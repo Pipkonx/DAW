@@ -29,7 +29,7 @@ Memorion es un juego clásico de memoria donde los jugadores necesitan encontrar
 
 ## 📥 Instalación
 No se requiere instalación. Simplemente:
-1. Clona este repositorio: `git clone https://github.com/VictorMedel06/Memorion.git`
+1. Clona este repositorio: `git clone https://github.com/Pipkonx/Memorion.git`
 2. Abre el archivo `index.html` en tu navegador favorito
 3. ¡Disfruta del juego!
 
