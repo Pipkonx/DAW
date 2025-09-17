@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Calculadora</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+
+<body>
+    <section class="calculator">
+        <form>
+            <input type="text" name="" id="" class="screen">
+        </form>
+        <div class="buttons">
+            <!-- amarillo -->
+            <button type="button" class="btn btn-yellow" data-num="*">*</button>
+            <button type="button" class="btn btn-yellow" data-num="/">/</button>
+            <button type="button" class="btn btn-yellow" data-num="-">-</button>
+            <button type="button" class="btn btn-yellow" data-num="+">+</button>
+            <!-- botones grises -->
+            <button type="button" class="btn btn-grey" data-num=".">.</button>
+            <button type="button" class="btn btn-grey" data-num="9">9</button>
+            <button type="button" class="btn btn-grey" data-num="8">8</button>
+            <button type="button" class="btn btn-grey" data-num="7">7</button>
+            <button type="button" class="btn btn-grey" data-num="6">6</button>
+            <button type="button" class="btn btn-grey" data-num="5">5</button>
+            <button type="button" class="btn btn-grey" data-num="4">4</button>
+            <button type="button" class="btn btn-grey" data-num="3">3</button>
+            <button type="button" class="btn btn-grey" data-num="2">2</button>
+            <button type="button" class="btn btn-grey" data-num="1">1</button>
+            <button type="button" class="btn btn-grey" data-num="0">0</button>
+            <button type="button" class="btn-equal btn-grey">=</button>
+            <button type="button" class="btn-clear btn-grey">C</button>
+        </div>
+    </section>
+</body>
+
+<script>
+    (function () {
+
+        let screen = document.querySelector('.screen');
+        let buttons = document.querySelectorAll('.btn');
+        let clear = document.querySelector('.btn-clear');
+        let equal = document.querySelector('.btn-equal');
+
+        buttons.forEach(function (button) {
+            button.addEventListener('click', function (e) {
+                let value = e.target.dataset.num;
+                screen.value += value;
+            })
+        });
+
+        equal.addEventListener('click', function (e) {
+            if (screen.value === '') {
+                screen.value = 'Please Enter a Value';
+            } else {
+                let answer = eval(screen.value);
+                screen.value = answer;
+            }
+        })
+
+        clear.addEventListener('click', function (e) {
+            screen.value = '';
+        })
+
+    })();
+</script>
+
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+    }
+
+    .calculator {
+        flex: 0 0 95%;
+    }
+
+    .screen {
+        width: 100%;
+        font-size: 7rem;
+        padding: 0.5rem;
+        background: rgb(41, 41, 56);
+        color: white;
+        border: none;
+    }
+
+    .buttons {
+        display: flex;
+        flex-wrap: wrap;
+        transition: all 0.5s linear;
+    }
+
+    button {
+        flex: 0 0 25%;
+        border: 1px solid black;
+        padding: 0.25rem 0;
+        transition: all 2s ease;
+    }
+
+    button:hover {
+        background: blue;
+    }
+
+    .btn-yellow {
+        background: rgb(245, 146, 62);
+        color: white;
+    }
+
+    .btn-grey {
+        background: rgb(224, 224, 224);
+    }
+
+    .btn,
+    .btn-equal,
+    .btn-clear {
+        font-size: 4rem;
+    }
+
+    .btn-equal {
+        background: green;
+    }
+
+    .btn-clear {
+        background: red;
+    }
+</style>
+
+</html>

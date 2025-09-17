@@ -1,0 +1,33 @@
+* {
+    -fx-font-size: 30px;
+    -fx-font-weight: bold;
+    -fx-font-family: "Comic Sans MS";
+    -fx-background-color: #1e1c1f;
+    -fx-text-fill: #FFFFFF;
+    -fx-alignment: center;
+}
+
+Button {
+    -fx-min-width: 50px;
+    -fx-min-height: 50px;
+    -fx-padding: 10px;
+}
+
+Button:hover {
+    -fx-background-color: white;
+    -fx-text-fill: black;
+}
+
+#palabraLabel {
+    -fx-letter-spacing: 50px;
+    -fx-padding: 20px;
+}
+
+#mascaraPane {
+    -fx-spacing: 20px;
+    -fx-padding: 30px;
+}
+
+#teclasPane {
+    -fx-padding: 10px;
+}

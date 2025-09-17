@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Display Quotes</title>
+</head>
+
+<body>
+    <div>
+        <button onclick="generarQuote()">Generar cita</button>
+        <div class="interior">
+            <div>
+                <img src="comilla.png" alt="">
+                <p id="quote">Los ganadores nunca renuncian y los que renuncian nunca ganan».</p>
+            </div>
+            <p id="author">Vince Lombardi</p>
+        </div>
+    </div>
+
+    <style>
+        * {
+            margin: 0;
+        }
+
+        body {
+            background-color: #b09e99;
+            font-family: sans-serif;
+            color: #6c757d;
+            font-size: 1.5rem;
+            margin: 0;
+        }
+
+        div {
+            background-color: #d7cecc;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            width: 50%;
+            margin: auto;
+        }
+
+        button {
+            padding: 10px;
+            background-color: #64b6ac;
+            color: white;
+            font-size: 1.5rem;
+            border-top: none;
+            border-left: none;
+        }
+
+        button:hover {
+            background-color: #b09e99;
+            color: #333333;
+        }
+
+
+        .interior {
+            margin: 0;
+            height: 80vh;
+            width: 100%;
+        }
+
+        img {
+            width: 7rem;
+        }
+
+        #author {
+            margin: 0;
+            color: #64b6ac;
+            text-align: right;
+        }
+    </style>
+
+
+    <script>
+        const quotes = [
+            'Los ganadores nunca renuncian y los que renuncian nunca ganan',
+            'Uno de los errores más grandes que comete la gente es forzar su interés en algo. Uno no elige sus pasiones; las pasiones nos eligen a nosotros',
+            'El éxito es la suma de pequeños esfuerzos, repetidos día tras día',
+            'La única forma de hacer un gran trabajo es amar lo que haces',
+        ]
+
+        const authors = [
+            'Vince Lombardi',
+            'Jeff Bezos',
+            'Robert Collier',
+            'Steve Jobs'
+        ]
+        function generarQuote() {
+            const quote = document.querySelector('#quote');
+            const author = document.querySelector('#author');
+            const index = quotes.indexOf(quote.textContent);
+            quote.textContent = quotes[(index + 1) % quotes.length];
+            author.textContent = authors[(index + 1) % authors.length];
+        }
+    </script>
+</body>
+
+</html>

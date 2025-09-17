@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ejercicio11</title>
+
+    <head>
+        <script>
+            function maxOfThree(n1, n2, n3) {
+                n1 = parseFloat(n1);
+                n2 = parseFloat(n2);
+                n3 = parseFloat(n3);
+                return Math.max(n1, n2, n3);
+            }
+            
+            function muestraMayor() {
+                var n1 = document.getElementById('n1').value;
+                var n2 = document.getElementById('n2').value;
+                var n3 = document.getElementById('n3').value;
+                document.getElementById("res").innerHTML = maxOfThree(n1, n2, n3);
+            }
+        </script>
+    </head>
+
+<body>
+    <h2>JavaScript Functions</h2>
+    <p>Muestra el mayor de tres números</p><br>
+    <label for="n1">Número 1 : </label>
+    <input type="text" id="n1" name="n1"> <br>
+    <label for="n2">Número 2 : </label>
+    <input type="text" id="n2" name="n2"> <br>
+    <label for="n3">Número 3 : </label>
+    <input type="text" id="n3" name="n3"> <br>
+    <button type="button" onclick="muestraMayor()">Mostrar Mayor</button><br>
+    <p id="res"></p>
+</body>
+
+</html>

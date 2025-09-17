@@ -1,0 +1,22 @@
+.p1 {
+    text-align: center;
+}
+
+.p2 {
+    text-align: right;
+
+}
+
+.p3 {
+    text-align: left;
+}
+
+
+.navbar {
+    display: flex;
+    align-items: center;
+}
+
+.espacio {
+    margin: 0 10px 0 10px;
+}

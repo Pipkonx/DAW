@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Personalizador de Texto</title>
+    <style>
+        #panel-control {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: rgb(247, 247, 247);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        #area-texto {
+            margin: 20px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            min-height: 300px;
+        }
+    </style>
+</head>
+<body>
+    <div id="panel-control">
+        <h3>Panel de Control</h3>
+        <div>
+            <label for="tamano-fuente">Tamaño de fuente:</label>
+            <input type="range" id="tamano-fuente" min="12" max="48" value="16">
+            <span id="valor-tamano">16px</span>
+        </div>
+        <div>
+            <label for="color-fondo">Color de fondo:</label>
+            <input type="color" id="color-fondo" value="#ffffff">
+        </div>
+        <div>
+            <label for="color-texto">Color de texto:</label>
+            <input type="color" id="color-texto" value="#000000">
+        </div>
+        <div>
+            <label for="tipo-fuente">Tipo de fuente:</label>
+            <select id="tipo-fuente">
+                <option value="Arial">Arial</option>
+                <option value="Times New Roman">Times New Roman</option>
+                <option value="Courier New">Courier New</option>
+                <option value="Georgia">Georgia</option>
+            </select>
+        </div>
+    </div>
+
+    <div id="area-texto">
+        <h1>Área de Texto Personalizable</h1>
+        <p>Este es un texto de ejemplo que puedes personalizar usando el panel de control a la derecha. Prueba a cambiar el tamaño de la fuente, los colores y el tipo de letra.</p>
+    </div>
+
+    <script>
+        document.getElementById('tamano-fuente').addEventListener('input', function() {
+            const tamano = this.value;
+            document.getElementById('area-texto').style.fontSize = tamano + 'px';
+            document.getElementById('valor-tamano').textContent = tamano + 'px';
+        });
+
+        document.getElementById('color-fondo').addEventListener('input', function() {
+            document.getElementById('area-texto').style.backgroundColor = this.value;
+        });
+
+        document.getElementById('color-texto').addEventListener('input', function() {
+            document.getElementById('area-texto').style.color = this.value;
+        });
+
+        document.getElementById('tipo-fuente').addEventListener('change', function() {
+            document.getElementById('area-texto').style.fontFamily = this.value;
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Web4U</title>
+    <link rel="stylesheet" href="/style.css" />
+    <link rel="icon" href="/images/logo.png" type="image/x-icon" />
+</head>
+
+<body>
+    <header class="header">
+        <ul class="navbar">
+            <li>
+                <a href="/index.html#html"><img src="/images/logo.png" class="logo" /></a>
+            </li>
+            <li><a href="/index.html#html" class=" enlace">Web4U</a></li>
+            <li><a href="/html/html.html" class="enlace">HTML</a></li>
+            <li><a href="/html/css.html" class="enlace">CSS</a></li>
+            <li><a href="/html/svg.html" class="activo enlace">SVG</a></li>
+            <li><a href="/htmleng/svg.html" class="enlace"><img src="/images/eng.jpg" alt="ingles"
+                        title="cambiar idioma a ingles" class="idioma"></a></li>
+        </ul>
+    </header>
+    <main>
+        <div id="svg">
+            <div class="cl">
+                <h1>SVG</h1>
+                <h3>Gráficos escalables para la web</h3>
+                <a href="/index.html#html"><button>&lt; Volver</button></a>
+            </div>
+            <div class="Dcaja">
+                <p>SVG (Scalable Vector Graphics) permite crear gráficos y formas vectoriales en la web.</p>
+                <p>Con SVG puedes diseñar desde iconos hasta gráficos complejos en tus páginas web.</p>
+                <p>SVG es ideal para gráficos que necesitan ser escalados sin perder calidad.</p>
+            </div>
+            <hr />
+            <!-- Nueva Sección con Ejemplos de SVG -->
+            <div>
+                <div class="cl">
+                    <h2>Ejemplos de Elementos SVG</h2>
+                    <!-- Ejemplo de rectángulo -->
+                    <h3>Dibujar un rectángulo</h3>
+                    <p>El elemento <code>&lt;rect&gt;</code> dibuja un rectángulo en la pantalla con atributos como
+                        ancho,
+                        alto y posición.</p>
+                </div>
+                <div class="DC">
+                    <h3>Ejemplo</h3>
+                    <div class="code">
+                        <p>&nbsp;&nbsp;1&nbsp;&nbsp;&lt;<b>svg</b> <b>width</b>="100" <b>height</b>="100"&gt;</p>
+                        <p>&nbsp;&nbsp;2&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>rect</b> <b>width</b>="80" <b>height</b>="50"
+                            <b>fill</b>="blue" /&gt;
+                        </p>
+                        <p>&nbsp;&nbsp;3&nbsp;&nbsp;&lt;/<b>svg</b>&gt;</p>
+                    </div>
+                    <a href="https://www.w3schools.com/graphics/svg_rect.asp" target="_blank"><button>Aprender
+                            Más</button></a>
+                </div>
+                <hr>
+                <div class="cl"> <!-- Ejemplo de círculo -->
+                    <h3>Dibujar un círculo</h3>
+                    <p>El elemento <code>&lt;circle&gt;</code> crea un círculo definiendo su centro y su radio.</p>
+                </div>
+                <div class="DC">
+                    <h3>Ejemplo</h3>
+                    <div class="code">
+                        <p>&nbsp;&nbsp;1&nbsp;&nbsp;&lt;<b>svg</b> <b>width</b>="100" <b>height</b>="100"&gt;</p>
+                        <p>&nbsp;&nbsp;2&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>circle</b> <b>cx</b>="50" <b>cy</b>="50"
+                            <b>r</b>="40" <b>fill</b>="red" /&gt;
+                        </p>
+                        <p>&nbsp;&nbsp;3&nbsp;&nbsp;&lt;/<b>svg</b>&gt;</p>
+                    </div>
+                    <a href="https://www.w3schools.com/graphics/svg_circle.asp" target="_blank"><button>Aprender
+                            Más</button></a>
+                </div>
+                <hr>
+                <div class="cl"> <!-- Ejemplo de elipse -->
+                    <h3>Dibujar una elipse</h3>
+                    <p>El elemento <code>&lt;ellipse&gt;</code> dibuja una elipse estableciendo su posición, ancho y
+                        alto.
+                    </p>
+                </div>
+                <div class="DC">
+                    <h3>Ejemplo</h3>
+                    <div class="code">
+                        <p>&nbsp;&nbsp;1&nbsp;&nbsp;&lt;<b>svg</b> <b>width</b>="100" <b>height</b>="100"&gt;</p>
+                        <p>&nbsp;&nbsp;2&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>ellipse</b> <b>cx</b>="50" <b>cy</b>="50"
+                            <b>rx</b>="40" <b>ry</b>="20" <b>fill</b>="green" /&gt;
+                        </p>
+                        <p>&nbsp;&nbsp;3&nbsp;&nbsp;&lt;/<b>svg</b>&gt;</p>
+                    </div>
+                    <a href="https://www.w3schools.com/graphics/svg_ellipse.asp" target="_blank"><button>Aprender
+                            Más</button></a>
+                </div>
+                <hr>
+                <div class="cl">
+                    <!-- Ejemplo de línea -->
+                    <h3>Dibujar una línea</h3>
+                    <p>El elemento <code>&lt;line&gt;</code> dibuja una línea recta entre dos puntos definidos por sus
+                        coordenadas.</p>
+                </div>
+                <div class="DC">
+                    <h3>Ejemplo</h3>
+                    <div class="code">
+                        <p>&nbsp;&nbsp;1&nbsp;&nbsp;&lt;<b>svg</b> <b>width</b>="100" <b>height</b>="100"&gt;</p>
+                        <p>&nbsp;&nbsp;2&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>line</b> <b>x1</b>="10" <b>y1</b>="10"
+                            <b>x2</b>="90" <b>y2</b>="90" <b>stroke</b>="black" <b>stroke-width</b>="2" /&gt;
+                        </p>
+                        <p>&nbsp;&nbsp;3&nbsp;&nbsp;&lt;/<b>svg</b>&gt;</p>
+                    </div>
+                    <a href="https://www.w3schools.com/graphics/svg_line.asp" target="_blank"><button>Aprender
+                            Más</button></a>
+                </div>
+                <hr>
+                <div class="cl"> <!-- Ejemplo de texto -->
+                    <h3>Añadir texto</h3>
+                    <p>El elemento <code>&lt;text&gt;</code> permite agregar texto dentro del SVG con coordenadas de
+                        posición.</p>
+                </div>
+                <div class="DC">
+                    <h3>Ejemplo</h3>
+                    <div class="code">
+                        <p>&nbsp;&nbsp;1&nbsp;&nbsp;&lt;<b>svg</b> <b>width</b>="100" <b>height</b>="100"&gt;</p>
+                        <p>&nbsp;&nbsp;2&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>text</b> <b>x</b>="10" <b>y</b>="50"
+                            <b>font-family</b>="Arial" <b>font-size</b>="20" <b>fill</b>="black"&gt;Hola
+                            SVG&lt;/<b>text</b>&gt;
+                        </p>
+                        <p>&nbsp;&nbsp;3&nbsp;&nbsp;&lt;/<b>svg</b>&gt;</p>
+                    </div>
+                    <a href="https://www.w3schools.com/graphics/svg_text.asp" target="_blank"><button>Aprender
+                            Más</button></a>
+                </div>
+            </div>
+        </div>
+    </main>
+    <footer>
+        <p>&copy;
+            <script>document.write(new Date().getFullYear())</script> PipkonDev. Todos los derechos reservados.
+        </p>
+        <a href="mailto:rcoracu924@g.educaand.es" target="_blank">rcoracu924@g.educaand.es</a>
+    </footer>
+</body>
+
+</html>

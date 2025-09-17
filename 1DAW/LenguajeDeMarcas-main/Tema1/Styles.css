@@ -1,0 +1,34 @@
+html {
+    margin: 10vh 15vh 0 15vh;
+    background-color: lightgray;
+}
+
+body {
+    background-color: lightgray;
+
+}
+
+h1 {
+    letter-spacing: 10px;
+    align-items: center;
+    padding-left: 40%;
+}
+
+.cuadro {
+    font-family: 'Courier New', Courier, monospace;
+    padding: 10px;
+    background-color: rgb(164, 164, 164);
+    color: white;
+    border-radius: 10px 0 10px 0;
+    height: 130px;
+    width: 90vh;
+}
+
+div {
+    display: flex;
+}
+
+p {
+    font-family: 'Courier New', Courier, monospace;
+    padding: 10px;
+}

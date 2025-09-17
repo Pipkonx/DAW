@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Lista</title>
+    <style>
+        .list-container {
+            margin: 20px;
+        }
+        button {
+            margin: 5px;
+            padding: 5px 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="list-container">
+        <h2>Mi Lista</h2>
+        <ul id="miLista">
+            <li>Elemento 1</li>
+            <li>Elemento 2</li>
+            <li>Elemento 3</li>
+            <li>Elemento 4</li>
+            <li>Elemento 5</li>
+        </ul>
+
+        <button onclick="eliminarUltimoElemento()">Eliminar Último Elemento</button>
+        <button onclick="eliminarPrimerElemento()">Eliminar Primer Elemento</button>
+        <button onclick="eliminarTodosElementos()">Eliminar Todos los Elementos</button>
+    </div>
+
+    <script>
+        function eliminarUltimoElemento() {
+            const lista = document.getElementById("miLista");
+            if (lista.children.length > 0) {
+                lista.removeChild(lista.lastElementChild);
+            }
+        }
+
+        function eliminarPrimerElemento() {
+            const lista = document.getElementById("miLista");
+            if (lista.children.length > 0) {
+                lista.removeChild(lista.firstElementChild);
+            }
+        }
+
+        function eliminarTodosElementos() {
+            const lista = document.getElementById("miLista");
+            while (lista.firstChild) {
+                lista.removeChild(lista.firstChild);
+            }
+        }
+    </script>
+</body>
+</html>

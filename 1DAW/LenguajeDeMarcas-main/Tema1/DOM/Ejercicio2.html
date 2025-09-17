@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+
+<body>
+
+    <h2>Uso del atributo ID en JS</h2>
+    <p>JS puede acceder a elementos específicos usando el método: getElementById()</p>
+
+    <p id="H">Hola Mundo!</p>
+    <button onclick="displayResult()">Cambiar Texto</button>
+
+    <script>
+        function displayResult() {
+            document.getElementById("H").innerHTML = "Cambio de texto en el párrafo";
+        }
+    </script>
+
+</body>
+
+</html>

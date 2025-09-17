@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- Crea un documento HTML desde cero con tres grupos de botones. Cada grupo se centrará en tres cuestiones diferentes:
+a. Cambiar el estilo de un párrafo: elegir entre tres estilos de fuente diferentes.
+b. Cambiar el atributo src de la etiqueta img.
+c. Mostrar tres mensajes diferentes en una etiqueta < div>. -->
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ejercicio 5</title>
+</head>
+
+<body>
+    <div>
+        <p>Párrafo 1</p>
+        <button onclick="cambiarEstilo()">Cambiar estilo</button>
+    </div>
+    <div>
+        <img src="imagen.jpg" alt="Imagen 1">
+        <button onclick="cambiarImagen()">Cambiar imagen</button>
+    </div>
+    <div>
+        <button onclick="cambiarMensaje()">Cambiar mensaje</button>
+    </div>
+    <style>
+        /* le damos estilo a la imagen */
+        img {
+            width: auto;
+            height: 25vw;
+        }
+    </style>
+
+    <script>
+        // Cambiar el estilo de un párrafo: elegir entre tres estilos de fuente diferentes
+        const parrafo1 = document.querySelector('p');
+        const estilos = ['Arial', 'Verdana', 'Georgia'];
+        let estiloActual = 0;
+
+        function cambiarEstilo() {
+            parrafo1.style.fontFamily = estilos[estiloActual];
+            estiloActual = (estiloActual + 1) % estilos.length;
+        }
+
+        // Cambiar el atributo src de la etiqueta img
+        const imagen1 = document.querySelector('img');
+        const imagenes = ['imagen.jpg', 'imagen2.jpg', 'imagen3.png'];
+        let imagenActual = 0;
+
+        function cambiarImagen() {
+            imagen1.src = imagenes[imagenActual];
+            imagenActual = (imagenActual + 1) % imagenes.length;
+        }
+
+        // Mostrar tres mensajes diferentes en una etiqueta <div>
+        const divMensaje1 = document.querySelector('div');
+        const mensajes1 = ['Mensaje cambiado 1', 'Mensaje cambiado 2', 'Mensaje cambiado 3'];
+        const divMensaje2 = document.querySelector('div');
+        const mensajes2 = ['Mensaje cambiado 1', 'Mensaje cambiado 2', 'Mensaje cambiado 3'];
+        const divMensaje3 = document.querySelector('div');
+        const mensajes3 = ['Mensaje cambiado 1', 'Mensaje cambiado 2', 'Mensaje cambiado 3'];
+        let mensajeActual1 = 0;
+        let mensajeActual2 = 0;
+        let mensajeActual3 = 0;
+
+        function cambiarMensaje() {
+            divMensaje1.textContent = mensajes1[mensajeActual1];
+            mensajeActual1 = (mensajeActual1 + 1) % mensajes1.length;
+        }
+        function cambiarMensaje2() {
+            divMensaje2.textContent = mensajes2[mensajeActual2];
+            mensajeActual2 = (mensajeActual2 + 1) % mensajes2.length;
+        }
+        function cambiarMensaje3() {
+            divMensaje3.textContent = mensajes3[mensajeActual3];
+            mensajeActual3 = (mensajeActual3 + 1) % mensajes3.length;
+        }
+    </script>
+</body>
+
+</html>

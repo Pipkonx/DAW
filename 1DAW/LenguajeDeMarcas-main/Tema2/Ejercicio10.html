@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <title>Frutas. Ejercicios. Páginas web HTML y hojas de estilo CSS. Bartolomé Sintes Marco. www.mclibre.org</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="a1_files/frutas.css">
+</head>
+
+<body>
+  <h1>Frutas y verduras</h1>
+
+  <section>
+    <h2>Ejemplo 1</h2>
+    <article class="a11">
+      <p class="p3">La fresa es una fruta del bosque adecuada en
+        regímenes dietéticos, dado que tiene escasa concentración de glúcidos.
+        Tiene un sabor muy agradable aunque ligeramente agrio (algunas pocas
+        especies pueden tener sabor dulce).</p>
+
+      <p class="p3">La cereza, también conocido como guinda, es fruto de
+        varios árboles del género Prunus. La cereza es una fruta rica en
+        vitaminas A, B, C, E, K y PP, en hierro, calcio, magnesio, potasio y
+        azufre. </p>
+
+      <p class="p3">La pera comestible es el fruto del peral común
+        (Pyrus communis). La pera es una fruta jugosa, carnosa, y una de las más
+        importantes producidas en las regiones templadas.</p>
+
+      <p class="p3">El plátano (también llamado banana, banano o guineo)
+        es un fruto con cualidades variables en tamaño, color y firmeza,
+        alargado, generalmente curvado y carnoso, rico en almidón cubierto con
+        una cáscara, que puede ser verde, amarilla, roja, púrpura o marrón
+        cuando está madura. Los frutos crecen en piñas que cuelgan de la parte
+        superior de la planta.</p>
+
+      <p class="p3">La sandía es una fruta originaria de África, pero
+        tiene una gran presencia y difusión en Asia. Hoy en día se cultiva de
+        manera extendida por todo el mundo debido a su fruto, un pepónide de
+        enorme tamaño —el récord entre las verduras fue una sandía de 120 kg.</p>
+    </article>
+  </section>
+
+  <section>
+    <h2>Ejemplo 2</h2>
+    <article class="a12">
+      <p class="p3">La fresa es una fruta del bosque adecuada en
+        regímenes dietéticos, dado que tiene escasa concentración de glúcidos.
+        Tiene un sabor muy agradable aunque ligeramente agrio (algunas pocas
+        especies pueden tener sabor dulce).</p>
+
+      <p class="p3">La cereza, también conocido como guinda, es fruto de
+        varios árboles del género Prunus. La cereza es una fruta rica en
+        vitaminas A, B, C, E, K y PP, en hierro, calcio, magnesio, potasio y
+        azufre. </p>
+
+      <p class="p3">La pera comestible es el fruto del peral común
+        (Pyrus communis). La pera es una fruta jugosa, carnosa, y una de las más
+        importantes producidas en las regiones templadas.</p>
+
+      <p class="p3">El plátano (también llamado banana, banano o guineo)
+        es un fruto con cualidades variables en tamaño, color y firmeza,
+        alargado, generalmente curvado y carnoso, rico en almidón cubierto con
+        una cáscara, que puede ser verde, amarilla, roja, púrpura o marrón
+        cuando está madura. Los frutos crecen en piñas que cuelgan de la parte
+        superior de la planta.</p>
+
+      <p class="p3">La sandía es una fruta originaria de África, pero
+        tiene una gran presencia y difusión en Asia. Hoy en día se cultiva de
+        manera extendida por todo el mundo debido a su fruto, un pepónide de
+        enorme tamaño —el récord entre las verduras fue una sandía de 120 kg.</p>
+    </article>
+  </section>
+
+  <section>
+    <h2>Ejemplo 3</h2>
+
+    <article class="a13">
+      <p class="p3">La fresa es una fruta del bosque adecuada en
+        regímenes dietéticos, dado que tiene escasa concentración de glúcidos.
+        Tiene un sabor muy agradable aunque ligeramente agrio (algunas pocas
+        especies pueden tener sabor dulce).</p>
+
+      <p class="p3">La cereza, también conocido como guinda, es fruto de
+        varios árboles del género Prunus. La cereza es una fruta rica en
+        vitaminas A, B, C, E, K y PP, en hierro, calcio, magnesio, potasio y
+        azufre. </p>
+
+      <p class="p3">La pera comestible es el fruto del peral común
+        (Pyrus communis). La pera es una fruta jugosa, carnosa, y una de las más
+        importantes producidas en las regiones templadas.</p>
+
+      <p class="p3">El plátano (también llamado banana, banano o guineo)
+        es un fruto con cualidades variables en tamaño, color y firmeza,
+        alargado, generalmente curvado y carnoso, rico en almidón cubierto con
+        una cáscara, que puede ser verde, amarilla, roja, púrpura o marrón
+        cuando está madura. Los frutos crecen en piñas que cuelgan de la parte
+        superior de la planta.</p>
+
+      <p class="p3">La sandía es una fruta originaria de África, pero
+        tiene una gran presencia y difusión en Asia. Hoy en día se cultiva de
+        manera extendida por todo el mundo debido a su fruto, un pepónide de
+        enorme tamaño —el récord entre las verduras fue una sandía de 120 kg.</p>
+    </article>
+  </section>
+
+  <style>
+    html {
+      font-family: sans-serif;
+      hyphens: auto;
+    }
+
+    article {
+      display: flex;
+      flex-wrap: wrap;
+    }
+
+    div.ficha {
+      border: black 2px solid;
+      margin: 10px;
+    }
+
+    article p {
+      margin: 0;
+      padding: 5px;
+    }
+
+    p.p1 {
+      text-align: center;
+    }
+
+    p.p2 {
+      padding: 5px 0;
+      background-color: lightgray;
+      font-size: 150%;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    p.p3 {
+      text-align: justify;
+    }
+
+    article.a11 p.p3 {
+      width: 200px;
+      margin: 10px;
+      border: black 2px solid;
+    }
+
+    article.a12 {
+      justify-content: space-around;
+    }
+
+    article.a12 p.p3 {
+      width: 200px;
+      margin: 10px;
+      border: black 2px solid;
+    }
+
+    article.a13 {
+      align-items: center;
+    }
+
+    article.a13 p.p3 {
+      width: 200px;
+      margin: 10px;
+      border: black 2px solid;
+    }
+  </style>
+</body>
+
+</html>

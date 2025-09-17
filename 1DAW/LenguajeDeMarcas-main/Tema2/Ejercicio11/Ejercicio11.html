@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Responsive Web Design</title>
+</head>
+
+<body>
+  <style>
+    div.gallery {
+      margin: 5px;
+      border: 1px solid #ccc;
+      float: left;
+      width: 180px;
+    }
+
+    div.gallery:hover {
+      border: 1px solid #777;
+    }
+
+    div.gallery img {
+      width: 100%;
+      height: auto;
+    }
+
+    div.desc {
+      padding: 15px;
+      text-align: center;
+    }
+
+    ul {
+      list-style-type: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+    }
+
+    li {
+      margin-left: 10px;
+    }
+
+    @media only screen and (max-width: 600px) {
+      body {
+        background-color: lightblue;
+      }
+    }
+
+    img {
+    }
+
+  </style>
+  </head>
+
+  <body>
+    <ul>
+      <li><a href="#">Home</a></li>
+      <li><a href="#">Nuevo</a></li>
+      <li><a href="#">Conctacto</a></li>
+      <li><a href="#">Sobre mí</a></li>
+    </ul>
+
+    <div class="gallery">
+      <a href="#">
+        <img src="a1.jpg" alt="A1" width="600" height="400" >
+      </a>
+      <div class="desc">Lorem ipsum dolor sit amet consectetur adipisicing elit. Vel, corporis!</div>
+    </div>
+
+    <div class="gallery">
+      <a href="#">
+        <img src="a2.jpg" alt="A2" width="600" height="400">
+      </a>
+      <div class="desc">Lorem ipsum dolor sit amet consectetur adipisicing elit. Vel, corporis!</div>
+    </div>
+
+    <div class="gallery">
+      <a href="a3.jpg">
+        <img src="#" alt="A3" width="600" height="400">
+      </a>
+      <div class="desc">Lorem ipsum dolor sit amet consectetur adipisicing elit. Vel, corporis!</div>
+    </div>
+
+    <div class="gallery">
+      <a href="a4.avif">
+        <img src="#" alt="A4" width="600" height="400">
+      </a>
+      <div class="desc">Lorem ipsum dolor sit amet consectetur adipisicing elit. Vel, corporis!</div>
+    </div>
+
+  </body>
+
+</html>

@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ejercicio10</title>
+</head>
+
+<body>
+    <script>
+        function max(n1, n2) {
+            var m;
+            if (n1 > n2)
+                m = n1;
+            else
+                m = n2;
+            return m;
+        }
+        function maxOfThree(n1, n2, n3) {
+            var m;
+            if (n1 > n2 && n1 > n3)
+                m = n1;
+            else if (n2 > n1 && n2 > n3)
+                m = n2;
+            else
+                m = n3;
+            return m;
+        }
+        function isVowel(c) {
+            var v = false;
+            if (c == 'a' || c == 'e' || c == 'i' || c == 'o' || c == 'u')
+                v = true;
+            return v;
+        }
+        function translate(s) {
+            var t = '';
+            for (var i = 0; i < s.length; i++) {
+                if (isVowel(s.charAt(i)))
+                    t += s.charAt(i);
+                else
+                    t += s.charAt(i) + 'o' + s.charAt(i);
+            }
+            return t;
+        }
+        function sum(a) {
+            var s = 0;
+            for (var i = 0; i < a.length; i++)
+                s += a[i];
+            return s;
+        }
+        function calculate(a) {
+            var c = 1;
+            for (var i = 0; i < a.length; i++)
+                c *= a[i];
+            return c;
+        }
+        function reverse(s) {
+            var r = '';
+            for (var i = s.length - 1; i >= 0; i--)
+                r += s.charAt(i);
+            return r;
+        }
+        function sort(a) {
+            var s = '';
+            for (var i = 0; i < a.length; i++)
+                s += a[i] + ' ';
+            return s;
+        }
+        function findLongestWord(a) {
+            var l = 0;
+            for (var i = 0; i < a.length; i++)
+                if (a[i].length > l)
+                    l = a[i].length;
+            return l;
+        }
+        function filterLongWords(a, i) {
+            var f = '';
+            for (var j = 0; j < a.length; j++)
+                if (a[j].length > i)
+                    f += a[j] + '';
+            return f;
+        }
+        function charFreq(s) {
+            var f = '';
+            for (var i = 0; i < s.length; i++)
+                f += s.charAt(i) + '=' + s.split(s.charAt(i)).length - 1 + ',';
+            return f;
+        }
+        function muestraMayor() {
+            var n1 = document.getElementById('n1').value;
+            var n2 = document.getElementById('n2').value;
+            var m = max(n1, n2);
+            document.getElementById('m').innerHTML = m;
+        }
+        function muestraMaxOfThree() {
+            var n1 = document.getElementById('n1').value;
+            var n2 = document.getElementById('n2').value;
+            var n3 = document.getElementById('n3').value;
+            var m = maxOfThree(n1, n2, n3);
+            document.getElementById('m').innerHTML = m;
+        }
+        function muestraIsVowel() {
+            var c = document.getElementById('c').value;
+            var v = isVowel(c);
+            document.getElementById('v').innerHTML = v;
+        }
+        function muestraTranslate() {
+            var s = document.getElementById('s').value;
+            var t = translate(s);
+            document.getElementById('t').innerHTML = t;
+        }
+        function muestraSum() {
+            var a = document.getElementById('a').value;
+            var s = sum(a);
+            document.getElementById('s').innerHTML = s;
+        }
+        function muestraCalculate() {
+            var a = document.getElementById('a').value;
+            var c = calculate(a);
+            document.getElementById('c').innerHTML = c;
+        }
+        function muestraReverse() {
+            var s = document.getElementById('s').value;
+            var r = reverse(s);
+            document.getElementById('r').innerHTML = r;
+        }
+        function muestraSort() {
+            var a = document.getElementById('a').value;
+            var s = sort(a);
+            document.getElementById('s').innerHTML = s;
+        }
+        function muestraFindLongestWord() {
+            var a = document.getElementById('a').value;
+            var l = findLongestWord(a);
+            document.getElementById('l').innerHTML = l;
+        }
+        function muestraFilterLongWords() {
+            var a = document.getElementById('a').value;
+            var i = document.getElementById('i').value;
+            var f = filterLongWords(a, i);
+            document.getElementById('f').innerHTML = f;
+        }
+        function muestraCharFreq() {
+            var s = document.getElementById('s').value;
+            var f = charFreq(s);
+            document.getElementById('f').innerHTML = f;
+        }
+    </script>
+    <h1>Ejercicio10</h1>
+    <p>Define una función max() que tome dos números como argumentos y devuelva el mayor de ellos. Utiliza la
+        construcción if-then-else disponible en Javascript.</p>
+    <label for="n1">n1: </label>
+    <input type="text" id="n1" name="n1">
+    <br>
+    <label for="n2">n2: </label>
+    <input type="text" id="n2" name="n2">
+    <br>
+    <button type="button" onclick="muestraMayor()">Muestra mayor</button>
+    <p id="m"></p>
+    <p>Define una función maxOfThree() que tome tres números como argumentos y devuelva el mayor de ellos.</p>
+    <label for="n1">n1: </label>
+    <input type="text" id="n1" name="n1">
+    <br>
+    <label for="n2">n2: </label>
+    <input type="text" id="n2" name="n2">
+    <br>
+    <label for="n3">n3: </label>
+    <input type="text" id="n3" name="n3">
+    <br>
+    <button type="button" onclick="muestraMaxOfThree()">Muestra mayor de tres</button>
+    <p id="m"></p>
+    <p>Escribe una función que tome un carácter (es decir, una cadena de longitud 1) y devuelva verdadero si es una
+        vocal, falso en caso contrario.</p>
+    <label for="c">c: </label>
+    <input type="text" id="c" name="c">
+    <br>
+    <button type="button" onclick="muestraIsVowel()">Muestra si es vocal</button>
+    <p id="v"></p>
+    <p>Rövarspråket es una jerga infantil sueca en la que, con palabras como estas, puedes hablar básicamente con
+        alguien
+        que entiende el "códec" y con alguien que no lo entiende. Escribe una función translate() que traduzca un texto
+        a
+        "rövarspråket". Es decir, duplica cada consonante y coloca una ocurrencia de "o" en el medio. Por ejemplo,
+        translate("this is fun") debería devolver la cadena "tothohisos isos fofunon". Nota: puedes visitar para ver un
+        ejemplo.</p>
+    <label for="s">s: </label>
+    <input type="text" id="s" name="s">
+    <br>
+    <button type="button" onclick="muestraTranslate()">Muestra translate</button>
+    <p id="t"></p>
+    <p>Define una función sum() y una función calculate() que sume y multiplique (respectivamente) todos los números en
+        una matriz de números. Por ejemplo, sum([1,2,3,4]) debe devolver 10, y calculate([1,2,3,4]) debe devolver 24.
+    </p>
+    <label for="a">a: </label>
+    <input type="text" id="a" name="a">
+    <br>
+    <button type="button" onclick="muestraSum()">Muestra sum</button>
+    <p id="s"></p>
+    <button type="button" onclick="muestraCalculate()">Muestra calculate</button>
+    <p id="c"></p>
+    <p>Escribe una función para ordenar una lista de palabras (una matriz) en orden alfabético</p>
+    <label for="a">a: </label>
+    <input type="text" id="a" name="a">
+    <br>
+    <button type="button" onclick="muestraSort()">Muestra sort</button>
+    <p id="s"></p>
+
+    <p>Define una función findLongestWord() que tome una matriz de palabras y devuelva la longitud de la más larga.</p>
+    <label for="a">a: </label>
+    <input type="text" id="a" name="a">
+    <br>
+    <button type="button" onclick="muestraFindLongestWord()">Muestra findLongestWord</button>
+    <p id="l"></p>
+
+    <p>Escribe una función filterLongWords() que tome una matriz de palabras y un entero i y devuelva la matriz de
+        palabras que sean más largas que i.</p>
+    <label for="a">a: </label>
+    <input type="text" id="a" name="a">
+    <br>
+    <label for="i">i: </label>
+    <input type="text" id="i" name="i">
+    <br>
+    <button type="button" onclick="muestraFilterLongWords()">Muestra filterLongWords</button>
+    <p id="f"></p>
+
+    <p>Escribe una función charFreq() que tome una cadena y construya una lista de frecuencias de los caracteres que
+        contiene. Representa la lista de frecuencias como un objeto Javascript.</p>
+    <label for="s">s: </label>
+    <input type="text" id="s" name="s">
+    <br>
+    <button type="button" onclick="muestraCharFreq()">Muestra charFreq</button>
+    <p id="f"></p>
+</body>
+
+</html>

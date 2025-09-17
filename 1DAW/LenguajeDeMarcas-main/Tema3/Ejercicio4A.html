@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Times Table Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+
+        .input-container {
+            margin-bottom: 20px;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            max-width: 400px;
+            margin-top: 20px;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Times Table Generator</h1>
+    <div class="input-container">
+        <label for="number">Enter a number: </label>
+        <input type="text" id="number" onchange="generateTable()">
+    </div>
+    <div id="tableContainer"></div>
+
+    <script>
+        function generateTable() {
+            const number = parseInt(document.getElementById('number').value);
+            const container = document.getElementById('tableContainer');
+
+            if (isNaN(number)) {
+                container.innerHTML = '<p>Please enter a valid number</p>';
+                return;
+            }
+
+            let tableHTML = `
+                <table>
+                    <tr>
+                        <th>Multiplication</th>
+                        <th>Result</th>
+                    </tr>
+            `;
+
+            for (let i = 1; i <= 10; i++) {
+                tableHTML += `
+                    <tr>
+                        <td>${number} × ${i}</td>
+                        <td>${number * i}</td>
+                    </tr>
+                `;
+            }
+
+            tableHTML += '</table>';
+            container.innerHTML = tableHTML;
+        }
+    </script>
+</body>
+
+</html>

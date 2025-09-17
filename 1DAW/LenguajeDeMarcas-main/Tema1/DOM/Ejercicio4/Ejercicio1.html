@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<h1>Ejercicio DOM</h1>
+<p>Aquí, en JS puedes carmbiar el atributo value del src (source) atributo de la imagen</p>
+
+<script>
+function light(sw) {
+  var pic;
+  if (sw == 0) {
+    pic = "pic_bulboff.gif"
+  } else {
+    pic = "pic_bulbon.gif"
+  }
+  document.getElementById('myImage').src = pic;
+}
+</script>
+
+<img id="myImage" src="pic_bulboff.gif" width="100" height="180">
+
+<p>
+<button type="button" onclick="light(1)">Encender la luz</button>
+<button type="button" onclick="light(0)">Apagar la luz</button>
+</p>
+
+</body>
+</html>
+

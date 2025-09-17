@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ejercicio7</title>
+</head>
+
+<body>
+    <style type="text/css">
+        body {
+            margin: 0;
+            background: #f2fdff;
+        }
+
+        .showSlide {
+            display: none
+        }
+
+        .showSlide img {
+            width: 100%;
+        }
+
+        .slidercontainer {
+            position: relative;
+            margin: auto;
+            margin-top: 10vh;
+            width: 70vw;
+        }
+
+        .left,
+        .right {
+            cursor: pointer;
+            position: absolute;
+            top: 50%;
+            width: auto;
+            padding: 16px;
+            margin-top: -22px;
+            color: white;
+            font-weight: bold;
+            font-size: 18px;
+            border-radius: 0 3px 3px 0;
+            background-color: #3e92cc;
+            border: 3px solid #3e92cc;
+        }
+
+        .right {
+            right: -30px;
+            border-radius: 3px;
+        }
+
+        .left {
+            left: -20px;
+            border-radius: 3px;
+        }
+
+        .left:hover,
+        .right:hover {
+            background-color: rgba(255, 255, 255, 0.8);
+            border: 3px solid #3e92cc;
+            color: #3e92cc;
+        }
+
+        img {
+            border-radius: 5px;
+            border: 5px solid #3e92cc;
+        }
+    </style>
+    <div class="slidercontainer">
+        <div class="showSlide ">
+            <img src="img1.jpg" />
+        </div>
+        <div class="showSlide ">
+            <img src="img2.jpg" />
+        </div>
+
+        <div class="showSlide ">
+            <img src="img3.jpg" />
+        </div>
+        <div class="showSlide ">
+            <img src="img4.jpeg" />
+        </div>
+        <!-- Navigation arrows -->
+        <a class="left" onclick="nextSlide(-1)">< </a>
+                <a class="right" onclick="nextSlide(1)">></a>
+    </div>
+
+    <script type="text/javascript">
+        var slide_index = 1;
+        displaySlides(slide_index);
+
+        function nextSlide(n) {
+            displaySlides(slide_index += n);
+        }
+
+        function currentSlide(n) {
+            displaySlides(slide_index = n);
+        }
+
+        function displaySlides(n) {
+            var i;
+            var slides = document.getElementsByClassName("showSlide");
+            if (n > slides.length) { slide_index = 1 }
+            if (n < 1) { slide_index = slides.length }
+            for (i = 0; i < slides.length; i++) {
+                slides[i].style.display = "none";
+            }
+            slides[slide_index - 1].style.display = "block";
+        }
+    </script>
+
+</body>
+
+</html>

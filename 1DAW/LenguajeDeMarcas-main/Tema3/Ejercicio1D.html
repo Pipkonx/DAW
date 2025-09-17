@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mostrar Contenido de Párrafos</title>
+</head>
+
+<body>
+    <p>Este es el primer párrafo con texto de ejemplo.</p>
+    <p>Aquí hay un segundo párrafo con contenido diferente.</p>
+    <p>Y este es el tercer párrafo para demostrar la manipulación del DOM.</p>
+
+    <div id="output" style="margin-top: 20px; padding: 10px; border: 1px solid #ccc;">
+        <h3>Contenido de los Párrafos:</h3>
+    </div>
+
+    <script>
+        const paragraphs = document.getElementsByTagName('p');
+        const outputDiv = document.getElementById('output');
+
+        for (let i = 0; i < paragraphs.length; i++) {
+            const content = document.createElement('div');
+            content.textContent = `Párrafo ${i + 1}: ${paragraphs[i].textContent}`;
+            outputDiv.appendChild(content);
+        }
+    </script>
+</body>
+
+</html>

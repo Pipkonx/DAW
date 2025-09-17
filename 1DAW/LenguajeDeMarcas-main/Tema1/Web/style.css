@@ -1,0 +1,417 @@
+@import url('https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,200..900;1,200..900&display=swap');
+
+/*! COLORES*/
+/* PALETA DE COLOR 2 */
+:root {
+    --negro: black;
+    --gris: #e7e9eb;
+    --grisbd: #d9eee1;
+    --grisoscuro: gray;
+    --blanco: #ffffff;
+    --verde: #04aa6d;
+    --verdebd: #028d5a;
+    --rojo: #dc143c;
+    --rojobd: #b14747;
+    --salmon: #ffc0c7;
+    --salmondb: #dda6ad;
+    --amarillo: #ffffcc;
+}
+
+/* ! TODO */
+* {
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 19px;
+}
+
+html {
+    height: 100%;
+    background-color: var(--blanco);
+    color: var(--negro);
+}
+
+body {
+    font-size: 16px;
+    height: 100%;
+}
+
+main {
+    display: grid;
+    justify-content: center;
+    align-items: center;
+    padding: 100px 0 0 0;
+}
+
+header {
+    position: fixed;
+    width: 100%;
+    z-index: 100;
+    background-color: var(--blanco);
+    box-shadow: 0 0 10px var(--negro);
+
+}
+
+/*? NAVBAR */
+.navbar {
+    height: 100%;
+    display: flex;
+    list-style: none;
+    overflow: hidden;
+    float: left;
+    display: flex;
+    height: 100%;
+    justify-content: center;
+    align-items: center;
+}
+
+.navbar li a  {
+    padding: 20px;
+}
+
+.navbar li .idioma {
+    padding: 10px 0 0 0;
+}
+
+.logo {
+    width: 63px;
+}
+
+/*? BOTONES */
+button {
+    padding: 10px 20px 10px 20px;
+    font-weight: bold;
+    background-color: var(--verde);
+    border-radius: 5px;
+    color: var(--blanco);
+    transition: 0.4 ease;
+    border: none;
+}
+
+button:hover {
+    background-color: var(--verdebd);
+    transition: 0.4 ease;
+}
+
+.btn {
+    background-color: var(--salmon);
+    color: var(--negro);
+}
+
+.btn:hover {
+    background-color: var(--salmondb);
+}
+
+/*! BODY */
+/*? CUERPO */
+h1 {
+    font-size: 100px;
+    margin: 0;
+}
+
+h2 {
+    font-size: 30px;
+}
+
+h3 {
+    font-size: 25px;
+    font-weight: 600;
+}
+
+h2,
+h3,
+p {
+    margin: 10px 0 10px 0;
+}
+
+/*? HTML */
+.code {
+    border-left: 10px solid var(--verde);
+    border-radius: 5px;
+    background-color: var(--blanco);
+    font-size: 8px;
+    margin: 20px;
+    padding: 40px;
+}
+
+.code p {
+    margin: 0;
+}
+
+b {
+    color: var(--rojobd);
+}
+
+.blanco {
+    color: var(--negro);
+}
+
+.claro {
+    color: var(--rojo);
+}
+
+.derecha {
+    display: flex;
+    gap: 70px;
+    height: 100vh;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.derecha div {
+    margin: 0 30px 0 0;
+}
+
+.texto {
+    padding: 20px 0 0 0;
+    display: grid;
+    gap: 20px;
+}
+
+.htmn,
+.htmn div {
+    border: 1px solid var(--negro);
+    background-color: var(--gris);
+}
+
+.divDiv,
+.divDiv div {
+    background-color: var(--blanco);
+}
+
+.htmn p,
+.htmn div {
+    margin: 0;
+    padding: 0;
+}
+
+.cl {
+    margin: 0 30px 0 30px
+}
+
+/*Estructura de la pagina*/
+#html,
+#css,
+#svg {
+    width: 90vh;
+}
+
+div .htmn,
+div .htmn div {
+    padding: 15px;
+}
+
+/*! TABLA */
+table {
+    width: 100%;
+}
+
+.tg {
+    border-collapse: collapse;
+    border-color: var(--blanco);
+    border-spacing: 0;
+}
+
+.tg td {
+    border-color: var(--blanco);
+    border-style: solid;
+    border-width: 1px;
+    color: var(--negro);
+    font-size: 14px;
+    overflow: hidden;
+    padding: 10px 5px;
+    word-break: normal;
+}
+
+.tg th {
+    background-color: var(--negro);
+    border-style: solid;
+    border-width: 1px;
+    color: var(--blanco);
+    font-size: 14px;
+    font-weight: normal;
+    overflow: hidden;
+    padding: 10px 5px;
+    word-break: normal;
+}
+
+.tg .tg-9wq8 {
+    border-color: inherit;
+    text-align: center;
+    vertical-align: middle
+}
+
+.tg .tg-8bgf {
+    border-color: inherit;
+    font-style: italic;
+    text-align: center;
+    vertical-align: top
+}
+
+.tg .tg-uzvj {
+    font-size: 20px;
+    border-color: var(--blanco);
+    font-weight: bold;
+    text-align: center;
+    vertical-align: middle
+}
+
+.bloque {
+    padding: 40px;
+}
+
+.nota {
+    background-color: var(--amarillo);
+    margin: 35px 0 0 0;
+    padding: 20px;
+}
+
+.nota b {
+    color: var(--negro);
+    border-radius: 5px;
+}
+
+/*? CAJAS*/
+.caja {
+    height: 320px;
+    background-color: var(--gris);
+    border-radius: 5px;
+    box-shadow: 0 20px 30px var(--grisoscuro);
+    margin: 20px;
+    padding: 50px;
+    display: grid;
+}
+
+.DC img {
+    margin: 20px 0 20px 0;
+}
+
+img {
+    border-radius: 5px;
+}
+
+.DC {
+    background-color: var(--gris);
+    border-radius: 5px;
+    margin: 50px 0 50px 0;
+    padding: 50px;
+    display: grid;
+}
+
+.rojo {
+    color: var(--rojo);
+    background-color: var(--gris);
+    font-weight: 500;
+}
+
+/*? HR */
+hr {
+    margin: 100px 0 100px 0;
+}
+
+/*! FOOTER */
+footer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 50px;
+    padding: 20px;
+    text-align: center;
+}
+
+footer p {
+    font-size: 12px;
+    margin-right: 5px;
+}
+
+footer a {
+    font-size: 12px;
+    transition: 0.3s ease;
+    text-decoration: none;
+    color: var(--negro);
+    font-weight: bold;
+    transition: 0.3s ease;
+}
+
+.footer:hover {
+    color: var(--verde);
+    transition: 0.3s ease;
+
+}
+
+footer a:hover {
+    color: var(--verde);
+    transition: 0.3s ease;
+}
+
+/*? ENLACES */
+.enlace {
+    text-decoration: none;
+    color: var(--negro);
+    font-weight: bold;
+    transition: 0.3s ease;
+}
+
+.enlace:hover {
+    color: var(--blanco);
+    background-color: var(--verde);
+    transition: 0.3s ease;
+}
+
+.activo {
+    color: var(--blanco);
+    background-color: var(--verde);
+}
+
+/*? DENTRO */
+.Dcaja {
+    background-color: var(--grisbd);
+    border-radius: 5px;
+    margin: 20px 0 0 0;
+    padding: 50px;
+}
+
+.idioma {
+    height: 2em;
+    width: 2em;
+}
+
+/*! MOSTRAR OCULTAR IMAGEN */
+
+#show,
+#hide {
+    display: none;
+}
+
+div#content {
+    padding: 10px;
+    width: 200px;
+    cursor: pointer;
+    margin: 0 0 0 25%;
+}
+
+input#show:checked~div#content {
+    display: block;
+}
+
+input#hide:checked~div#content {
+    display: none;
+}
+
+
+
+span {
+    padding: 10px 20px 10px 20px;
+    font-weight: bold;
+    background-color: var(--verde);
+    border-radius: 5px;
+    color: var(--blanco);
+    transition: 0.4 ease;
+}
+
+span:hover {
+    background-color: var(--verdebd);
+    transition: 0.4 ease;
+}

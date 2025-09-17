@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script>
+        function muestra() {
+            f = document.getElementById("tbf").value;
+            c = toCelsius(f);
+            document.getElementById("tbc").value = c;
+        }
+        function toCelsius(f) {
+            return (5 / 9) * (f - 32);
+        }
+        function muestraFahrenheit() {
+            c = document.getElementById("tbc").value;
+            f = toFahrenheit(c);
+            document.getElementById("tbf").value = f;
+        }
+        function toFahrenheit(c) {
+            return (9 / 5) * c + 32;
+        }
+    </script>
+</head>
+
+<body>
+    <h2>Funciones de conversión de temperatura</h2>
+    <p>Este ejemplo llama a una función para convertir de Fahrenheit a Celsius y viceversa:</p>
+    <label for="tbf">Fahrenheit : </label>
+    <input type="text" id="tbf" name="tbf">
+    <br>
+    <label for="tbc">Celcius : </label>
+    <input type="text" id="tbc" name="tbc">
+    <br>
+    <button type="button" onclick="muestra()">Convierte a Celsius</button>
+    <button type="button" onclick="muestraFahrenheit()">Convierte a Fahrenheit</button>
+</body>
+
+</html>

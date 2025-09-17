@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<!--Crea un documento HTML que declare una variable, asigne un valor a partir de una entrada y, finalmente, lo muestre utilizando la propiedad innerHTML. Hazlo varias veces utilizando números y texto. Puedes inspirarte en esto: -->
+<html>
+
+<body>
+    <p>Crea una variable, asigna un valor a ella y muéstrala:</p>
+    <p id="demo"></p>
+    <p id="demo2"></p>
+    <p id="demo3"></p>
+    <p id="demo4"></p>
+    <p id="demo5"></p>
+    <p id="demo6"></p>
+
+    <script>
+        // declaramos la varibale
+        var carName = "Volvo";
+        // mostramos el valor de la variable
+        document.getElementById("demo").innerHTML = carName;
+        // cambiamos el valor de la variable
+        carName = "BMW";
+        // mostramos el nuevo valor de la variable
+        document.getElementById("demo2").innerHTML = carName;
+        // declaramos la variable con un numero
+        var x = 10;
+        //mostramos el valor de la variable
+        document.getElementById("demo3").innerHTML = x;
+        // cambiamos el valor de la variable
+        x = 20;
+        //mostramos el nuevo valor de la variable
+        document.getElementById("demo4").innerHTML = x;
+        // declaramos la varibale con un texto
+        var y = "Hola";
+        // mostramos el valor de la variable
+        document.getElementById("demo5").innerHTML = y;
+        // cambiamos el valor de la variable
+        y = "Adios";
+        //mostramos el nuevo valor de la variable
+        document.getElementById("demo6").innerHTML = y;
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,15 @@
+casa
+perro
+gato
+ordenador
+programacion
+java
+ahorcado
+juego
+computadora
+teclado
+pantalla
+raton
+ventana
+escritorio
+monitor

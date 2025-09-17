@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agregar Imagen con JavaScript</title>
+</head>
+<body>
+    <div id="contenedorImagen"></div>
+
+    <script>
+        const imagen = document.createElement('img');
+        
+        imagen.src = 'https://picsum.photos/400/300';
+        imagen.alt = 'Imagen aleatoria';
+        imagen.style.maxWidth = '100%';
+        
+        const contenedor = document.getElementById('contenedorImagen');
+        contenedor.appendChild(imagen);
+    </script>
+</body>
+</html>

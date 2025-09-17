@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inspector de Elementos Web</title>
+</head>
+<body>
+    <h1>Inspector de Elementos Web</h1>
+
+    <script>
+        function mostrarElementosPagina() {
+            const tituloPagina = document.title;
+            console.log('Título de la página:', tituloPagina);
+
+            const imagenes = document.getElementsByTagName('img');
+            console.log('\nImágenes encontradas:');
+            for (let img of imagenes) {
+                console.log('- Fuente:', img.src);
+                console.log('- Texto alternativo:', img.alt);
+            }
+
+            const enlaces = document.getElementsByTagName('a');
+            console.log('\nEnlaces encontrados:');
+            for (let enlace of enlaces) {
+                console.log('- URL:', enlace.href);
+                console.log('- Texto:', enlace.textContent);
+            }
+        }
+
+        window.onload = mostrarElementosPagina;
+    </script>
+
+    <img src="imagen1.jpg" alt="Imagen de ejemplo 1">
+    <img src="imagen2.jpg" alt="Imagen de ejemplo 2">
+    
+    <a href="https://www.ejemplo.com">Enlace de ejemplo 1</a>
+    <a href="https://www.muestra.com">Enlace de ejemplo 2</a>
+</body>
+</html>
