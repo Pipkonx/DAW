@@ -41,8 +41,8 @@ No se requiere instalación. Simplemente:
 
 ## 👥 Contribuciones
 Este proyecto ha sido desarrollado por:
-- [Víctor Medel](https://github.com/VictorMedel06) - Desarrollo principal
-- [Rafael Cordero de Acuña (Pipkon)](https://www.linkedin.com/in/rafael-c-b69b85292/) - Colaborador
+- [Rafael Cordero de Acuña (Pipkon)](https://www.linkedin.com/in/rafael-c-b69b85292/) - Desarrollo principal
+- [Víctor Medel](https://github.com/VictorMedel06) - Colaborador
 
 ## 📄 Licencia
 Este proyecto está bajo la Licencia MIT - ver el archivo [LICENSE](LICENSE) para más detalles.
