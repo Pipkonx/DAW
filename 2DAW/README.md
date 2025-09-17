@@ -1,34 +1,77 @@
-# Desarrollo de Aplicaciones Web - 2° DAW
+# Segundo Curso de Desarrollo de Aplicaciones Web (2º DAW)
 
-Bienvenido al repositorio del segundo curso de Desarrollo de Aplicaciones Web (DAW). Aquí encontrarás información sobre las diferentes asignaturas que componen el curso.
+Este directorio contiene los proyectos, ejercicios y prácticas realizados durante el segundo curso del Ciclo Formativo de Grado Superior en Desarrollo de Aplicaciones Web.
 
 ## Asignaturas
 
 ### Desarrollo Web en Entorno Servidor (DWES)
-- Programación backend
-- Frameworks de servidor
-- Bases de datos
-- [Ver más detalles](./DWES/README.md)
+- [Repositorio de DWES](./DWES)
+- Contenido: PHP, Frameworks backend, Bases de datos, APIs
+- Tecnologías: PHP, MySQL, Laravel, Symfony
+- Proyectos y ejercicios organizados por temas
 
 ### Desarrollo Web en Entorno Cliente (DWEC)
-- JavaScript
-- Frameworks frontend
-- Desarrollo de aplicaciones SPA
-- APIs del navegador
+- Lenguajes principales: JavaScript, TypeScript
+- Contenido: DOM, AJAX, Frameworks frontend, SPA
+- Tecnologías: React, Vue.js, Angular
+- APIs del navegador y desarrollo responsive
 
 ### Despliegue de Aplicaciones Web (DAW)
-- Servidores web
-- Configuración y optimización
-- Seguridad
-- Contenedores
+- Contenido: Servidores web, Configuración y optimización
+- Tecnologías: Apache, Nginx, Docker, AWS
+- Seguridad y contenedores
+- Automatización de despliegues
 
 ### Diseño de Interfaces Web (DIW)
-- HTML5 y CSS3
-- Diseño responsive
-- Accesibilidad
-- UX/UI
+- Contenido: HTML5, CSS3, Diseño responsive
+- Tecnologías: Sass, Bootstrap, Tailwind CSS
+- Accesibilidad y UX/UI
+- Prototipado y wireframing
 
+### Empresa e Iniciativa Emprendedora (EIE)
+- Contenido: Plan de empresa, Marketing digital
+- Gestión empresarial y emprendimiento
+- Legislación y aspectos legales
 
-## Enlaces de Interés
+### Inglés Técnico
+- Contenido: Terminología técnica en inglés
+- Documentación técnica
+- Comunicación profesional
 
-- [Documentación DWES](./DWES/README.md)
+## Proyectos Destacados
+
+### Proyecto Integrado Final
+- Aplicación web completa utilizando todas las tecnologías aprendidas
+- Frontend y backend desarrollados desde cero
+- Despliegue en producción
+
+### Prácticas en Empresa (FCT)
+- Formación en Centros de Trabajo
+- Aplicación práctica de conocimientos
+- Experiencia profesional real
+
+## Recursos Adicionales
+
+En este directorio encontrarás:
+- Ejemplos de código avanzado
+- Ejercicios resueltos por módulos
+- Documentación técnica especializada
+- Proyectos prácticos profesionales
+- Recursos para el desarrollo full-stack
+
+## Cómo Navegar
+
+Cada carpeta de asignatura contiene su propia estructura organizada por temas o proyectos. Consulta los README específicos dentro de cada carpeta para más información detallada sobre cada módulo.
+
+## Competencias Desarrolladas
+
+- Desarrollo de aplicaciones web completas
+- Programación frontend y backend
+- Gestión de bases de datos
+- Despliegue y mantenimiento de aplicaciones
+- Diseño de interfaces de usuario
+- Trabajo en equipo y metodologías ágiles
+
+---
+
+[Volver al Inicio](../README.md)
