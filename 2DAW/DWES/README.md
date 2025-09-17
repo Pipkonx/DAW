@@ -17,8 +17,6 @@ El módulo de Desarrollo Web en Entorno Servidor (DWES) es una parte fundamental
 
 ## Primeras Actividades
 
-### Primeras Actividades
-
 ### [Introducción a PHP](index.html)
 
 En esta primera sección comenzaremos con:
