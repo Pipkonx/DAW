@@ -1,7 +1,9 @@
 @import url("https://fonts.cdnfonts.com/css/sf-pro-display");
+
 :root {
   font-family: SF Pro Display;
 }
+
 html {
   background-color: #f5f5f7;
 }

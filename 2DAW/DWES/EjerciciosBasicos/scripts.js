@@ -35,14 +35,14 @@ function ejercicio2() {
   }
   alert(
     "La frase: '" +
-      frase +
-      "' tiene " +
-      contadorNumero +
-      " números y " +
-      contadorLetra +
-      " letras" +
-      " y la suma de los dos es " +
-      suma
+    frase +
+    "' tiene " +
+    contadorNumero +
+    " números y " +
+    contadorLetra +
+    " letras" +
+    " y la suma de los dos es " +
+    suma
   );
 }
 
