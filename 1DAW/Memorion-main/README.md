@@ -52,4 +52,4 @@ Si tienes alguna pregunta o sugerencia, no dudes en contactarnos:
 - Email: [rcoracu924@g.educaand.es](mailto:rcoracu924@g.educaand.es)
 - Twitter: [@Pipkon](https://x.com/rafacrdr0)
 
-<sub>Desarrollado con ❤️ por [Víctor Medel](https://github.com/VictorMedel06) y [Pipkon - Rafael Cordero de Acuña](https://www.linkedin.com/in/rafael-c-b69b85292/)</sub>
+<sub>Desarrollado con ❤️ por [Pipkon - Rafael Cordero de Acuña](https://www.linkedin.com/in/rafael-c-b69b85292/) y [Víctor Medel](https://github.com/VictorMedel06) </sub>
