@@ -7,7 +7,7 @@ Este repositorio contiene los proyectos y ejercicios realizados durante el Ciclo
 El repositorio está organizado por cursos:
 
 - [1º DAW](./1DAW/README.MD) - Primer curso del ciclo formativo
-- [2º DAW](./2DAW/README.MD) - Segundo curso del ciclo formativo
+- [2º DAW](./2DAW/README.md) - Segundo curso del ciclo formativo
 
 ## Proyectos Destacados
 
