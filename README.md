@@ -30,4 +30,4 @@ Si tienes alguna pregunta o sugerencia sobre este repositorio, no dudes en conta
 
 ---
 
-© 2023-2024 - Todos los derechos reservados
+© 2024-2026 - Todos los derechos reservados
