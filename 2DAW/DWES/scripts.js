@@ -15,21 +15,35 @@ function ejercicio1() {
 
 // * de una frase saber los numeros y letras y sumarlos
 function ejercicio2() {
-  let frase = prompt("Introduce una frase formada por letras y numeros:").toLocaleLowerCase();
-  let contadorNumero = 0, contadorLetra = 0, suma = 0;
-  
-  for (let i = 0 ; i< frase.length ; i++){
+  let frase = prompt(
+    "Introduce una frase formada por letras y numeros:"
+  ).toLocaleLowerCase();
+  let contadorNumero = 0,
+    contadorLetra = 0,
+    suma = 0;
+
+  for (let i = 0; i < frase.length; i++) {
     if (frase[i] === " ") {
-        continue;
+      continue;
     }
-    if (frase[i] >= 0 && frase[i] <= 9){
+    if (frase[i] >= 0 && frase[i] <= 9) {
       contadorNumero++;
-    } else if (frase[i] >= "a" && frase[i] <= "z"){
+    } else if (frase[i] >= "a" && frase[i] <= "z") {
       contadorLetra++;
     }
-    suma = (contadorNumero + contadorLetra);
+    suma = contadorNumero + contadorLetra;
   }
-  alert("La frase: '" + frase + "' tiene " + contadorNumero + " números y " + contadorLetra + " letras" + " y la suma de los dos es " + suma);
+  alert(
+    "La frase: '" +
+      frase +
+      "' tiene " +
+      contadorNumero +
+      " números y " +
+      contadorLetra +
+      " letras" +
+      " y la suma de los dos es " +
+      suma
+  );
 }
 
 // * adivina el número
@@ -55,8 +69,8 @@ function ejercicio4() {
   let palabra = prompt("Introduce una palabra:");
   let esPalindroma = true;
 
-  for(let i = 0; i < palabra.length ; i++){
-    if(palabra[i] !== palabra[palabra.length - 1 - i]){
+  for (let i = 0; i < palabra.length; i++) {
+    if (palabra[i] !== palabra[palabra.length - 1 - i]) {
       esPalindroma = false;
     }
   }
