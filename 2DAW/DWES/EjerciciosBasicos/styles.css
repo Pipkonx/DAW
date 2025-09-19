@@ -91,3 +91,56 @@ h1 {
   color: #6e6e73;
   margin-left: 0.2em;
 }
+
+@media (max-width: 320px) {
+  h1 {
+    font-size: 2em;
+  }
+
+  .js-title {
+    margin-left: 0.5em;
+  }
+}
+
+/* 
+@media (max-width: 480px){
+  
+}
+
+@media (max-width: 768px){
+
+}
+
+@media (max-width: 1024px) {
+
+}
+
+@media (max-width: 1280px){
+
+}
+@media (max-width: 1440px){
+
+}
+@media (max-width: 1600px){
+  
+}
+
+@media (max-width: 1600px){
+  
+}
+
+@media (max-width: 1920px){
+
+}
+
+@media (max-width: 2560px) {
+  
+}
+
+@media (max-width: 2560px) {
+  
+}
+
+@media (max-width: 3840px) {
+  
+} */
