@@ -5,12 +5,13 @@ Este directorio contiene los proyectos, ejercicios y prácticas realizados duran
 ## Asignaturas
 
 ### Desarrollo Web en Entorno Servidor (DWES)
-- [Repositorio de DWES](./DWES)
+<!-- - [Repositorio de DWES](./DWES) -->
 - Contenido: PHP, Frameworks backend, Bases de datos, APIs
 - Tecnologías: PHP, MySQL, Laravel, Symfony
 - Proyectos y ejercicios organizados por temas
 
 ### Desarrollo Web en Entorno Cliente (DWEC)
+- [Repositorio de DWES](./DWEC)
 - Lenguajes principales: JavaScript, TypeScript
 - Contenido: DOM, AJAX, Frameworks frontend, SPA
 - Tecnologías: React, Vue.js, Angular
