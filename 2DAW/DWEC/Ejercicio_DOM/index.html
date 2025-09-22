@@ -5,12 +5,40 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ejemplo DOM</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="icon" type="image/png" href="favi.png">
 </head>
 
 <body>
-    <h1 id="titulo">Hola mundo</h1>
-    <button onclick=muestraTitulo(); >Dame titulo</button>
+    <h1 id="titulo">Ejercicios DOM</h1>
+
+    <section>
+        <div>
+            <h3>Ejercicio 1</h3>
+            <hr>
+            <p>Cambiar titulo DOM</p>
+            <button onclick=muestraTitulo();>▶ Ejecutar</button><br>
+        </div>
+
+        <div>
+            <h3>Ejercicio 2</h3>
+            <hr>
+            <p>Sumar numeros al contador</p>
+            <h1 id="cuenta">0</h1>
+            <button onclick="contador();">▶ Ejecutar</button>
+        </div>
+        
+        <div>
+            <h3>Ejercicio 3</h3>
+            <hr>
+            <p>Cambiar todos los parrafos</p>
+            <button onclick="parrafos();">▶ Ejecutar</button>
+        </div>
+    </section>
 </body>
 <script src="scripts.js"></script>
+<footer>
+    <p>&copy 2025 - Ejercicios de JS - Hecho por Pipkon - Rafacrdr</p>
+</footer>
 
 </html>
