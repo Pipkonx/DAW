@@ -42,7 +42,6 @@ No se requiere instalación. Simplemente:
 ## 👥 Contribuciones
 Este proyecto ha sido desarrollado por:
 - [Rafael Cordero de Acuña (Pipkon)](https://www.linkedin.com/in/rafael-c-b69b85292/) - Desarrollo principal
-- [Víctor Medel](https://github.com/VictorMedel06) - Colaborador
 
 ## 📄 Licencia
 Este proyecto está bajo la Licencia MIT - ver el archivo [LICENSE](LICENSE) para más detalles.
@@ -52,4 +51,4 @@ Si tienes alguna pregunta o sugerencia, no dudes en contactarnos:
 - Email: [rcoracu924@g.educaand.es](mailto:rcoracu924@g.educaand.es)
 - Twitter: [@Pipkon](https://x.com/rafacrdr0)
 
-<sub>Desarrollado con ❤️ por [Pipkon - Rafael Cordero de Acuña](https://www.linkedin.com/in/rafael-c-b69b85292/) y [Víctor Medel](https://github.com/VictorMedel06) </sub>
+<sub>Desarrollado con ❤️ por [Pipkon - Rafael Cordero de Acuña](https://www.linkedin.com/in/rafael-c-b69b85292/)</sub>
