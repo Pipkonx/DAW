@@ -37,7 +37,7 @@ En esta carpeta encontrarás ejercicios prácticos de JavaScript:
 - Ejercicio 3: Juego de adivinanza de números
 - Ejercicio 4: Detector de palíndromos
 
-### [Ver Programa Funcionando](./EjerciciosBasicos/index.html)
+### [Ver Programa Funcionando](https://pipkonx.github.io/DAW/2DAW/DWEC/EjerciciosBasicos/index.html)
 
 Puedes ver los ejercicios en funcionamiento accediendo directamente a la página.
 
@@ -51,6 +51,8 @@ En esta sección encontrarás ejercicios para practicar la manipulación del Doc
 - Gestión de atributos y estilos
 - Navegación por el árbol DOM
 - Eventos y delegación de eventos
+
+### [Ver Programa Funcionando](https://pipkonx.github.io/DAW/2DAW/DWEC/Ejercicio_DOM/index.html)
 
 ## Metodología
 

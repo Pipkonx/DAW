@@ -11,7 +11,7 @@ Este directorio contiene los proyectos, ejercicios y prácticas realizados duran
 - Proyectos y ejercicios organizados por temas
 
 ### Desarrollo Web en Entorno Cliente (DWEC)
-- [Repositorio de DWES](./DWEC)
+- [Repositorio de DWEC](./DWEC)
 - Lenguajes principales: JavaScript, TypeScript
 - Contenido: DOM, AJAX, Frameworks frontend, SPA
 - Tecnologías: React, Vue.js, Angular
