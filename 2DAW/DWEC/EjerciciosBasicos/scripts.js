@@ -1,4 +1,4 @@
-// *saber cuantas letras hay
+// * saber cuantas letras hay
 function ejercicio1() {
   let frase = prompt("Escribe una frase:");
   let letra = prompt("Elige una letra");
@@ -13,7 +13,7 @@ function ejercicio1() {
   alert("la letra " + letra + "de la frase aparece " + contador + " veces");
 }
 
-// * de una frase saber los numeros y letras y sumarlos
+// * dar una frase saber los numeros y letras y sumarlos
 function ejercicio2() {
   let frase = prompt(
     "Introduce una frase formada por letras y numeros:"
