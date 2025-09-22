@@ -17,8 +17,6 @@ El módulo de Desarrollo Web en Entorno Cliente (DWEC) es una parte fundamental 
 
 ## Primeras Actividades
 
-### [Introducción a JavaScript](index.html)
-
 En esta primera sección comenzaremos con:
 - Configuración del entorno de desarrollo
 - Sintaxis básica de JavaScript
