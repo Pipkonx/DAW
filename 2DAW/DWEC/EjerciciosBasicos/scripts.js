@@ -51,17 +51,18 @@ function ejercicio2() {
 function ejercicio3() {
   let numeroAleatorio = Math.floor(Math.random() * 100) + 1;
   //console.log(numeroAleatorio);
-  let intento;
+  let intento, contador = 0;
 
   while (intento != numeroAleatorio) {
     intento = prompt("Adivina el número (entre 1 y 100):");
+    contador++;
     if (intento < numeroAleatorio) {
-      alert("El número es mayor");
+      alert("Intento: " + contador + "\nEl número es mayor");
     } else if (intento > numeroAleatorio) {
-      alert("El número es menor");
+      alert("Intento: " + contador + "\nEl número es menor");
     }
   }
-  alert("¡Has adivinado el número!");
+  alert("Acertaste! \nIntento: " + contador + "\nEl número era" + numeroAleatorio);
 }
 
 //  * palindroma
@@ -79,5 +80,63 @@ function ejercicio4() {
     alert("La palabra es palíndroma");
   } else {
     alert("La palabra no es palíndroma");
+  }
+}
+
+
+// * Ejercicio 5
+
+function ejercicio5() {
+  let array = [1, 2, 3, 4, 5];
+
+  let operacion = prompt("Ingresa la operacion: sumar, restar, multiplicar o dividir").toLowerCase();
+
+  let resultado = 0;
+
+if (operacion !== "sumar" && operacion !== "restar" && operacion !== "multiplicar" && operacion !== "dividir") {
+  alert("La operacion no es valida");
+}
+
+  if (operacion === "sumar") {
+    for (let i = 0; i < array.length; i++) {
+      resultado += array[i];
+    }
+    alert("El resultado de sumar " + array + " es: " + resultado);
+
+  }
+
+  if (operacion === "restar") {
+    for (let i = 0; i < array.length; i++) {
+      resultado -= array[i];
+    }
+    alert("El resultado de restar " + array + " es: " + resultado);
+  }
+
+  if (operacion === "multiplicar") {
+    for (let i = 0; i < array.length; i++) {
+      resultado *= array[i];
+    }
+    alert("El resultado de multiplicar " + array + " es: " + resultado);
+  }
+
+  if (operacion === "dividir") {
+    for (let i = 0; i < array.length; i++) {
+      resultado /= array[i];
+    }
+    alert("El resultado de dividir " + array + " es: " + resultado);
+  }
+}
+
+// jugamos a agregar y eliminar de un array
+function ejercicio6(accion) {
+  let array = [1, 2, 3, 4, 5];
+  if(accion === 'agregar') {
+    array.push(prompt("Array: " + array + " Ingresa un numero para agregar a la array:"));
+    alert("Array: " + array);
+  }
+
+  if (accion === 'eliminar' ) {
+    array.pop(prompt("Array: " + array + ' Ingresa el numero a eliminar:'));
+    alert("Array: " + array);
   }
 }
