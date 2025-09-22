@@ -93,9 +93,9 @@ function ejercicio5() {
 
   let resultado = 0;
 
-if (operacion !== "sumar" && operacion !== "restar" && operacion !== "multiplicar" && operacion !== "dividir") {
-  alert("La operacion no es valida");
-}
+  if (operacion !== "sumar" && operacion !== "restar" && operacion !== "multiplicar" && operacion !== "dividir") {
+    alert("La operacion no es valida");
+  }
 
   if (operacion === "sumar") {
     for (let i = 0; i < array.length; i++) {
@@ -130,13 +130,76 @@ if (operacion !== "sumar" && operacion !== "restar" && operacion !== "multiplica
 // jugamos a agregar y eliminar de un array
 function ejercicio6(accion) {
   let array = [1, 2, 3, 4, 5];
-  if(accion === 'agregar') {
+  if (accion === 'agregar') {
     array.push(prompt("Array: " + array + " Ingresa un numero para agregar a la array:"));
     alert("Array: " + array);
   }
 
-  if (accion === 'eliminar' ) {
+  if (accion === 'eliminar') {
     array.pop(prompt("Array: " + array + ' Ingresa el numero a eliminar:'));
     alert("Array: " + array);
   }
+}
+
+
+function ejercicio7() {
+  let array = [1, 2, 3, 4, 5];
+  let arrayPar = [];
+  for (let i = 0; i < array.length; i++) {
+    if (array[i] % 2 === 0) {
+      arrayPar.push(array[i] * 2);
+    }
+  }
+  alert("Array original: " + array + "\nArray par: " + arrayPar)
+}
+
+function ejercicio8() {
+  let array1 = [2, 3, 8, 6, 1];
+  let array2 = [10, 3, 6, 20];
+  let arrayRepe = [];
+  for (let i = 0; i < array1.length; i++) {
+    for (let x = 0; x < array2.length; x++) {
+      if (array1[i] === array2[x]) {
+        arrayRepe.push(array1[i]);
+      }
+    }
+  }
+  alert("Array 1: " + array1 + "\nArray 2: " + array2 + "\nNumeros repetidos de los Arrays: " + arrayRepe);
+}
+
+//? Concateno ambas array luego lo recorro agregando a otro array los numeros que no estan repetidos
+// * indexOf() compara el valor con los elementos de un array
+// * concat() para unir los dos arrays
+
+function ejercicio9() {
+  let array1 = [2, 3, 8, 6, 1];
+  let array2 = [10, 3, 6, 20];
+  let array3 = array1.concat(array2);
+  let arrayNoRepe = [];
+  for (let i = 0; i < array3.length; i++) {
+    if (arrayNoRepe.indexOf(array3[i]) === -1) {
+      arrayNoRepe.push(array3[i]);
+    }
+  }
+  alert("Array 1: " + array1 + "\nArray 2: " + array2 + "\nNumeros no repetidos de los Arrays: " + arrayNoRepe);
+}
+
+function Persona(nombre, edad, genero) {
+  this.nombre = nombre;
+  this.edad = edad;
+  this.genero = genero;
+}
+
+function ejercicio10() {
+  let persona1 = new Persona("Rafa", 25, "masculino");
+  let persona2 = new Persona("Pepito", 30, "masculino");
+  let persona3 = new Persona("Maria", 25, "femenino");
+
+  let cadena = "";
+  let personas = [persona1, persona2, persona3];
+
+  for (let i = 0; i < personas.length; i++) {
+    cadena += personas[i].nombre + " " + personas[i].edad + " " + personas[i].genero + "\n";
+  }
+  alert(cadena);
 }
