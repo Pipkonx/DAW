@@ -122,13 +122,13 @@
         print("<br>no son iguales");
     }
 
-
+    
     if ($v1 === $v2) {
         print("<br>Son iguales");
     } else {
         print("<br>No son iguales");
     }    
-
+    
 
 
 
