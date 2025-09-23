@@ -100,11 +100,21 @@
     print("<br>Si tratamos de sumar varios que son letras y numeros nos saltara un error");
     // print($prueba5 + $prueba6);
 
+
+    print("<br>Ejercicio 10<br>");
+    PRINT(error_reporting() . "<br>");
+    print(E_ERROR . "<br>");
+    print(E_WARNING  . "<br>");
+    print(E_PARSE . "<br>");
+    print(E_ALL . "<br>");
+    print(E_NOTICE . "<br>");
+
+
     print("<br><br>Ejercicio 11");
     $v1 = 1;
     $v2 = "1";
-
-
+    
+    
     // Lo comprobamos primero en binario los numero dando igual lo de los tipos
     if ($v1 == $v2) {
         print("<br>Son iguales");
@@ -117,10 +127,7 @@
         print("<br>Son iguales");
     } else {
         print("<br>No son iguales");
-    }
-
-
-
+    }    
 
 
 
