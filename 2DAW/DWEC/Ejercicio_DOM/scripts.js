@@ -39,3 +39,9 @@ function aumentarImagen() {
     let width = parseInt(imagen.getAttribute("width"));
     imagen.setAttribute("width", width + 50);
 }
+
+function ejercicio6() {
+    miCaja = document.querySelector("#miCaja");
+    miCaja.style.backgroundColor = "green";
+    miCaja.style.width = "200px";
+}
