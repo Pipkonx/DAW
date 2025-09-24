@@ -45,6 +45,11 @@ div {
   display: flex;
 }
 
+#divImage {
+  align-items: center;
+}
+
+
 section div {
   list-style: none;
   height: 20em;
@@ -99,4 +104,11 @@ table {
 
 span {
   border: 1px solid black;
+}
+
+img {
+  margin: 10px;
+  height: auto;
+  border-radius: 20px;
+  max-width: 90%;
 }

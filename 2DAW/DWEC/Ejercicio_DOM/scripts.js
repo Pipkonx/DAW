@@ -34,10 +34,8 @@ function sumaCelda() {
     document.getElementById("suma").innerHTML = "SUMA : " + suma + "<br>Suma derecha : " + sumaDerecha;
 }
 
-
-
-
-
-
-
-
+function aumentarImagen() {
+    imagen = document.querySelector("#arbol");
+    let width = parseInt(imagen.getAttribute("width"));
+    imagen.setAttribute("width", width + 50);
+}
