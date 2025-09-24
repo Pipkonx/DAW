@@ -109,6 +109,13 @@ span {
 img {
   margin: 10px;
   height: auto;
-  border-radius: 20px;
+  border-radius: 10px;
   max-width: 90%;
+  box-shadow: 0 0 12px rgb(179, 179, 179);
+  transition: ease 0.3s;
+}
+
+img:hover {
+  transform: rotate(-5deg) scale(1.05);
+  transition: ease 0.3s;
 }
