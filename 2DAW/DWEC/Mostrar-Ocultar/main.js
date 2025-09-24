@@ -1,7 +1,7 @@
 function CrearOpcion() {
     let nuevo = document.createElement('li');
     let num = document.querySelectorAll("li").length;
-    nuevo.textContent = "Opcion " + num;
+    nuevo.innerHTML = "Opcion " + num + "<button onclick='Borrar(" + num + ");'>Borrar</button>";
     let padre = document.querySelector("#opciones");
     padre.appendChild(nuevo);
 }
@@ -14,4 +14,27 @@ function EliminarOpcion() {
     if (opcion.length > 0) {
         opcion[opcion.length - 1].remove();
     }
+}
+
+function Borrar(fila) {
+    let opcion = document.querySelectorAll("li");
+    opcion[fila].remove();
+}
+
+function CrearTabla() {
+    let filas = prompt("Numero de filas");
+    let columnas = prompt("Numero de columnas");
+
+    let tabla = document.querySelector("table");
+
+    for (let i = 0; i < filas; i++) {
+        let fila = document.createElement('tr');
+        for (let j = 0; j < columnas; j++) {
+            let celdas = document.createElement('td');
+            celdas.innerHTML = "A";
+            fila.appendChild(celdas);
+        }
+        tabla.appendChild(fila);
+    }
+    document.body.appendChild(tabla)
 }
