@@ -92,3 +92,11 @@ hr {
 h1 {
   font-size: 3em;
 }
+
+table {
+  border: 1px solid black;
+}
+
+span {
+  border: 1px solid black;
+}
