@@ -3,6 +3,7 @@
 <div align="center">
   <img src="https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python"/>
   <img src="https://img.shields.io/badge/VSCode-007ACC?style=for-the-badge&logo=visual-studio-code&logoColor=white" alt="VSCode"/>
+  <img src="https://img.shields.io/badge/Jupyter-F37626?style=for-the-badge&logo=jupyter&logoColor=white" alt="Jupyter"/>
 </div>
 
 ## 📋 Descripción del Módulo
@@ -14,11 +15,14 @@ Este repositorio contiene ejercicios y proyectos desarrollados en Python como pa
 ### 📁 Ejercicios Básicos
 
 - **[01_holaMundo.py](./01_holaMundo.py)**: Introducción a Python con el clásico "Hola Mundo"
-- **[02_calculadora_simple.py](./02_calculadora_simple.py)**: Implementación de operaciones aritméticas básicas
-- **[03_ejercicioBasico.py](./03_ejercicioBasico.py)**: Ejercicios de fundamentos de programación
-- **[04_presentacion.py](./04_presentacion.py)**: Ejemplo de presentación de datos
-- **[05_Basico.py](./05_Basico.py)**: Conceptos básicos adicionales
-- **[06_errores.py](./06_errores.py)**: Manejo de excepciones y errores
+- **[02_ejercicioBasico.py](./02_ejercicioBasico.py)**: Ejercicios de fundamentos de programación
+- **[03_presentacion.py](./03_presentacion.py)**: Ejemplo de presentación de datos
+- **[04_Basico.py](./04_Basico.py)**: Conceptos básicos adicionales
+- **[05_errores.py](./05_errores.py)**: Manejo de excepciones y errores
+
+### 📁 [Actividades Evaluables](./ActEvaluables/)
+
+Colección de ejercicios evaluables que ponen en práctica los conceptos aprendidos. Ver el [README de Actividades Evaluables](./ActEvaluables/README.md) para más detalles.
 
 ## 🚀 Conceptos Cubiertos
 

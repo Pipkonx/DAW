@@ -1,61 +1,63 @@
 # TEORIA - https://github.com/fencgut961/OPT_25_26/blob/main/TEORIA/BLOQUE_01/UD_1_8.md
-
-
 credenciales = {}
 
-
+# con def creamos las funciones
 def registrarUsu():
     usuario = input("Introduce un nombre de usuario: ")
-    passwd = input("Introduce una contraseña: ")
     
-    
-# Si no cumple las reglas → muestra un mensaje de error y vuelve a pedir la contraseña.
-    if len(passwd) < 8:
-        print("Contraseña insegura ❌. Debe tener al menos 8 caracteres, un número y un símbolo.")
-    elif passwd.isupper():
-        print("Contraseña insegura ❌. Debe tener al menos una mayúscula.")
-    elif not any(char.isdigit() for char in passwd):
-        print("Contraseña insegura ❌. Debe tener al menos un número.")
-    elif not any(char.isalnum() for char in passwd):
-        print("Contraseña insegura ❌. Debe tener al menos un carácter alfanumérico.")
-        credenciales[usuario] = passwd
+    # Validación de contraseña
+    while True:
+        passwd = input("Introduce una contraseña: ")
+        
+        # Si no cumple las reglas → muestra un mensaje de error y vuelve a pedir la contraseña.
+        if len(passwd) < 8:
+            print("Contraseña insegura ❌. Debe tener al menos 8 caracteres.")
+            continue
+        elif passwd.isupper():
+            print("Contraseña insegura ❌. Debe tener al menos una minúscula.")
+            continue
+        elif not any(char.isdigit() for char in passwd):
+            print("Contraseña insegura ❌. Debe tener al menos un número.")
+            continue
+        elif not any(not char.isalnum() for char in passwd):
+            print("Contraseña insegura ❌. Debe tener al menos un símbolo.")
+            continue
+        else:
+            credenciales[usuario] = passwd
+            print("Usuario registrado con éxito ✅")
+            break
 
-    print("Usuario registrado con exito ✅")
-
-
-
-
-def iniciarSesion(usuario, passwd):
+def iniciarSesion():
     usuario = input("Introduce un nombre de usuario: ")
     if usuario not in credenciales:
-            print("El usuario no existe. ❌")
-            exit()
-    passwd = input("Introduce una contraseña: ")
-    if credenciales[usuario] != passwd:
-            for i in range (2, 4):
-                print(f"Acceso denegado ⛔. Intento {i}/3")
-                if i == 3:
-                    print("Demasiados intentos fallidos 🚫. Regresando al menú principal.")
-                    exit()
-            else :
-                print(f"Acceso concedido ✅. Bienvenid@, {usuario}.")
-
-
-
-
-
-
-# El programa debe ejecutarse en bucle hasta que el usuario elija la opción Salir.
-
-while True:
-    opcion = int(input(f"Que quieres hacer? [1] Registrarse [2] Iniciar sesion [3] Salir: "))
+        print("El usuario no existe. ❌")
+        return
     
-    if opcion == 1 :
-        registrarUsu()
-    # Si falla las 3 veces seguidas → mostrar “Demasiados intentos fallidos 🚫. Regresando al menú principal.” y volver al menú.
-    if opcion == 2 :
-        iniciarSesion()
+    # 3 intentos de contraseña
+    for intento in range(1, 4):
+        passwd = input("Introduce una contraseña: ")
+        if credenciales[usuario] == passwd:
+            print(f"Acceso concedido ✅. Bienvenid@, {usuario}.")
+            return
+        else:
+            print(f"Acceso denegado ⛔. Intento {intento}/3")
+            if intento == 3:
+                print("Demasiados intentos fallidos 🚫. Regresando al menú principal.")
+                return
+
 # El programa debe ejecutarse en bucle hasta que el usuario elija la opción Salir.
-    if opcion == 3:
-        print("Saliendo del programa...")
-        exit()
+while True:
+    try:
+        opcion = int(input("¿Qué quieres hacer? [1] Registrarse [2] Iniciar sesión [3] Salir: "))
+        
+        if opcion == 1:
+            registrarUsu()
+        elif opcion == 2:
+            iniciarSesion()
+        elif opcion == 3:
+            print("Saliendo del programa...")
+            exit()
+        else:
+            print("Opción no válida. Por favor, elige 1, 2 o 3.")
+    except ValueError:
+        print("Por favor, introduce un número válido.")
