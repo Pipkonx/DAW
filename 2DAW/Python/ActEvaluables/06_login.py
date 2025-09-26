@@ -12,7 +12,7 @@ def registrarUsu():
             print("Contraseña insegura ❌. Debe tener al menos 8 caracteres.")
             continue
         elif passwd.isupper():
-            print("Contraseña insegura ❌. Debe tener al menos una minúscula.")
+            print("Contraseña insegura ❌. Debe tener al menos una mayúscula.")
             continue
         elif not any(char.isdigit() for char in passwd):
             print("Contraseña insegura ❌. Debe tener al menos un número.")
@@ -43,7 +43,7 @@ def iniciarSesion():
                 print("Demasiados intentos fallidos 🚫. Regresando al menú principal.")
                 return
 
-# El programa debe ejecutarse en bucle hasta que el usuario elija la opción Salir.
+# blucle hasta salir
 while True:
     try:
         opcion = int(input("¿Qué quieres hacer? [1] Registrarse [2] Iniciar sesión [3] Salir: "))
