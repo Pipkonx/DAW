@@ -4,7 +4,7 @@ credenciales = {}
 def registrarUsu():
     usuario = input("Introduce un nombre de usuario: ")
     
-    # Validación de contraseña
+    # Validamos la contraseña
     while True:
         passwd = input("Introduce una contraseña: ")
         
@@ -26,19 +26,22 @@ def registrarUsu():
             break
 
 def iniciarSesion():
+    MAX_INTENTOS= 3
     usuario = input("Introduce un nombre de usuario: ")
     if usuario not in credenciales:
         print("El usuario no existe. ❌")
         return
     
     # 3 intentos de contraseña
-    for intento in range(1, 4):
+    # Podemos usar también el range para determinar un rango de intento
+    # for intento in range(1, 4):
+    for intento in MAX_INTENTOS:
         passwd = input("Introduce una contraseña: ")
         if credenciales[usuario] == passwd:
             print(f"Acceso concedido ✅. Bienvenid@, {usuario}.")
             return
         else:
-            print(f"Acceso denegado ⛔. Intento {intento}/3")
+            print(f"Acceso denegado ⛔. Intento {intento + 1}/{MAX_INTENTOS}")
             if intento == 3:
                 print("Demasiados intentos fallidos 🚫. Regresando al menú principal.")
                 return
