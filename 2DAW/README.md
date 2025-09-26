@@ -48,9 +48,21 @@ Este repositorio contiene los proyectos, ejercicios y prácticas realizados dura
 </div>
 
 - **Descripción**: Introducción a la programación en Python y sus aplicaciones en el desarrollo web.
-- **Tecnologías**: Python, Flask, Django
+- **Tecnologías**: Python
 - **Contenidos**: Sintaxis básica, estructuras de datos, funciones, módulos, manejo de excepciones
 - **[Ver proyectos y ejercicios](./Python)**
+
+
+### 👾 [Despliegue de Aplicaciones Webs](./DespliegueDeAplicacionesWeb/)
+
+<div align="center">
+  <img src="https://img.shields.io/badge/Python-3776AB?style=flat-square&logo=python&logoColor=white" alt="Python"/>
+</div>
+
+- **Descripción**: Introducción a la programación en Python y sus aplicaciones en el desarrollo web.
+- **Tecnologías**: Python por el momento 
+- **Contenidos**: Sintaxis básica, estructuras de datos, funciones, módulos, manejo de excepciones
+- **[Ver proyectos y ejercicios](./DespliegueDeAplicacionesWeb/)**
 
 ## 📅 Calendario Académico
 
