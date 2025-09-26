@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inyectar Contenido en Div</title>
+</head>
+
+<body>
+    <button onclick="mostrarMensajes()">Ejecutar</button>
+
+    <style>
+        img {
+            width: 40vh;
+        }
+    </style>
+</body>
+
+<script>
+    function mostrarMensajes() {
+        let div = document.createElement("div");
+        let img = document.createElement("img");
+        img.src = "https://upload.wikimedia.org/wikipedia/commons/0/06/Nintendo-Famicom-Console-Set-FL.jpg";
+        div.appendChild(img);
+        document.querySelector("button").before(div);
+    }
+</script>
+
+</html>

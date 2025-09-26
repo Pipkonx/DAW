@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inyectar Contenido en Div</title>
+</head>
+
+<body>
+    <button onclick="mostrarMensajes()">Ejecutar</button>
+    <button onclick="cambiarImagen()">CambiarImagen</button>
+
+    <style>
+        img {
+            width: 40vh;
+        }
+
+        button {
+            padding: 10px;
+            border-radius: 20px;
+        }
+    </style>
+</body>
+
+<script>
+    function mostrarMensajes() {
+        let div = document.createElement("div");
+        let img = document.createElement("img");
+        img.src = "https://upload.wikimedia.org/wikipedia/commons/0/06/Nintendo-Famicom-Console-Set-FL.jpg";
+        div.appendChild(img);
+        document.querySelector("button").before(div);
+    }
+
+    function cambiarImagen() {
+        let img = document.querySelector("img");
+        img.src = "https://upload.wikimedia.org/wikipedia/commons/7/76/PlayStation_2_logo.svg"
+    }
+</script>
+
+</html>
