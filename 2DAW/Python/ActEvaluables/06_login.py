@@ -11,7 +11,7 @@ def registrarUsu():
         if len(passwd) < 8:
             print("Contraseña insegura ❌. Debe tener al menos 8 caracteres.")
             continue
-        elif passwd.isupper():
+        elif passwd.isupper() is False:
             print("Contraseña insegura ❌. Debe tener al menos una mayúscula.")
             continue
         elif not any(char.isdigit() for char in passwd):
