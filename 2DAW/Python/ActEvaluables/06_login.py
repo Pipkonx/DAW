@@ -1,7 +1,6 @@
 # TEORIA - https://github.com/fencgut961/OPT_25_26/blob/main/TEORIA/BLOQUE_01/UD_1_8.md
 credenciales = {}
 
-# con def creamos las funciones
 def registrarUsu():
     usuario = input("Introduce un nombre de usuario: ")
     
@@ -9,7 +8,6 @@ def registrarUsu():
     while True:
         passwd = input("Introduce una contraseña: ")
         
-        # Si no cumple las reglas → muestra un mensaje de error y vuelve a pedir la contraseña.
         if len(passwd) < 8:
             print("Contraseña insegura ❌. Debe tener al menos 8 caracteres.")
             continue
