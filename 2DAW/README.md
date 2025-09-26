@@ -108,42 +108,6 @@ Para cualquier consulta relacionada con este repositorio, puedes contactar a tra
 - Seguridad y contenedores
 - Automatización de despliegues
 
-### Diseño de Interfaces Web (DIW)
-- Contenido: HTML5, CSS3, Diseño responsive
-- Tecnologías: Sass, Bootstrap, Tailwind CSS
-- Accesibilidad y UX/UI
-- Prototipado y wireframing
-
-### Empresa e Iniciativa Emprendedora (EIE)
-- Contenido: Plan de empresa, Marketing digital
-- Gestión empresarial y emprendimiento
-- Legislación y aspectos legales
-
-### Inglés Técnico
-- Contenido: Terminología técnica en inglés
-- Documentación técnica
-- Comunicación profesional
-
-## Proyectos Destacados
-
-### Proyecto Integrado Final
-- Aplicación web completa utilizando todas las tecnologías aprendidas
-- Frontend y backend desarrollados desde cero
-- Despliegue en producción
-
-### Prácticas en Empresa (FCT)
-- Formación en Centros de Trabajo
-- Aplicación práctica de conocimientos
-- Experiencia profesional real
-
-## Recursos Adicionales
-
-En este directorio encontrarás:
-- Ejemplos de código avanzado
-- Ejercicios resueltos por módulos
-- Documentación técnica especializada
-- Proyectos prácticos profesionales
-- Recursos para el desarrollo full-stack
 
 ## Cómo Navegar
 
