@@ -7,7 +7,7 @@
 
 ## 📋 Descripción
 
-Este directorio contiene las actividades evaluables del módulo de Python en el Ciclo Formativo de Grado Superior en Desarrollo de Aplicaciones Web. Cada ejercicio demuestra la aplicación práctica de los conceptos fundamentales de programación en Python.
+Este directorio contiene las actividades del módulo de Optativa: Python en el Ciclo Formativo de Grado Superior en Desarrollo de Aplicaciones Web 2 año
 
 ## 📚 Contenido
 
@@ -18,24 +18,6 @@ Este directorio contiene las actividades evaluables del módulo de Python en el 
 - **[05_analizador_notas.py](./05_analizador_notas.py)**: Análisis estadístico de un conjunto de calificaciones.
 - **[06_login.py](./06_login.py)**: Sistema simple de autenticación de usuarios.
 
-## 🎯 Objetivos de Aprendizaje
-
-- ✅ **Aplicación práctica de la sintaxis de Python**
-- ✅ **Implementación de algoritmos básicos**
-- ✅ **Manejo de estructuras de datos**
-- ✅ **Uso de funciones y modularización**
-- ✅ **Validación de entradas de usuario**
-- ✅ **Resolución de problemas mediante programación**
-
-## 📊 Criterios de Evaluación
-
-| Criterio | Descripción | Porcentaje |
-|----------|-------------|------------|
-| Funcionalidad | El programa cumple con los requisitos especificados | 40% |
-| Código limpio | Organización, legibilidad y comentarios adecuados | 25% |
-| Eficiencia | Uso óptimo de recursos y algoritmos | 20% |
-| Documentación | Explicación clara del funcionamiento | 15% |
-
 ## 🔍 Instrucciones de Ejecución
 
 Para ejecutar cualquiera de los ejercicios:
@@ -43,14 +25,6 @@ Para ejecutar cualquiera de los ejercicios:
 ```bash
 python nombre_del_archivo.py
 ```
-
-## 📝 Entrega
-
-Las actividades deben entregarse antes de la fecha límite establecida, asegurándose de que:
-
-1. El código esté correctamente comentado
-2. Se incluya documentación si es requerida
-3. Se hayan realizado pruebas para verificar su funcionamiento
 
 ## 🔗 Enlaces Útiles
 
