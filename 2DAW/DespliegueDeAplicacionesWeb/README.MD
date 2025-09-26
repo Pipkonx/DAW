@@ -34,9 +34,6 @@ Este repositorio contiene ejercicios y prácticas relacionadas con el despliegue
 4. Ejecutar el archivo Python y verificar el funcionamiento del servidor
 
 ## 💡 Notas adicionales
-- Los servidores web implementados son para fines educativos y no deben usarse en entornos de producción
 - Para detener cualquier servidor, presionar `Ctrl+C` en la línea de comandos
 
-## 👨‍💻 Autor
-Estudiante de 2DAW - Despliegue de Aplicaciones Web
 
