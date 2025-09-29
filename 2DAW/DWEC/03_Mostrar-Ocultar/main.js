@@ -25,7 +25,7 @@ function CrearTabla() {
     let filas = prompt("Numero de filas");
     let columnas = prompt("Numero de columnas");
 
-    let tabla = document.querySelector("table");
+    let tabla = document.getElementById("e2");
 
     for (let i = 0; i < filas; i++) {
         let fila = document.createElement('tr');
@@ -37,4 +37,11 @@ function CrearTabla() {
         tabla.appendChild(fila);
     }
     document.body.appendChild(tabla)
+}
+
+function CambiarColor(celda) {
+    celda.innerHTML = parseInt(celda.innerHTML) + 1;
+    if (celda.innerHTML >= 10) {
+        celda.style.backgroundColor = "lightblue";
+    }
 }

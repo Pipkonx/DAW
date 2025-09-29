@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <h1>Formulario</h1>
+    <section id="principal">
+        <div id="caja">
+            <h3>Ejercicio 1</h3>
+            <hr>
+            <p>Formulario</p>
+            <form action="">
+                Numero1: <input type="text" id="numero1"><br>
+                Numero2: <input type="text" id="numero2"><br>
+                <!-- <input type="button" onclick="sumar()" value="➕ Sumar"><br> -->
+                <span id="resultado"></span>
+            </form>
+            <button onclick="sumar()">➕ Sumar</button>
+        </div>
+
+        <div id="caja">
+            <h3>Ejercicio 2</h3>
+            <hr>
+            <p>Formulario de votacion</p>
+            <section id="votacion">
+                <input type="Radio" id="si" name="votacion" value="si">
+                <label for="si">Sí</label>
+                <span id="votoSi"></span>
+                <br>
+                <img src="images\1.png" id="img1" alt="">
+                <br>
+                <input type="Radio" id="no" name="votacion" value="no">
+                <label for="no">No</label>
+                <span id="votoNo"></span>
+                <br>
+                <img src="images\2.png" id="img2" alt="">
+                <br>
+                <input type="Radio" id="si/no" name="votacion" value="si/no">
+                <label for="si/no">si/no</label>
+                <span id="votoSiNo"></span>
+                <br>
+                <img src="images\3.png" id="img3" alt="">
+                <br>
+            </section>
+
+            <button onclick="votar()">▶ Votar</button>
+        </div>
+
+
+        <div id="caja">
+            <h3>Ejercicio 3</h3>
+            <hr>
+            <p>Elige tu pais: </p>
+            <input type="text" placeholder="Introduce tu pais" id="pais">
+            <button onclick="anade();">+ Añade</button>
+            <label for="country">País:</label>
+
+            <select id="country" name="country" onchange="document.getElementById('pais').value">
+                <option value="us">Estados Unidos</option>
+                <option value="es">España</option>
+                <option value="mx">México</option>
+            </select>
+            <button onclick="alert(document.getElementById('country').value)">▶ Ejecutar</button>
+        </div>
+        <script src="main.js"></script>
+    </section>
+</body>
+
+</html>
