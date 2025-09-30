@@ -12,27 +12,22 @@ Este repositorio contiene ejercicios y proyectos desarrollados en Python como pa
 
 ## 📚 Contenido del Repositorio
 
-### 📁 Ejercicios Básicos
+### 📁 [Tema 1 (T1)](./T1/)
 
-- **[01_holaMundo.py](./01_holaMundo.py)**: Introducción a Python con el clásico "Hola Mundo"
-- **[02_ejercicioBasico.py](./02_ejercicioBasico.py)**: Ejercicios de fundamentos de programación
-- **[03_presentacion.py](./03_presentacion.py)**: Ejemplo de presentación de datos
-- **[04_Basico.py](./04_Basico.py)**: Conceptos básicos adicionales
-- **[05_errores.py](./05_errores.py)**: Manejo de excepciones y errores
+Introducción a Python y conceptos básicos de programación:
+- Sintaxis básica
+- Variables y tipos de datos
+- Estructuras de control
+- Funciones y módulos
+- Manejo de excepciones
 
-### 📁 [Actividades Evaluables](./ActEvaluables/)
+### 📁 [Tema 2 (T2)](./T2/)
 
-Colección de ejercicios evaluables que ponen en práctica los conceptos aprendidos. Ver el [README de Actividades Evaluables](./ActEvaluables/README.md) para más detalles.
-
-## 🚀 Conceptos Cubiertos
-
-- ✅ **Sintaxis básica de Python**
-- ✅ **Variables y tipos de datos**
-- ✅ **Estructuras de control (if, for, while)**
-- ✅ **Funciones y módulos**
-- ✅ **Manejo de excepciones**
-- ✅ **Entrada/salida de datos**
-- ✅ **Operaciones con archivos**
+Programación avanzada en Python:
+- Programación orientada a objetos
+- Manejo de archivos
+- Bibliotecas y frameworks
+- Desarrollo de aplicaciones
 
 ## 💻 Requisitos
 
@@ -50,45 +45,19 @@ Colección de ejercicios evaluables que ponen en práctica los conceptos aprendi
    python --version
    ```
 
-3. **Instalar dependencias** (si es necesario):
+3. **Instalar paquetes necesarios**:
    ```bash
    pip install -r requirements.txt
    ```
 
-## 📝 Cómo Ejecutar los Ejercicios
-
-Para ejecutar cualquier script de Python, utiliza el siguiente comando en la terminal:
-
-```bash
-python nombre_del_archivo.py
-```
-
-Por ejemplo:
-```bash
-python 01_holaMundo.py
-```
-
-## 📅 Plan de Aprendizaje
-
-| Semana | Tema | Ejercicios |
-|--------|------|------------|
-| 1 | Introducción a Python | 01_holaMundo.py, 02_calculadora_simple.py |
-| 2 | Estructuras de control | 03_ejercicioBasico.py, 04_presentacion.py |
-| 3 | Funciones y módulos | 05_Basico.py |
-| 4 | Manejo de excepciones | 06_errores.py |
-
-## 🔗 Recursos Útiles
+## 🔗 Enlaces Útiles
 
 - [Documentación oficial de Python](https://docs.python.org/es/3/)
-- [Python para todos (libro gratuito)](https://www.py4e.com/book)
-- [Real Python - Tutoriales](https://realpython.com/)
-
-## 📞 Contacto
-
-Para cualquier duda o consulta relacionada con este módulo, puedes contactar con el profesor a través del aula virtual o por correo electrónico.
+- [Tutorial de Python en Español](https://docs.python.org/es/3/tutorial/index.html)
+- [Python para Todos - Curso en línea](https://www.py4e.com/)
 
 ---
 
 <div align="center">
-  <p>Desarrollado con ❤️ para el Ciclo Formativo de Grado Superior en Desarrollo de Aplicaciones Web</p>
+  <p>Desarrollado como parte del módulo de Python en 2º DAW</p>
 </div>
