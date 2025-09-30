@@ -87,7 +87,27 @@
         $i = rand(0, 1000);
         print($i . "<br>");
     } while ($i == 15);
+
+    print("<hr><h3>Ejercicio 8</h3><br><p></p><br>");
+    $startTime = time();
+    $endTime = $startTime + 5;
+    $count = 0;
+    // for ($i = 0 ; $i < 1001; $i++) {
+    while ($startTime < $endTime) {
+        if ($i % 5 == 0) {
+            print($i . ",");
+            // $count++;
+            // if ($count % 10 == 0) {
+            //     print("<hr>");
+            // }
+        }
+    }
+    
+
+
+
     ?>
+
 
 </body>
 
