@@ -11,6 +11,7 @@ function EsPrimo(int $numero = 5) : bool {
     return true;
 }
 
+
 for ($n = 2; $n < 102; $n++) {
     if (EsPrimo($n)) echo $n . "<br>";
 }
