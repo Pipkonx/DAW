@@ -68,6 +68,56 @@
             </select>
             <button onclick="alert(document.getElementById('country').value)">▶ Ejecutar</button>
         </div>
+        <div id="caja">
+            <h3>Ejercicio 4</h3>
+            <hr>
+            <p>Agrega una palabra: </p>
+            <input type="text" placeholder="Introduce una palabra" id="palabra">
+            <button onclick="anadeD();">+ Añadir</button>
+
+            <label for="word">Palabra: </label>
+            <select id="word" name="word" onchange="document.getElementById('word').value"></select>
+            <button onclick="anadeT();">+ Añadir</button>
+
+            <label for="word2">Palabra2: </label>
+            <select id="word2" name="word2" onchange="document.getElementById('word2').value"></select>
+        </div>
+
+        <div id="caja">
+            <h3>Ejercicio 5</h3>
+            <hr>
+            <p>Combo dependiente como objeto</p>
+
+            <label for="categoria">lista </label>
+            <select id="categoria" onchange="cargarSubCat()">
+                <option value="">Seleccionar una</option>
+                <option value="pc">PC</option>
+                <option value="teclado">TECLADO</option>
+                <option value="monitor">MONITORES</option>
+                <option value="mouse">MOUSE</option>
+            </select>
+
+            <label for="subCat">Subcategoría: </label>
+            <select id="subCat"></select>
+        </div>
+
+        <div id="caja">
+            <h3>Ejercicio 5.2</h3>
+            <hr>
+            <p>Combo dependiente con array</p>
+
+            <label for="categoriaD">lista </label>
+            <select id="categoriaD" onchange="cargarSubCatD()">
+                <option value="1">PC</option>
+                <option value="2">TECLADO</option>
+                <option value="3">MONITORES</option>
+                <option value="4">MOUSE</option>
+            </select>
+
+            <label for="subCatD">Subcategoría: </label>
+            <select id="subCatD"></select>
+        </div>
+
         <script src="main.js"></script>
     </section>
 </body>
