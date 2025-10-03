@@ -1,4 +1,9 @@
 # TEORIA - https://github.com/fencgut961/OPT_25_26/blob/main/TEORIA/BLOQUE_01/UD_1_8.md
+
+# ACTIVIDAD - GITHUB https://github.com/Pipkonx/DAW/blob/main/2DAW/Python/T1/ActEvaluables/06_login.py
+
+# GITHUB CON TODAS LAS ACTIVIDADES - https://github.com/Pipkonx/DAW/tree/main/2DAW/Python
+
 credenciales = {}
 
 def registrarUsu():
