@@ -9,8 +9,6 @@
 include("11_NombreMes.php");
 include("10_diaMes.php");
 
-// Obtener el número del mes actual (1-12)
-$num_mes = date('n');
+$num_mes = 9;
 
-// Mostrar el nombre del mes actual
-echo NombreMes($num_mes);
+echo "<br>El mes {$num_mes} tiene " . diaMes($num_mes) . " días y corresponde al mes: " . nombreMes($num_mes);

@@ -9,7 +9,7 @@
 // • marca
 
 // Realiza un array que almacene información de 5 o más coches.
-// Crea la función MuestraCoche($coche), donde $coche será un array que contiene los atributos indicados anteriormente que c
+// Crea la función MuestraCoche($coche), donde $coche será un array que contiene los atributos indicados anteriormente que 
 // Realiza la función MuestraCoches($lista) que mostrará por pantalla información de los coches almacenados .
 // Añade dos coches adicionales al array, después de mostrar, y vuelve a mostrar toda la lista.
 
@@ -18,11 +18,15 @@
 // utilizando objetos (clases).
 
 $coche = [
-    "matricula" => "12345678D",
-    "color" => "Rojo",
-    "modelo" => "2020",
-    "marca" => "Seat",
+    "matricula",
+    "color",
+    "modelo",
+    "marca",
 ];
+
+function MuestraCoche($coche) {
+    
+}
 
 
 
