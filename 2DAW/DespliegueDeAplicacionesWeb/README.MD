@@ -72,10 +72,10 @@ Este repositorio contiene ejercicios y prácticas relacionadas con el despliegue
 1. Descargamos mysql secure
    ![Paso 1](./images/apache/8.png)
 
-2. Ejecutamos mysql
+1. Ejecutamos mysql
    ![Paso 2](./images/apache/9.png)
 
-3. Salimos con el comando exit
+1. Salimos con el comando exit
    ![Paso 3](./images/apache/10.png)
 
 #### Paso 3: Instalación de MySQL
@@ -93,6 +93,41 @@ Este repositorio contiene ejercicios y prácticas relacionadas con el despliegue
 
 7. Ahora le asignamos la propiedad al directorio con la variable de entorno `$USER`, que hará referencia al usuario del sistema actual:
    ![Paso 7](./images/apache/14.png)
+
+8. Ahora abrimos un nuevo archivo de configuracion en el siguiente directorio de apache usando el editor de linea de comandos:
+   ![Paso 8](./images/apache/15.png)
+
+9. De esta manera nos creará un nuevo archivo en blanco y deberemos copiar lo siguiente:
+   ![Paso 9](./images/apache/16.png)
+
+10. Ahora podemos usar `a2ensite` para habilitar el nuevo host virtual:
+   ![Paso 10](./images/apache/17.png)
+
+11. Ahora nos aseguramos de que el archivo de configuración no contenga errores de sintaxis para esto ejecutamos el siguiente comando
+   ![Paso 11](./images/apache/18.png)
+
+12. Ahora conviene que deshabilitemos el sitio web predeterminado que viene instalado con apache para esto hacemos el siguiente comando:
+   ![Paso 12](./images/apache/19.png)
+
+13. Procedemos a reininiciar apache2:
+   ![Paso 13](./images/apache/20.png)
+
+14. procedemos a deshabilitar la web que viene predeterminada:
+   ![Paso 14](./images/apache/21.png)
+
+15. reverificamos que el archivo no tenga errores:
+   ![Paso 15](./images/apache/22.png)
+
+16. y ahora entramos a nuestro para empezar a escribir nuestra landing page
+   ![Paso 16](./images/apache/23.png)
+
+17. Ponemso que funciona 
+   ![Paso 17](./images/apache/24.png)
+
+18.  Abrimos el localhost y comprobamos de que realmente nuestra página cambio y se muestra lo que escribimos anteriormente
+   ![Paso 18](./images/apache/25.png)
+
+
 
 
 ## 💡 Notas adicionales
