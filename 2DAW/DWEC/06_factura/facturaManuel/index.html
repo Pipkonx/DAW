@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Factura</title>
+    <style>
+        table, td {
+            border: 1px solid black;
+            border-collapse: collapse;
+            text-align: center;
+            margin: auto;
+            width: 50%;
+        }
+        td {
+            padding: 5px;
+            width: 50px;
+        }
+        label {
+            margin-left: 25%;
+        }
+    </style>
+</head>
+<body>
+    <form>
+        Codigo:
+        <input type="text" id="codigo" >
+        Descripcion:
+        <input type="text" id="descripcion">
+        Cantidad:
+        <input type="number" id="cantidad">
+        Precio:
+        <input type="number" id="precio">
+        <input type="button" onclick="agregar()" value="OK."> <br><br>
+    </form>
+
+    <table id="tabla">
+        <tr>
+            <td>Codigo</td>
+            <td>Descripcion</td>
+            <td>Cantidad</td>
+            <td>Precio</td>
+            <td>SubTotal</td>
+        </tr>
+    </table>
+    <label>Total: <span id="total">0€</span></label>
+
+    <form>
+        Codigo:
+        <input type="text" id="codigo2" >
+        Descripcion:
+        <input type="text" id="descripcion2">
+        Cantidad:
+        <input type="number" id="cantidad2">
+        Precio:
+        <input type="number" id="precio2">
+        <input type="button" id="botonmodifica" value="OK."> <br><br>
+    </form>
+    <script src="utiles.js"></script>
+</body>
+</html>
