@@ -15,19 +15,30 @@ Este repositorio contiene ejercicios y proyectos desarrollados en Python como pa
 ### 📁 [Tema 1 (T1)](./T1/)
 
 Introducción a Python y conceptos básicos de programación:
-- Sintaxis básica
-- Variables y tipos de datos
-- Estructuras de control
-- Funciones y módulos
-- Manejo de excepciones
+- **Sintaxis básica**: Estructura de un programa Python, indentación, comentarios
+- **Variables y tipos de datos**: Números, cadenas, listas, tuplas, diccionarios
+- **Estructuras de control**: Condicionales (if-elif-else), bucles (for, while)
+- **Funciones y módulos**: Definición de funciones, parámetros, retorno de valores
+- **Manejo de excepciones**: Manejo de errores
+
+#### Ejemplos incluidos:
+- Calculadora básica
+- Conversor de temperaturas
+- Juego de adivinanza de números
+- Generador de contraseñas
 
 ### 📁 [Tema 2 (T2)](./T2/)
 
 Programación avanzada en Python:
-- Programación orientada a objetos
-- Manejo de archivos
-- Bibliotecas y frameworks
-- Desarrollo de aplicaciones
+- **Programación orientada a objetos**: Clases, objetos, herencia, polimorfismo
+- **Manejo de archivos**: Lectura/escritura de archivos, JSON, CSV
+- **Desarrollo de aplicaciones**: Aplicaciones de consola, web, análisis de datos
+
+#### Proyectos incluidos:
+- Sistema de gestión de inventario
+- Aplicación web básica con Flask
+- Análisis de datos con Pandas
+- Visualización de datos con Matplotlib
 
 ## 💻 Requisitos
 

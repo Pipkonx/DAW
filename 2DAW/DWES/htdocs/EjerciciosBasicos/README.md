@@ -30,6 +30,8 @@ Ejercicios básicos de introducción a PHP, sintaxis y primeros pasos.
 | Ejercicio 12 | Inclusión de archivos | [Archivo uno](./T1/Ejercicio12/uno.php) / [Archivo dos](./T1/Ejercicio12/dos.php) |
 | Ejercicio 13 | Plantillas y layouts | [Layout](./T1/Ejercicio13/layout.php) / [Cuerpo](./T1/Ejercicio13/cuerpo.php) |
 
+[Ver más detalles del Tema 1](./T1/README.md)
+
 ---
 
 ## 🔄 Tema 2: Estructuras de Control y Funciones
@@ -55,6 +57,36 @@ Ejercicios sobre estructuras de control (condicionales, bucles) y funciones en P
 | Ejercicio 14 | Uso de la función predefinida date() | [Ver solución](./T2/02_Funciones/14_predefinida_date.php) |
 | Ejercicio 15 | Función para mostrar fecha dentro de 50 segundos | [Ver solución](./T2/02_Funciones/15_MuestraDentroDe50s.php) |
 | Ejercicio 16 | Funciones de fecha en PHP | [Ver solución](./T2/02_Funciones/16_functiones_fecha.php) |
+| Ejercicio 17 | Muestra fecha | [Ver solución](./T2/02_Funciones/17_muetraFecha.php) |
+
+[Ver más detalles del Tema 2](./T2/README.md)
+
+---
+
+## 📊 Tema 3: Arrays y Estructuras de Datos
+
+Ejercicios avanzados sobre arrays y estructuras de datos en PHP.
+
+### Arrays
+
+| Ejercicio | Descripción | Solución |
+|-----------|-------------|----------|
+| Ejercicio 18 | Array para días del mes | [Ver solución](./T2/03_Arrays/18_DiaMes.php) |
+| Ejercicio 19 | Verificación de DNI | [Ver solución](./T2/03_Arrays/19_verificaDNI.php) |
+| Ejercicio 20 | Función para obtener valor máximo | [Ver solución](./T2/03_Arrays/20_valorMaximo.php) |
+| Ejercicio 21 | Manejo de atributos | [Ver solución](./T2/03_Arrays/21_Atributos.php) |
+| Ejercicio 22 | Comprobación de arrays | [Ver solución](./T2/03_Arrays/22_ComprobarArray.php) |
+| Ejercicio 23 | Fecha actual | [Ver solución](./T2/03_Arrays/23_FechaActual.php) |
+
+### Formularios
+
+| Ejercicio | Descripción | Solución |
+|-----------|-------------|----------|
+| Ejercicio 26 | Tabla de multiplicar | [Ver carpeta](./T2/04_Formularios/26_muestraTablaMultiplicar/) |
+| Ejercicio 27 | Nombre y apellidos | [Ver carpeta](./T2/04_Formularios/27_NombreYApellidos/) |
+| Ejercicio 28 | Autollamadas | [Ver carpeta](./T2/04_Formularios/28_Autollamadas/) |
+| Ejercicio 29 | Tabla de multiplicar (mismo archivo) | [Ver carpeta](./T2/04_Formularios/29_TablaMultiplicarMismo/) |
+| Ejercicio 30 | Formulario completo | [Ver carpeta](./T2/04_Formularios/30_Formulario/) |
 
 ---
 

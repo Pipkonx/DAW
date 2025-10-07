@@ -33,11 +33,11 @@ Ejercicios prácticos para dominar los fundamentos de PHP y MySQL:
 - ✅ Funciones y arrays
 - ✅ Formularios y procesamiento de datos
 
-#### 📂 [T2 - Bases de Datos](./htdocs/EjerciciosBasicos/T2/)
-- ✅ Conexión a MySQL
-- ✅ Operaciones CRUD
-- ✅ Consultas preparadas
-- ✅ Transacciones
+#### 📂 [T2 - Estructuras de Control y Funciones](./htdocs/EjerciciosBasicos/T2/)
+- ✅ Estructuras condicionales (if, switch)
+- ✅ Bucles (for, while, do-while)
+- ✅ Funciones definidas por el usuario
+- ✅ Arrays y manipulación de datos
 
 ## 💻 Tecnologías Utilizadas
 
