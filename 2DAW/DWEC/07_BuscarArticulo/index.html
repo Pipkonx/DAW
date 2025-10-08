@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>factura</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div id="caja">
+        <form action="">
+            <label for="codigoD">Codigo:</label>
+            <input type="number" id="codigoD" onchange="buscaArticulo()">
+            <label for="descripcionD">Descripcion</label>
+            <input type="text" id="descripcionD">
+            <label for="cantidad">Cantidad</label>
+            <input type="number" id="cantidadD">
+            <label for="precioD">Precio</label>
+            <input type="text" id="precioD">
+        </form>
+        <button onclick="modificarProducto()">🔑 Modificar</button>
+    </div>
+
+    <table id="tabla">
+        <tr>
+            <td>ID</td>
+            <td>Descripcion</td>
+            <td>Cantidad</td>
+            <td>Precio</td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td class="codigo">1</td>
+            <td>Tornillos</td>
+            <td>40</td>
+            <td>10</td>
+        </tr>
+        <tr>
+            <td class="codigo">2</td>
+            <td>Tuercas</td>
+            <td>70</td>
+            <td>8</td>
+        </tr>
+        <tr>
+            <td class="codigo">3</td>
+            <td>Pinza</td>
+            <td>20</td>
+            <td>7</td>
+        </tr>
+    </table>
+    <label for="total">Total : <span id="total">0</span> €</label>
+
+    <script src="main.js"></script>
+</body>
+
+</html>

@@ -15,7 +15,6 @@ function agregarProducto() {
     let total = (cantidad * precio).toFixed(2);
 
     let NuevaFila = [codigo, descripcion, cantidad, precio, total];
-
     let fila = document.createElement("tr");
     document.getElementById("tabla").appendChild(fila);
 
