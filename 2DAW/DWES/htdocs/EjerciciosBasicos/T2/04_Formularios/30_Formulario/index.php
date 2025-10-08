@@ -31,6 +31,7 @@
         <br>
         <br>
     </form>
+
     <?php
     if (isset($_POST["nombre"]) && isset($_POST["apellido"]) && isset($_POST["sexo"])) {
         echo "Nombre : " . $_POST["nombre"] . "<br>Apellido: " . $_POST["apellido"] . "<br>Sexo: " . $_POST["sexo"];
