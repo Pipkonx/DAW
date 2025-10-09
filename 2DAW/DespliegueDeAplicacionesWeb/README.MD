@@ -22,7 +22,7 @@ Este repositorio contiene ejercicios y prácticas relacionadas con el despliegue
 
 ### [📁 Ejercicio 2: Servidor personalizado](./02_ServidorPersonalizado/README.MD)
 
-### [📁 Ejercicio 3: Instalación de Apache, MySQL y PHP](./03_InstalacionApachey%2B/README.MD)
+### [📁 Ejercicio 3: Instalación de Apache, MySQL y PHP](./03_InstalacionApache/README.MD)
 
 ### [📁 Ejercicio 4: Cambiar configuracion de apache](./04_cambiosApache/README.MD)
 
