@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Búsqueda en dos motores</title>
+</head>
+
+<body>
+    <h1>Búsqueda en dos motores</h1>
+    <form action="" method="get" target="_blank">
+        <label for="query">Palabra a buscar:</label>
+        <input type="text" id="query" name="query" required>
+
+        <br><br>
+
+        <input type="checkbox" id="images" name="images">
+        <label for="images">Buscar imágenes</label>
+
+        <br><br>
+
+        <!-- Google -->
+        <button type="submit" formaction="https://www.google.com/search" formtarget="_blank" formmethod="get" onclick="
+                if(document.getElementById('images').checked) {
+                    this.form.action='https://www.google.com/search?tbm=isch';
+                } else {
+                    this.form.action='https://www.google.com/search';
+                }
+            ">
+            Buscar en Google
+        </button>
+
+        <!-- Bing -->
+        <button type="submit" formaction="https://www.bing.com/search" formtarget="_blank" formmethod="get" onclick="
+                if(document.getElementById('images').checked) {
+                    this.form.action='https://www.bing.com/images/search';
+                } else {
+                    this.form.action='https://www.bing.com/search';
+                }
+            ">
+            Buscar en Bing
+        </button>
+    </form>
+</body>
+
+</html>

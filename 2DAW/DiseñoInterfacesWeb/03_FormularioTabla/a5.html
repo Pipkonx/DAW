@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Formulario de búsqueda de imágenes en Google</title>
+</head>
+
+<body>
+    <h2>Buscar imágenes en Google</h2>
+    <form action="https://www.google.com/search" method="get" target="_blank">
+        <!-- Campo para la búsqueda -->
+        <label for="q">Buscar:</label>
+        <input type="text" id="q" name="q" required><br><br>
+
+        <!-- Tamaño -->
+        <label for="tbs_size">Tamaño:</label>
+        <select id="tbs_size" name="tbs">
+            <option value="">--Seleccione--</option>
+            <option value="isz:l">Grande</option>
+            <option value="isz:m">Mediano</option>
+            <option value="isz:i">Icono</option>
+        </select><br><br>
+
+        <!-- Color -->
+        <label for="tbs_color">Color:</label>
+        <select id="tbs_color" name="tbs">
+            <option value="">--Seleccione--</option>
+            <option value="ic:color">Color</option>
+            <option value="ic:gray">Blanco y negro</option>
+            <option value="ic:trans">Transparente</option>
+        </select><br><br>
+
+        <!-- Tipo -->
+        <label for="tbs_type">Tipo:</label>
+        <select id="tbs_type" name="tbs">
+            <option value="">--Seleccione--</option>
+            <option value="itp:clipart">Clipart</option>
+            <option value="itp:photo">Foto</option>
+            <option value="itp:lineart">Dibujo lineal</option>
+            <option value="itp:animated">Animado</option>
+        </select><br><br>
+
+        <!-- Fecha -->
+        <label for="tbs_date">Fecha:</label>
+        <select id="tbs_date" name="tbs">
+            <option value="">--Seleccione--</option>
+            <option value="qdr:h">Última hora</option>
+            <option value="qdr:d">Último día</option>
+            <option value="qdr:w">Última semana</option>
+            <option value="qdr:m">Último mes</option>
+            <option value="qdr:y">Último año</option>
+        </select><br><br>
+
+        <!-- Licencia -->
+        <label for="tbs_license">Licencia:</label>
+        <select id="tbs_license" name="tbs">
+            <option value="">--Seleccione--</option>
+            <option value="il:cl">Etiqueta Creative Commons</option>
+            <option value="il:ol">Etiqueta comercial o de otra licencia</option>
+        </select><br><br>
+
+        <button type="submit">Buscar</button>
+        <button type="reset">Reiniciar</button>
+    </form>
+</body>
+
+</html>
