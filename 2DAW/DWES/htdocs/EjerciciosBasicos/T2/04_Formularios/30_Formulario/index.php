@@ -18,7 +18,7 @@
         <br>
         <label for="apellido">Apellido: </label>
         <input type="text" name="apellido" id="apellido">
-        <br>
+        <br><br>
         <label for="sexo">Sexo: </label>
         <br>
         <label for="masculino">Masculino</label>
@@ -26,15 +26,28 @@
         <br>
         <label for="femenino">Femenino</label>
         <input type="radio" name="sexo" id="femenino" value="femenino">
-        <br>
+        <br><br>
+        <label for="curso">Curso: </label>
+        <select name="curso" id="curso">
+            <option value="1">1 DAW</option>
+            <option value="2">2 DAW</option>
+            <option value="3">1 ASIR</option>
+            <option value="4">2 ASIR</option>
+            <option value="5">1 DAM</option>
+            <option value="6">2 DAM</option>
+        </select>
+        <br><br>
+        <label for="fecha">Fecha nacimiento: </label>
+        <input type="date" name="fecha" id="fecha">
+        <br><br>
         <input type="submit" value="Guardar">
         <br>
         <br>
     </form>
 
     <?php
-    if (isset($_POST["nombre"]) && isset($_POST["apellido"]) && isset($_POST["sexo"])) {
-        echo "Nombre : " . $_POST["nombre"] . "<br>Apellido: " . $_POST["apellido"] . "<br>Sexo: " . $_POST["sexo"];
+    if (isset($_POST["nombre"]) && isset($_POST["apellido"]) && isset($_POST["sexo"]) && isset($_POST["curso"]) && isset($_POST["fecha"])) {
+        echo "Nombre : " . $_POST["nombre"] . "<br>Apellido: " . $_POST["apellido"] . "<br>Sexo: " . $_POST["sexo"] . "<br>Curso: " . $_POST["curso"] . "<br>Fecha nacimiento: " . $_POST["fecha"];
     }
     ?>
 </body>
