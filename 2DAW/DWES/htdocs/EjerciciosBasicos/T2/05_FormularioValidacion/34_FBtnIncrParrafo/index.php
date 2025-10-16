@@ -19,9 +19,9 @@
     <form method="post">
         <center>
             <h3>Incrementar Boton</h3>
-            <!-- recordar que tinen que usar campos de formulario con un p no se podr'ia hacer porque no se envia -->
-            <input type="text" name="contador" value="<?= $valor ?>">
-            <br>
+            <p><?= $valor ?></p>
+            <!-- hay que hacerlo asi porque si no se eenvia el valor al hacer summit se pierde -->
+            <input type="hidden" name="contador" value="<?= $valor ?>">
             <br>
             <button type="submit">Sumar</button>
         </center>

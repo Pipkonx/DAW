@@ -1,98 +1,120 @@
-<!DOCTYPE html>
-<html lang="en">
+<?php
+$errores = [];
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
+if ($_POST) {
+    if ($_POST["nombre"] == "") {
+        $errores["nombre"] = "Falta el nombre";
+    }
 
-<body>
-    <?php
-    $errores = [];
-    if ($_POST) {
-        echo "<h1>Formulario enviado</h1>";
-        if ($_POST["nombre"] == "") {
-            $errores["nombre"] = "Falta el nombre";
-        }
-        if ($_POST["apellido"] == "") {
-            $errores["apellido"] = "Falta el apellido";
-        }
-        if (!isset($_POST["sexo"])) {
-            $errores["sexo"] = "Hay que seleccionar un sexo";
-        }
-        if ($_POST["observaciones"] == "") {
-            $errores["observaciones"] = "Debe de agregar observaciones";
-        }
-        if ($errores) {
-            echo '<div style="color:red">';
-            foreach ($errores as $error) {
-                echo "<p>$error</p>";
-            }
-            echo "</div>";
-            formulario();
-        } else {
-            echo "<p>Campos recibidos:";
-            print_r($_POST);
-        }
+    if (empty($_POST["fecha"])) {
+        $errores["fecha"] = "Debes de introducir una fecha";
     } else {
-        formulario();
-    }
+        // con el explode sparamos la fecha en anno mes y lo hacemos una lista
+        $partes_fecha = explode("-", $_POST["fecha"]);
 
-    function formulario()
-    {
-    ?>
+        // comprobasmos que son 3 partees
+        if (count($partes_fecha) == 3) {
+            // le ponmos a las variablese un nombre para identificarlo mejor
+            list($year, $month, $day) = $partes_fecha;
 
-        <form method="post">
-            <center>
-                <h3>DATOS PERSONA</h3>
-            </center>
-            <br>
-            <label for="nombre" value="<?= filter_input(INPUT_POST, 'nombre') ?>">Nombre: </label>
-            <input type="text" name="nombre" id="nombre">
-            <br>
-            <label for="apellido" value="<?= filter_input(INPUT_POST, 'apellido') ?>">Apellido: </label>
-            <input type="text" name="apellido" id="apellido">
-            <br><br>
-            <label for="sexo">Sexo: </label>
-            <br>
-            <input type="radio" name="sexo[]" id="masculino" value="masculino"> <?= estaMarcado("masculino") ?>
-            <label for="masculino">Masculino</label>
-            <br>
-            <input type="radio" name="sexo[]" id="femenino" value="femenino" <?= estaMarcado("femenino") ?>>
-            <label for="femenino">Femenino</label>
-            <br><br>
-            <label for="observaciones">Observaciones</label><br>
-            <textarea name="observaciones" id="observaciones" cols="50" rows="5"></textarea>
-            <br><br>
-            <button type="submit">Enviar</button>
-            <br>
-            <br>
-        </form>
-    <?php
-    }
-
-    function estaMarcado(string $value)
-    {
-        $opcionesMarcadas = isset($_POST['sexo']) ? $_POST["sexo"] : [];
-        if (in_array($value, $opcionesMarcadas)) {
-            return "checked";
+            // Usa checkdate() para validar la fecha y no seea mayor que 2025
+            if (!checkdate($month, $day, $year)) {
+                $errores["fecha"] = "La fecha introducida no es válida.";
+            } else {
+                if ($year >= 2025) {
+                    $errores["fecha"] = "El año de la fecha no puede ser 2025 o posterior.";
+                }
+            }
+        } else {
+            $errores["fecha"] = "El formato de la fecha es incorrecto.";
         }
-        return "";
     }
 
-    if (isset($_POST["nombre"]) && isset($_POST["apellido"]) && isset($_POST["sexo"])) {
-        echo "Nombre : " . $_POST["nombre"] . "<br>Apellido: " . $_POST["apellido"] . "<br>Sexo: " . $_POST["sexo"][0];
+    if ($errores) {
+        echo '<div style="color:red">';
+        foreach ($errores as $error) {
+            echo "<p>$error</p>";
+        }
+        echo "</div>";
+        formulario();
+    } else {
+        echo "<p>Campos recibidos:</p>";
+        print_r($_POST);
     }
+} else {
+    formulario();
+}
 
+function formulario()
+{
+?>
+    <!-- Tu formulario HTML -->
+    <form method="post">
+        <center>
+            <h3>DATOS PERSONA</h3>
+        </center>
+        <br>
+        <label for="nombre">Nombre: </label>
+        <input type="text" name="nombre" id="nombre" value="<?= filter_input(INPUT_POST, 'nombre') ?>">
+        <br>
+        <label for="apellido">Apellido: </label>
+        <input type="text" name="apellido" id="apellido" value="<?= filter_input(INPUT_POST, 'apellido') ?>">
+        <br>
+        <label for="sexo">Sexo: </label>
+        <br>
+        <input type="radio" name="sexo" id="masculino" value="masculino" <?= estaMarcado("masculino") ?>>
+        <label for="masculino">Masculino</label>
+        <br>
+        <input type="radio" name="sexo" id="femenino" value="femenino" <?= estaMarcado("femenino") ?>>
+        <label for="femenino">Femenino</label>
+        <br>
+        <label for="curso">Curso: </label>
+        <select name="curso" id="curso">
+            <option value="1daw" <?= estaSeleccionado('1daw') ?>>1DAW</option>
+            <option value="2daw" <?= estaSeleccionado('2daw') ?>>2DAW</option>
+            <option value="1dam" <?= estaSeleccionado('1dam') ?>>1DAM</option>
+            <option value="2dam" <?= estaSeleccionado('2dam') ?>>2DAM</option>
+            <option value="1asir" <?= estaSeleccionado('1asir') ?>>1ASIR</option>
+            <option value="2asir" <?= estaSeleccionado('2asir') ?>>2ASIR</option>
+        </select>
+        <br>
+        <label for="fecha">Fecha</label>
+        <input type="date" name="fecha" id="fecha" value="<?= filter_input(INPUT_POST, 'fecha') ?>">
+        <br>
+        <label for="observaciones">Observaciones: </label>
+        <br>
+        <textarea name="observaciones" id="Observaciones" cols="70" rows="10"></textarea>
+        <br>
+        <button type="submit">Enviar</button>
+    </form>
+<?php
+}
 
-    if (isset($_POST["observaciones"])) {
-        $_POST["observaciones"] = str_replace("\n", "<br>", $_POST["observaciones"]);
+function estaMarcado(string $value)
+{
+    if (isset($_POST['sexo']) && $_POST['sexo'] == $value) {
+        return "checked";
     }
-    if (isset($_POST["observaciones"])) {
-        $_POST["observaciones"] = nl2br($_POST["observaciones"]);
+    return "";
+}
+
+function estaSeleccionado(string $value)
+{
+    if (isset($_POST['curso']) && $_POST['curso'] == $value) {
+        return "selected";
     }
-    ?>
+    return "";
+}
+
+if (isset($_POST["nombre"]) && isset($_POST["apellido"]) && isset($_POST["sexo"]) && isset($_POST["curso"]) && isset($_POST["fecha"]) && isset($_POST["observaciones"])) {
+    echo "Nombre : " . $_POST["nombre"] . "<br>Apellido: " . $_POST["apellido"] . "<br>Sexo: " . $_POST["sexo"] . "<br>Curso: " . $_POST["curso"] . "<br>Fecha: " . $_POST["fecha"] . "<br>Observaciones: " .   nl2br($_POST["observaciones"]);
+
+    // se supone que con str se sustituira el salto de linea por br
+    // str_replace("\n", "<br>", $_POST["observaciones"], $i);
+}
+
+// con nl2br al printeearlo directamente respeta los salto de linea
+?>
 </body>
 
 </html>
