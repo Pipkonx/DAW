@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <a href="#">Enlace</a>
+    <style>
+        :root {
+            text-align: center;
+            margin-top: 45vh;
+            font-family: arial;
+        }
+
+        a {
+            background-color: white;
+            color: black;
+            text-decoration: none;
+            padding: 10px;
+            transition: all 0.3s ease-in-out;
+            border-radius: 5px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+            
+            &:hover {
+                background-color: black;
+                color: white;
+                text-decoration: underline;
+                transition: all 0.3s ease-in-out;
+            }
+            
+            &:active {
+                background-color: red;
+                transition: all 0.3s ease-in-out;
+            }
+            
+            &:visited {
+                background-color: lightcoral;
+            }
+            
+            &:focus {
+                background-color: lightblue;
+                text-decoration: underline;
+            }
+        }
+    </style>
+</body>
+
+</html>

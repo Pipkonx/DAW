@@ -22,7 +22,6 @@ if ($_POST) {
 function formulario()
 {
 ?>
-    <!-- Tu formulario HTML -->
     <form method="post">
         <center>
             <h3>ENCUESTA SIGMA 3</h3>
@@ -93,14 +92,10 @@ function estaSeleccionado(string $value)
     return "";
 }
 
-if (isset($_POST["nombre"]) && isset($_POST["apellido"]) && isset($_POST["sexo"]) && isset($_POST["curso"]) && isset($_POST["fecha"]) && isset($_POST["observaciones"])) {
-    echo "Nombre : " . $_POST["nombre"] . "<br>Apellido: " . $_POST["apellido"] . "<br>Sexo: " . $_POST["sexo"] . "<br>Curso: " . $_POST["curso"] . "<br>Fecha: " . $_POST["fecha"] . "<br>Observaciones: " .   nl2br($_POST["observaciones"]);
-
-    // se supone que con str se sustituira el salto de linea por br
-    // str_replace("\n", "<br>", $_POST["observaciones"], $i);
+// esto es para que se muestre el valor de las aficiones, estudio y vacaciones
+if (isset($_POST["sexo"]) && isset($_POST["curso"]) && isset($_POST["aficiones"]) && isset($_POST["estudio"]) && isset($_POST["vacaciones"])) {
+    echo "<br>Sexo: " . $_POST["sexo"] . "<br>Curso: " . $_POST["curso"] . "<br>Aficiones: ". $_POST["aficiones"]. "<br>Estudios: " . $_POST["estudio"] . "<br>Vacaciones: " . $_POST["vacaciones"];
 }
-
-// con nl2br al printeearlo directamente respeta los salto de linea
 ?>
 </body>
 
