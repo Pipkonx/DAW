@@ -60,4 +60,33 @@ Options -Indexes
 
 Recargamos apache tras los cambios con `sudo systemctl reload apache2`
 
+
+
+
+# Trabajando con scripts  (Debes publicarlos en Github)
+## Crea un script para cada uno de los siguientes problemas
+
+### Crea un script que añada un puerto de escucha en el fichero de configuración de Apache. El puerto se recibirá como parámetro en la llamada y se comprobará que no esté ya presente en el fichero de configuración.
+
+### Crea un script que añada un nombre de dominio y una ip al fichero hosts. Debemos comprobar que no existe dicho dominio en el fichero hosts
+
+### Crea un script que nos permita crear una página web con un título, una cabecera y un mensaje
+
+
+
+
+Los scripts deben comprobar previamente el número de parámetros y en el caso de no pasar los parámetros necesarios nos mostrará un error indicando la sintaxis correcta.
+
+Se aconseja leer previamente alguno de los siguientes enlaces sobre shell script
+https://github.com/denysdovhan/bash-handbook
+https://www.shellscript.sh/
+http://www.freeos.com/guides/lsst/index.html
+Dos comandos que te pueden ser de utilidad son:
+grep
+https://geekland.eu/uso-del-comando-grep-en-linux-y-unix-con-ejemplos/
+sed
+https://geekland.eu/uso-del-comando-sed-en-linux-y-unix-con-ejemplos/
+ -->
+
+
 - [Volver al índice principal](../README.md)
