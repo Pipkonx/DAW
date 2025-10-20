@@ -27,37 +27,37 @@
 
 <script>
     function cambiarImagen() {
-        // let div = document.createElement("div");
-        // let img = document.createElement("img");
-        // img.src = "https://upload.wikimedia.org/wikipedia/commons/0/06/Nintendo-Famicom-Console-Set-FL.jpg";
-        // div.appendChild(img);
-        // document.querySelector("button").before(div);
-
-        // if (div.contains(img)) {
-        //     let img2 = document.querySelector("img");
-        //     img2.src = "https://upload.wikimedia.org/wikipedia/commons/7/76/PlayStation_2_logo.svg"
-        //     div.appendChild(img2);
-        // }
-
-        // if (div.contains(img2)) {
-        //     img.src = "https://upload.wikimedia.org/wikipedia/commons/0/06/Nintendo-Famicom-Console-Set-FL.jpg";
-        //     div.appendChild(img);
-        //     document.querySelector("button").before(div);
-        // }
-
-
         // Ejercicio7 -- https://burjcdigital.urjc.es/server/api/core/bitstreams/32e93ed0-3a2c-4c97-bcff-5c24530c6a69/content
-
-        let div = document.getElementsById("imagen");
+        let div = document.createElement("div");
         let img = document.createElement("img");
         img.src = "https://upload.wikimedia.org/wikipedia/commons/0/06/Nintendo-Famicom-Console-Set-FL.jpg";
-
-
-        let img2 = document.querySelector("img");
-        img2.src = "https://upload.wikimedia.org/wikipedia/commons/7/76/PlayStation_2_logo.svg"
-
         div.appendChild(img);
         document.querySelector("button").before(div);
+
+        if (div.contains(img)) {
+            let img2 = document.querySelector("img");
+            img2.src = "https://upload.wikimedia.org/wikipedia/commons/7/76/PlayStation_2_logo.svg"
+            div.appendChild(img2);
+        }
+
+        if (div.contains(img2)) {
+            img.src = "https://upload.wikimedia.org/wikipedia/commons/0/06/Nintendo-Famicom-Console-Set-FL.jpg";
+            div.appendChild(img);
+            document.querySelector("button").before(div);
+        }
+
+
+
+        // let div = document.getElementsById("imagen");
+        // let img = document.createElement("img");
+        // img.src = "https://upload.wikimedia.org/wikipedia/commons/0/06/Nintendo-Famicom-Console-Set-FL.jpg";
+
+
+        // let img2 = document.querySelector("img");
+        // img2.src = "https://upload.wikimedia.org/wikipedia/commons/7/76/PlayStation_2_logo.svg"
+
+        // div.appendChild(img);
+        // document.querySelector("button").before(div);
     }
 </script>
 
