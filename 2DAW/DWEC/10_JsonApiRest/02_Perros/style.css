@@ -1,0 +1,37 @@
+:root {
+    font-family: arial;
+}
+
+button {
+    padding: 10px 25px;
+    margin: 10px;
+    background-color: transparent;
+    border: 1px solid black;
+    font-weight: bold;
+    transition: 0.3s ease;
+
+    &:hover {
+        background-color: black;
+        color: white;
+    }
+}
+
+input {
+    padding: 10px 25px;
+    margin: 10px;
+    border-radius: 5px;
+    border: 1px solid black;
+}
+
+img {
+    width: 100px;
+    height: auto;
+    margin: 10px;
+    border-radius: 5px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+    transition: 0.3s ease;
+
+    &:hover {
+        transform: scale(1.1) rotate(10deg);
+    }
+}

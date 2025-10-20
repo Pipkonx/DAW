@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body onload="cargarProvincia()">
+    <section>
+        <label for="buscar">Provincia: </label>
+        <select name="provincia" id="provincia" onchange="cargarPoblacion()">
+            <option value="?" onchange="cargarPoblacion()">Seleccione una provincia</option>
+        </select><br>
+        <label for="poblacion">Poblacion: </label>
+        <select name="poblacion" id="poblacion">
+        </select>
+    </section>
+    <script src="main.js"></script>
+</body>
+</html>

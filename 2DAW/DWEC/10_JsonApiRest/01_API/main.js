@@ -82,12 +82,22 @@ function mostrarArticulosHasta() {
         .catch((error) => console.log(error));
 }
 
+function limpiarDesdeFilaUno() {
+    const table = document.getElementById("tbody");
+    for (let i = 1; i < table.length; i++) {
+        table.innerHTML = "";
+        i--;
+    }
+}
+
 function cargarArticulos() {
     const autor = parseInt(document.querySelector("#autor").value);
     fetch('https://jsonplaceholder.typicode.com/posts')
         .then((response) => response.json())
         .then((data) => {
             const table = document.querySelector("tbody");
+            table.innerHTML = "";
+            document.querySelector("thead").innerHTML = "<tr><th>ID</th><th>Titulo</th><th>Cuerpo</th></tr>";
             for (let i = 0; i < data.length; i++) {
                 if (autor == parseInt(data[i].userId)) {
                     const fila = document.createElement("tr");
@@ -102,3 +112,4 @@ function cargarArticulos() {
         })
         .catch((error) => console.error(error));
 }
+

@@ -18,7 +18,8 @@ tr:nth-child(even) {
     background-color: #cccccc;
 }
 
-tr:nth-child(1) {
+
+thead {
     background-color: #000000;
     color: #ffffff;
     text-align: center;
