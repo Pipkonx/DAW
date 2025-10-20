@@ -5,10 +5,38 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 
-<body>
-    <button onclick="cargaArticulos()">cargar</button>
+<body onload="cargarAutor()">
+    <section>
+        <label for="buscar">Buscar : </label>
+        <input type="text" id="texto">
+        <button onclick="muestra()">Mostrar ID</button><br>
+
+        <label for="buscar">Mostrar tabla hasta : </label>
+        <input type="hasta" id="hasta">
+        <button onclick="mostrarArticulosHasta()">Mostrar</button><br>
+
+        <button onclick="cargaArticulos()">ConsoleLog</button><br>
+        <button onclick="mostrarArticulos()">MostrarTabla</button><br>
+
+
+        <label for="autor">Autor : </label>
+        <select name="autor" id="autor" onchange="cargarArticulos()">
+            <option value="">Selecciona un autor</option>
+        </select>
+
+    </section>
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Titulo</th>
+            <th>Cuerpo</th>
+        </tr>
+    </table>
+
+
     <script src="main.js"></script>
 </body>
 

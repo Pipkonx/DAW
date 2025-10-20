@@ -1,0 +1,54 @@
+:root {
+    font-family: arial;
+}
+
+table {
+    border-collapse: collapse;
+    border: 1px solid black;
+    margin: 10px auto;
+}
+
+tr,
+th,
+td {
+    border: 1px solid black;
+}
+
+tr:nth-child(even) {
+    background-color: #cccccc;
+}
+
+tr:nth-child(1) {
+    background-color: #000000;
+    color: #ffffff;
+    text-align: center;
+}
+
+td:first-child {
+    text-align: center;
+    background-color: black;
+    font-weight: bold;
+    color: white;
+}
+
+
+button {
+    padding: 10px 25px;
+    margin: 10px;
+    background-color: transparent;
+    border: 1px solid black;
+    font-weight: bold;
+    transition: 0.3s ease;
+
+    &:hover {
+        background-color: black;
+        color: white;
+    }
+}
+
+input {
+    padding: 10px 25px;
+    margin: 10px;
+    border-radius: 5px;
+    border: 1px solid black;
+}
