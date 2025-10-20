@@ -16,7 +16,6 @@ function cargarProvincia() {
         .catch((error) => console.error(error));
 }
 
-
 function cargarPoblacion() {
     fetch('https://raw.githubusercontent.com/IagoLast/pselect/master/data/municipios.json')
         .then((response) => response.json())
@@ -26,6 +25,7 @@ function cargarPoblacion() {
             select.innerHTML = "";
             for (let i = 0; i < data.length; i++) {
                 if (data[i].id.slice(0, 2) == provincia) {
+                    console.log(data[i].id, data[i].nm);
                     const option = document.createElement("option");
                     option.value = data[i].id;
                     option.textContent = data[i].nm;
