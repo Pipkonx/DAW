@@ -25,8 +25,7 @@ function cargarPoblacion() {
             const provincia = document.querySelector("#provincia").value;
             select.innerHTML = "";
             for (let i = 0; i < data.length; i++) {
-                if (data[i].id.startsWith(provincia)) {
-                    // console.log(data[i].id);
+                if (data[i].id.slice(0, 2) == provincia) {
                     const option = document.createElement("option");
                     option.value = data[i].id;
                     option.textContent = data[i].nm;
