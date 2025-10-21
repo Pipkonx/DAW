@@ -3,51 +3,95 @@
 1.  Apache utilizará el puerto 81 además del 80
 
     Para esto primero primero entramos al archvio de configuracion de los puertos
-    ![paso1](./images/01.png)
+    <p align="center">
+      <img src="./images/01.png" alt="paso1">
+    </p>
 
     Ahora agregamos para que esecuche por el puerto 81 `control + o` y `control + x` para guardar y salir
-    ![paso2](./images/02.png)
+    <p align="center">
+      <img src="./images/02.png" alt="paso2">
+    </p>
 
     Ahora simplemente reiniciamos el servicio con `sudo systemctl restart apache2` y ya estaría escuchando por ese puerto
-    ![paso3](./images/03.png)
+    <p align="center">
+      <img src="./images/03.png" alt="paso3">
+    </p>
 
-2.  Añadir el dominio “marisma.intranet” en el fichero “hosts”
+2.  Añadir el dominio "marisma.intranet" en el fichero "hosts"
 
     Ejecuta el comando para editar: Escribe `sudo nano /etc/hosts` y presiona Enter.
-    ![paso4](./images/04.png)
+    <p align="center">
+      <img src="./images/04.png" alt="paso4">
+    </p>
 
     Añade la entrada: En una nueva línea, escribe la dirección IP del servidor, un espacio, y luego el dominio: 192.168.1.100 marisma.intranet
-    ![paso5](./images/05.png)
+    <p align="center">
+      <img src="./images/05.png" alt="paso5">
+    </p>
 
-3.  Cambia la directiva “ServerTokens” para mostrar el nombre del producto.
-    ![paso6](./images/06.png)
-    ![paso7](./images/07.png)
+3.  Cambia la directiva "ServerTokens" para mostrar el nombre del producto.
+    <p align="center">
+      <img src="./images/06.png" alt="paso6">
+    </p>
+    <p align="center">
+      <img src="./images/07.png" alt="paso7">
+    </p>
 
-4.  Comprueba si se visualiza el pie de página en las páginas generadas por Apache (por ejemplo, en las páginas de error). Cambia el valor de la directiva “ServerSignature” y comprueba que funciona correctamente.
-    ![paso8](./images/08.png)
-    ![paso9](./images/09.png)
-    ![paso10](./images/10.png)
+4.  Comprueba si se visualiza el pie de página en las páginas generadas por Apache (por ejemplo, en las páginas de error). Cambia el valor de la directiva "ServerSignature" y comprueba que funciona correctamente.
+    <p align="center">
+      <img src="./images/08.png" alt="paso8">
+    </p>
+    <p align="center">
+      <img src="./images/09.png" alt="paso9">
+    </p>
+    <p align="center">
+      <img src="./images/10.png" alt="paso10">
+    </p>
 
-5.  Crea un directorio “prueba” y otro directorio “prueba2”. Incluye un par de páginas en cada una de ellas.
-    ![paso11](./images/11.png)
-    ![paso12](./images/12.png)
-    ![paso13](./images/13.png)
-6.  Redirecciona el contenido de la carpeta “prueba” hacia “prueba2”
-    ![paso14](./images/14.png)
-    ![paso15](./images/15.png)
-    ![paso16](./images/16.png)
+5.  Crea un directorio "prueba" y otro directorio "prueba2". Incluye un par de páginas en cada una de ellas.
+    <p align="center">
+      <img src="./images/11.png" alt="paso11">
+    </p>
+    <p align="center">
+      <img src="./images/12.png" alt="paso12">
+    </p>
+    <p align="center">
+      <img src="./images/13.png" alt="paso13">
+    </p>
+6.  Redirecciona el contenido de la carpeta "prueba" hacia "prueba2"
+    <p align="center">
+      <img src="./images/14.png" alt="paso14">
+    </p>
+    <p align="center">
+      <img src="./images/15.png" alt="paso15">
+    </p>
+    <p align="center">
+      <img src="./images/16.png" alt="paso16">
+    </p>
 
 7.  Es posible redireccionar tan solo una página en lugar de toda la carpeta. Pruébalo.
-    ![paso17](./images/17.png)
+    <p align="center">
+      <img src="./images/17.png" alt="paso17">
+    </p>
 
 8.  Usa la directiva userdir
-    ![paso18](./images/18.png)
+    <p align="center">
+      <img src="./images/18.png" alt="paso18">
+    </p>
 
 9.  Usa la directiva alias para redireccionar a una carpeta dentro del directorio de usuario.
-    ![paso19](./images/19.png)
-    ![paso20](./images/20.png)
-    ![paso21](./images/21.png)
-    ![paso22](./images/22.png)
+    <p align="center">
+      <img src="./images/19.png" alt="paso19">
+    </p>
+    <p align="center">
+      <img src="./images/20.png" alt="paso20">
+    </p>
+    <p align="center">
+      <img src="./images/21.png" alt="paso21">
+    </p>
+    <p align="center">
+      <img src="./images/22.png" alt="paso22">
+    </p>
 
 10. ¿Para qué sirve la directiva Options y dónde aparece. Comprueba si apache indexa los directorios. Si es así, ¿cómo lo desactivamos?
 
@@ -60,152 +104,102 @@ Options -Indexes
 
 Recargamos apache tras los cambios con `sudo systemctl reload apache2`
 
+# Trabajando con scripts (Debes publicarlos en Github)
 
+### 1.Crea un script que añada un nombre de dominio y una ip al fichero hosts. Debemos comprobar que no existe dicho dominio en el fichero hosts
 
+Primero creamos el reepositorio n la ruta d scripts apach, entramos y vamos a editar el fichero
 
-# Trabajando con scripts  (Debes publicarlos en Github)
+<p align="center">
+  <img src="./images/23.png" alt="paso23">
+</p>
 
-### Crea un script que añada un nombre de dominio y una ip al fichero hosts. Debemos comprobar que no existe dicho dominio en el fichero hosts
+Agregamos el codigo para que podamos agregar el puerto al fichero de configuracion de apache, salimos y guardamos con `control + o` y `control + x`
 
-### Crea un script que nos permita crear una página web con un título, una cabecera y un mensaje
+<p align="center">
+  <img src="./images/24.png" alt="paso24">
+</p>
 
+Ahora probamos el script con `./agregar_puerto_apache.sh 81` y comprobamos que se ha agregado el puerto 81 al fichero de configuracion de apache
 
-# 🧠 Guía paso a paso — Creación y prueba de scripts en Linux
+<p align="center">
+  <img src="./images/25.png" alt="paso25">
+</p>
 
-Este documento describe de forma visual el proceso para crear y probar tres scripts básicos en Linux:
+Ahora creamos el fichero añadir_hosts.sh y agregamos el codigo para que podamos agregar el dominio y la ip al fichero hosts
 
-1. **agregar_puerto_apache.sh** — Añade un puerto al fichero de configuración de Apache.  
-2. **añadir_hosts.sh** — Añade una IP y un dominio al archivo `/etc/hosts`.  
-3. **crear_web.sh** — Crea una página web simple con un título, cabecera y mensaje.  
+<p align="center">
+  <img src="./images/26.png" alt="paso26">
+</p>
 
-Cada paso incluye un espacio donde debes colocar una **captura de pantalla**.
+Agregamos ahora el codigo para ver si el dominio existe en el fichero
 
----
+<p align="center">
+  <img src="./images/27.png" alt="paso27">
+</p>
 
-## 🥇 1) Ir a tu home y crear la carpeta del proyecto
+guardamos salimos mostramos de que eel fichero se crio y probamos
 
-Abre una terminal, navega hasta tu carpeta personal y crea un nuevo directorio para los scripts.  
-Comprueba que te encuentras dentro del directorio recién creado.
+<p align="center">
+  <img src="./images/28.png" alt="paso28">
+</p>
 
-📸 **Captura de pantalla:**  
-> Muestra la terminal en el directorio `/home/tuusuario/mis-scripts-apache`.
+### 2. Crea un script que nos permita crear una página web con un título, una cabecera y un mensaje
 
-![imagen](imagenes/paso1.png)
+Ahora creamos el fichero de crear_web.sh y agregamos el codigo para que podamos crear una pagina web con un titulo, una cabecera y un mensaje
 
----
+<p align="center">
+  <img src="./images/29.png" alt="paso29">
+</p>
 
-## 🥈 2) Crear el script `puerto_apache.sh`
+Ahora mostramos de que hemos creado los 3 ficheros y le damos peermisos con chmod de ejecución y mostramos de nuevo los permisos
 
-Crea un nuevo archivo llamado `puerto_apache.sh` dentro de la carpeta del proyecto.  
-Este script permitirá agregar un puerto de escucha al fichero de configuración de Apache.
+<p align="center">
+  <img src="./images/32.png" alt="paso32">
+</p>
 
-📸 **Captura de pantalla:**  
-> Muestra el archivo `puerto_apache.sh` creado y visible en la terminal o editor.
+Ahora vamos a probar a crear la web solamentee con el script para eso usamos `./crear_web.sh marisma.intranet "Hola mundo" "Pagina creada con script"` , y mostramos l contnido
 
-![imagen](imagenes/paso2.png)
+<p align="center">
+  <img src="./images/33.png" alt="paso33">
+</p>
 
----
+1 Mostramos que ahora todo y vamos a realizar una prueba local
 
-## 🥉 3) Crear el script `añadir_hosts.sh`
+<p align="center">
+  <img src="./images/34.png" alt="paso34">
+</p>
 
-Crea el script `añadir_hosts.sh`, que servirá para agregar un dominio y su IP al archivo `/etc/hosts`.  
-Este script comprueba primero si el dominio ya existe antes de añadirlo.
+### 3. Crea un script que añada un nombre de dominio y una ip al fichero hosts. Debemos comprobar que no existe dicho dominio en el fichero hosts
 
-📸 **Captura de pantalla:**  
-> Muestra el archivo `añadir_hosts.sh` creado correctamente.
+Entramos al etc/hosts para agregar la ip y el dominio prueba.local
 
-![imagen](imagenes/paso3.png)
+<p align="center">
+  <img src="./images/35.png" alt="paso35">
+</p>
 
----
+Usamos sed para agregar la ip y el dominio prueba.local al fichero hosts
 
-## 🏅 4) Crear el script `crear_web.sh`
+<p align="center">
+  <img src="./images/36.png" alt="paso36">
+</p>
 
-Crea el script `crear_web.sh`, que generará una página web sencilla con un título, una cabecera y un mensaje.  
-La página se guardará en una carpeta que se crea automáticamente.
+Ahora hacemos un sudo ./agregar_puerto_apache.sh 8080 para agregar el puerto 8080 al fichero de configuracion de apache
 
-📸 **Captura de pantalla:**  
-> Muestra el archivo `crear_web.sh` creado y visible en tu terminal o editor.
+<p align="center">
+  <img src="./images/37.png" alt="paso37">
+</p>
 
-![imagen](imagenes/paso4.png)
+Ahora vemos la última linea del fichero hosts para ver si se ha agregado correctamente
 
----
+<p align="center">
+  <img src="./images/38.png" alt="paso38">
+</p>
 
-## ⚙️ 5) Dar permisos de ejecución a los scripts
+Y por ultimo reiniciamos apache con `sudo systemctl restart apache2`
 
-Concede permisos de ejecución a los tres scripts para poder ejecutarlos desde la terminal.  
-Verifica que tienen permisos (`x`) activados.
-
-📸 **Captura de pantalla:**  
-> Muestra los tres scripts listos para ejecutarse, con permisos de ejecución visibles.
-
-![imagen](imagenes/paso5.png)
-
----
-
-## 🌐 6) Probar el script `crear_web.sh`
-
-Ejecuta el script para crear una página de prueba.  
-Comprueba que se ha creado la carpeta con el archivo `index.html` dentro y que el contenido del HTML se generó correctamente.
-
-📸 **Captura de pantalla:**  
-> Muestra el archivo `index.html` generado y el contenido HTML visible.
-
-![imagen](imagenes/paso6.png)
-
----
-
-## 🧩 7) Probar el script `añadir_hosts.sh`
-
-Ejecuta el script para agregar una nueva línea al archivo `/etc/hosts`.  
-Verifica que la IP y el dominio se han añadido correctamente.  
-Si el dominio ya existía, el script mostrará un mensaje avisando.
-
-📸 **Captura de pantalla:**  
-> Muestra la nueva entrada añadida al archivo `/etc/hosts`.
-
-![imagen](imagenes/paso7.png)
-
----
-
-## 🔊 8) Probar el script `puerto_apache.sh`
-
-Ejecuta el script para agregar un nuevo puerto de escucha al fichero de configuración de Apache.  
-Comprueba que la línea `Listen <PUERTO>` se añadió correctamente.  
-Si el puerto ya estaba presente, el script mostrará un aviso.
-
-📸 **Captura de pantalla:**  
-> Muestra el contenido del archivo `ports.conf` con el nuevo puerto añadido.
-
-![imagen](imagenes/paso8.png)
-
----
-
-✅ **Hasta aquí, has completado los pasos para crear y probar tus tres scripts en Linux.**  
-Ahora puedes continuar con los pasos para crear tu repositorio y subirlo a GitHub si lo deseas.
-
-
-
-
-
-
-
-
-
-
-
-
-Los scripts deben comprobar previamente el número de parámetros y en el caso de no pasar los parámetros necesarios nos mostrará un error indicando la sintaxis correcta.
-
-Se aconseja leer previamente alguno de los siguientes enlaces sobre shell script
-https://github.com/denysdovhan/bash-handbook
-https://www.shellscript.sh/
-http://www.freeos.com/guides/lsst/index.html
-Dos comandos que te pueden ser de utilidad son:
-grep
-https://geekland.eu/uso-del-comando-grep-en-linux-y-unix-con-ejemplos/
-sed
-https://geekland.eu/uso-del-comando-sed-en-linux-y-unix-con-ejemplos/
- -->
-
+<p align="center">
+  <img src="./images/39.png" alt="paso39">
+</p>
 
 - [Volver al índice principal](../README.md)
