@@ -64,13 +64,132 @@ Recargamos apache tras los cambios con `sudo systemctl reload apache2`
 
 
 # Trabajando con scripts  (Debes publicarlos en Github)
-## Crea un script para cada uno de los siguientes problemas
-
-### Crea un script que añada un puerto de escucha en el fichero de configuración de Apache. El puerto se recibirá como parámetro en la llamada y se comprobará que no esté ya presente en el fichero de configuración.
 
 ### Crea un script que añada un nombre de dominio y una ip al fichero hosts. Debemos comprobar que no existe dicho dominio en el fichero hosts
 
 ### Crea un script que nos permita crear una página web con un título, una cabecera y un mensaje
+
+
+# 🧠 Guía paso a paso — Creación y prueba de scripts en Linux
+
+Este documento describe de forma visual el proceso para crear y probar tres scripts básicos en Linux:
+
+1. **agregar_puerto_apache.sh** — Añade un puerto al fichero de configuración de Apache.  
+2. **añadir_hosts.sh** — Añade una IP y un dominio al archivo `/etc/hosts`.  
+3. **crear_web.sh** — Crea una página web simple con un título, cabecera y mensaje.  
+
+Cada paso incluye un espacio donde debes colocar una **captura de pantalla**.
+
+---
+
+## 🥇 1) Ir a tu home y crear la carpeta del proyecto
+
+Abre una terminal, navega hasta tu carpeta personal y crea un nuevo directorio para los scripts.  
+Comprueba que te encuentras dentro del directorio recién creado.
+
+📸 **Captura de pantalla:**  
+> Muestra la terminal en el directorio `/home/tuusuario/mis-scripts-apache`.
+
+![imagen](imagenes/paso1.png)
+
+---
+
+## 🥈 2) Crear el script `puerto_apache.sh`
+
+Crea un nuevo archivo llamado `puerto_apache.sh` dentro de la carpeta del proyecto.  
+Este script permitirá agregar un puerto de escucha al fichero de configuración de Apache.
+
+📸 **Captura de pantalla:**  
+> Muestra el archivo `puerto_apache.sh` creado y visible en la terminal o editor.
+
+![imagen](imagenes/paso2.png)
+
+---
+
+## 🥉 3) Crear el script `añadir_hosts.sh`
+
+Crea el script `añadir_hosts.sh`, que servirá para agregar un dominio y su IP al archivo `/etc/hosts`.  
+Este script comprueba primero si el dominio ya existe antes de añadirlo.
+
+📸 **Captura de pantalla:**  
+> Muestra el archivo `añadir_hosts.sh` creado correctamente.
+
+![imagen](imagenes/paso3.png)
+
+---
+
+## 🏅 4) Crear el script `crear_web.sh`
+
+Crea el script `crear_web.sh`, que generará una página web sencilla con un título, una cabecera y un mensaje.  
+La página se guardará en una carpeta que se crea automáticamente.
+
+📸 **Captura de pantalla:**  
+> Muestra el archivo `crear_web.sh` creado y visible en tu terminal o editor.
+
+![imagen](imagenes/paso4.png)
+
+---
+
+## ⚙️ 5) Dar permisos de ejecución a los scripts
+
+Concede permisos de ejecución a los tres scripts para poder ejecutarlos desde la terminal.  
+Verifica que tienen permisos (`x`) activados.
+
+📸 **Captura de pantalla:**  
+> Muestra los tres scripts listos para ejecutarse, con permisos de ejecución visibles.
+
+![imagen](imagenes/paso5.png)
+
+---
+
+## 🌐 6) Probar el script `crear_web.sh`
+
+Ejecuta el script para crear una página de prueba.  
+Comprueba que se ha creado la carpeta con el archivo `index.html` dentro y que el contenido del HTML se generó correctamente.
+
+📸 **Captura de pantalla:**  
+> Muestra el archivo `index.html` generado y el contenido HTML visible.
+
+![imagen](imagenes/paso6.png)
+
+---
+
+## 🧩 7) Probar el script `añadir_hosts.sh`
+
+Ejecuta el script para agregar una nueva línea al archivo `/etc/hosts`.  
+Verifica que la IP y el dominio se han añadido correctamente.  
+Si el dominio ya existía, el script mostrará un mensaje avisando.
+
+📸 **Captura de pantalla:**  
+> Muestra la nueva entrada añadida al archivo `/etc/hosts`.
+
+![imagen](imagenes/paso7.png)
+
+---
+
+## 🔊 8) Probar el script `puerto_apache.sh`
+
+Ejecuta el script para agregar un nuevo puerto de escucha al fichero de configuración de Apache.  
+Comprueba que la línea `Listen <PUERTO>` se añadió correctamente.  
+Si el puerto ya estaba presente, el script mostrará un aviso.
+
+📸 **Captura de pantalla:**  
+> Muestra el contenido del archivo `ports.conf` con el nuevo puerto añadido.
+
+![imagen](imagenes/paso8.png)
+
+---
+
+✅ **Hasta aquí, has completado los pasos para crear y probar tus tres scripts en Linux.**  
+Ahora puedes continuar con los pasos para crear tu repositorio y subirlo a GitHub si lo deseas.
+
+
+
+
+
+
+
+
 
 
 
