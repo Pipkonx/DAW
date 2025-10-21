@@ -32,24 +32,7 @@ class Hora
     private int $min;
     private int $seg;
 
-    // Constructor predeterminado (00:00:00) o con parámetros
-    // __construct es para inicializar los atributos de la clase
-    public function __construct(int $h = 0, int $m = 0, int $s = 0)
-    {
-        //recordar que hay que poner siempre this para referirnos a los atributos de la clase
-        $this->Asigna($h, $m, $s);
-    }
-
-    // Asigna una hora al objeto
-    public function Asigna(int $h, int $m, int $s): void
-    {
-        $this->hora = $h;
-        $this->min  = $m;
-        $this->seg  = $s;
-        $this->EsValida();
-    }
-
-    // Ajusta la hora si no es válida
+       // Ajusta la hora si no es válida
     private function EsValida(): void
     {
         if ($this->seg >= 60) {
@@ -76,6 +59,26 @@ class Hora
             $this->hora = 24 - abs($this->hora) % 24;
         }
     }
+
+
+    // Asigna una hora al objeto
+    public function Asigna(int $h, int $m, int $s): void
+    {
+        $this->hora = $h;
+        $this->min  = $m;
+        $this->seg  = $s;
+        $this->EsValida();
+    }
+
+        // Constructor predeterminado (00:00:00) o con parámetros
+    // __construct es para inicializar los atributos de la clase
+    public function __construct(int $h = 0, int $m = 0, int $s = 0)
+    {
+        //recordar que hay que poner siempre this para referirnos a los atributos de la clase
+        $this->Asigna($h, $m, $s);
+    }
+
+ 
 
     // Devuelve los segundos desde medianoche
     public function A_Segundos(): int
@@ -169,11 +172,17 @@ class Hora
     }
 
 
-    //Funciones de la siguiente actividada
+    //Funciones de la siguiente actividad
     // Añade minutos a la hora actual del objeto (no estático)
-    public function incrementarMinutos(int $numero): int
+    public function incrementarMinutos(int $numero): void
     {
-        return $this->A_Segundos() + $numero * 60;
+        $this->De_Segundos($this->A_Segundos() + $numero * 60);
+    }
+    
+    // Añade horas a la hora actual del objeto (no estático)
+    public function incrementarHoras(int $numero): void
+    {
+        $this->De_Segundos($this->A_Segundos() + $numero * 3600);
     }
 
     // Devuelve los minutos de la hora
