@@ -1,4 +1,6 @@
 <?php
+// Se desea realizar un visor de fotos “cutre” que nos permita ver en el navegador fotos/imágenes que subiremos con un formulario. En la pantalla 1 pediremos el fichero que deseamos mostrar, y en la pantalla 2 mostraremos el fichero que hemos seleccionado
+
 // Seleccionamos la foto
 if (!isset($_POST['img'])):
 ?>
