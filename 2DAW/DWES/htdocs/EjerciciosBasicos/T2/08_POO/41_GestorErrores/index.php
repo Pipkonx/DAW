@@ -1,30 +1,34 @@
 <?php
 /**
-* Anota un error para un campo en nuestro gestor de errores
-* @param type $campo
-* @param type $descripcion
-*/
-AnotaError($campo, $descripcion);
-/**
-* Indica si hay errores
-* @return boolean
-*/
-HayErrores() ;
-/**
-* Indica si hay error en un campo
-* @return boolean
-*/
-HayError($campo);
-/**
-* Devuelve la descripción de error para un campo o una cadaena vacia si no hay
-* @param type $campo
-* @return string
-*/
-Error($campo);
-/**
-* Devuelve la descripción del error o cadena vacia si no hay
-* @param type $campo
-* @return string
-*/
+ * Anota un error para un campo en nuestro gestor de errores
+ * @param string $campo
+ * @param string $descripcion
+ */
+function AnotaError($campo, $descripcion) {}
 
-public function ErrorFormateado($campo) {}
+/**
+ * Indica si hay errores
+ * @return boolean
+ */
+function HayErrores() {}
+
+/**
+ * Indica si hay error en un campo
+ * @param string $campo
+ * @return boolean
+ */
+function HayError($campo) {}
+
+/**
+ * Devuelve la descripción de error para un campo o una cadena vacía si no hay
+ * @param string $campo
+ * @return string
+ */
+function Error($campo) {}
+
+/**
+ * Devuelve la descripción del error o cadena vacía si no hay
+ * @param string $campo
+ * @return string
+ */
+function ErrorFormateado($campo) {}
