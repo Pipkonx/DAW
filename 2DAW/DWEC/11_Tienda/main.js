@@ -65,35 +65,40 @@ function cargarCat() {
         .catch((error) => console.error(error));
 }
 
-function filtrarCat() {
+function aplicarFiltrosYOrden() {
     const categoria = document.querySelector("#categoria").value;
-    if (!categoria) {
-        cargarProductos();
-        return;
-    }
+    const orden = document.querySelector("#ordenar").value; // 'asc' | 'desc' | ''
 
-    fetch('https://fakestoreapi.com/products/category/' + categoria)
-        .then((response) => response.json())
+    const fuente = categoria
+        ? fetch('https://fakestoreapi.com/products/category/' + categoria).then(r => r.json())
+        : fetch('https://fakestoreapi.com/products').then(r => r.json());
+
+    fuente
         .then((data) => {
-            renderizarProductos(data, `Productos de la categoría ${categoria}`);
+            let titulo = '';
+            if (orden) {
+                data.sort((a, b) => orden === 'asc' ? a.price - b.price : b.price - a.price);
+            }
+
+            if (categoria && orden) {
+                titulo = `Productos de la categoría ${categoria} ordenados por precio ${orden === 'asc' ? 'ascendente' : 'descendente'}`;
+            } else if (categoria) {
+                titulo = `Productos de la categoría ${categoria}`;
+            } else if (orden) {
+                titulo = `Productos ordenados por precio ${orden === 'asc' ? 'ascendente' : 'descendente'}`;
+            }
+
+            renderizarProductos(data, titulo);
         })
         .catch((error) => console.error(error));
 }
 
-function ordenar() {
-    const ordenar = document.querySelector("#ordenar").value;
-    if (!ordenar) {
-        cargarProductos();
-        return;
-    }
+function filtrarCat() {
+    aplicarFiltrosYOrden();
+}
 
-    fetch("https://fakestoreapi.com/products?sort=" + ordenar)
-        .then((response) => response.json())
-        .then((data) => {
-            const titulo = ordenar === 'asc' ? 'Productos ordenados por ID ascendente' : 'Productos ordenados por ID descendente';
-            renderizarProductos(data, titulo);
-        })
-        .catch((error) => console.error(error));
+function ordenar() {
+    aplicarFiltrosYOrden();
 }
 
 function eliminarProducto(id) {

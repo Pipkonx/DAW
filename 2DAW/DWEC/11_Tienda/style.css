@@ -4,6 +4,16 @@ body {
     margin: 0;
 }
 
+html,
+body {
+    max-width: 100%;
+    /* overflow-x: hidden; */
+}
+
+* {
+    box-sizing: border-box;
+}
+
 :root {
     --color-precio: #ff0000;
     font-family: Arial, Helvetica, sans-serif;
@@ -18,7 +28,7 @@ nav {
     padding: 1rem 2rem;
     position: sticky;
     top: 0;
-    width: 96vw;
+    width: 100%;
     z-index: 1000;
     display: flex;
     align-items: center;
@@ -198,15 +208,13 @@ nav button {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(
-        to top,
-        rgba(255, 255, 255, 1) 0%,
-        rgba(255, 255, 255, 0.85) 8%,
-        rgba(255, 255, 255, 0.5) 18%,
-        rgba(255, 255, 255, 0.2) 28%,
-        rgba(255, 255, 255, 0.0) 40%,
-        rgba(255, 255, 255, 0.0) 100%
-    );
+    background: linear-gradient(to top,
+            rgba(255, 255, 255, 1) 0%,
+            rgba(255, 255, 255, 0.85) 8%,
+            rgba(255, 255, 255, 0.5) 18%,
+            rgba(255, 255, 255, 0.2) 28%,
+            rgba(255, 255, 255, 0.0) 40%,
+            rgba(255, 255, 255, 0.0) 100%);
 
 }
 
