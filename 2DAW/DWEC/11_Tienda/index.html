@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,21 +7,19 @@
     <link rel="stylesheet" href="style.css">
     <link rel="icon" href="favicon.png" type="image/x-icon">
 </head>
-
 <body onload="cargarProductos(), cargarCat()">
     <nav>
         <div class="nav-left">
             <img src="favicon.png" id="icono" alt="icono">
-            <span class="brand">Pipkon shop</span>
+            <h1 class="brand">Pipkon shop</h1>
         </div>
         <div class="nav-center">
-            <label for="categoria">Categoria: </label>
-            <select name="categoria" id="categoria" onchange="filtrarCat()">
+            <label for="categoria">Categoria:</label>
+            <select id="categoria" onchange="filtrarCat()">
                 <option value="">Selecciona la categoria</option>
             </select>
-
-            <label for="ordenar">Ordenar: </label>
-            <select name="ordenar" id="ordenar" onchange="ordenar()">
+            <label for="ordenar">Ordenar:</label>
+            <select id="ordenar" onchange="ordenar()">
                 <option value="">Ordenar</option>
                 <option value="desc">Descendente</option>
                 <option value="asc">Ascendente</option>
@@ -42,12 +39,8 @@
             <h1 id="Arriba" class="hero-title">Tienda de ropa</h1>
         </div>
     </section>
-
     <div id="titulo-categoria"></div>
-
-    <div id="tarjeta">
-    </div>
-
+    <div id="tarjeta"></div>
     <footer class="site-footer">
         <div class="footer-inner">
             <span>&copy; <span id="year"></span> Tienda. Todos los derechos reservados.</span>
@@ -58,5 +51,4 @@
     </footer>
     <script src="main.js"></script>
 </body>
-
 </html>

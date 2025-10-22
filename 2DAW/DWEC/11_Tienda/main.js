@@ -5,7 +5,7 @@ let cart = [];
 function generarTarjetaProducto(producto) {
     const stockActual = productosStock[producto.id] ?? producto.rating.count;
     return `
-    <img src="${producto.image}" />
+    <img src="${producto.image}" /> 
     <h3 class="card-title">${producto.title}</h3>
     <p class="precio">${producto.price}€</p>
     <p class="description">${producto.description}</p>
@@ -185,6 +185,7 @@ function renderCarritoTabla() {
 }
 
 function updateStockDisplay(id) {
+    //es para actualizar el stock disponible de un producto en la tienda
     const stock = productosStock[id] ?? 0;
     const stockSpan = document.getElementById(`stock-${id}`);
     if (stockSpan) stockSpan.textContent = stock;
@@ -192,6 +193,7 @@ function updateStockDisplay(id) {
     const card = document.querySelector(`[data-product-id="${id}"]`);
     if (card) {
         const qtyInput = card.querySelector('.cantidad');
+        // [data-role="add-to-cart"] es para obtener el boton de agregar al carrito
         const addBtn = card.querySelector('[data-role="add-to-cart"]');
         if (qtyInput) qtyInput.max = Math.max(stock, 0);
         if (addBtn) addBtn.disabled = stock <= 0;
@@ -226,13 +228,17 @@ function agregarAlCarrito(id, btn) {
 }
 
 function eliminarCantidadDelCarrito(id, btn) {
+    //parentElement es para obtener el elemento padre de un elemento
     const input = btn.parentElement.querySelector('.removeQty');
+    // para que la cantidad a eliminar sea al menos 1
     const solicitada = Math.max(1, parseInt(input?.value) || 1);
+    // para que la cantidad a eliminar no sea mayor que la cantidad en el carrito
     const item = cart.find(p => p.id === id);
     if (!item) return;
 
     const aEliminar = Math.min(solicitada, item.quantity);
     item.quantity -= aEliminar;
+    // para actualizar el stock cuando se elimina una cantidad del carrito
     productosStock[id] = (productosStock[id] ?? (productosData[id]?.rating.count ?? 0)) + aEliminar;
     updateStockDisplay(id);
 
@@ -243,10 +249,18 @@ function eliminarCantidadDelCarrito(id, btn) {
 }
 
 function mostrarCarrito() {
+    if (cart.length === 0) {
+        if (document.querySelector('#carrito')) document.querySelector('#carrito').remove();
+        alert('El carrito está vacío');
+        return;
+    }
     renderCarritoTabla();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    const tabla = document.querySelector('#carrito');
+    if (!tabla) return;
+    tabla.hidden = !tabla.hidden;
 }
 
 function calcularTotalCarrito() {
+    //reduce es para reducir un array a un solo valor
     return cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 }
