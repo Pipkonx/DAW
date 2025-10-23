@@ -1,4 +1,4 @@
-# 📚 Tema 2: Estructuras de Control y Funciones
+# 📚 Tema 3: Estructuras de Control y Funciones
 
 <div align="center">
   <img src="https://img.shields.io/badge/PHP-777BB4?style=for-the-badge&logo=php&logoColor=white" alt="PHP"/>
@@ -9,15 +9,6 @@
 Este directorio contiene ejercicios sobre estructuras de control (condicionales, bucles), funciones, arrays, formularios y manejo de ficheros en PHP.
 
 ## 📂 Ejercicios
-
-### 00 - Ejercicios de Repaso
-
-Ejercicios de repaso que incluyen manejo de objetos y filtrado de errores.
-
-| Categoría | Descripción | Ubicación |
-|-----------|-------------|-----------|
-| Objetos | Gestor de errores | [Ver código](./00_EjerciciosRepaso/Objetos/GestorErrores.php) |
-| Filtrado de errores | Ejemplos de formularios con manejo de errores | [Ver carpeta](./00_EjerciciosRepaso/filtrado_errores/) |
 
 ### 01 - Estructuras de Control
 
