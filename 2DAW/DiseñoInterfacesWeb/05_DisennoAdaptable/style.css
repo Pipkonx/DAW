@@ -1,0 +1,53 @@
+:root {
+    --colorPrimario: #2e4c54;
+}
+
+*,
+html,
+body {
+    margin: 0;
+    font-family: arial;
+}
+
+article p, article ul {
+    margin-left: 20%;
+}
+
+img {
+    width: 10vw;
+    border-radius: 50%;
+}
+
+section h3 {
+    float: left;
+    margin-right: 5vh;
+    text-decoration: underline;
+    text-decoration-color: var(--colorPrimario);
+}
+
+section {
+    padding: 5vh 10vw;
+    text-align: justify;
+}
+
+article {
+    padding: 1em;
+}
+
+hr {
+    margin: 2vh 0;
+}
+
+header {
+    background-color: var(--colorPrimario);
+    padding: 1vw 25vw;
+    color: white;
+    text-align: center;
+}
+
+footer {
+    background-color: var(--colorPrimario);
+    padding: 1vw 10vw;
+    color: white;
+    text-align: center;
+}

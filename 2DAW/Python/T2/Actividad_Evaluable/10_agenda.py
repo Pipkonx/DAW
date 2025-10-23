@@ -12,11 +12,6 @@
 
     # Añade un docstring explicando qué hace el programa.
 
-
-
-
-
-
 agenda = []
 persona = []
 

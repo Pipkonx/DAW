@@ -5,7 +5,17 @@ try {
     echo $ex->getMessage();
 }
 
-// Mostrar las provincias que tiene cada comunidad autónoma, con el siguiente formato: CCAA1 : prov1, prov2. CCAA2: ...
+// Realiza una página en PHP que muestre las provincias que tiene cada comunidad
+// autónoma, en una tabla con el formato:
+// CCAA Provincias
+// Andalucía Almería
+// Cadiz
+// ...
+// Sevilla
+// Cuando resolvemos problemas siempre es conveniente separar la lógica de negocio
+// (obtener los datos de la base de datos, en este caso) de la presentación (mostrar la
+// página web). Por este motivo es conveniente que por un lado obtengáis los datos y los
+// almacenéis en un array, y por otro generéis el código HTML que muestre los datos
 
 //COMUNIDADES
 $sqlCcaa = "SELECT id, nombre FROM tbl_comunidadesautonomas ORDER BY nombre";
@@ -21,32 +31,17 @@ while ($prov = mysqli_fetch_assoc($resultadoProv)) {
     //esto hace que se guarde el nombre de la provincia en el array con su id ccaa
     $provinciasPorComunidad[$prov['comunidad_id']][] = $prov['nombre'];
 }
+echo "<table border='1'>";
+echo "<tr><th>CCAA</th><th>Provincias</th></tr>";
 
 //mostramos
 while ($ccaa = mysqli_fetch_assoc($resultadoCcaa)) {
     $id = $ccaa['id'];
-    $nombre = $ccaa['nombre'];
+    echo "<tr><td>" . $ccaa['nombre'] . "</td><td>";
     if (isset($provinciasPorComunidad[$id])) {
-        echo $nombre . " : " . implode(', ', $provinciasPorComunidad[$id]) . ".<br>";
+        //el implode hace que se convierta el array en una cadena separada por comas
+        echo implode('<br>', $provinciasPorComunidad[$id]);
     }
+    echo "</td></tr>";
 }
-
-
-//todo CON SUBCONSULTA
-// $sql = "
-//     SELECT 
-//         ccaa.nombre AS comunidad,
-//         GROUP_CONCAT(prov.nombre ORDER BY prov.nombre SEPARATOR ', ') AS provincias
-//     FROM tbl_comunidadesautonomas ccaa
-//     JOIN tbl_provincias prov ON prov.comunidad_id = ccaa.id
-//     GROUP BY ccaa.id, ccaa.nombre
-//     ORDER BY ccaa.nombre
-// ";
-
-// $resultado = mysqli_query($con, $sql);
-
-// // mysqli_fetch_assoc es para obtener una fila de resultados como un array asociativo.
-// while ($fila = mysqli_fetch_assoc($resultado)) {
-//     echo $fila['comunidad'] . " : " . $fila['provincias'] . ".<br>";
-// }
-// }
+echo "</table>";
