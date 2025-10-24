@@ -1,111 +1,84 @@
 <?php
+const LIMITE_CODIGO = 100;
 
-// Realiza una página que nos permita añadir nuevas provincias a nuestra base de datos.
-// Las provincias creadas estarán ubicadas en una nueva comunidad autónoma llamada “Nuevas provincias”.
-// La entrada será filtrada: no se permiten cadenas en blanco, dígitos en el nombre ni provincias repetidas.
-
-try {
-    $con = new mysqli("localhost", "root", "", "provinciass");
-} catch (mysqli_sql_exception $ex) {
-    echo $ex->getMessage();
-    exit;
+// conectamos base de datos
+$con = mysqli_connect("localhost", "root", "", "provinciass");
+if (!$con) {
+    die("Error al conectar: " . mysqli_connect_error());
 }
 
-function filtrarNombre($nombre) {
-    $nombre = trim($nombre);
-    // Sin dígitos, solo letras/espacios (incluye acentos y ñ)
-    if ($nombre === '' || preg_match('/\d/', $nombre)) {
-        return false;
-    }
-    if (!preg_match('/^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ ]+$/u', $nombre)) {
-        return false;
-    }
+// Limpiar y vaciar nombre
+function limpiarNombre($nombre)
+{
+    $nombre = trim($nombre);                       // quitamos espacios
+    if ($nombre === '') return false;              // no vacío
+    if (preg_match('/\d/', $nombre)) return false; // sin dígitos
+    // solo letras, espacios y acentos
+    if (!preg_match('/^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ ]+$/u', $nombre)) return false;
     return $nombre;
 }
 
-if (!isset($_POST['ccaa'])) {
-    echo "<h1>Agregar Provincia</h1>";
-    echo "<form method='post'>";
-    echo "<label for='ccaa'>Provincia:</label>";
-    echo "<input type='text' name='ccaa' id='ccaa' required>";
-    echo "<button type='submit'>Añadir</button>";
-    echo "</form>";
+// formulario si no se detecta post
+if (!isset($_POST['provincia'])) {
+    echo "<h1>Añadir provincia</h1>";
+    echo '<form method="post">';
+    echo 'Provincia: <input type="text" name="provincia" required>';
+    echo ' <button type="submit">Añadir</button>';
+    echo '</form>';
+    exit; // paramos aquí para no mezclar código
 }
 
-if (isset($_POST['ccaa'])) {
-    $nombreProv = filtrarNombre($_POST['ccaa']);
-    if ($nombreProv === false) {
-        echo "<h2>Nombre de provincia inválido. No se permiten dígitos ni cadenas vacías.</h2>";
-        exit;
-    }
-
-    // Comprobar duplicados por nombre
-    $stmtCheck = $con->prepare("SELECT 1 FROM tbl_provincias WHERE nombre = ? LIMIT 1");
-    $stmtCheck->bind_param('s', $nombreProv);
-    $stmtCheck->execute();
-    $stmtCheck->store_result();
-    if ($stmtCheck->num_rows > 0) {
-        echo "<h2>La provincia ya existe: $nombreProv</h2>";
-        // mostrar todas las provincias
-        $consulta = "SELECT p.cod, p.nombre, c.nombre AS comunidad FROM tbl_provincias p JOIN tbl_comunidadesautonomas c ON p.comunidad_id = c.id ORDER BY p.cod";
-        $resultado = mysqli_query($con, $consulta);
-        echo "<h3>Listado de provincias</h3>";
-        echo "<ul>";
-        while ($fila = mysqli_fetch_assoc($resultado)) {
-            echo "<li>" . $fila['cod'] . " - " . $fila['nombre'] . " (" . $fila['comunidad'] . ")" . "</li>";
-        }
-        echo "</ul>";
-        exit;
-    }
-    $stmtCheck->close();
-
-    // Obtener/crear comunidad "Nuevas provincias"
-    $comunidadId = null;
-    $stmtCcaa = $con->prepare("SELECT id FROM tbl_comunidadesautonomas WHERE nombre = 'Nuevas provincias' LIMIT 1");
-    $stmtCcaa->execute();
-    $stmtCcaa->bind_result($comunidadId);
-    if ($stmtCcaa->fetch()) {
-        // existe y ya tenemos $comunidadId
-    } else {
-        // crear nueva comunidad con id siguiente al máximo
-        $stmtCcaa->close();
-        $resMax = mysqli_query($con, "SELECT IFNULL(MAX(id),0) AS max_id FROM tbl_comunidadesautonomas");
-        $maxId = mysqli_fetch_assoc($resMax)['max_id'];
-        $nuevoId = $maxId + 1;
-        $stmtInsCcaa = $con->prepare("INSERT INTO tbl_comunidadesautonomas (id, nombre) VALUES (?, 'Nuevas provincias')");
-        $stmtInsCcaa->bind_param('i', $nuevoId);
-        $stmtInsCcaa->execute();
-        $stmtInsCcaa->close();
-        $comunidadId = $nuevoId;
-    }
-    $stmtCcaa->close();
-
-    // Calcular siguiente código disponible (dos dígitos)
-    $resCod = mysqli_query($con, "SELECT MAX(CAST(cod AS UNSIGNED)) AS max_cod FROM tbl_provincias");
-    $maxCod = (int) mysqli_fetch_assoc($resCod)['max_cod'];
-    $nextCodNum = $maxCod + 1;
-    if ($nextCodNum > 99) {
-        echo "<h2>No hay códigos disponibles (se alcanzó 99).</h2>";
-        exit;
-    }
-    $nextCod = str_pad((string)$nextCodNum, 2, '0', STR_PAD_LEFT);
-
-    // Insertar nueva provincia
-    $stmtIns = $con->prepare("INSERT INTO tbl_provincias (cod, nombre, comunidad_id) VALUES (?, ?, ?)");
-    $stmtIns->bind_param('ssi', $nextCod, $nombreProv, $comunidadId);
-    $stmtIns->execute();
-    $stmtIns->close();
-
-    echo "<h2>Provincia añadida: " . htmlspecialchars($nombreProv, ENT_QUOTES, 'UTF-8') . " (cod $nextCod)</h2>";
-
-    // Mostrar todas las provincias con su comunidad
-    $consulta = "SELECT p.cod, p.nombre, c.nombre AS comunidad FROM tbl_provincias p JOIN tbl_comunidadesautonomas c ON p.comunidad_id = c.id ORDER BY p.cod";
-    $resultado = mysqli_query($con, $consulta);
-
-    echo "<h3>Listado de provincias</h3>";
-    echo "<ul>";
-    while ($fila = mysqli_fetch_assoc($resultado)) {
-        echo "<li>" . $fila['cod'] . " - " . $fila['nombre'] . " (" . $fila['comunidad'] . ")" . "</li>";
-    }
-    echo "</ul>";
+$nombre = limpiarNombre($_POST['provincia']);
+if ($nombre === false) {
+    die("<h2>Nombre inválido: no uses números ni dejes el campo vacío.</h2>");
 }
+
+// Comprobar si ya existe la provincia
+$sql = "SELECT cod FROM tbl_provincias WHERE nombre = '$nombre' LIMIT 1";
+$res = mysqli_query($con, $sql);
+if (mysqli_num_rows($res) > 0) {
+    die("<h2>La provincia $nombre ya existe.</h2>");
+}
+
+// busca comunidad Nuevas provincias si no existe la crea
+$sqlCcaa = "SELECT id FROM tbl_comunidadesautonomas WHERE nombre = 'Nuevas provincias' LIMIT 1";
+$resCcaa = mysqli_query($con, $sqlCcaa);
+if (mysqli_num_rows($resCcaa) > 0) {
+    $fila = mysqli_fetch_assoc($resCcaa);
+    $idComunidad = $fila['id'];
+} else {
+    // creamos la  comunidad con el siguiente id libre
+    $resMax = mysqli_query($con, "SELECT MAX(id) AS maximo FROM tbl_comunidadesautonomas");
+    $maximo = mysqli_fetch_assoc($resMax)['maximo'] ?? 0;
+    $nuevoId = $maximo + 1;
+    mysqli_query($con, "INSERT INTO tbl_comunidadesautonomas (id, nombre) VALUES ($nuevoId, 'Nuevas provincias')");
+    $idComunidad = $nuevoId;
+}
+
+// calculamos el siguiente codigo de dos digitos
+
+// el cast sirve para convertir el valor de la columna cod en un número sin signo para poder sumar
+$resCod = mysqli_query($con, "SELECT MAX(CAST(cod AS UNSIGNED)) AS maximo FROM tbl_provincias");
+$maxCod = (int)(mysqli_fetch_assoc($resCod)['maximo'] ?? 0);
+$siguiente = $maxCod + 1;
+if ($siguiente > LIMITE_CODIGO) {
+    die("<h2>No quedan códigos libres (máx 99).</h2>");
+}
+$codigo = str_pad($siguiente, 2, '0', STR_PAD_LEFT);
+
+mysqli_query($con, "INSERT INTO tbl_provincias (cod, nombre, comunidad_id) VALUES ('$codigo', '$nombre', $idComunidad)");
+
+echo "<h2>Provincia añadida: $nombre (código $codigo)</h2>";
+
+//mostramos todas
+echo "<h3>Listado de provincias</h3><ul>";
+$resultado = mysqli_query($con, "SELECT p.cod, p.nombre, c.nombre AS comunidad
+                                FROM tbl_provincias p
+                                JOIN tbl_comunidadesautonomas c ON p.comunidad_id = c.id
+                                ORDER BY p.cod");
+while ($fila = mysqli_fetch_assoc($resultado)) {
+    echo "<li>{$fila['cod']} - {$fila['nombre']} ({$fila['comunidad']})</li>";
+}
+echo "</ul>";
+
+mysqli_close($con);
