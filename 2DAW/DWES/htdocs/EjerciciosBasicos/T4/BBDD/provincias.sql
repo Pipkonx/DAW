@@ -7,9 +7,6 @@
 -- Versión del servidor: 5.0.51
 -- Versión de PHP: 5.2.6-1+lenny13
 
-CREATE DATABASE IF not exists 'provincias';
-    DEFAULT CHARACTER SET = 'utf8mb4';
-
 SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
 
