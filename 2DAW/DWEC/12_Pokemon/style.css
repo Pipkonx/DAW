@@ -1,0 +1,143 @@
+/* === ESTILOS GENERALES === */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    background-color: #f6f8fc;
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+}
+
+/* === HEADER === */
+header {
+    text-align: center;
+    margin-top: 2rem;
+}
+
+header h1 {
+    font-size: 3rem;
+    color: #ef5350;
+    margin-bottom: 0.5rem;
+}
+
+header p {
+    color: #555;
+}
+
+/* === CONTENEDOR DE POKÉMON === */
+#pokemons {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1.5rem;
+    width: 90%;
+    max-width: 1200px;
+    margin: 2rem auto;
+}
+
+/* === TARJETAS === */
+.card {
+    background-color: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    padding: 1.2rem;
+    transition: transform 0.2s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+.card img {
+    width: 100px;
+    height: 100px;
+    margin-bottom: 0.8rem;
+}
+
+.card h2 {
+    font-size: 1.2rem;
+    text-transform: capitalize;
+}
+
+.pokemon-id {
+    font-size: 0.85rem;
+    opacity: 0.7;
+    margin-bottom: 0.4rem;
+}
+
+/* === BOTÓN === */
+#btnMas {
+    background-color: #ef5350;
+    color: white;
+    border: none;
+    border-radius: 25px;
+    padding: 0.8rem 1.8rem;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-bottom: 2rem;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+#btnMas:hover {
+    background-color: #d32f2f;
+    transform: scale(1.05);
+}
+
+/* === FOOTER === */
+footer {
+    margin-top: auto;
+    padding: 1rem 0;
+    color: #777;
+    font-size: 0.9rem;
+}
+
+footer a {
+    color: #ef5350;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+footer a:hover {
+    text-decoration: underline;
+}
+
+
+/* === BUSCADOR === */
+.buscador {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.6rem;
+    margin-top: 1rem;
+}
+
+.buscador input,
+.buscador select {
+    padding: 0.6rem 1rem;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+    font-size: 1rem;
+}
+
+.buscador button {
+    background-color: #ef5350;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    padding: 0.6rem 1.2rem;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.buscador button:hover {
+    background-color: #d32f2f;
+    transform: scale(1.05);
+}
