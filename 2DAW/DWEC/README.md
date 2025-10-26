@@ -28,7 +28,8 @@ Colección de actividades y prácticas del módulo DWEC de 2º DAW. Ejercicios p
 
 ### Datos y APIs
 - **[10_JsonApiRest](./10_JsonApiRest/)** - Lectura y procesamiento de datos en formato JSON
-- **[11_Tienda](./11_Tienda/)** - Aplicación completa de tienda online
+- **[11_Tienda](./11_Tienda/)** - Aplicación completa de tienda online con carrito de compras
+- **[12_Pokemon](./12_Pokemon/)** - Pokédex interactiva con búsqueda y filtrado por tipos
 
 ### Repaso
 - **[99_Repaso](./99_Repaso/)** - Ejercicios de refuerzo y resumen
