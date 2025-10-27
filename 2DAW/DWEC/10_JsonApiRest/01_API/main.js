@@ -15,8 +15,7 @@ function mostrarArticulos() {
                 fila.innerHTML = `
                 <td>${contenidoTabla[i].id}</td>
                 <td>${contenidoTabla[i].title}</td>
-                <td>${contenidoTabla[i].body}</td>
-                `;
+                <td>${contenidoTabla[i].body}</td>`;
                 table.appendChild(fila);
             }
         })

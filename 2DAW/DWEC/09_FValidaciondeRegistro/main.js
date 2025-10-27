@@ -35,5 +35,5 @@ document
     if (errores.length == 0) {
       document.getElementById("errores").innerHTML = "El formulario se envio"
     }
-    
+
   });
