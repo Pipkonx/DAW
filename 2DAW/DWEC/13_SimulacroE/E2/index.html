@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Aplicación de Facturas</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <h2>Aplicación de Facturas</h2>
+
+    <div class="formulario">
+        <label>Código:</label>
+        <input type="text" id="codigo">
+        <button id="buscarBtn">🔍</button><br>
+
+        <label>Descripción:</label>
+        <input type="text" id="descripcion"><br>
+
+        <label>Cantidad:</label>
+        <input type="number" id="cantidad" value="1" min="1"><br>
+
+        <label>Precio:</label>
+        <input type="number" id="precio"><br>
+
+        <label>Subtotal:</label>
+        <input type="text" id="subtotal"><br>
+
+        <button id="insertarBtn">Insertar</button>
+    </div>
+
+    <div class="tabla-articulos">
+        <table id="tablaDetalle">
+            <thead>
+                <tr>
+                    <th>Código</th>
+                    <th>Descripción</th>
+                    <th>Cantidad</th>
+                    <th>Precio</th>
+                    <th>Subtotal</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+        <div class="totales">
+            Base: <span id="base">0.00</span> € |
+            IVA (21%): <span id="iva">0.00</span> € |
+            Total: <span id="total">0.00</span> €
+        </div>
+    </div>
+
+    <!-- Tabla de selección de artículos -->
+    <div id="tablaArticulos" class="formulario">
+        <h3>Seleccionar artículo</h3>
+        <input type="text" id="buscador" placeholder="Buscar por descripción...">
+        <table>
+            <thead>
+                <tr>
+                    <th>Código</th>
+                    <th>Descripción</th>
+                    <th>Precio</th>
+                    <th>Seleccionar</th>
+                </tr>
+            </thead>
+            <tbody id="listaArticulos"></tbody>
+        </table>
+    </div>
+
+    <script src="main.js"></script>
+
+</body>
+
+</html>

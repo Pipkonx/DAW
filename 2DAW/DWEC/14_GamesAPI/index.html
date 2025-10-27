@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Free Games API</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body onload="cargarJuegos()">
+  <h1>Free Games API</h1>
+
+  <div class="buscador">
+    <input type="text" id="inputBusqueda" placeholder="Buscar Juego...">
+    <select id="filtroPlataforma">
+      <option value="">plataforma</option>
+    </select>
+    <button id="btnReiniciar">Reestablecer</button>
+  </div>
+  <div id="contenedor"></div>
+  <script src="main.js"></script>
+</body>
+</html>
