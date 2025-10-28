@@ -1,6 +1,6 @@
 # Proyecto Mio — CRUD de Usuarios (PHP + PDO)
 
-Aplicación sencilla y profesional para gestionar usuarios usando **PHP**, **PDO** y **MySQL** con una arquitectura básica MVC (Modelo, Vista, Controlador).
+Trabajando con tabla en mySQL y php para gestionarlo
 
 ## Requisitos
 
@@ -50,10 +50,6 @@ CREATE DATABASE IF NOT EXISTS proyecto CHARACTER SET utf8 COLLATE utf8_general_c
 - Con Apache/XAMPP: coloca el proyecto en `htdocs` y abre `http://localhost/proyectoMio/`.
 - Con el servidor embebido de PHP (si tienes PHP en el PATH):
 
-```bash
-php -S localhost:8000
-```
-
 Luego abre `http://localhost:8000/`.
 
 ## Uso
@@ -77,22 +73,3 @@ CREATE TABLE IF NOT EXISTS usuarios (
   creado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 ```
-
-## Notas de implementación
-
-- Modelo `Usuario` usa **PDO** con consultas preparadas para evitar inyección SQL.
-- Controlador pasa la conexión al modelo: `new Usuario($conn)`.
-- Flujo GET/POST:
-  - En GET se muestran formularios o confirmaciones.
-  - En POST se procesan las acciones y se retorna al listado.
-- Las vistas escapan datos con `htmlspecialchars` donde corresponde.
-
-## Problemas comunes
-
-- "php no se reconoce": añade PHP a tu `PATH` o usa XAMPP.
-- Error de conexión PDO: revisa credenciales en `DB/conexion.php` y que la BD exista.
-- Email duplicado: la columna `email` es `UNIQUE`; usa un correo distinto.
-
-## Licencia
-
-Uso educativo. Adáptalo libremente para tus prácticas.
