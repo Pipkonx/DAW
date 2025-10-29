@@ -11,13 +11,18 @@ class Usuario
         $this->conn = $conn;
     }
 
-    public function crear($nombre, $email)
+    public function crear($nombre, $email, $nif, $cp)
     {
         try {
-            $sql = "INSERT INTO usuarios (nombre, email) VALUES (:nombre, :email)";
+            $sql = "INSERT INTO usuarios (nombre, email, nif, cp) VALUES (:nombre, :email, :nif, :cp)";
             // el prepare previene inyeccion sql
             $stmt = $this->conn->prepare($sql);
-            $stmt->execute([':nombre' => $nombre, ':email' => $email]);
+            $stmt->execute([
+                ':nombre' => $nombre,
+                ':email' => $email,
+                ':nif' => $nif,
+                ':cp' => $cp
+            ]);
 
             echo "✅ Usuario insertado correctamente<br>";
         } catch (PDOException $e) {
@@ -28,7 +33,7 @@ class Usuario
     public function listar()
     {
         try {
-            $sql = "SELECT * FROM usuarios";
+            $sql = "SELECT * FROM usuarios ORDER BY id DESC";
             $stmt = $this->conn->prepare($sql);
             $stmt->execute();
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -49,13 +54,18 @@ class Usuario
         }
     }
 
-
-    public function actualizar($id, $nombre, $email)
+    public function actualizar($id, $nombre, $email, $nif, $cp)
     {
         try {
-            $sql = "UPDATE usuarios SET nombre = :nombre, email = :email WHERE id = :id";
+            $sql = "UPDATE usuarios SET nombre = :nombre, email = :email, nif = :nif, cp = :cp WHERE id = :id";
             $stmt = $this->conn->prepare($sql);
-            $stmt->execute([':id' => $id, ':nombre' => $nombre, ':email' => $email]);
+            $stmt->execute([
+                ':id' => $id,
+                ':nombre' => $nombre,
+                ':email' => $email,
+                ':nif' => $nif,
+                ':cp' => $cp
+            ]);
             echo "✏️ Usuario actualizado correctamente<br>";
         } catch (PDOException $e) {
             echo "❌ Error al actualizar usuario: " . $e->getMessage() . "<br>";

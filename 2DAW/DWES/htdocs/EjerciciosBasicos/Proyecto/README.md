@@ -1,78 +1,78 @@
-# 🧩 Proyecto MVC en PHP - Gestión de Usuarios
+# Proyecto Mio — CRUD de Usuarios (PHP + PDO)
 
-Este proyecto es un ejemplo básico del patrón **MVC (Modelo - Vista - Controlador)** implementado en **PHP**, ideal para aprender cómo separar la lógica del negocio, la presentación y el control del flujo de la aplicación.  
-Incluye un pequeño sistema CRUD (Crear, Leer, Actualizar y Borrar) de usuarios. 👤
+Trabajando con tabla en mySQL y php para gestionarlo
 
----
+## Requisitos
 
-## 🚀 Características
+- PHP 7.4 o superior (con extensión PDO habilitada)
+- Servidor web (Apache/XAMPP) o servidor embebido de PHP
+- MySQL/MariaDB
 
-- Estructura MVC simple y limpia.  
-- CRUD completo de usuarios.  
-- Validación básica de formularios.  
-- Conexión a base de datos con **PDO**.  
-- Código fácil de entender y ampliar.
-
----
-
-## 🗂️ Estructura del proyecto
+## Estructura
 
 ```
-proyecto_mvc/
-│
-├── index.php                     # Punto de entrada principal
-│
-├── config/
-│   └── database.php              # Conexión a la base de datos
-│
-├── controllers/
-│   └── UsuarioController.php     # Controlador principal
-│
-├── models/
-│   └── Usuario.php               # Modelo de datos
-│
-└── views/
-    ├── usuario_alta.php          # Formulario de alta
-    ├── usuario_modificar.php     # Formulario de edición
-    ├── usuario_borrar.php        # Confirmación de borrado
-    └── usuario_lista.php         # Listado de usuarios
+proyectoMio/
+├── DB/
+│   └── conexion.php          # Conexión PDO a MySQL
+├── controlador/
+│   └── Controlador.php       # Controlador principal de usuarios
+├── modelo/
+│   └── Usuario.php           # Modelo Usuario (CRUD con PDO)
+├── vista/
+│   ├── usuario_alta.php      # Formulario de alta
+│   ├── usuario_borrar.php    # Confirmación de borrado
+│   ├── usuario_lista.php     # Listado con acciones
+│   └── usuario_modificar.php # Formulario de edición
+└── index.php                 # Enrutador y bootstrap del proyecto
 ```
 
----
+## Instalación
 
-## 🧠 Requisitos
+1. Configura tu conexión en `DB/conexion.php`:
 
-- **PHP 7.4+**
-- **MySQL o MariaDB**
-- Servidor local como **XAMPP**, **Laragon** o **WAMP**.
+```php
+$user = "root";
+$pass = "";     // Ajusta tu contraseña
+$host = "localhost";
+$dbname = "proyecto"; // Asegúrate de que exista esta BD
+```
 
----
-
-## 🗃️ Base de datos
-
-Ejecuta este script SQL en tu gestor (phpMyAdmin, DBeaver, etc.):
+2. Crea la base de datos (si no existe) desde tu gestor (phpMyAdmin/CLI) con:
 
 ```sql
-CREATE DATABASE IF NOT EXISTS mvc_demo CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+CREATE DATABASE IF NOT EXISTS proyecto CHARACTER SET utf8 COLLATE utf8_general_ci;
+```
 
-USE mvc_demo;
+3. La tabla `usuarios` se crea automáticamente al cargar `index.php` (ver SQL más abajo).
 
+## Ejecutar
+
+- Con Apache/XAMPP: coloca el proyecto en `htdocs` y abre `http://localhost/proyectoMio/`.
+- Con el servidor embebido de PHP (si tienes PHP en el PATH):
+
+Luego abre `http://localhost:8000/`.
+
+## Uso
+
+- `?action=listar` muestra el listado de usuarios.
+- `?action=alta` muestra el formulario para crear.
+- `?action=modificar&id=ID` edita el usuario con ese `ID`.
+- `?action=borrar&id=ID` confirma y elimina el usuario.
+
+El menú básico está en `index.php` y las opciones de modificar/borrar aparecen en el listado.
+
+## SQL de la tabla `usuarios`
+
+`index.php` crea la tabla si no existe:
+
+```sql
 CREATE TABLE IF NOT EXISTS usuarios (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL,
-    email VARCHAR(100) NOT NULL UNIQUE
+    email VARCHAR(150) NOT NULL UNIQUE,
+    nif VARCHAR(9) NOT NULL UNIQUE,
+    cp VARCHAR(10) NOT NULL,
+    fecha_alta TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
 ```
-
-
-## 💡 Próximos pasos
-
-- Añadir validaciones más completas.  
-- Incluir sesiones e inicio de sesión.  
-- Crear más entidades (productos, clientes, pedidos, etc).  
-- Conectar el frontend con Bootstrap o TailwindCSS.
-
----
-
-> Si este proyecto te sirvió, ¡guárdalo o modifícalo a tu gusto!  
-> Aprender creando es la mejor forma de dominar PHP. 🚀

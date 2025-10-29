@@ -1,19 +1,19 @@
 <h2>Tareas</h2>
 <form method="POST">
     <label for="nif">NIF</label>
-    <input type="text" name="nif" placeholder="99999999A" required><br>
+    <input type="text" name="nif" placeholder="99999999A" value="<?= isset($datos['nif']) ? $datos['nif'] : '' ?>" required><br>
 
     <label for="nombre">Nombre: </label>
     <input type="text" name="nombre" placeholder="Pepe" required><br>
 
     <label for="apellido">Apellido: </label>
-    <input type="text" name="apellido" placeholder="Vazquez" required><br>
+    <input type="text" name="apellido" placeholder="Vazquez"><br>
 
     <label for="telefono">Telefono: </label>
     <input type="tel" name="telefono" placeholder="999999999" required><br>
 
     <label for="descripcion">Descripcion: </label>
-    <input type="text" name="descripcion" ><br>
+    <input type="text" name="descripcion"><br>
 
     <label for="email">Email: </label>
     <input type="email" name="email" placeholder="email@email.com" required><br>
@@ -28,7 +28,7 @@
     </select><br>
 
     <label for="cp">CP</label>
-    <input type="number" name="cp" value="cp" placeholder="21000" required><br>
+    <input type="number" name="cp" value="cp" placeholder="21000" ><br>
 
     <label for="provincia">Provincia: </label>
     <select name="provincia" id="provincia">
@@ -44,7 +44,7 @@
     </select><br>
 
     <label for="operario">Operario: </label>
-    <input type="text" name="operario" placeholder="Nombre del operario" required><br>
+    <input type="text" name="operario" placeholder="Nombre del operario" ><br>
 
     <label for="Frealizacion">Fecha de realizacion</label>
     <input type="date" name="Frealizacion"><br>

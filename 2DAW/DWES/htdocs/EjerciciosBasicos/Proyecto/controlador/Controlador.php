@@ -39,34 +39,55 @@ class Controlador
 
         //! ver como hacer seguir
         // validacion del NIF
-        validarNIF($_POST["nif"]);
+        $nif_valido = validarNIF($_POST["nif"]);
 
         // Procesar alta en POST
         if (isset($_POST['nombre'])) {
-            $nombre = $_POST['nombre'];
+            $nombre = trim($_POST['nombre']);
         } else {
             $nombre = '';
         }
 
-        // FILTER_VALIDATE_EMAIL --> https://www.w3schools.com/php/filter_validate_email.asp
-        // chekea que tiene el formato correcto para ser email 
-        if (filter_var($_POST["email"], FILTER_VALIDATE_EMAIL)) {
-            echo "El formato del email es válido";
+        if (isset($_POST['email'])) {
+            $email = trim($_POST['email']);
         } else {
-            echo "El formato del email es inválido";
+            $email = '';
         }
 
-
-        if (!empty($nombre) && !empty($email) && !empty($cp)) {
-            // $conn viene de DB/conexion.php incluido por modelo/Usuario.php
-            // global $conn;
-            // $usuario = new Usuario($conn);
-            // $usuario->crear($nombre, $email);
-            // // Volver al listado tras crear
-            // $this->listar();
-            echo "V datos son valido"
+        if (isset($_POST['cp'])) {
+            $cp = trim($_POST['cp']);
         } else {
-            echo "❌ Datos no válidos";
+            $cp = '';
+        }
+
+        // FILTER_VALIDATE_EMAIL --> https://www.w3schools.com/php/filter_validate_email.asp
+        // chekea que tiene el formato correcto para ser email
+        // filter_var() es para validar que el email tenga el formato correcto
+        if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            echo "✅ El formato del email es válido<br>";
+        } else {
+            echo "❌ El formato del email es inválido<br>";
+        }
+
+        // Validar NIF
+        if ($nif_valido) {
+            echo "✅ NIF válido<br>";
+        } else {
+            echo "❌ NIF inválido<br>";
+        }
+
+        // Validar campos obligatorios
+        if (!empty($nombre) && !empty($email) && $nif_valido && !empty($cp)) {
+            // $conn viene de DB/conexion.php incluido por modelo/Usuario.php
+            global $conn;
+            $usuario = new Usuario($conn);
+            $usuario->crear($nombre, $email, $_POST["nif"], $cp);
+
+            // // Volver al listado tras crear
+            $this->listar();
+            return;
+        } else {
+            echo "❌ Datos no válidos<br>";
             include "vista/usuario_alta.php";
         }
     }
@@ -107,7 +128,10 @@ class Controlador
             // se podría hacer con operador ternario o con if normales
             $nombre = $_POST['nombre'] ?? '';
             $email = $_POST['email'] ?? '';
-            $usuario->actualizar($id, $nombre, $email);
+            $nif = $_POST['nif'] ?? '';
+            $cp = $_POST['cp'] ?? '';
+
+            $usuario->actualizar($id, $nombre, $email, $nif, $cp);
             $this->listar();
             return;
         }
