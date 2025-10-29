@@ -1,5 +1,5 @@
 <?php
-require_once "controllers/UsuarioController.php";
+require "controllers/UsuarioController.php";
 
 $controller = new UsuarioController();
 

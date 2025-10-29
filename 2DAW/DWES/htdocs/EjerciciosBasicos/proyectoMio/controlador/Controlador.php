@@ -1,15 +1,45 @@
 <?php
 require "modelo/Usuario.php";
 
+function validarNIF($nif)
+{
+    // espacios y todo a mayuscula
+    $nif = strtoupper(trim($nif));
+
+    // comprobar formato bascio
+    //el preg_match hace que realiza una busqueda que coincid con la expresion
+    if (!preg_match('/^[0-9]{8}[A-Z]$/', $nif)) {
+        return false;
+    }
+
+    // separa la letra
+    $numero = substr($nif, 0, 8);
+    $letra_introducida = substr($nif, 8, 1);
+
+    // calcula la letra de control
+    $letras_nif = 'TRWAGMYFPDXBNJZSQVHLCKE';
+    $letra_calculada = $letras_nif[$numero % 23];
+
+    if ($letra_introducida === $letra_calculada) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+
 class Controlador
 {
     public function alta()
     {
-        // Mostrar formulario en GET
         if (!$_POST) {
             include "vista/usuario_alta.php";
             return;
         }
+
+        //! ver como hacer seguir
+        // validacion del NIF
+        validarNIF($_POST["nif"]);
 
         // Procesar alta en POST
         if (isset($_POST['nombre'])) {
@@ -18,19 +48,23 @@ class Controlador
             $nombre = '';
         }
 
-        if (isset($_POST['email'])) {
-            $email = $_POST['email'];
+        // FILTER_VALIDATE_EMAIL --> https://www.w3schools.com/php/filter_validate_email.asp
+        // chekea que tiene el formato correcto para ser email 
+        if (filter_var($_POST["email"], FILTER_VALIDATE_EMAIL)) {
+            echo "El formato del email es válido";
         } else {
-            $email = '';
+            echo "El formato del email es inválido";
         }
 
-        if (!empty($nombre) && !empty($email)) {
+
+        if (!empty($nombre) && !empty($email) && !empty($cp)) {
             // $conn viene de DB/conexion.php incluido por modelo/Usuario.php
-            global $conn;
-            $usuario = new Usuario($conn);
-            $usuario->crear($nombre, $email);
-            // Volver al listado tras crear
-            $this->listar();
+            // global $conn;
+            // $usuario = new Usuario($conn);
+            // $usuario->crear($nombre, $email);
+            // // Volver al listado tras crear
+            // $this->listar();
+            echo "V datos son valido"
         } else {
             echo "❌ Datos no válidos";
             include "vista/usuario_alta.php";
