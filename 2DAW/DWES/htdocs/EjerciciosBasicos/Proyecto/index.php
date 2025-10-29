@@ -13,7 +13,7 @@
 
     <h1>Proyecto PHP</h1>
     <nav>
-        <a href="?action=listar">Listar usuarios</a>
+        <a href="?action=listar">Mostrar usuarios</a>
         <a href="?action=alta">Alta usuario</a>
     </nav>
     <hr>
@@ -23,7 +23,8 @@
     $controller = new Controlador();
 
     $action = isset($_GET['action']) ? $_GET['action'] : 'listar';
-    $id = isset($_GET['id']) ? (int) $_GET['id'] : null;
+    // Capturar id desde GET o POST para que las operaciones funcionen aunque el formulario no preserve la query
+    $id = isset($_GET['id']) ? (int) $_GET['id'] : (isset($_POST['id']) ? (int) $_POST['id'] : null);
 
     switch ($action) {
         case 'alta':

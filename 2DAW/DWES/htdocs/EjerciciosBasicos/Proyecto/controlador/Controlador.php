@@ -33,6 +33,8 @@ class Controlador
     public function alta()
     {
         if (!$_POST) {
+            // hay que iniciarlo para que no muestre aviso en la vistas
+            $datos = [];
             include "vista/usuario_alta.php";
             return;
         }
@@ -60,10 +62,19 @@ class Controlador
             $cp = '';
         }
 
+        // para que se mantengan los correctos
+        $datos = [];
+        // nombre requerido
+        if (!empty($nombre)) {
+            $datos['nombre'] = $nombre;
+        }
+
+        // Email con formato
         // FILTER_VALIDATE_EMAIL --> https://www.w3schools.com/php/filter_validate_email.asp
         // chekea que tiene el formato correcto para ser email
         // filter_var() es para validar que el email tenga el formato correcto
         if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $datos['email'] = $email;
             echo "✅ El formato del email es válido<br>";
         } else {
             echo "❌ El formato del email es inválido<br>";
@@ -71,12 +82,37 @@ class Controlador
 
         // Validar NIF
         if ($nif_valido) {
+            $datos['nif'] = $_POST["nif"];
             echo "✅ NIF válido<br>";
         } else {
             echo "❌ NIF inválido<br>";
         }
 
         // Validar campos obligatorios
+        if (!empty($cp)) {
+            $datos['cp'] = $cp;
+        }
+
+        // Además, conservar otros campos no validados si existen
+        foreach (
+            [
+                'apellido',
+                'telefono',
+                'descripcion',
+                'direccion',
+                'poblacion',
+                'provincia',
+                'estado',
+                'operario',
+                'Frealizacion',
+                'Aanteriores'
+            ] as $campo
+        ) {
+            if (isset($_POST[$campo]) && $_POST[$campo] !== '') {
+                $datos[$campo] = $_POST[$campo];
+            }
+        }
+
         if (!empty($nombre) && !empty($email) && $nif_valido && !empty($cp)) {
             // $conn viene de DB/conexion.php incluido por modelo/Usuario.php
             global $conn;
@@ -87,7 +123,8 @@ class Controlador
             $this->listar();
             return;
         } else {
-            echo "❌ Datos no válidos<br>";
+            echo "❌ Faltan campos por rellenar<br>";
+            // Volver a mostrar el formulario conservando los datos correctos
             include "vista/usuario_alta.php";
         }
     }

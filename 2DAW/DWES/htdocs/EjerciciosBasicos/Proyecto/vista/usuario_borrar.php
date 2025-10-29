@@ -10,8 +10,9 @@
     <li><strong>CP:</strong> <?= $datos['cp'] ?></li>
 </ul>
 
-<form method="post">
-    <button type="submit" style="background-color:red;color:white;">Sí, borrar definitivamente</button>
+<form method="post" action="?action=borrar&id=<?= $datos['id'] ?>">
+    <input type="hidden" name="id" value="<?= $datos['id'] ?>" />
+    <button type="submit" class="btn btn-danger">Sí, borrar definitivamente</button>
 </form>
 
 <br>

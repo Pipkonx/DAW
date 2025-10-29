@@ -3,8 +3,8 @@
 <a href="?action=alta">➕ Nuevo usuario</a>
 <br><br>
 
-<table border="1" cellpadding="6" cellspacing="0">
-    <tr style="background-color: #eee;">
+<table>
+    <tr>
         <th>ID</th>
         <th>Nombre</th>
         <th>Email</th>
@@ -29,7 +29,7 @@
         <?php endforeach; ?>
     <?php else: ?>
         <tr>
-            <td colspan="6" style="text-align:center;">No hay usuarios registrados</td>
+            <td colspan="6" class="text-center">No hay usuarios registrados</td>
         </tr>
     <?php endif; ?>
 </table>
