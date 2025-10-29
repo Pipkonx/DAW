@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gestión de Tareas</title>
+</head>
+
+<body>
+  <h1>Gestión de Tareas</h1>
+
+  <div>
+    <label for="filtroPrioridad">Filtrar por prioridad</label>
+    <select id="filtroPrioridad">
+      <option value="Todas">Todas</option>
+      <option value="Alta">Alta</option>
+      <option value="Media">Media</option>
+      <option value="Baja">Baja</option>
+    </select>
+  </div>
+
+  <form id="formTarea">
+    <label for="nombreTarea">Nombre de la tarea</label>
+    <input id="nombreTarea" type="text" placeholder="Introduce el nombre" />
+        <label for="prioridadTarea">Prioridad</label>
+        <select id="prioridadTarea">
+          <option value="Alta">Alta</option>
+          <option value="Media">Media</option>
+          <option value="Baja">Baja</option>
+        </select>
+        <button type="submit">Añadir tarea</button>
+    <div id="mensaje" class="feedback"></div>
+  </form>
+
+    <section>
+      <h2>Lista</h2>
+      <ul id="listaTareas"></ul>
+    </section>
+    <section>
+      <h2>Tabla</h2>
+      <table id="tablaTareas">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Prioridad</th>
+            <th>Acción</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
+
+  <script src="main.js"></script>
+</body>
+
+</html>

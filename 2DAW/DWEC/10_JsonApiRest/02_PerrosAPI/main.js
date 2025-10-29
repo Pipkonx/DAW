@@ -3,6 +3,9 @@ function generar() {
     const contenedor = document.getElementById("perros");
     contenedor.innerHTML = "";
 
+
+    listaPerros = [];
+
     for (let i = 0; i < cantidad; i++) {
         fetch('https://dog.ceo/api/breeds/image/random')
             .then(response => response.json())
@@ -13,4 +16,8 @@ function generar() {
             })
             .catch(error => console.error(error));
     }
+}
+
+function mostrarHistorial() {
+
 }
