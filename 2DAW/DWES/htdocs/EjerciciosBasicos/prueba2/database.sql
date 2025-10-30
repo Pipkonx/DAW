@@ -18,13 +18,15 @@ INSERT INTO
 VALUES (
         'Administrador',
         'admin@miapp.com',
-        '$2y$10$e0NRjYv3u7k6/u0FmAB5OuwY1oQ9pRZbRKaG3tNNbFQl4kJuMdc9y',
+        -- '$2y$10$e0NRjYv3u7k6/u0FmAB5OuwY1oQ9pRZbRKaG3tNNbFQl4kJuMdc9y',
+        'admin123',
         'admin'
     ), -- password: admin123
     (
         'Operador',
         'operador@miapp.com',
-        '$2y$10$6eA3Z4lV6d7YNRk2bEoAe.QKw7vI3Hg6zO9/0KPZVxj9xXydmTXq6',
+        -- '$2y$10$6eA3Z4lV6d7YNRk2bEoAe.QKw7vI3Hg6zO9/0KPZVxj9xXydmTXq6',
+        'operador123',
         'operador'
     );
 -- password: operador123
@@ -47,7 +49,8 @@ CREATE TABLE IF NOT EXISTS tareas (
     fecha_realizacion DATE,
     anotaciones_antes TEXT,
     anotaciones_despues TEXT,
-    fichero_resumen VARCHAR(255)
+    fichero_resumen VARCHAR(255),
+    fotos TEXT
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4;
 
 -- Insertar tareas de ejemplo

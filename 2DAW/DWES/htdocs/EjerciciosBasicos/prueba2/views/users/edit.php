@@ -10,13 +10,15 @@
         <label>Email</label>
         <input type="email" name="email" class="form-control" value="<?= htmlspecialchars($user['email']) ?>" required>
     </div>
-    <div class="mb-3">
-        <label>Rol</label>
-        <select name="rol" class="form-select">
-            <option value="admin" <?= $user['rol'] == 'admin' ? 'selected' : '' ?>>Administrador</option>
-            <option value="operador" <?= $user['rol'] == 'operador' ? 'selected' : '' ?>>Operador</option>
-        </select>
-    </div>
+    <?php if (($_GET['role'] ?? '') === 'admin'): ?>
+        <div class="mb-3">
+            <label>Rol</label>
+            <select name="rol" class="form-select">
+                <option value="admin" <?= $user['rol'] == 'admin' ? 'selected' : '' ?>>Administrador</option>
+                <option value="operador" <?= $user['rol'] == 'operador' ? 'selected' : '' ?>>Operador</option>
+            </select>
+        </div>
+    <?php endif; ?>
     <button type="submit" class="btn btn-primary">Actualizar</button>
 </form>
 

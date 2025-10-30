@@ -1,6 +1,8 @@
 <?php require "views/templates/header.php"; ?>
 <h2>Usuarios</h2>
-<a href="index.php?controller=User&action=create" class="btn btn-success mb-3">Nuevo usuario</a>
+<?php if (($_GET['role'] ?? '') === 'admin'): ?>
+<a href="index.php?controller=User&action=create&role=admin" class="btn btn-success mb-3">Nuevo usuario</a>
+<?php endif; ?>
 
 <table class="table table-bordered">
     <thead>
