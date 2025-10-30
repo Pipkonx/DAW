@@ -1,0 +1,41 @@
+html,
+body {
+    margin: 0;
+    padding: 0;
+}
+
+* {
+    text-align: center;
+}
+
+header,
+footer {
+    background-color: rgba(0, 128, 0, 0.46);
+    height: 10%;
+    width: 100%;
+}
+
+#medio {
+    height: 80%;
+}
+
+#izq,
+#der {
+    background-color: rgba(255, 0, 0, 0.457);
+    height: 100vh;
+    width: 10vw;
+}
+
+body {
+    display: flex;
+}
+
+#tbody {
+    background-color: rgba(255, 255, 0, 0.567);
+    width: 100vw;
+    height: 100vh;
+}
+
+p {
+    margin: 0;
+}

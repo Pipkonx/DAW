@@ -1,0 +1,16 @@
+.azul {
+    background-color: lightblue;
+    padding: 5px;
+    text-transform: uppercase;
+}
+
+p:nth-child(0) {
+    color: yellow;
+    background-color: #660066;
+    padding: 5px;
+}
+
+p:nth-child(1) {
+    background-color: #006666;
+    padding: 5px;
+}

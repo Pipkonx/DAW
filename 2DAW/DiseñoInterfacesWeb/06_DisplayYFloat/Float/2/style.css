@@ -1,0 +1,36 @@
+html {
+    margin: 0;
+    padding: 0;
+}
+
+img {
+    width: 100px;
+}
+
+div {
+    border: 1px solid black;
+    width: 30%;
+    padding: 5px;
+    text-align: center;
+    margin: 5px;
+    box-sizing: border-box;
+    float: left;
+}
+
+p {
+    text-align: left;
+}
+
+body {
+    gap: 1em;
+    height: 100vh;
+    width: 100vw;
+}
+
+div:nth-child(7) {
+    width: 92.5vw;
+    text-align: center;
+    margin: 5px;
+    box-sizing: border-box;
+    clear: both;
+}
