@@ -1,5 +1,6 @@
 <?php
 require "modelo/Usuario.php";
+require "modelo/Tarea.php";
 
 function validarNIF($nif)
 {
@@ -39,7 +40,6 @@ class Controlador
             return;
         }
 
-        //! ver como hacer seguir
         // validacion del NIF
         $nif_valido = validarNIF($_POST["nif"]);
 
@@ -117,7 +117,8 @@ class Controlador
             // $conn viene de DB/conexion.php incluido por modelo/Usuario.php
             global $conn;
             $usuario = new Usuario($conn);
-            $usuario->crear($nombre, $email, $_POST["nif"], $cp);
+            // para recoger los datos podemos usar el request tanto para post como para get
+            $usuario->crear($nombre, $email, $_REQUEST["nif"], $cp);
 
             // // Volver al listado tras crear
             $this->listar();
@@ -175,5 +176,50 @@ class Controlador
 
         // Mostrar formulario de edición en GET
         include "vista/usuario_modificar.php";
+    }
+
+    public function mostrarTareas()
+    {
+        global $conn;
+        $tarea = new Tarea($conn);
+        $tareas = $tarea->listar();
+        include "vista/tarea_lista.php";
+    }
+
+    public function modificarTarea($id)
+    {
+        global $conn;
+        $tarea = new Tarea($conn);
+        $datos = $tarea->obtenerId($id);
+
+        if ($_POST) {
+            $nombreTarea = $_POST['nombreTarea'] ?? '';
+            $descripcion = $_POST['descripcion'] ?? '';
+            $estado = $_POST['estado'] ?? '';
+            $anotaciones_anteriores = $_POST['anotaciones_anteriores'] ?? '';
+            $anotaciones_posteriores = $_POST['anotaciones_posteriores'] ?? '';
+            $operario_encargado = $_POST['operario_encargado'] ?? '';
+
+            $tarea->actualizar($id, $nombreTarea, $descripcion, $estado, $anotaciones_anteriores, $anotaciones_posteriores, $operario_encargado);
+            $this->mostrarTareas();
+            return;
+        }
+
+        include "vista/tarea_modificar.php";
+    }
+
+    public function borrarTarea($id)
+    {
+        global $conn;
+        $tarea = new Tarea($conn);
+
+        if ($_POST) {
+            $tarea->eliminar($id);
+            $this->mostrarTareas();
+            return;
+        }
+
+        $datos = $tarea->obtenerId($id);
+        include "vista/tarea_borrar.php";
     }
 }

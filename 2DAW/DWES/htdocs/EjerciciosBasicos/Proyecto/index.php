@@ -15,6 +15,7 @@
     <nav>
         <a href="?action=listar">Mostrar usuarios</a>
         <a href="?action=alta">Alta usuario</a>
+        <a href="?action=tareas_listar">Mostrar tareas</a>
     </nav>
     <hr>
 
@@ -42,6 +43,23 @@
                 echo 'Falta el parámetro id para borrar.';
             } else {
                 $controller->borrar($id);
+            }
+            break;
+        case 'tareas_listar':
+            $controller->mostrarTareas();
+            break;
+        case 'tareas_modificar':
+            if ($id === null) {
+                echo 'Falta el parámetro id para modificar la tarea.';
+            } else {
+                $controller->modificarTarea($id);
+            }
+            break;
+        case 'tareas_borrar':
+            if ($id === null) {
+                echo 'Falta el parámetro id para borrar la tarea.';
+            } else {
+                $controller->borrarTarea($id);
             }
             break;
 

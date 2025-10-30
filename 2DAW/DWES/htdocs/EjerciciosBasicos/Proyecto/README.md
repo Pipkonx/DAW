@@ -40,7 +40,7 @@ $dbname = "proyecto"; // Asegúrate de que exista esta BD
 2. Crea la base de datos (si no existe) desde tu gestor (phpMyAdmin/CLI) con:
 
 ```sql
-CREATE DATABASE IF NOT EXISTS proyecto CHARACTER SET utf8 COLLATE utf8_general_ci;
+CREATE DATABASE IF NOT EXISTS usuarios CHARACTER SET utf8 COLLATE utf8_general_ci;
 ```
 
 3. La tabla `usuarios` se crea automáticamente al cargar `index.php` (ver SQL más abajo).
@@ -76,3 +76,20 @@ CREATE TABLE IF NOT EXISTS usuarios (
 );
 
 ```
+## y ahora faltaría crear la tabla `tareas`
+
+y procedemos a crear la tabla
+
+```sql
+CREATE TABLE `proyecto`.`tareas` (
+    `id` INT NOT NULL AUTO_INCREMENT ,
+    `nombreTarea` VARCHAR(30) NOT NULL ,
+    `descripcion` VARCHAR(100) NOT NULL ,
+    `estado` CHAR(1) NOT NULL ,
+    `fecha_tarea` TIMESTAMP NOT NULL ,
+    `fecha_actualizacion` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,
+    `anotaciones_anteriores` VARCHAR(250) NOT NULL ,
+    `anotaciones_posteriores` VARCHAR(250) NOT NULL ,
+    `operario_encargado` VARCHAR(50) NOT NULL ,
+      PRIMARY KEY (`id`)) ENGINE = InnoDB; 
+    ```

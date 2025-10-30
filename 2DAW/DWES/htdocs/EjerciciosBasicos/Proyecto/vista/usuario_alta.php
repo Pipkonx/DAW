@@ -2,29 +2,29 @@
 <form method="POST">
     <label for="nif">NIF</label>
     <!-- el htmlspecialchars es para evitar inyeccion de codigo -->
-    <input type="text" name="nif" placeholder="99999999A" value="<?= isset($datos['nif']) ? $datos['nif'] : '' ?>" required><br>
+    <input type="text" name="nif" placeholder="99999999A" value="<?= isset($datos['nif']) ? $datos['nif'] : '' ?>" ><br>
 
     <label for="nombre">Nombre: </label>
-    <input type="text" name="nombre" placeholder="Pepe" value="<?= isset($datos['nombre']) ? $datos['nombre'] : '' ?>" required><br>
+    <input type="text" name="nombre" placeholder="Pepe" value="<?= isset($datos['nombre']) ? $datos['nombre'] : '' ?>" ><br>
 
     <label for="apellido">Apellido: </label>
     <input type="text" name="apellido" placeholder="Vazquez" value="<?= isset($datos['apellido']) ? $datos['apellido'] : '' ?>"><br>
 
     <label for="telefono">Telefono: </label>
-    <input type="tel" name="telefono" placeholder="999999999" value="<?= isset($datos['telefono']) ? $datos['telefono'] : '' ?>" required><br>
+    <input type="tel" name="telefono" placeholder="999999999" value="<?= isset($datos['telefono']) ? $datos['telefono'] : '' ?>" ><br>
 
     <label for="descripcion">Descripcion: </label>
     <input type="text" name="descripcion" value="<?= isset($datos['descripcion']) ? $datos['descripcion'] : '' ?>"><br>
 
     <label for="email">Email: </label>
-    <input type="email" name="email" placeholder="email@email.com" value="<?= isset($datos['email']) ? $datos['email'] : '' ?>" required><br>
+    <input type="email" name="email" placeholder="email@email.com" value="<?= isset($datos['email']) ? $datos['email'] : '' ?>" ><br>
 
 
     <label for="direccion">Direccion: </label>
-    <input type="text" name="direccion" placeholder="av patata patata 1 1a" value="<?= isset($datos['direccion']) ? $datos['direccion'] : '' ?>" required><br>
+    <input type="text" name="direccion" placeholder="av patata patata 1 1a" value="<?= isset($datos['direccion']) ? $datos['direccion'] : '' ?>" ><br>
 
     <label for="poblacion">Poblacion: </label>
-    <select name="poblacion" id="poblacion" required>
+    <select name="poblacion" id="poblacion" >
         <option value="es" <?= (isset($datos['poblacion']) && $datos['poblacion'] === 'es') ? 'selected' : '' ?>>España</option>
     </select><br>
 

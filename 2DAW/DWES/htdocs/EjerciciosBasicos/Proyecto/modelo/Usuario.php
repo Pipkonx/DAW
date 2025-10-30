@@ -8,7 +8,9 @@ class Usuario
     public function __construct($conn)
     {
         // para que nuestra conexion sea en todo
-        $this->conn = $conn;
+        // $this->conn = $conn;
+        // obtenemos la conexión PDO desde el singleton
+        $this->conn = conexion::getInstance()->getConnection();
     }
 
     public function crear($nombre, $email, $nif, $cp)
@@ -26,7 +28,7 @@ class Usuario
 
             echo "✅ Usuario insertado correctamente<br>";
         } catch (PDOException $e) {
-            echo "❌ Error al insertar: " . $e->getMessage() . "<br>";
+            echo "❌ Error al insertar usuario: " . $e->getMessage() . "<br>";
         }
     }
 
