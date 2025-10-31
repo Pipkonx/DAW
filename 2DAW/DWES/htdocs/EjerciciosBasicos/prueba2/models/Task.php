@@ -40,11 +40,30 @@ class Task
 
     public function update($id, $data)
     {
-        $sql = "UPDATE tareas SET persona_contacto=:persona_contacto, telefono=:telefono, descripcion=:descripcion,
-                correo=:correo, direccion=:direccion, poblacion=:poblacion, codigo_postal=:codigo_postal,
-                provincia=:provincia, estado=:estado, fecha_realizacion=:fecha_realizacion,
-                anotaciones_antes=:anotaciones_antes, anotaciones_despues=:anotaciones_despues,
-                fichero_resumen=:fichero_resumen, fotos=:fotos WHERE id=:id";
+        // Construir SQL dinámicamente según columnas existentes para evitar errores cuando faltan
+        $set = [
+            'persona_contacto=:persona_contacto',
+            'telefono=:telefono',
+            'descripcion=:descripcion',
+            'correo=:correo',
+            'direccion=:direccion',
+            'poblacion=:poblacion',
+            'codigo_postal=:codigo_postal',
+            'provincia=:provincia',
+            'estado=:estado',
+            'fecha_realizacion=:fecha_realizacion',
+            'anotaciones_antes=:anotaciones_antes',
+            'anotaciones_despues=:anotaciones_despues'
+        ];
+
+        if ($this->hasColumn('tareas', 'fichero_resumen')) {
+            $set[] = 'fichero_resumen=:fichero_resumen';
+        }
+        if ($this->hasColumn('tareas', 'fotos')) {
+            $set[] = 'fotos=:fotos';
+        }
+
+        $sql = 'UPDATE tareas SET ' . implode(', ', $set) . ' WHERE id=:id';
         $stmt = $this->db->prepare($sql);
         $data['id'] = $id;
         return $stmt->execute($data);
@@ -54,5 +73,13 @@ class Task
     {
         $stmt = $this->db->prepare("DELETE FROM tareas WHERE id=?");
         return $stmt->execute([$id]);
+    }
+
+    private function hasColumn($table, $column)
+    {
+        // MySQL: SHOW COLUMNS FROM table LIKE 'column'
+        $stmt = $this->db->prepare("SHOW COLUMNS FROM `" . $table . "` LIKE ?");
+        $stmt->execute([$column]);
+        return (bool) $stmt->fetch(PDO::FETCH_ASSOC);
     }
 }
