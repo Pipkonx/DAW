@@ -26,6 +26,8 @@ Este repositorio contiene ejercicios y prácticas relacionadas con el despliegue
 
 ### [📁 Ejercicio 4: Cambiar configuracion de apache](./04_cambiosApache/README.MD)
 
+### [📁 Ejercicio 5: Directiva directory](./05_DirectivaDirectory/README.MD)
+
 ## 💡 Notas adicionales
 
 - Para detener cualquier servidor, presionar `Ctrl+C` en la línea de comandos
