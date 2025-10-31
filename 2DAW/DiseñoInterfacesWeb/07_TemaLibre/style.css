@@ -1,84 +1,99 @@
 html,
 body {
-    margin: 0;
-    padding: 0;
-    font-family: Arial, Helvetica, sans-serif;
-    height: 100vh;
+  margin: 0;
+  padding: 0;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  scroll-behavior: smooth;
 }
 
 a {
-    font-style: none;
-    text-decoration: none;
-    transition: .3s ease;
-    color: white;
+  text-decoration: none;
+  transition: .25s ease;
+  color: white;
 }
 
 a:hover {
-    text-decoration: underline;
+  text-decoration: underline;
+}
+
+header {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  background: linear-gradient(#087020, #087020b6);
+  z-index: 10;
 }
 
 nav {
-    background-color: #087020;
-    padding: 0.3vh;
-    font-size: x-large;
-    position: fixed;
-    width: 100vw;
-    background: linear-gradient(#087020, #087020b6);
-    margin: 0;
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  gap: 2rem; 
+  padding: .75rem 1rem;
 }
 
-ul {
-    display: flex;
-    gap: 5em;
-    list-style: none;
-    justify-content: center;
-    align-items: center;
-}
 
 #logo {
-    width: 80px;
+  width: 80px;
+  height: auto;
+  display: block;
 }
 
-.container {
-    display: grid;
-    justify-content: center;
-    align-items: center;
-    height: 300vh;
+ ul {
+  display: flex;
+  gap: 2rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  align-items: center;
 }
+
+main {
+  height: 100vh;
+  overflow-y: auto;
+  scroll-snap-type: y mandatory;
+}
+
+/* sin contenedor extra, las secciones ocupan toda la pantalla */
 
 article {
-    width: 70vw;
-    display: flex;
-    gap: 3em;
-    box-shadow: 0 0 10px lightgray;
-    border-radius: 15px;
-    height: 250px;
+  width: min(70vw, 1000px);
+  display: flex;
+  gap: 2rem;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, .12);
+  border-radius: 15px;
+  min-height: 250px;
+  background: #fff;
 }
 
 section {
-    padding: 3%;
-    text-justify: justify;
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  scroll-snap-align: start;
+  scroll-margin-top: 80px; /* compensa el header fijo al navegar por anclas */
 }
 
 section h3 {
-    text-align: center;
+  text-align: center;
 }
 
 hr {
-    width: 90%;
+  width: 90%;
 }
 
 .imgArt {
-    border-radius: 15px 0 0 15px;
+  border-radius: 15px 0 0 15px;
+  max-height: 250px;
+  object-fit: cover;
 }
 
-tbody {
-    width: 100vw;
-    align-items: center;
-}
+/* reglas no utilizadas eliminadas */
 
-#D {
-    border: none;
-    gap: 0;
-    margin: 0;
-}
+/* id #D ya no requiere estilos especiales */

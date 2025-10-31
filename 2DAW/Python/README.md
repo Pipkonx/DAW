@@ -34,6 +34,10 @@ Programación avanzada en Python:
 - **Manejo de archivos**: Lectura/escritura de archivos, JSON, CSV
 - **Desarrollo de aplicaciones**: Aplicaciones de consola, web, análisis de datos
 
+TEORIA: https://github.com/fencgut961/OPT_25_26/blob/main/TEORIA/BLOQUE_03/UD_3_1.md
+
+
+
 #### Proyectos incluidos:
 - Sistema de gestión de inventario
 - Aplicación web básica con Flask
