@@ -27,10 +27,10 @@ class Usuario {
             return ['success' => false, 'error' => 'El email ya está registrado'];
         }
 
-        $hash = password_hash($password, PASSWORD_DEFAULT);
+        // Guardar la contraseña sin aplicar hash
         $pwdCol = $this->getPasswordColumn();
         $stmt = $this->db->prepare("INSERT INTO usuarios (nombre, email, {$pwdCol}) VALUES (?, ?, ?)");
-        $stmt->execute([$nombre, $email, $hash]);
+        $stmt->execute([$nombre, $email, $password]);
         $id = (int)$this->db->lastInsertId();
 
         return ['success' => true, 'id' => $id];
@@ -42,7 +42,7 @@ class Usuario {
         $stmt->execute([$email]);
         $user = $stmt->fetch();
 
-        if (!$user || !isset($user['pwd']) || !password_verify($password, $user['pwd'])) {
+        if (!$user || !isset($user['pwd']) || $password !== $user['pwd']) {
             return ['success' => false, 'error' => 'Credenciales inválidas'];
         }
 

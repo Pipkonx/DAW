@@ -1,8 +1,10 @@
 <?php
 // Conexión a MySQL usando PDO con manejo de errores y UTF-8
 
-class Database {
-    public static function getConnection(): PDO {
+class Database
+{
+    public static function getConnection(): PDO
+    {
         $host = getenv('DB_HOST') ?: 'localhost';
         $dbname = getenv('DB_NAME') ?: 'finanzas_db';
         $user = getenv('DB_USER') ?: 'root';
@@ -32,7 +34,8 @@ class Database {
 }
 
 // Utilidad de sesión/CSRF
-function ensure_session(): void {
+function ensure_session(): void
+{
     if (session_status() !== PHP_SESSION_ACTIVE) {
         session_start();
     }
@@ -41,7 +44,8 @@ function ensure_session(): void {
     }
 }
 
-function verify_csrf_token(?string $token): bool {
+function verify_csrf_token(?string $token): bool
+{
     ensure_session();
     return isset($_SESSION['csrf_token']) && hash_equals($_SESSION['csrf_token'], (string)$token);
 }
