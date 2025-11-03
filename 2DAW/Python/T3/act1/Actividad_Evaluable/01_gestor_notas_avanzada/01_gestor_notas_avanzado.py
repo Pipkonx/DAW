@@ -24,16 +24,60 @@
 #     Documenta el programa con un docstring al inicio y comentarios en las funciones
 
 
-archivo = "2DAW/Python/T3/act1/Actividad_Evaluable/01_gestor_notas_avanzada/notas.txt"
+
+ARCHIVO = "2DAW/Python/T3/act1/Actividad_Evaluable/01_gestor_notas_avanzada/notas.txt"
 
 try:
-    with open(archivo, 'r') as file:
-        content = file.read()
-except FileNotFoundError:
-    print("El fichero no existe")
+    with open(ARCHIVO, "x"):
+        print("\n✅ Archivo creado vacío\n")
+except FileExistsError:
+    # Pass Sirve para marcar la posici'on para indicar que no se necesita ejecutar
+    pass
 
 
-# Con el with podemos asegurarnos de que el archivo se cierre automaticamente
-with open("2DAW/Python/T3/act1/Actividad_Evaluable/01_gestor_notas_avanzada/notas.txt", "r") as f:
-    contenido = f.read()
-    print(contenido)
+def agregar():
+    nota = input("\nNota: ")
+    # Abrir el archivo en modo lectura y escritura ('a+')
+    # El modo 'a+' permite agregar al final y también leer el archivo
+    with open(ARCHIVO, 'a+') as f:
+        # para que se vaya al principio del archivo
+        f.seek(0)
+        lineas = f.readlines()
+        resta = str(len(lineas))
+        # Escribir la nueva línea al final del archivo
+        f.write("\n" + resta + ". " + nota)
+
+    print("\n✅ Nota añadida\n")
+
+def eliminar():
+    with open(ARCHIVO) as f:
+        lineas = f.readlines()
+    ver()
+    num = int(input("Número a borrar: "))
+
+    # Se usa para eliminar variables, elementos de listas, o atributos de objetos
+    del lineas[num]
+
+    with open(ARCHIVO, "w") as f:
+        f.writelines(lineas)
+    print("\n✅ Nota borrada\n")
+
+def ver():
+    with open(ARCHIVO, "r") as archivo:
+        contenido = archivo.read()
+        print(contenido)
+
+while True:
+    print("\n-- Menu --\n\n1) Ver\n2) Añadir\n3) Eliminar\n4) Salir\n")
+    op = input("\nOpción: ")
+    match op:
+        case "1":
+            ver()
+        case "2":
+            agregar()
+        case "3":
+            eliminar()
+        case "4":
+            break
+        case _:
+            print("\n❌ Opción no válida\n")
