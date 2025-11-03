@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Recetas con Filtros dinámicos</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body onload="cargarRecetas()">
+  <h1>Recetas con Filtros dinámicos</h1>
+
+  <div class="buscador">
+    <input type="text" id="inputBusqueda" placeholder="Buscar receta...">
+    <select id="filtroMealType">
+      <option value="">Tipo de comida</option>
+    </select>
+    <select id="filtroDifficulty">
+      <option value="">Dificultad</option>
+    </select>
+    <select id="filtroCuisine">
+      <option value="">Cocina</option>
+    </select>
+    <select id="filtroTiempo">
+      <option value="">Tiempo de preparación</option>
+      <option value="5">Menos de 5 min</option>
+      <option value="15">Menos de 15 min</option>
+      <option value="30">Menos de 30 min</option>
+      <option value="60">Menos de 60 </option>
+    </select>
+    <button id="btnReiniciar">Reestablecer</button>
+  </div>
+  <div id="contenedor"></div>
+  <script src="main.js"></script>
+</body>
+</html>

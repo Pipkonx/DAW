@@ -6,11 +6,13 @@
   <img src="https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black" alt="JavaScript"/>
   <img src="https://img.shields.io/badge/PHP-777BB4?style=for-the-badge&logo=php&logoColor=white" alt="PHP"/>
   <img src="https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python"/>
+  <img src="https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=react&logoColor=black" alt="React"/>
+  <img src="https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white" alt="Node.js"/>
 </div>
 
 ## 📋 Descripción
 
-Este repositorio contiene los proyectos, ejercicios y prácticas realizados durante el segundo curso del Ciclo Formativo de Grado Superior en Desarrollo de Aplicaciones Web. Aquí encontrarás una colección organizada de recursos y código fuente para las diferentes asignaturas del curso.
+Este repositorio contiene los proyectos, ejercicios y prácticas realizados durante el segundo curso del Ciclo Formativo de Grado Superior en Desarrollo de Aplicaciones Web (2024). Aquí encontrarás una colección organizada de recursos y código fuente para las diferentes asignaturas del curso, incluyendo los últimos proyectos y tecnologías actualizadas.
 
 ## 📚 Módulos Formativos
 

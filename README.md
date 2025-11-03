@@ -13,16 +13,28 @@ El repositorio está organizado por cursos:
 
 - **Memorion** - Juego de memoria desarrollado como proyecto práctico
   - [Ver proyecto](./1DAW/Memorion-main)
+- **Python** - Ejercicios y proyectos de programación en Python
+  - [Ver proyectos](./2DAW/Python)
+- **Desarrollo Web Cliente** - Proyectos de JavaScript y frameworks frontend
+  - [Ver proyectos](./2DAW/DWEC)
 
 ## Tecnologías
 
 Este repositorio incluye proyectos y ejercicios desarrollados con diversas tecnologías:
 
-- HTML, CSS y JavaScript
-- Java
-- XML y lenguajes de marcas
-- Bases de datos
-- Y más...
+- **Frontend**: HTML5, CSS3, JavaScript, React
+- **Backend**: Java, Python, PHP
+- **Bases de datos**: MySQL, MongoDB
+- **Otros**: XML, JSON, APIs REST
+- **Despliegue**: Apache, Nginx
+
+## Cursos Actuales (2024)
+
+- **Desarrollo Web en Entorno Cliente (DWEC)**
+- **Desarrollo Web en Entorno Servidor (DWES)**
+- **Diseño de Interfaces Web**
+- **Despliegue de Aplicaciones Web**
+- **Programación en Python**
 
 ## Contacto
 
