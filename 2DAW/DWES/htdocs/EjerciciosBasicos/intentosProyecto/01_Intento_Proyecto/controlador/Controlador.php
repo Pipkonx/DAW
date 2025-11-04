@@ -36,7 +36,7 @@ class Controlador
         if (!$_POST) {
             // hay que iniciarlo para que no muestre aviso en la vistas
             $datos = [];
-            include "vista/usuario_alta.php";
+            include "vista/usuarios/usuario_alta.php";
             return;
         }
 
@@ -152,7 +152,7 @@ class Controlador
         global $conn;
         $usuario = new Usuario($conn);
         $usuarios = $usuario->listar();
-        include "vista/usuario_lista.php";
+        include "vista/usuarios/usuario_lista.php";
     }
 
     public function modificar($id)
@@ -182,7 +182,7 @@ class Controlador
         global $conn;
         $tarea = new Tarea($conn);
         $tareas = $tarea->listar();
-        include "vista/tarea_lista.php";
+        include "vista/tareas/tarea_lista.php";
     }
 
     public function modificarTarea($id)
@@ -204,7 +204,7 @@ class Controlador
             return;
         }
 
-        include "vista/tarea_modificar.php";
+        include "vista/tareas/tarea_modificar.php";
     }
 
     public function borrarTarea($id)
@@ -221,4 +221,17 @@ class Controlador
         $datos = $tarea->obtenerId($id);
         include "vista/tarea_borrar.php";
     }
+
+    public function altaTarea()
+    {
+        global $conn;
+        $tarea = new Tarea($conn);
+        $datos = $tarea->obtenerId($id);
+        include "vista/tarea_alta.php";
+    }
+
+
+
+
+
 }

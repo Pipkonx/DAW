@@ -137,11 +137,11 @@
             <select name="operario" class="form-select" required>
                 <option value="">Selecciona un operario</option>
                 <?php if (!empty($operators)):
-                    $sel = $_POST['operario'] ?? ''; 
-                    foreach ($operators as $op): 
+                    $sel = $_POST['operario'] ?? '';
+                    foreach ($operators as $op):
                         $selected = ($sel === $op['nombre']) ? 'selected' : ''; ?>
                         <option value="<?= htmlspecialchars($op['nombre']) ?>" <?= $selected ?>><?= htmlspecialchars($op['nombre']) ?></option>
-                    <?php endforeach; 
+                <?php endforeach;
                 endif; ?>
             </select>
         </div>

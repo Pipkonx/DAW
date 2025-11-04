@@ -1,0 +1,18 @@
+=========================================================
+==== EJEMPLO DE CREACIÓN DE WEB USANDO EL PATRÓN MVC ====
+=========================================================
+APROXIMACIÓN PRIMERA
+
+Ejemplo de creación de una web modular usando el patrón MVC y con un enfoque
+modular.
+Cada vista se encargará de incluir todas las partes de la plantilla y generar 
+una página completa.
+
+Estamos repitiendo código, si hay que modificar hay que alterar muchas páginas
+
+
+Carpetas
+- ctrl = Controladores
+- model = Modelos
+- view = Vistas
+- plantilla= Partes de la plantilla para web modular

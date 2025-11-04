@@ -1,0 +1,24 @@
+=========================================================
+==== EJEMPLO DE CREACIÓN DE WEB USANDO EL PATRÓN MVC ====
+==== Y CONTROLADOR FRONTAL                           ====
+=========================================================
+APROXIMACIÓN SEGUNDA
+
+Ejemplo de creación de una web modular usando el patrón MVC y con un enfoque
+modular y usando el patrón de diseño controlador frontal.
+
+El controlador frontal tan solo tiene código que se encarga de la lógica.
+Cada control de forma individual cargará la plantilla que está utilizando
+y configurará las diferentes partes.
+
+Este enfoque permite que cada controlador tengan un control total sobre lá
+página mostrada, y aproveche la modularidad
+
+
+Carpetas
+- ctrl      = Controladores
+- model     = Modelos
+- view      = Vistas
+- plantilla = Partes de la plantilla para web modular
+- helpers   = Funciones libres que facilitaran el trabajo
+- lib       = Librerias. Clases que nos facilitarán el trabajo
