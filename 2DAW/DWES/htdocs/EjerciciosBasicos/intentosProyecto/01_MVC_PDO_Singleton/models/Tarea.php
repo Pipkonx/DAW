@@ -1,15 +1,18 @@
 <?php
 require_once __DIR__ . '/../config/Database.php';
 
-class Tarea {
+class Tarea
+{
     private $db;
-    
-    public function __construct() {
+
+    public function __construct()
+    {
         $this->db = Database::getInstance()->getConnection();
     }
-    
+
     // Obtener todas las tareas
-    public function getAll() {
+    public function getAll()
+    {
         try {
             $stmt = $this->db->query(
                 "SELECT t.*, u.nombre AS nombre_usuario, u.email AS email_usuario
@@ -18,13 +21,14 @@ class Tarea {
                  ORDER BY t.fecha_creacion DESC"
             );
             return $stmt->fetchAll();
+            // usamos el PDO exception directamtente en vez de Exception
         } catch (PDOException $e) {
             return [];
         }
     }
-    
-    // Obtener tarea por ID
-    public function getById($id) {
+
+    public function getById($id)
+    {
         try {
             $stmt = $this->db->prepare("SELECT * FROM tareas WHERE id = ?");
             $stmt->execute([$id]);
@@ -33,10 +37,12 @@ class Tarea {
             return false;
         }
     }
-    
+
     // Crear nueva tarea (acepta array o parámetros sueltos)
-    public function create($dataOrTitulo, $descripcion = null, $usuario_id = null) {
+    public function create($dataOrTitulo, $descripcion = null, $usuario_id = null)
+    {
         try {
+            // is_array es para ver si es un array o no
             if (is_array($dataOrTitulo)) {
                 $data = $dataOrTitulo;
                 $titulo = $data['titulo'] ?? '';
@@ -46,15 +52,19 @@ class Tarea {
                 $titulo = $dataOrTitulo;
                 // $descripcion y $usuario_id ya vienen por parámetros
             }
+
+
+            // el prepare es para prevenir inyeccion sql
             $stmt = $this->db->prepare("INSERT INTO tareas (titulo, descripcion, usuario_id) VALUES (?, ?, ?)");
             return $stmt->execute([$titulo, $descripcion, $usuario_id]);
         } catch (PDOException $e) {
             return false;
         }
     }
-    
+
     // Actualizar tarea (acepta array o parámetros sueltos)
-    public function update($id, $dataOrTitulo, $descripcion = null) {
+    public function update($id, $dataOrTitulo, $descripcion = null)
+    {
         try {
             if (is_array($dataOrTitulo)) {
                 $data = $dataOrTitulo;
@@ -62,9 +72,10 @@ class Tarea {
                 $descripcion = $data['descripcion'] ?? '';
                 $usuario_id = $data['usuario_id'] ?? null;
                 $completada = isset($data['completada']) ? (int)$data['completada'] : 0;
-                
+
                 if ($completada === 1) {
                     $stmt = $this->db->prepare("UPDATE tareas SET titulo = ?, descripcion = ?, usuario_id = ?, completada = 1, fecha_completado = NOW() WHERE id = ?");
+                    // execute es para ejecutar la consulta
                     return $stmt->execute([$titulo, $descripcion, $usuario_id, $id]);
                 } else {
                     $stmt = $this->db->prepare("UPDATE tareas SET titulo = ?, descripcion = ?, usuario_id = ?, completada = 0, fecha_completado = NULL WHERE id = ?");
@@ -79,9 +90,10 @@ class Tarea {
             return false;
         }
     }
-    
+
     // Marcar tarea como completada
-    public function marcarComoCompletada($id) {
+    public function marcarComoCompletada($id)
+    {
         try {
             $stmt = $this->db->prepare("UPDATE tareas SET completada = 1, fecha_completado = NOW() WHERE id = ?");
             return $stmt->execute([$id]);
@@ -89,9 +101,10 @@ class Tarea {
             return false;
         }
     }
-    
+
     // Marcar tarea como pendiente
-    public function marcarComoPendiente($id) {
+    public function marcarComoPendiente($id)
+    {
         try {
             $stmt = $this->db->prepare("UPDATE tareas SET completada = 0, fecha_completado = NULL WHERE id = ?");
             return $stmt->execute([$id]);
@@ -99,9 +112,10 @@ class Tarea {
             return false;
         }
     }
-    
+
     // Eliminar tarea
-    public function delete($id) {
+    public function delete($id)
+    {
         try {
             $stmt = $this->db->prepare("DELETE FROM tareas WHERE id = ?");
             return $stmt->execute([$id]);
@@ -109,9 +123,10 @@ class Tarea {
             return false;
         }
     }
-    
+
     // Obtener tareas por usuario (con datos del usuario)
-    public function getByUsuario($usuario_id) {
+    public function getByUsuario($usuario_id)
+    {
         try {
             $stmt = $this->db->prepare(
                 "SELECT t.*, u.nombre AS nombre_usuario, u.email AS email_usuario
@@ -126,12 +141,14 @@ class Tarea {
             return [];
         }
     }
-    
+
     // Obtener tareas por estado (0 pendientes, 1 completadas) con datos del usuario
-    public function getByEstado($completada) {
+    public function getByEstado($completada)
+    {
         try {
             $completada = (int)$completada;
             if ($completada === 1) {
+                // diferencia entre query y execute es que query es para consultas pero no devuelve datos y el execute es para ejecutar la consulta y devolver datos
                 $stmt = $this->db->query(
                     "SELECT t.*, u.nombre AS nombre_usuario, u.email AS email_usuario
                      FROM tareas t

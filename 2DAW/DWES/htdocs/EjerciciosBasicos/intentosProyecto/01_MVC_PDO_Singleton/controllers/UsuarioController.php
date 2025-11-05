@@ -17,7 +17,6 @@ class UsuarioController {
         return $errores;
     }
     
-    // Validar email
     private function validarEmail($email) {
         $errores = [];
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -26,7 +25,6 @@ class UsuarioController {
         return $errores;
     }
     
-    // Validar nombre
     private function validarNombre($nombre) {
         $errores = [];
         if (empty($nombre)) {
@@ -48,6 +46,7 @@ class UsuarioController {
         $errores = [];
         $datos = ['nombre' => '', 'email' => '', 'password' => ''];
         
+        // podriamos poner directamnete el post
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $datos = [
                 'nombre' => trim($_POST['nombre'] ?? ''),
@@ -56,6 +55,7 @@ class UsuarioController {
             ];
             
             // Validaciones
+            // array_merge es para unir los array de errores
             $errores = array_merge(
                 $this->validarNombre($datos['nombre']),
                 $this->validarEmail($datos['email']),

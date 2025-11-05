@@ -6,7 +6,6 @@ class Database
     private static $instance = null;
     private $connection;
 
-    // Constructor privado para prevenir instanciación directa
     private function __construct()
     {
         try {
@@ -21,16 +20,17 @@ class Database
         }
     }
 
-    // Método para obtener la instancia única (Singleton)
+// singlestone
     public static function getInstance()
     {
+        // self es para accedeer a la propiedad de dentro
         if (self::$instance === null) {
             self::$instance = new self();
         }
         return self::$instance;
     }
 
-    // Método para obtener la conexión
+
     public function getConnection()
     {
         return $this->connection;

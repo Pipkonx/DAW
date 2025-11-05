@@ -19,6 +19,7 @@
         <?php if (!empty($errores)): ?>
             <div class="alert alert-danger">
                 <?php foreach ($errores as $error): ?>
+                    <!-- HTMLSPECIALCHARS es para prevenir inyeccion sql desde el html desde php seria con prepare -->
                     <p class="error-text"><?= htmlspecialchars($error) ?></p>
                 <?php endforeach; ?>
             </div>
@@ -28,6 +29,7 @@
             <div class="form-group">
                 <label for="titulo">Título:</label>
                 <input type="text" id="titulo" name="titulo" value="<?= htmlspecialchars($datos['titulo']) ?>" required>
+                <!--! CAMBIAR EL REQUIRE PARA QUE LO VERIFIQUE EN PHP CON  -->
             </div>
 
             <div class="form-group">

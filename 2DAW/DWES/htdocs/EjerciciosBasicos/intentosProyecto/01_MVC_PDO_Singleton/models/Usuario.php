@@ -23,6 +23,7 @@ class Usuario {
         try {
             $stmt = $this->db->prepare("SELECT * FROM usuarios WHERE id = ?");
             $stmt->execute([$id]);
+            // diferencia entre fetch y fetchall es que uno devuelve una y el otro todas
             return $stmt->fetch();
         } catch (PDOException $e) {
             return false;
@@ -71,7 +72,8 @@ class Usuario {
         }
     }
     
-    // Verificar contraseña (sin hash)
+    // Verificar contraseña
+    // ! DEBERIA DE HASHEAR LA CONTRASEÑA
     public function verifyPassword($email, $password) {
         $usuario = $this->getByEmail($email);
         if ($usuario && $usuario['password'] === $password) {

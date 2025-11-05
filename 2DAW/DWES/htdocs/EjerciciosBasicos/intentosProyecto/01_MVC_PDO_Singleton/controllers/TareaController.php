@@ -1,4 +1,5 @@
 <?php
+// dir es para coger la ruta
 require_once __DIR__ . '/../models/Tarea.php';
 require_once __DIR__ . '/../models/Usuario.php';
 
@@ -13,21 +14,22 @@ class TareaController
         $this->usuarioModel = new Usuario();
     }
 
-    // Validar título
     private function validarTitulo($titulo)
     {
         $errores = [];
         if (empty($titulo)) {
             $errores[] = "El título no puede estar vacío";
+            //strlen nos dice la longitud
         } elseif (strlen($titulo) < 3) {
             $errores[] = "El título debe tener al menos 3 caracteres";
         }
         return $errores;
     }
 
-    // Listar todas las tareas con filtros
+    // Listar todas las tareas
     public function index()
     {
+        // el ?? es para si no hay valor que ponga null
         $usuarioId = $_GET['usuario_id'] ?? null;
         $completada = $_GET['completada'] ?? null;
 
@@ -46,7 +48,6 @@ class TareaController
         require_once __DIR__ . '/../views/tareas/index.php';
     }
 
-    // Mostrar formulario de creación
     public function crear()
     {
         $usuarios = $this->usuarioModel->getAll();
@@ -76,7 +77,6 @@ class TareaController
         require_once __DIR__ . '/../views/tareas/crear.php';
     }
 
-    // Mostrar formulario de edición
     public function editar()
     {
         $id = $_GET['id'] ?? null;
@@ -97,6 +97,7 @@ class TareaController
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $datos = [
+                // trim quita los espacios
                 'titulo' => trim($_POST['titulo'] ?? ''),
                 'descripcion' => trim($_POST['descripcion'] ?? ''),
                 'usuario_id' => $_POST['usuario_id'] ?? '',
@@ -107,7 +108,9 @@ class TareaController
             $errores = $this->validarDatos($datos);
 
             if (empty($errores)) {
+                // el update es para actualizar la tarea
                 if ($this->tareaModel->update($id, $datos)) {
+                    // el header es para redirigir a la lista de tareas
                     header('Location: index.php?controller=tarea&action=index');
                     exit;
                 } else {
@@ -119,7 +122,6 @@ class TareaController
         require_once __DIR__ . '/../views/tareas/editar.php';
     }
 
-    // Marcar tarea como completada
     public function marcarCompletada()
     {
         $id = $_GET['id'] ?? null;

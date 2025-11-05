@@ -59,6 +59,7 @@
                 </thead>
                 <tbody>
                     <?php foreach ($tareas as $tarea): ?>
+                        <!-- usamos los ternario para ser mas corto -->
                         <tr class="<?= $tarea['completada'] ? 'completada' : 'pendiente' ?>">
                             <td><?= htmlspecialchars($tarea['id']) ?></td>
                             <td><?= htmlspecialchars($tarea['titulo']) ?></td>
