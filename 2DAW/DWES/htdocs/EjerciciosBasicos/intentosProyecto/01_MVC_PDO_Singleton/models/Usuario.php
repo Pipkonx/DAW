@@ -11,7 +11,9 @@ class Usuario {
     // Obtener todos los usuarios
     public function getAll() {
         try {
-            $stmt = $this->db->query("SELECT id, nombre, email, password, created_at FROM usuarios ORDER BY id DESC");
+            $stmt = $this->db->query("SELECT id, nombre, email, password, created_at 
+            FROM usuarios 
+            ORDER BY id DESC");
             return $stmt->fetchAll();
         } catch (PDOException $e) {
             return [];

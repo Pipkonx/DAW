@@ -20,7 +20,7 @@ class Database
         }
     }
 
-// singlestone
+    // singlestone
     public static function getInstance()
     {
         // self es para accedeer a la propiedad de dentro

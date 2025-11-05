@@ -110,7 +110,7 @@ class TareaController
             if (empty($errores)) {
                 // el update es para actualizar la tarea
                 if ($this->tareaModel->update($id, $datos)) {
-                    // el header es para redirigir a la lista de tareas
+                    // header para hacer redirecciones
                     header('Location: index.php?controller=tarea&action=index');
                     exit;
                 } else {

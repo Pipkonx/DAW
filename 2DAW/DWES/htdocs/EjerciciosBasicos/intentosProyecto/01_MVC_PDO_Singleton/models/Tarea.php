@@ -15,10 +15,12 @@ class Tarea
     {
         try {
             $stmt = $this->db->query(
-                "SELECT t.*, u.nombre AS nombre_usuario, u.email AS email_usuario
-                 FROM tareas t
-                 JOIN usuarios u ON u.id = t.usuario_id
-                 ORDER BY t.fecha_creacion DESC"
+                "SELECT t.*, u.nombre 
+                AS nombre_usuario, u.email 
+                AS email_usuario
+                FROM tareas t
+                JOIN usuarios u ON u.id = t.usuario_id
+                ORDER BY t.fecha_creacion DESC"
             );
             return $stmt->fetchAll();
             // usamos el PDO exception directamtente en vez de Exception
@@ -38,7 +40,7 @@ class Tarea
         }
     }
 
-    // Crear nueva tarea (acepta array o parámetros sueltos)
+    // Crear nueva tarea
     public function create($dataOrTitulo, $descripcion = null, $usuario_id = null)
     {
         try {
@@ -50,19 +52,19 @@ class Tarea
                 $usuario_id = $data['usuario_id'] ?? null;
             } else {
                 $titulo = $dataOrTitulo;
-                // $descripcion y $usuario_id ya vienen por parámetros
             }
 
 
             // el prepare es para prevenir inyeccion sql
-            $stmt = $this->db->prepare("INSERT INTO tareas (titulo, descripcion, usuario_id) VALUES (?, ?, ?)");
+            $stmt = $this->db->prepare("INSERT INTO tareas (titulo, descripcion, usuario_id) 
+            VALUES (?, ?, ?)");
             return $stmt->execute([$titulo, $descripcion, $usuario_id]);
         } catch (PDOException $e) {
             return false;
         }
     }
 
-    // Actualizar tarea (acepta array o parámetros sueltos)
+    // Actualizar tarea
     public function update($id, $dataOrTitulo, $descripcion = null)
     {
         try {
@@ -129,11 +131,13 @@ class Tarea
     {
         try {
             $stmt = $this->db->prepare(
-                "SELECT t.*, u.nombre AS nombre_usuario, u.email AS email_usuario
-                 FROM tareas t
-                 JOIN usuarios u ON u.id = t.usuario_id
-                 WHERE t.usuario_id = ?
-                 ORDER BY t.fecha_creacion DESC"
+                "SELECT t.*, u.nombre 
+                AS nombre_usuario, u.email 
+                AS email_usuario
+                FROM tareas t
+                JOIN usuarios u ON u.id = t.usuario_id
+                WHERE t.usuario_id = ?
+                ORDER BY t.fecha_creacion DESC"
             );
             $stmt->execute([$usuario_id]);
             return $stmt->fetchAll();
@@ -150,19 +154,23 @@ class Tarea
             if ($completada === 1) {
                 // diferencia entre query y execute es que query es para consultas pero no devuelve datos y el execute es para ejecutar la consulta y devolver datos
                 $stmt = $this->db->query(
-                    "SELECT t.*, u.nombre AS nombre_usuario, u.email AS email_usuario
-                     FROM tareas t
-                     JOIN usuarios u ON u.id = t.usuario_id
-                     WHERE t.completada = 1
-                     ORDER BY t.fecha_completado DESC"
+                    "SELECT t.*, u.nombre 
+                    AS nombre_usuario, u.email 
+                    AS email_usuario
+                    FROM tareas t
+                    JOIN usuarios u ON u.id = t.usuario_id
+                    WHERE t.completada = 1
+                    ORDER BY t.fecha_completado DESC"
                 );
             } else {
                 $stmt = $this->db->query(
-                    "SELECT t.*, u.nombre AS nombre_usuario, u.email AS email_usuario
-                     FROM tareas t
-                     JOIN usuarios u ON u.id = t.usuario_id
-                     WHERE t.completada = 0
-                     ORDER BY t.fecha_creacion DESC"
+                    "SELECT t.*, u.nombre 
+                    AS nombre_usuario, u.email 
+                    AS email_usuario
+                    FROM tareas t
+                    JOIN usuarios u ON u.id = t.usuario_id
+                    WHERE t.completada = 0
+                    ORDER BY t.fecha_creacion DESC"
                 );
             }
             return $stmt->fetchAll();
