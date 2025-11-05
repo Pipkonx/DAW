@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Partida</title>
+  <link rel="stylesheet" href="../../public/style.css">
+</head>
+<body>
+  <h1>Partida de Ahorcado</h1>
+  <p>Usuario: <span id="usuario">Invitado</span></p>
+  <div>
+    <p>Fallos: <span id="fallos">0</span> / <span id="maxfallos">6</span></p>
+    <p id="palabras">_ _ _ _ _</p>
+    <div id="teclado"></div>
+    <p id="mensaje"></p>
+    <button id="start">Empezar</button>
+    <button id="end">Terminar</button>
+  </div>
+
+  <div id="game-config" data-secreta="" data-maxfallos="6" data-login="" data-id-palabra=""></div>
+  <script src="../../public/main.js"></script>
+</body>
+</html>

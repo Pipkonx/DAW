@@ -14,6 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['act
     $stmt = $pdo->query('SELECT id_categoria, nombre_categoria FROM CATEGORIAS ORDER BY nombre_categoria');
     $cats = $stmt->fetchAll();
     header('Content-Type: application/json');
+    // json_encode convierte el array en una cadena json
     echo json_encode($cats);
     exit;
 }

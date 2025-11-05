@@ -11,8 +11,7 @@
 <body>
   <main class="card">
     <h1>Ahorcado</h1>
-    <!-- aria-live es para que el screen reader lea el contenido del div -->
-    <div id="palabra" aria-live="mascara" aria-label="Palabra oculta"></div>
+    <div id="palabra" aria-label="Palabra oculta"></div>
     <div id="status">
       <div>Fallos: <span id="fallos">0</span> / <span id="maximoFallos">6</span></div>
     </div>

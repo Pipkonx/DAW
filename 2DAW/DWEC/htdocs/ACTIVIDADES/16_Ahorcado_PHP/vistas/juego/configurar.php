@@ -29,7 +29,7 @@
 
         <label for="categoria">Categoría</label>
         <select id="categoria" name="categoria" required>
-            <option value="">Cargando...</option>
+            <option value="">Seleccionar Categoria</option>
         </select>
 
         <label for="dificultad">Dificultad</label>
@@ -42,31 +42,7 @@
         <button type="submit">Comenzar</button>
     </form>
 
-    <script>
-        fetch('../../contorlador/juego.php?action=categorias')
-            .then(r => r.json())
-            .then(data => {
-                const sel = document.getElementById('categoria');
-                sel.innerHTML = '';
-                if (!Array.isArray(data) || data.length === 0) {
-                    sel.innerHTML = '<option value="">Sin categorías</option>';
-                    sel.disabled = true;
-                    return;
-                }
-                data.forEach(c => {
-                    const opt = document.createElement('option');
-                    opt.value = c.id_categoria;
-                    opt.textContent = c.nombre_categoria;
-                    sel.appendChild(opt);
-                });
-            })
-            // el catch es para manejar los errores en la carga de categorias
-            .catch(() => {
-                const sel = document.getElementById('categoria');
-                sel.innerHTML = '<option value="">Error cargando categorías</option>';
-                sel.disabled = true;
-            });
-    </script>
+    <script src="../public/main.js"></script>
     <p>
         <a href="mis_partidas.php?login=<?= urlencode($login) ?>">Ver mis partidas</a>
     </p>
