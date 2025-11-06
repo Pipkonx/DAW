@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <!-- ---------------------------------------------------------- -->
+    <!--            NO AGREGO PDF PORQUE SE QUEDABA MUY LARGO       -->
+    <!-- ---------------------------------------------------------- -->
+
+    <!-- agrego las dos hojas de estilos como se indica en la actividad -->
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style2.css">
+    <!-- Hoja de impresión: oculta header, nav, aside y footer -->
+    <link rel="stylesheet" href="print.css" media="print">
+</head>
+
+<body>
+    <header>
+        <h1>Mi Sitio Web</h1>
+    </header>
+    <nav>
+        <ul>
+            <li><a href="#">Inicio</a></li>
+            <li><a href="#">Servicios</a></li>
+            <li><a href="#">Nosotros</a></li>
+            <li><a href="#">Contacto</a></li>
+        </ul>
+    </nav>
+    <main>
+        <section>
+            <h2>Sección 1</h2>
+            <p>Contenido de la sección 1.</p>
+            <p>Parrafo de texto en diferente apartado 1</p>
+            <p>Texto adicional para mejorar la legibilidad y comprobar espaciados.</p>
+        </section>
+        <section>
+            <h2>Sección 2</h2>
+            <p>Contenido de la sección 2.</p>
+            <p>Parrafo de texto en diferente apartado 2</p>
+            <p>Más contenido para el diseño, incluyendo ejemplos de paginación y botones.</p>
+            <!-- Paginación -->
+            <ul class="pagination">
+                <li><a href="#" class="cursor-pointer">«</a></li>
+                <li class="active"><a href="#" class="cursor-pointer">1</a></li>
+                <li><a href="#" class="cursor-pointer">2</a></li>
+                <li><a href="#" class="cursor-pointer">3</a></li>
+                <li><a href="#" class="cursor-pointer">»</a></li>
+            </ul>
+            <!-- Botones -->
+            <div class="botones">
+                <button class="btn btn-alert">Alerta</button>
+                <button class="btn btn-icon"><img src="Imagen_PNG.png" alt="icono">Con icono</button>
+                <button class="btn btn-gradient">Degradado</button>
+                <button class="btn btn-shadow">Sombras</button>
+            </div>
+        </section>
+    </main>
+    <aside>
+        <h2>Listado</h2>
+        <ul>
+            <li>Elemento 1</li>
+            <li>Elemento 2</li>
+            <li class="cursor-move">Elemento 3</li>
+        </ul>
+        <!-- Imágenes en diferentes formatos -->
+        <picture>
+            <source srcset="1.jpeg" type="image/jpeg">
+            <img src="Imagen_PNG.png" alt="Imagen alternativa" class="img-rounded img-shadow">
+        </picture>
+    </aside>
+    <footer>
+        <div>
+            <h3>Contacto</h3>
+            <p>Email: info@misitioweb.com</p>
+        </div>
+        <div>
+            <h3>Redes Sociales</h3>
+            <p>Síguenos en Twitter, Facebook, Instagram, etc.</p>
+        </div>
+        <div>
+            <h3>Acerca de Nosotros</h3>
+            <p>Información sobre nuestro sitio web y nuestro equipo.</p>
+        </div>
+        <div>
+            <h3>Enlaces</h3>
+
+            <p>Mapa del sitio</p>
+        </div>
+
+        <img src="1.jpeg" alt="Imagen JPG" class="img-rounded img-shadow">
+        <button class="btn btn-outline"><img src="Imagen_PNG.png" alt="Icono">boton prueba</button>
+
+        <!-- Esto lo he tenido que buscar porque no sabia -->
+        <svg class="svg-inline" version="1.1" baseProfile="full" width="120" height="120"
+            xmlns="http://www.w3.org/2000/svg">
+            <circle class="primary" cx="60" cy="60" r="50" fill="lightblue" />
+        </svg>
+
+        <!-- SVG con diferentes etiquetas -->
+        <img src="icon.svg" alt="Icono SVG" class="svg-relative">
+        <object type="image/svg+xml" data="icon.svg" class="svg-inline"></object>
+
+
+    </footer>
+    <script src="main.js"></script>
+</body>
+
+</html>

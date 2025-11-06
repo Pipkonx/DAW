@@ -1,0 +1,105 @@
+:root {
+    --color1: lightblue;
+    --color2: lightcoral;
+    --color3: lightgreen;
+    --color4: rgb(224, 229, 255);
+    --texto: white;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    margin: auto;
+    padding: auto;
+}
+
+header {
+    background-color: var(--color1);
+    color: white;
+    text-align: center;
+    padding: 20px;
+}
+
+nav {
+    background-color: var(--color2);
+    color: var(--texto);
+    text-align: center;
+
+    & ul {
+        /* display: flex; */
+        display: inline;
+        list-style-type: none;
+        color: var(--texto);
+    }
+
+    & a {
+        color: var(--texto);
+    }
+}
+
+main {
+    padding: 20px;
+    width: 20vw;
+    height: 100vh;
+    float: left;
+}
+
+section {
+    display: block;
+    margin: 0 10px 0 0;
+}
+
+aside {
+    background-color: var(--color3);
+    width: 23vw;
+    float: left;
+}
+
+footer {
+    background-color: var(--color4);
+    color: var(--texto);
+    padding: 20px;
+    clear: both;
+
+    & div {
+        margin: 0 auto 0 0;
+        padding: 20px;
+        width: 10%;
+    }
+}
+
+@media screen and (max-width: 1000px) {
+
+    main,
+    aside {
+        width: 100%;
+    }
+
+    footer {
+        width: 50%;
+    }
+}
+
+@media screen and (max-width: 600px) {
+    nav,
+    nav ul,
+    nav li {
+        display: block;
+        /* display: grid; */
+    }
+
+    main,
+    section,
+    aside,
+    div,
+    footer {
+        width: 100%;
+        float: none;
+    }
+}
+
+header,
+footer,
+nav,
+aside {
+    font-size: 12px;
+}

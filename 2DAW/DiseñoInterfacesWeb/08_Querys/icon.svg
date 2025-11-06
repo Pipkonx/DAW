@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+  <!-- Icono SVG simple con clase para estilos CSS -->
+  <circle class="primary" cx="32" cy="32" r="28" fill="#6a11cb" />
+  <path d="M32 18 L44 32 L32 46 L20 32 Z" fill="#ffffff" />
+</svg>

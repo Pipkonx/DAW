@@ -1,0 +1,291 @@
+:root {
+    --blanco: #ffffff;
+    --negro: #000000;
+    --color1: #2E86C1;
+    --color2: #D35400;
+    --color3: #27AE60;
+    --color4: #E0E5FF;
+    --texto: #ffffff;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    margin: 0;
+    padding: 0;
+    font-size: 12px;
+    /* line height es tambin para el espaciado de linea */
+    line-height: 1.6;
+    color: #222;
+}
+
+header {
+    background-color: var(--color1);
+    color: var(--blanco);
+    text-align: center;
+    padding: 20px;
+}
+
+nav {
+    background-color: var(--color2);
+    color: var(--texto);
+    padding: 10px 0;
+}
+
+nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+}
+
+nav li {
+    display: inline-block;
+    margin: 0 12px;
+}
+
+nav a {
+    color: var(--texto);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+nav a:hover {
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+main {
+    padding: 20px;
+    width: 70%;
+    float: left;
+    /* box sizing es para que eel pading no se sume al ancho */
+    box-sizing: border-box;
+}
+
+section {
+    display: block;
+    margin-right: 20px;
+    margin-bottom: 20px;
+    background: #f9f9f9;
+    padding: 12px;
+    border-radius: 6px;
+}
+
+aside {
+    background-color: var(--color3);
+    color: var(--blanco);
+    padding: 20px;
+    width: 30%;
+    float: left;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+aside ul {
+    margin: 0;
+    padding-left: 18px;
+}
+
+aside li {
+    margin-bottom: 8px;
+}
+
+footer {
+    background-color: var(--color4);
+    color: var(--negro);
+    padding: 20px;
+    clear: both;
+}
+
+footer div {
+    display: block;
+    float: left;
+    width: 25%;
+    margin-right: 20px;
+    padding: 10px;
+    box-sizing: border-box;
+    background: #f6f8ff;
+    border-radius: 6px;
+}
+
+
+
+button {
+    cursor: pointer;
+    outline: none;
+    transition: .3s ease;
+}
+
+button:hover {
+    background-color: var(--negro);
+    color: var(--blanco);
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    transition: .3s ease;
+    font-weight: 600;
+}
+
+.btn-alert {
+    background: #e74c3c;
+    color: #fff;
+}
+
+
+.btn-icon svg,
+.btn-icon img {
+    width: 18px;
+    height: 18px;
+}
+
+.btn-gradient {
+    background: linear-gradient(135deg, #6a11cb, #2575fc);
+    color: var(--blanco);
+}
+
+.btn-gradient:hover {
+    filter: saturate(1.2);
+}
+
+.btn-shadow {
+    background: #34495e;
+    color: var(--blanco);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, .25);
+}
+
+.btn-shadow:hover {
+    box-shadow: 0 10px 22px rgba(0, 0, 0, .3);
+    transform: translateY(-1px);
+}
+
+.pagination {
+    list-style: none;
+    padding: 0;
+    margin: 20px 0;
+    text-align: center;
+}
+
+.pagination li {
+    display: inline-block;
+    margin: 0 6px;
+}
+
+.pagination a {
+    display: inline-block;
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    text-decoration: none;
+    color: #333;
+}
+
+.pagination a:hover {
+    background: #eee;
+}
+
+.pagination .active a {
+    background: #2E86C1;
+    color: var(--blanco);
+    border-color: #2E86C1;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.cursor-help {
+    cursor: help;
+}
+
+.cursor-not-allowed {
+    cursor: not-allowed;
+}
+
+.cursor-move {
+    cursor: move;
+}
+
+img,
+svg {
+    max-width: 100%;
+    height: auto;
+}
+
+.img-rounded {
+    border-radius: 12px;
+}
+
+.img-shadow {
+    box-shadow: 0 6px 18px rgba(0, 0, 0, .2);
+}
+
+.svg-inline {
+    width: 120px;
+    height: 120px;
+
+    & .primary {
+        fill: #6a11cb;
+    }
+}
+
+.svg-color-primary {
+    /* el fill es para cambiar el color de los elementos que tengan la clase .primary */
+    fill: #6a11cb;
+}
+
+.svg-relative {
+    position: relative;
+    left: 10px;
+    top: 5px;
+}
+
+header,
+footer,
+nav,
+aside {
+    /* visibility: hidden; */
+    /* opacity: 0; */
+
+    /* <!-- ---------------------------------------------------------- -->
+<!--  OCULTAR LA PROPIEDAD DE ABAJO PARA VER EL RESTO DE LA ACTIVIDAD  -->
+<!-- ---------------------------------------------------------- --> */
+    /* display: none; */
+}
+
+
+
+/* LAS MEDIAQUERYS */
+@media screen and (max-width: 1000px) {
+
+    main,
+    aside {
+        width: 100%;
+    }
+
+    footer div {
+        width: 50%;
+    }
+}
+
+@media screen and (max-width: 600px) {
+    nav li {
+        display: block;
+        margin: 8px 0;
+    }
+
+    main,
+    section,
+    aside,
+    footer div {
+        width: 100%;
+        float: none;
+        margin-right: 0;
+    }
+}

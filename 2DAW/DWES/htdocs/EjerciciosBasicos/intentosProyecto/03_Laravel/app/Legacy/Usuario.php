@@ -1,39 +1,43 @@
 <?php
-require_once __DIR__ . '/../config/Database.php';
 
-class Usuario {
-    private $db;
-    
-    public function __construct() {
+namespace App\Legacy;
+
+use App\Services\Database;
+use PDO;
+use PDOException;
+
+class Usuario
+{
+    private PDO $db;
+
+    public function __construct()
+    {
         $this->db = Database::getInstance()->getConnection();
     }
-    
-    // Obtener todos los usuarios
-    public function getAll() {
+
+    public function getAll(): array
+    {
         try {
-            $stmt = $this->db->query("SELECT id, nombre, email, password, created_at 
-            FROM usuarios 
-            ORDER BY id DESC");
+            $stmt = $this->db->query("SELECT id, nombre, email, password, created_at FROM usuarios ORDER BY id DESC");
             return $stmt->fetchAll();
         } catch (PDOException $e) {
             return [];
         }
     }
 
-    // Obtener usuario por ID
-    public function getById($id) {
+    public function getById(int $id): array|false
+    {
         try {
             $stmt = $this->db->prepare("SELECT * FROM usuarios WHERE id = ?");
             $stmt->execute([$id]);
-            // diferencia entre fetch y fetchall es que uno devuelve una y el otro todas
             return $stmt->fetch();
         } catch (PDOException $e) {
             return false;
         }
     }
-    
-    // Obtener usuario por email
-    public function getByEmail($email) {
+
+    public function getByEmail(string $email): array|false
+    {
         try {
             $stmt = $this->db->prepare("SELECT * FROM usuarios WHERE email = ?");
             $stmt->execute([$email]);
@@ -42,20 +46,19 @@ class Usuario {
             return false;
         }
     }
-    
-    // Crear nuevo usuario
-    public function create($nombre, $email, $password) {
+
+    public function create(string $nombre, string $email, string $password): bool
+    {
         try {
-            // Contraseña sin hash
-            $stmt = $this->db->prepare("INSERT INTO usuarios (nombre, email, password) VALUES (?, ?, ?)");
+            $stmt = $this->db->prepare("INSERT INTO usuarios (nombre, email, password, created_at) VALUES (?, ?, ?, NOW())");
             return $stmt->execute([$nombre, $email, $password]);
         } catch (PDOException $e) {
             return false;
         }
     }
-    
-    // Actualizar usuario
-    public function update($id, $nombre, $email, $password) {
+
+    public function update(int $id, string $nombre, string $email, string $password): bool
+    {
         try {
             $stmt = $this->db->prepare("UPDATE usuarios SET nombre = ?, email = ?, password = ? WHERE id = ?");
             return $stmt->execute([$nombre, $email, $password, $id]);
@@ -63,9 +66,9 @@ class Usuario {
             return false;
         }
     }
-    
-    // Eliminar usuario
-    public function delete($id) {
+
+    public function delete(int $id): bool
+    {
         try {
             $stmt = $this->db->prepare("DELETE FROM usuarios WHERE id = ?");
             return $stmt->execute([$id]);
@@ -73,12 +76,11 @@ class Usuario {
             return false;
         }
     }
-    
-    // Verificar contraseña
-    // ! DEBERIA DE HASHEAR LA CONTRASEÑA
-    public function verifyPassword($email, $password) {
+
+    public function verifyPassword(string $email, string $password): array|false
+    {
         $usuario = $this->getByEmail($email);
-        if ($usuario && $usuario['password'] === $password) {
+        if ($usuario && ($usuario['password'] ?? null) === $password) {
             return $usuario;
         }
         return false;
