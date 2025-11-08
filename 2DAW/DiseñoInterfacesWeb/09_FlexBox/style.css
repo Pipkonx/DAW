@@ -1,0 +1,479 @@
+/* ---------------- */
+/*    GENERALES     */
+/* ---------------- */
+
+:root {
+    --principio: #122838;
+    --final: #4698d4;
+}
+
+body,
+html {
+    margin: 0;
+    padding: 0;
+    justify-content: center;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+div,
+section {
+    display: flex;
+}
+
+/* ------------------ */
+/*   ACTIVIDAD 1     */
+/* ------------------ */
+.act1 {
+    background: linear-gradient(to right, var(--principio), var(--final));
+
+    /* el > aplica a todos los hijos */
+    &>div {
+        /* el flex es de la nueva propiedad explicada */
+        flex: 1;
+    }
+
+    & div {
+        width: 13vw;
+        border: 1px solid;
+        align-items: center;
+        justify-content: center;
+        color: white;
+    }
+}
+
+
+/* ------------------ */
+/*   ACTIVIDAD 2     */
+/* ------------------ */
+
+.act2 {
+    background: linear-gradient(to right, var(--final), var(--principio));
+    flex-direction: row-reverse;
+
+    /* el > aplica a todos los hijos */
+    &>div {
+        /* el flex es de la nueva propiedad explicada */
+        flex: 1;
+    }
+
+    & div {
+        width: 13vw;
+        border: 1px solid;
+        align-items: center;
+        justify-content: center;
+        color: white;
+    }
+}
+
+
+/* ------------------ */
+/*   ACTIVIDAD 3     */
+/* ------------------ */
+.act3 {
+    background: linear-gradient(to top, var(--final), var(--principio));
+    /* Otra opcion sería ponerlo con display grid */
+    flex-direction: column;
+    /* tambien width para que salga bien el fondo */
+    width: 13vw;
+
+    & div {
+        width: 13vw;
+        border: 1px solid;
+        align-items: center;
+        justify-content: center;
+        color: white;
+    }
+}
+
+/* ------------------ */
+/*   ACTIVIDAD 4     */
+/* ------------------ */
+.act4 {
+    background: linear-gradient(to top, var(--principio), var(--final));
+    /* tambien width para que salga bien el fondo */
+    width: 13vw;
+
+    flex-direction: column-reverse;
+
+    & div {
+        display: flex;
+        width: 13vw;
+        border: 1px solid;
+        align-items: center;
+        justify-content: center;
+        color: white;
+    }
+}
+
+/* ------------------ */
+/*   ACTIVIDAD 5     */
+/* ------------------ */
+.act5 {
+
+    flex-wrap: wrap-reverse;
+
+    & div {
+        display: flex;
+        width: 20vw;
+        border: 1px solid;
+        align-items: center;
+        justify-content: center;
+        color: white;
+    }
+}
+
+/* ------------------ */
+/*   ACTIVIDAD 6     */
+/* ------------------ */
+.act6 {
+
+    flex-wrap: wrap-reverse;
+    flex-direction: row-reverse;
+
+    & div {
+        display: flex;
+        width: 20vw;
+        border: 1px solid;
+        align-items: center;
+        justify-content: center;
+        color: white;
+    }
+}
+
+/* ------------------ */
+/*   ACTIVIDAD 6     */
+/* ------------------ */
+.act6 {
+
+    flex-wrap: wrap-reverse;
+    flex-direction: row-reverse;
+
+    & div {
+        display: flex;
+        width: 20vw;
+        border: 1px solid;
+        align-items: center;
+        justify-content: center;
+        color: white;
+    }
+}
+
+/* ------------------ */
+/*   ACTIVIDAD 7     */
+/* ------------------ */
+.act7 {
+    flex-wrap: wrap;
+
+    & div {
+        display: flex;
+        width: 20vw;
+        border: 1px solid;
+        align-items: center;
+        justify-content: center;
+        color: white;
+    }
+}
+
+/* ------------------ */
+/*   ACTIVIDAD 8     */
+/* ------------------ */
+.act8 {
+    flex-wrap: wrap;
+    flex-direction: row-reverse;
+
+    & div {
+        display: flex;
+        width: 20vw;
+        border: 1px solid;
+        align-items: center;
+        justify-content: center;
+        color: white;
+    }
+}
+
+/* ------------------ */
+/*   ACTIVIDAD 9     */
+/* ------------------ */
+.act9 {
+    /* flex-wrap: wrap;
+    flex-direction: row-reverse; */
+    flex-flow: wrap row-reverse;
+    justify-content: start;
+
+    & div {
+        display: flex;
+        width: 20vw;
+        border: 1px solid;
+        align-items: center;
+        justify-content: center;
+        color: white;
+    }
+}
+
+/* ------------------ */
+/*   ACTIVIDAD 10     */
+/* ------------------ */
+.act10 {
+    /* flex-wrap: wrap;
+    flex-direction: row-reverse; */
+    flex-flow: wrap;
+    justify-content: center;
+
+    & div {
+        display: flex;
+        width: 20vw;
+        border: 1px solid;
+        align-items: center;
+        justify-content: center;
+        color: white;
+    }
+}
+
+/* ------------------ */
+/*   ACTIVIDAD 11     */
+/* ------------------ */
+.act11 {
+    flex-flow: wrap;
+    justify-content: space-between;
+
+    & div {
+        display: flex;
+        width: 20vw;
+        border: 1px solid;
+        align-items: center;
+        justify-content: center;
+        color: white;
+    }
+}
+
+/* ------------------ */
+/*   ACTIVIDAD 12     */
+/* ------------------ */
+.act12 {
+    flex-flow: wrap;
+
+    & div {
+        display: flex;
+        height: 30vh;
+        width: 20vw;
+        border: 1px solid;
+        justify-content: center;
+        color: white;
+    }
+}
+
+/* ------------------ */
+/*   ACTIVIDAD 13     */
+/* ------------------ */
+.act13 {
+    flex-flow: wrap;
+    align-content: space-between;
+    height: 60vh;
+
+    & div {
+        display: flex;
+        width: 20vw;
+        border: 1px solid;
+        justify-content: center;
+        color: white;
+    }
+}
+
+/* ------------------ */
+/*   ACTIVIDAD 14     */
+/* ------------------ */
+.act14 {
+    flex-flow: wrap;
+    align-content: space-around;
+    height: 60vh;
+
+    & div {
+        display: flex;
+        width: 20vw;
+        border: 1px solid;
+        justify-content: center;
+        color: white;
+    }
+}
+
+/* ------------------ */
+/*   ACTIVIDAD 15     */
+/* ------------------ */
+.act15 {
+    flex-flow: wrap;
+    align-content: space-around;
+    height: 60vh;
+    align-items: baseline;
+
+    & div {
+        display: flex;
+        width: 20vw;
+        border: 1px solid;
+        justify-content: center;
+        align-items: center;
+        color: white;
+    }
+
+    & div:nth-child(1) {
+        background-color: #122838;
+        height: 20vh;
+    }
+
+    & div:nth-child(2) {
+        background-color: #183449;
+        height: 15vh;
+    }
+
+    & div:nth-child(3) {
+        background-color: #204662;
+        height: 10vh;
+    }
+
+    & div:nth-child(4) {
+        background-color: #2a5b7f;
+        height: 15vh;
+    }
+
+    & div:nth-child(5) {
+        background-color: #34719e;
+        height: 15vh;
+    }
+
+    & div:nth-child(6) {
+        background-color: #3e86bb;
+        height: 20vh;
+    }
+
+    & div:nth-child(7) {
+        background-color: #4698d4;
+        height: 15vh;
+    }
+}
+
+
+/* ------------------ */
+/*   ACTIVIDAD 16     */
+/* ------------------ */
+.act16 {
+    flex-flow: wrap;
+    align-content: center;
+
+    & div {
+        display: flex;
+        width: 20vw;
+        justify-content: center;
+        color: white;
+    }
+
+    & div:nth-child(1) {
+        background-color: #122838;
+    }
+
+    & div:nth-child(2) {
+        background-color: #183449;
+    }
+
+    & div:nth-child(3) {
+        background-color: #204662;
+    }
+
+    & div:nth-child(4) {
+        background-color: #2a5b7f;
+    }
+
+    & div:nth-child(5) {
+        background-color: #34719e;
+    }
+
+    & div:nth-child(6) {
+        background-color: #3e86bb;
+    }
+
+    & div:nth-child(7) {
+        background-color: #4698d4;
+    }
+}
+
+/* ------------------ */
+/*   ACTIVIDAD 17     */
+/* ------------------ */
+.act17 {
+    flex-flow: wrap;
+    height: 300px;
+    align-content: space-between;
+
+    & div {
+        display: flex;
+        width: 21vw;
+        justify-content: center;
+        color: white;
+    }
+
+    & div:nth-child(1) {
+        background-color: #122838;
+    }
+
+    & div:nth-child(2) {
+        background-color: #183449;
+    }
+
+    & div:nth-child(3) {
+        background-color: #204662;
+    }
+
+    & div:nth-child(4) {
+        background-color: #2a5b7f;
+    }
+
+    & div:nth-child(5) {
+        background-color: #34719e;
+    }
+
+    & div:nth-child(6) {
+        background-color: #3e86bb;
+    }
+
+    & div:nth-child(7) {
+        background-color: #4698d4;
+    }
+}
+
+/* ------------------ */
+/*   ACTIVIDAD 18     */
+/* ------------------ */
+.act18 {
+    & div {
+        display: flex;
+        width: 14vw;
+        justify-content: center;
+        color: white;
+    }
+
+    & div:nth-child(1) { background-color: #122838; order: 1; }
+    & div:nth-child(2) { background-color: #183449; order: 5; }
+    & div:nth-child(3) { background-color: #204662; order: 2; }
+    & div:nth-child(4) { background-color: #2a5b7f; order: 6; }
+    & div:nth-child(5) { background-color: #34719e; order: 3; }
+    & div:nth-child(6) { background-color: #3e86bb; order: 7; }
+    & div:nth-child(7) { background-color: #4698d4; order: 4; }
+}
+
+/* ------------------ */
+/*   ACTIVIDAD 19     */
+/* ------------------ */
+.act19 {
+    & div {
+        display: flex;
+        width: 14vw;
+        justify-content: center;
+        color: white;
+    }
+
+    & div:nth-child(1) { background-color: #122838;}
+    & div:nth-child(2) { background-color: #183449;}
+    & div:nth-child(3) { background-color: #204662;}
+    & div:nth-child(4) { background-color: #2a5b7f; width: 28vw;}
+    & div:nth-child(5) { background-color: #34719e;}
+    & div:nth-child(6) { background-color: #3e86bb;}
+    & div:nth-child(7) { background-color: #4698d4;}
+}
