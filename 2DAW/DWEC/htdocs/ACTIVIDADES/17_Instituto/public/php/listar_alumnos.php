@@ -1,17 +1,16 @@
 <?php
-require_once "Conexion.php";
+header('Content-Type: application/json; charset=utf-8');
 
-// alumnos
-$sqlAlumnos = "SELECT * FROM alumnos ORDER BY id";
-$resultado = $con->query($sqlAlumnos);
+require_once __DIR__ . '/../../conexion/Conexion.php';
 
-$alumnos = [];
+try {
+    $pdo = Conexion::getInstance()->getConnection();
 
-if ($resultado && $resultado->num_rows > 0) {
-    while ($fila = $resultado->fetch_assoc()) {
-        $alumnos[] = $fila;
-    }
+    $sql = 'SELECT id, nombre, apellido, nota FROM alumnos ORDER BY id';
+    $stmt = $pdo->query($sql);
+    $alumnos = $stmt->fetchAll();
+
     echo json_encode($alumnos);
-} else {
-    echo "No se encontraron alumnos.";
+} catch (Exception $e) {
+    echo json_encode(['error' => 'Error al listar alumnos', 'detalle' => $e->getMessage()]);
 }
