@@ -41,6 +41,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? '';
 
+    if ($action === 'login_json') {
+        $login = trim($_POST['login'] ?? '');
+        $password = $_POST['password'] ?? '';
+        if ($login === '' || $password === '') {
+            json_response(['error' => 'Credenciales inválidas'], 400);
+        }
+        if (!$jugadorModel->verifyCredentials($login, $password)) {
+            json_response(['error' => 'Usuario/contraseña incorrectos'], 401);
+        }
+        json_response(['ok' => true, 'login' => $login]);
+    }
+
+    if ($action === 'register_json') {
+        $login = trim($_POST['login'] ?? '');
+        $password = $_POST['password'] ?? '';
+        if ($login === '' || $password === '') {
+            json_response(['error' => 'Datos inválidos'], 400);
+        }
+        $ok = $jugadorModel->createUser($login, $password, false);
+        if (!$ok) {
+            json_response(['error' => 'El usuario ya existe'], 409);
+        }
+        json_response(['ok' => true, 'login' => $login]);
+    }
+
     if ($action === 'start_json') {
         $login = trim($_POST['login'] ?? '');
         $categoria = isset($_POST['categoria']) ? intval($_POST['categoria']) : 0;

@@ -1,6 +1,6 @@
 <?php
 // COPIAMOS directamente de php la conexion a la base de datos PDO con el patron singlestone para que solo una llave de conexion
-class Database
+class Conexion
 {
     private static $instance = null;
     private $pdo;
@@ -9,7 +9,7 @@ class Database
     {
         // getenv es para obtener las variables de entorno del servidor
         $host = getenv('DB_HOST') ?: 'localhost';
-        $dbname = getenv('DB_NAME') ?: 'ahrocado';
+        $dbname = getenv('DB_NAME') ?: 'ahorcado';
         $user = getenv('DB_USER') ?: 'root';
         $pass = getenv('DB_PASS') ?: '';
         $dsn = "mysql:host=$host;dbname=$dbname;charset=utf8mb4";

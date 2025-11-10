@@ -1,5 +1,5 @@
 let secreta = "";
-let adivinadas = new Set();
+let adivinadas = [];
 let fallos = 0;
 let maxfallos = 6;
 let finalizado = false;
@@ -9,8 +9,26 @@ let finalizado = false;
 const API_URL = "http://localhost/ACTIVIDADES/16_Ahorcado_JS/contorlador/juego.php";
 
 function getParam(name) {
-  const params = new URLSearchParams(window.location.search);
-  return params.get(name);
+  const qs = window.location.search.replace(/^\?/, "");
+  if (!qs) return null;
+  const parts = qs.split("&");
+  for (let i = 0; i < parts.length; i++) {
+    const pair = parts[i].split("=");
+    const key = decodeURIComponent(pair[0] || "");
+    const val = decodeURIComponent((pair[1] || "").replace(/\+/g, " "));
+    if (key === name) return val;
+  }
+  return null;
+}
+
+function encodeForm(data) {
+  const parts = [];
+  for (const k in data) {
+    if (Object.prototype.hasOwnProperty.call(data, k)) {
+      parts.push(encodeURIComponent(k) + "=" + encodeURIComponent(String(data[k])));
+    }
+  }
+  return parts.join("&");
 }
 
 function setText(id, text) {
@@ -25,7 +43,7 @@ function iniciarJuego() {
     const base = catalogoPalabras[1] || ["ahorcado"];
     secreta = base[Math.floor(Math.random() * base.length)].toLowerCase();
   }
-  adivinadas = new Set();
+  adivinadas = [];
   fallos = 0;
   finalizado = false;
   // set Text es para establecer el texto de un elemento html
@@ -47,7 +65,7 @@ function terminarJuego() {
 function actualizarPalabra() {
   let display = "";
   for (let i = 0; i < secreta.length; i++) {
-    if (adivinadas.has(secreta[i])) {
+    if (adivinadas.indexOf(secreta[i]) !== -1) {
       display += secreta[i];
     } else {
       display += "_";
@@ -100,8 +118,8 @@ function deshabilitarAlfabeto() {
 }
 
 function elegir(letra) {
-  if (finalizado || adivinadas.has(letra)) return;
-  adivinadas.add(letra);
+  if (finalizado || adivinadas.indexOf(letra) !== -1) return;
+  adivinadas.push(letra);
   if (secreta.indexOf(letra) !== -1) {
     actualizarPalabra();
     establecerMensaje("Bien");
@@ -122,7 +140,7 @@ function elegir(letra) {
 function verificarVictoria() {
   let ganado = true;
   for (let i = 0; i < secreta.length; i++) {
-    if (!adivinadas.has(secreta[i])) { ganado = false; break; }
+    if (adivinadas.indexOf(secreta[i]) === -1) { ganado = false; break; }
   }
   if (ganado) {
     finalizado = true;
@@ -150,9 +168,9 @@ function enviarResultados(acertada) {
   const cfgEl = document.getElementById("game-config");
   const ds = (cfgEl && cfgEl.dataset) || {};
   //getParam es para obtener el valor de un parametro de
-  const login = ds.login || getParam("login") || "Invitado";
+  const login = ds.login || sessionStorage.getItem("ahorcado:login") || "Invitado";
   const idPalabra = ds.idPalabra ? parseInt(ds.idPalabra, 10) : 0;
-  const acertadas = Array.from(adivinadas).filter((l) => secreta.includes(l)).length;
+  const acertadas = adivinadas.filter((l) => secreta.indexOf(l) !== -1).length;
   const puntos = Math.max(0, secreta.length * 10 - fallos * 5);
   guardarResultado(login, {
     fecha: new Date().toISOString(),
@@ -162,7 +180,7 @@ function enviarResultados(acertada) {
     palabra_acertada: !!acertada,
     puntuacion_obtenida: puntos,
   });
-  const body = new URLSearchParams({
+  const body = encodeForm({
     action: 'finalizar_json',
     login: login,
     id_palabra: String(idPalabra || 0),
@@ -170,7 +188,7 @@ function enviarResultados(acertada) {
     letras_falladas: String(fallos),
     palabra_acertada: acertada ? '1' : '0',
     puntuacion_obtenida: String(puntos),
-  }).toString();
+  });
   fetch(API_URL, {
     method: "POST",
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -180,12 +198,12 @@ function enviarResultados(acertada) {
     .then((data) => {
       const okMsg = data && data.ok ? 'Partida guardada' : (data && data.error ? data.error : 'Guardado completado');
       //encodeURIComponent es para la cadena de texto para que no se interprete como codigo
-      const dest = `configurar.html?login=${encodeURIComponent(login)}&ok=${encodeURIComponent(okMsg)}`;
-      window.location.href = dest;
+      sessionStorage.setItem("ahorcado:last_ok", okMsg);
+      window.location.href = `configurar.html`;
     })
     .catch(() => {
-      const dest = `configurar.html?login=${encodeURIComponent(login)}&ok=${encodeURIComponent('Guardado local completado')}`;
-      window.location.href = dest;
+      sessionStorage.setItem("ahorcado:last_ok", 'Guardado local completado');
+      window.location.href = `configurar.html`;
     });
 }
 
@@ -200,7 +218,7 @@ function leerConfig() {
     try { cfg = JSON.parse(raw); } catch { }
   }
   // Si no hay, leer de URL
-  const login = getParam("login") || (cfg && cfg.login) || "Invitado";
+  const login = sessionStorage.getItem("ahorcado:login") || (cfg && cfg.login) || "Invitado";
   const palabra = getParam("palabra") || (cfg && cfg.palabra) || "";
   const mf = parseInt(getParam("maxfallos") || (cfg && cfg.maxfallos) || "6", 10);
   const idp = parseInt(getParam("id_palabra") || (cfg && cfg.id_palabra) || "0", 10);
@@ -234,9 +252,9 @@ function initConfigPage() {
   const usuarioEl = document.getElementById("usuario");
   const linkMis = document.getElementById("linkMisPartidas");
   if (!sel || !form) return;
-  const login = getParam("login") || "Invitado";
+  const login = sessionStorage.getItem("ahorcado:login") || "Invitado";
   if (usuarioEl) usuarioEl.textContent = login;
-  if (linkMis) linkMis.href = `mis_partidas.html?login=${encodeURIComponent(login)}`;
+  if (linkMis) linkMis.href = `mis_partidas.html`;
   // Poblar categorías
   sel.innerHTML = "";
   // opción por defecto
@@ -276,12 +294,12 @@ function initConfigPage() {
     const idCat = parseInt(sel.value, 10);
     const dif = document.getElementById("dificultad").value;
     if (!idCat || !dif) { setText("msg", "Selecciona categoría y dificultad"); return; }
-    const body = new URLSearchParams({
+    const body = encodeForm({
       action: 'start_json',
       login: login,
       categoria: String(idCat),
       dificultad: dif,
-    }).toString();
+    });
     fetch(API_URL, {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -294,7 +312,7 @@ function initConfigPage() {
         const maxfallos = data.maxfallos || 6;
         const id_palabra = data.id_palabra || 0;
         sessionStorage.setItem("ahorcado:config", JSON.stringify({ login, palabra, maxfallos, id_palabra }));
-        window.location.href = `partida.html?login=${encodeURIComponent(login)}`;
+        window.location.href = `partida.html`;
       })
       .catch(() => {
         setText("msg", "Error iniciando partida");
@@ -306,9 +324,9 @@ function initMisPartidasPage() {
   const cont = document.getElementById("contenedorPartidas");
   const volver = document.getElementById("volverConfig");
   if (!cont) return;
-  const login = getParam("login") || "Invitado";
+  const login = sessionStorage.getItem("ahorcado:login") || "Invitado";
   setText("usuario", login);
-  if (volver) volver.href = `configurar.html?login=${encodeURIComponent(login)}`;
+  if (volver) volver.href = `configurar.html`;
   const partidas = cargarResultados(login);
   if (!partidas.length) {
     cont.innerHTML = '<p class="empty">Aún no tienes partidas registradas.</p>';
@@ -357,18 +375,27 @@ function initLoginPage() {
   const form = document.getElementById("loginForm");
   const msg = document.getElementById("msg");
   if (!form) return;
-  const ok = getParam("ok");
-  const login = getParam("login");
+  const ok = sessionStorage.getItem("ahorcado:last_ok") || getParam("ok");
+  const login = sessionStorage.getItem("ahorcado:login") || getParam("login");
   if (ok) msg.textContent = `${ok}${login ? " — Usuario: " + login : ""}`;
   form.addEventListener("submit", (ev) => {
     ev.preventDefault();
     const login = document.getElementById("login").value.trim();
     const password = document.getElementById("password").value;
     if (!login || !password) { msg.textContent = "Credenciales inválidas"; return; }
-    const users = getUsers();
-    if (!users[login]) { msg.textContent = "Usuario no encontrado"; return; }
-    if (users[login].password !== password) { msg.textContent = "Contraseña incorrecta"; return; }
-    window.location.href = `../juego/configurar.html?login=${encodeURIComponent(login)}`;
+    const body = encodeForm({ action: 'login_json', login, password });
+    fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body,
+    })
+      .then((r) => r.json())
+      .then((data) => {
+        if (data && data.error) { msg.textContent = data.error; return; }
+        sessionStorage.setItem("ahorcado:login", login);
+        window.location.href = `../juego/configurar.html`;
+      })
+      .catch(() => { msg.textContent = "Error conectando con el servidor"; });
   });
 }
 
@@ -383,11 +410,20 @@ function initRegisterPage() {
     const confirm = document.getElementById("confirm").value;
     if (!login || !password || !confirm) { msg.textContent = "Completa todos los campos"; return; }
     if (password !== confirm) { msg.textContent = "Las contraseñas no coinciden"; return; }
-    const users = getUsers();
-    if (users[login]) { msg.textContent = "El usuario ya existe"; return; }
-    users[login] = { password };
-    setUsers(users);
-    window.location.href = `login.html?ok=Registro+completado&login=${encodeURIComponent(login)}`;
+    const body = encodeForm({ action: 'register_json', login, password });
+    fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body,
+    })
+      .then((r) => r.json())
+      .then((data) => {
+        if (data && data.error) { msg.textContent = data.error; return; }
+        sessionStorage.setItem("ahorcado:last_ok", "Registro completado");
+        sessionStorage.setItem("ahorcado:login", login);
+        window.location.href = `login.html`;
+      })
+      .catch(() => { msg.textContent = "Error conectando con el servidor"; });
   });
 }
 
