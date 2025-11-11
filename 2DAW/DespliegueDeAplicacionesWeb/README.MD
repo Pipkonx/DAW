@@ -28,6 +28,8 @@ Este repositorio contiene ejercicios y prácticas relacionadas con el despliegue
 
 ### [📁 Ejercicio 5: Directiva directory](./05_DirectivaDirectory/README.MD)
 
+### [📁 Ejercicio 6: Practica Servidor Web 1 Trimestre](./06_Practica_Servidor_Web/README.MD)
+
 ## 💡 Notas adicionales
 
 - Para detener cualquier servidor, presionar `Ctrl+C` en la línea de comandos
