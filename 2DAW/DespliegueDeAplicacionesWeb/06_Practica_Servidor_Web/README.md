@@ -274,7 +274,9 @@ define( 'DB_PASSWORD', 'wp_password_seguro' );
 define( 'DB_HOST', 'localhost' );
 ```
 
-Genera claves y sales (opcional): https://api.wordpress.org/secret-key/1.1/salt/
+![Práctica Servidor Web](images/21-configuracion.png)
+
+Genera claves y sales (es una api gratuita): https://api.wordpress.org/secret-key/1.1/salt/ 
 
 Permisos:
 
@@ -284,15 +286,41 @@ sudo find /var/www/centro.intranet -type d -exec chmod 755 {} \;
 sudo find /var/www/centro.intranet -type f -exec chmod 644 {} \;
 ```
 
+![Práctica Servidor Web](images/22-permisos.png)
+
+
 Reinicia Apache y abre en navegador:
 
+Al tratar de reinciar apache he tenido un problema que me sallia que no quería reiniciarse me salia el error
+```
+AH00526: Syntax error on line 6 of /etc/apache2/sites-enabled/departamentos.centro.intranet.conf:
+Invalid command 'WSGIDaemonProcess', perhaps misspelled or defined by a module not included in the server configuration
+```
+Entonces he tenido que instalar
+```
+sudo apt install libapache2-mod-wsgi-py3
+```
+
+Y hacemos lo siguiente, en el archivo de apache2 tenemos que meter el 
+```
+ServerName localhost
+```
+
+para poder quitar el error
+
+![Práctica Servidor Web](images/23_error.png)
+
+
+Ahora abrimos en nuestro navegador el localhost o centro intranet y nos debe de salir la pagina de instalacion de wordpress
 ```
 http://centro.intranet
 ```
 
-Completa el instalador web (título del sitio, usuario admin, etc.).
+![alt text](images/24-wordpress.png)
 
-Capturas sugeridas: `images/05-wp-installer.png` y `images/05-wp-dashboard.png`.
+Ahora vamos a ir completando la instalacion paso a paso el instalador web (título del sitio, usuario admin, etc.).
+
+
 
 ---
 
@@ -330,13 +358,21 @@ EOF
 sudo chown -R www-data:www-data /var/www/departamentos.centro.intranet
 ```
 
+![Práctica Servidor Web](images/26-Estructura-basica.png)
+
+
 Reinicia Apache y prueba:
 
 ```
 http://departamentos.centro.intranet/
 ```
 
-Captura sugerida: `images/06-python-ok.png` (página HTML de prueba).
+Al tratar de reinciar apache y abrir la web me daba error 500, pero al ver el log he visto de que tenia conflicto con las tildes y he tenido que entrar al archivo y quitarlas
+
+![Práctica Servidor Web](images/27-error500.png)
+![Práctica Servidor Web](images/28-funcionando.png)
+
+
 
 ### 6.2) Proteger acceso con autenticación HTTP básica
 
@@ -347,6 +383,8 @@ sudo apt -y install apache2-utils
 sudo htpasswd -c /etc/apache2/.htpasswd profesor
 # (para más usuarios: sudo htpasswd /etc/apache2/.htpasswd alumno)
 ```
+
+![Práctica Servidor Web](images/29-usuario-profesor.png)
 
 Restringe el Directorio en el VirtualHost (edita el archivo creado en el paso 4.2):
 
@@ -365,6 +403,9 @@ Ajusta el bloque Directory:
 </Directory>
 ```
 
+![Práctica Servidor Web](images/30-ajustamos-Directory.png)
+
+
 Aplica cambios:
 
 ```bash
@@ -372,8 +413,7 @@ sudo systemctl reload apache2
 ```
 
 Prueba en navegador y valida el prompt de autenticación.
-
-Captura sugerida: `images/06-auth-prompt.png` (diálogo de usuario/contraseña).
+![Práctica Servidor Web](images/31-verificacion.png)
 
 ---
 
@@ -403,20 +443,25 @@ SiteDomain="centro.intranet"
 HostAliases="localhost 127.0.0.1 www.centro.intranet"
 LogFormat=1
 ```
+![Práctica Servidor Web](images/32-LogFile.png)
+![Práctica Servidor Web](images/33-SiteDomain.png)
+![Práctica Servidor Web](images/34-HostAliases.png)
+
 
 Actualiza estadísticas iniciales:
 
 ```bash
 sudo /usr/lib/cgi-bin/awstats.pl -config=centro.intranet -update
 ```
+![Práctica Servidor Web](images/35-updatee.png)
 
 Accede al informe:
 
 ```
 http://centro.intranet/awstats/awstats.pl?config=centro.intranet
 ```
+![Práctica Servidor Web](images/36-pagina.png)
 
-Captura sugerida: `images/07-awstats-report.png`.
 
 ---
 
@@ -465,7 +510,6 @@ server {
         access_log off;
     }
 }
-```
 
 Habilita sitio y recarga Nginx:
 
@@ -481,7 +525,7 @@ Prueba PHP info:
 http://servidor2.centro.intranet:8080/info.php
 ```
 
-Captura sugerida: `images/08-nginx-phpinfo.png`.
+![Práctica Servidor Web](images/37-phpinfo.png)
 
 ### 8.1) Instalar phpMyAdmin con Nginx
 
@@ -490,6 +534,8 @@ Instala phpMyAdmin:
 ```bash
 sudo apt -y install phpmyadmin
 ```
+Debemos seleccionar apache2 y aceptar luego nos pondrá para elegir una contraseña , en mi caso no le puse
+
 
 Haz accesible phpMyAdmin bajo Nginx (método sencillo con symlink):
 
@@ -504,7 +550,7 @@ Accede:
 http://servidor2.centro.intranet:8080/phpmyadmin
 ```
 
-Captura sugerida: `images/08-phpmyadmin-login.png`.
+![Práctica Servidor Web](images/38-phpmyadmin.png)
 
 ---
 
@@ -526,7 +572,10 @@ curl -I http://departamentos.centro.intranet
 curl -I http://servidor2.centro.intranet:8080
 ```
 
-Capturas sugeridas: `images/09-curl-tests.png`, `images/09-logs.png`.
+Curl a los sitios para probar que funcionan
+![Práctica Servidor Web](images/39-validacion.png)
+Logs apache2
+![Práctica Servidor Web](images/40-logs.png)
 
 ---
 
@@ -588,7 +637,4 @@ feat(nginx): server 8080 con php y phpmyadmin
 - “Python da 500”: revisa `wsgi.py`, permisos y `error.log`.
 - “AWStats vacío”: verifica `LogFile` y ejecuta `-update`.
 - “Nginx no ejecuta PHP”: confirma socket de `php-fpm` correcto.
-
----
-
-Con esta guía, podrás replicar la práctica completa y documentarla con capturas y configuraciones, lista para su entrega en GitHub.
+- “Visualizar las versiones de PHP“
