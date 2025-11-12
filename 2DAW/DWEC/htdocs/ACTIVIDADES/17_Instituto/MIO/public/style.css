@@ -1,0 +1,45 @@
+    :root {
+        color-scheme: light dark;
+        --fondo: #f5f5f7;
+        --letra: black;
+        --verde: rgba(70, 130, 66, 0.438);
+    }
+
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        margin: 0;
+        font-family: Arial, Helvetica, sans-serif;
+        background: var(--fondo);
+        color: var(--letra);
+        height: 100vh;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+
+    }
+
+    table,
+    thead,
+    tr {
+        border: 1px solid var(--letra);
+        border-collapse: collapse;
+    }
+
+    tr:nth-child(even) {
+        background-color: var(--verde);
+    }
+
+    th,
+    tr, td {
+        padding: 10px;
+    }
+
+
+#alta-alumno {
+    display: flex;
+}
