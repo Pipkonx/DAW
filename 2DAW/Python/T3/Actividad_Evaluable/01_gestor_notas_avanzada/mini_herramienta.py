@@ -1,6 +1,7 @@
-import os
 import sys
+import os
 import math
+import requests
 
 def menu():
     print("\n --- MENU DE HERRAMIENTAS --- \n 1. Calculos matematicos \n 2. Explorador de directorios \n 3. Consultar a API (requests) \n 4. Salir")
@@ -45,7 +46,6 @@ def matematicas():
 
 
 def api():
-    import requests
     print("\n --- CONSULTA a API ---\n 1. Hacer petición GET\n 2. Detalles y errores\n 3. Volver")
     op2 = int(input("\n\tQue opción desea realizar: "))
 
@@ -58,7 +58,7 @@ def api():
                 print(f"Tamaño de la respuesta: {len(respuesta.text)} caracteres")
                 print("Primeros 200 caracteres del contenido:")
                 print(respuesta.text[:200])
-            except requests.exceptions.RequestException as e:
+            except Exception as e:
                 print("\n❌ Error al realizar la petición:", e)
             api()
 
@@ -75,7 +75,6 @@ def api():
         case _:
             print("Opción no válida.")
             api()
-
 
 def directorio():
     print("\n --- Explorador de directorios ---")
