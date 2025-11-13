@@ -1,17 +1,17 @@
 @extends('layouts/plantilla01')
 
-@section('titulo', 'Hola con plantilla')
+@section('titulo', 'Alta de Tarea')
 
-@section('estilos')
-<style>
-        .error {
-            color: red;
-        }
-</style>
-@endsection
+@section('estilos')@endsection
 
 @section('cuerpo')
    <h1>Alta de Tarea</h1>
+   @if(!empty($errorGeneral))
+   <div class="error">{{ $errorGeneral }}</div>
+   @endif
+   @if(!empty($mensaje))
+   <div class="msg">{{ $mensaje }}</div>
+   @endif
 
    @include('form')
 

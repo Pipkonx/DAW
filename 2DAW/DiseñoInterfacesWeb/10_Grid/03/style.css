@@ -1,0 +1,24 @@
+.container-inner{
+      border: 1px solid blue;
+}
+.section1, .container-inner {
+    width: 100%;
+}
+
+@media (min-width: 600px) {
+    .section1 {
+        width: 25%;
+        height: 100vh;
+    }
+    .container-inner {
+        width: 75%;
+    }
+}
+
+@media (min-width: 800px) {
+    .container{
+        width: 800px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+}

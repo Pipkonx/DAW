@@ -70,6 +70,7 @@ def mostrar_estudiantes():
     if not estudiantes:
         print("No hay estudiantes.")
         return
+        # <numero es para que ocupe nada más que eso
     print(f"{'ID':<5}{'Nombre':<25}{'Edad':<6}{'Promedio':<10}{'Estado':<10}")
     for e in estudiantes:
         print(f"{e['id']:<5}{e['nombre']:<25}{e['edad']:<6}{e['promedio']:<10}{e['estado']:<10}")
