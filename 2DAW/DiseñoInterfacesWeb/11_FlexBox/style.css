@@ -4,7 +4,7 @@
 
 body {
     margin: 0;
-    font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial;
+    font-family: Arial, Helvetica, sans-serif;
     background: #ffffff;
 }
 
@@ -65,25 +65,27 @@ h1 {
     background: #2d4059;
     padding: 10px;
     flex: 1 1 auto;
-    display: grid;
-    /* el gridtemplate para las columnas y tamanno el otro para las filas */
-    grid-template-columns: repeat(2, 1fr);
-    grid-auto-rows: minmax(40px, auto);
-    gap: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
 }
 
 .section__article {
     background: #6e828a;
     padding: 10px;
     text-align: center;
+    flex: 0 0 48%;
+    margin-right: 5px;
+    margin-bottom: 10px;
 }
 
 .section__nav {
-    grid-column: 1 / -1;
     background: #9ec3d6;
     color: #17323f;
     padding: 10px;
     text-align: center;
+    flex: 0 0 100%;
+    margin-bottom: 10px;
 }
 
 .aside {
