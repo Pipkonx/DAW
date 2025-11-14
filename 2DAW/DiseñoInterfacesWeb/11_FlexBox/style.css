@@ -145,3 +145,7 @@ h1 {
         gap: 10px;
     }
 }
+
+img {
+    width: 50px;
+}
