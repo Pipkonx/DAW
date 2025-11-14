@@ -1,0 +1,145 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial;
+    background: #ffffff;
+}
+
+.container {
+    max-width: 1000px;
+    margin: 20px auto;
+    background: #000000;
+    padding: 10px;
+}
+
+.header {
+    background-color: #000000;
+    padding: 6px;
+}
+
+.header__content {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background-color: #2d4059;
+    padding: 10px;
+}
+
+.header__logo,
+.header__nav,
+.header__social {
+    background-color: #ea5455;
+    color: #111111;
+    padding: 10px 20px;
+    flex: 1 1 0;
+    text-align: center;
+}
+
+.header__title {
+    background-color: #f07b3f;
+    margin-top: 10px;
+    padding: 12px;
+}
+
+.header__title h1,
+h1 {
+    background-color: #ffd460;
+    margin: 0;
+    text-align: center;
+    color: #111111;
+    font-weight: 700;
+}
+
+.section {
+    background: #000000;
+    padding: 6px;
+    margin-top: 12px;
+    display: flex;
+    gap: 10px;
+}
+
+.section__content {
+    background: #2d4059;
+    padding: 10px;
+    flex: 1 1 auto;
+    display: grid;
+    /* el gridtemplate para las columnas y tamanno el otro para las filas */
+    grid-template-columns: repeat(2, 1fr);
+    grid-auto-rows: minmax(40px, auto);
+    gap: 10px;
+}
+
+.section__article {
+    background: #6e828a;
+    padding: 10px;
+    text-align: center;
+}
+
+.section__nav {
+    grid-column: 1 / -1;
+    background: #9ec3d6;
+    color: #17323f;
+    padding: 10px;
+    text-align: center;
+}
+
+.aside {
+    background: #ea5455;
+    padding: 10px;
+    width: 280px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.aside__publicidad {
+    background: #fff4d6;
+    color: #1b1b1b;
+    padding: 10px;
+    text-align: center;
+}
+
+.footer {
+    background: #000000;
+    padding: 6px;
+    margin-top: 12px;
+}
+
+.pie {
+    background: #fff4d6;
+    margin: 0 auto;
+    padding: 10px;
+    max-width: 70%;
+    text-align: center;
+}
+
+@media screen and (max-width: 600px) {
+    .header__content {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+}
+
+@media screen and (max-width: 300px) {
+    .section {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .section__content {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .aside {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+}
