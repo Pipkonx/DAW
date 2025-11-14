@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use PDO;
@@ -31,10 +32,20 @@ class Tareas
         $sql = 'INSERT INTO tareas (nifCif, personaNombre, telefono, correo, descripcionTarea, direccionTarea, poblacion, codigoPostal, provincia, estadoTarea, operarioEncargado, fechaRealizacion, anotacionesAnteriores, anotacionesPosteriores) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)';
         $st = $this->db()->prepare($sql);
         $st->execute([
-            $d['nifCif'],$d['personaNombre'],$d['telefono'],$d['correo'],$d['descripcionTarea'],
-            $d['direccionTarea'],$d['poblacion'],$d['codigoPostal'],$d['provincia'],
-            $d['estadoTarea'],$d['operarioEncargado'],$d['fechaRealizacion'],
-            $d['anotacionesAnteriores'],$d['anotacionesPosteriores']
+            $d['nifCif'],
+            $d['personaNombre'],
+            $d['telefono'],
+            $d['correo'],
+            $d['descripcionTarea'],
+            $d['direccionTarea'],
+            $d['poblacion'],
+            $d['codigoPostal'],
+            $d['provincia'],
+            $d['estadoTarea'],
+            $d['operarioEncargado'],
+            $d['fechaRealizacion'],
+            $d['anotacionesAnteriores'],
+            $d['anotacionesPosteriores']
         ]);
         return (int)$this->db()->lastInsertId();
     }
@@ -45,10 +56,21 @@ class Tareas
         $sql = 'UPDATE tareas SET nifCif=?, personaNombre=?, telefono=?, correo=?, descripcionTarea=?, direccionTarea=?, poblacion=?, codigoPostal=?, provincia=?, estadoTarea=?, operarioEncargado=?, fechaRealizacion=?, anotacionesAnteriores=?, anotacionesPosteriores=? WHERE id=?';
         $st = $this->db()->prepare($sql);
         return $st->execute([
-            $d['nifCif'],$d['personaNombre'],$d['telefono'],$d['correo'],$d['descripcionTarea'],
-            $d['direccionTarea'],$d['poblacion'],$d['codigoPostal'],$d['provincia'],
-            $d['estadoTarea'],$d['operarioEncargado'],$d['fechaRealizacion'],
-            $d['anotacionesAnteriores'],$d['anotacionesPosteriores'], $id
+            $d['nifCif'],
+            $d['personaNombre'],
+            $d['telefono'],
+            $d['correo'],
+            $d['descripcionTarea'],
+            $d['direccionTarea'],
+            $d['poblacion'],
+            $d['codigoPostal'],
+            $d['provincia'],
+            $d['estadoTarea'],
+            $d['operarioEncargado'],
+            $d['fechaRealizacion'],
+            $d['anotacionesAnteriores'],
+            $d['anotacionesPosteriores'],
+            $id
         ]);
     }
 
@@ -61,10 +83,20 @@ class Tareas
     private function limpiar(array $datos): array
     {
         $keys = [
-            'nifCif','personaNombre','telefono','correo','descripcionTarea',
-            'direccionTarea','poblacion','codigoPostal','provincia',
-            'estadoTarea','operarioEncargado','fechaRealizacion',
-            'anotacionesAnteriores','anotacionesPosteriores'
+            'nifCif',
+            'personaNombre',
+            'telefono',
+            'correo',
+            'descripcionTarea',
+            'direccionTarea',
+            'poblacion',
+            'codigoPostal',
+            'provincia',
+            'estadoTarea',
+            'operarioEncargado',
+            'fechaRealizacion',
+            'anotacionesAnteriores',
+            'anotacionesPosteriores'
         ];
         $out = [];
         foreach ($keys as $k) {
