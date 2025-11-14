@@ -1,3 +1,26 @@
 Notas actuales:
 1. Comprar pan
 2. prueba
+
+diccionario con lista
+datos = {
+    "nombres": ["Rafa", "Ana", "Luis"]
+}
+
+Para recorrer la lista:
+
+for nombre in datos["nombres"]:
+    print(nombre)
+
+
+
+
+def procesar(datos, estados):
+    resultado = []
+
+    for (i, dicc), estado in zip(enumerate(datos), estados):
+        resultado.append((i, dicc["ip"], estado))
+   
+    return resultado
+
+
