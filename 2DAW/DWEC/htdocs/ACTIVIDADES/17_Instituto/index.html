@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Listado de Alumnos (AJAX)</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+</head>
+<body>
+<div class="container">
+<h1>Listado de Alumnos (desde JSON)</h1>
+
+<div id="cargando">Cargando alumnos...</div>
+<table class="table" id="tabla-alumnos" style="display: none;">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Apellidos</th>
+            <th>Nota</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+<br><br>
+<button onclick="cargalista();">Carga Lista</button><br>
+Lista alumnos:
+<ul id="lista-alumnos">
+
+</ul>
+<hr>
+Nombre: <input type="text" id="nombre"><br>
+Apellidos: <input type="text" id="apellidos"><br>
+Nota: <input type="text" id="nota"><br>
+<button onclick="altaalumno();">Alta alumno</button>
+<button onclick="modificar(id);">Modifica alumno</button>
+</div>
+</body>
+
+
+<script src="js/utiles.js"></script>
+</html>
