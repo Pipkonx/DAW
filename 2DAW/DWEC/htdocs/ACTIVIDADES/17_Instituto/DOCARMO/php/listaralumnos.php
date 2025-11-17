@@ -1,31 +1,19 @@
 <?php
-// Encabezado para indicar que la respuesta es JSON
-header('Content-Type: application/json; charset=utf-8');
+include 'conexion.php';
 
-// Incluir el archivo de conexión
-include 'conexion.php'; // o require 'conexion.php';
+try {
+    $sql = "SELECT * FROM alumnos";
+    $stmt = $conn->prepare($sql);
+    $stmt->execute();
 
-// Verificar conexión
-if ($conn->connect_error) {
-    die(json_encode(["error" => "Error de conexión: " . $conn->connect_error]));
-}
+    $alumnos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Consulta SQL
-$sql = "SELECT * FROM alumnos";
-$resultado = $conn->query($sql);
-
-// Array para guardar los resultados
-$alumnos = [];
-
-if ($resultado && $resultado->num_rows > 0) {
-    while ($fila = $resultado->fetch_assoc()) {
-        $alumnos[] = $fila;
-    }
-    // Devolver los datos como JSON
+    // Devolver JSON limpio
+    header('Content-Type: application/json; charset=utf-8');
     echo json_encode($alumnos, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
-} else {
-    echo json_encode(["mensaje" => "No hay registros en la tabla alumnos."]);
+} catch (PDOException $e) {
+    header('Content-Type: application/json; charset=utf-8');
+    echo json_encode(['error' => $e->getMessage()]);
 }
 
-// Cerrar conexión
-$conn->close();
+$conn = null;

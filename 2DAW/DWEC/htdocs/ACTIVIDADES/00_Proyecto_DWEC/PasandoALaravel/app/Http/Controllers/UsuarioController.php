@@ -6,7 +6,7 @@ use Database\Seeders\Database;
 use App\Models\Usuario;
 
 header('Content-Type: application/json; charset=utf-8');
-require_once __DIR__ . '/../../Utils/DatabaseConecction.php';
+require_once __DIR__ . '/../../Utils/DatabaseConection.php';
 require_once __DIR__ . '/../../models/Usuario.php';
 
 
@@ -22,7 +22,7 @@ if ($_POST) {
 
 $action = $_POST['action'] ?? null;
 
-$pdo = Database::getConnection();
+$pdo = DatabaseConection::getInstance();
 $usuarioModel = new Usuario($pdo);
 
 try {

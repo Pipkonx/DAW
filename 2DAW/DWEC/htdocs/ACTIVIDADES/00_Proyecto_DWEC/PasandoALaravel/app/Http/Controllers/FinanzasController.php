@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Exception;
 
 header('Content-Type: application/json; charset=utf-8');
-require_once __DIR__ . '/../../../database/seeders/database.php';
+require_once __DIR__ . '/../../Utils/DatabaseConection.php';
 require_once __DIR__ . '/../../models/Finanzas.php';
 
 
@@ -25,7 +25,7 @@ if ($_POST) {
 
 $action = $_POST['action'] ?? null;
 
-$pdo = Database::getInstance()->getConection();
+$pdo = DatabaseConection::getInstance()->getConection();
 $finModel = new Finanzas($pdo);
 $userId = (int)$_SESSION['user_id'];
 
