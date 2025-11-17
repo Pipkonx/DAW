@@ -1,0 +1,33 @@
+bugs = [
+        {
+            "ticket_id": "BUG-401",
+            "descripcion": "Fallo de login intermitente",
+            "severidad": "Alta",
+            "tiempo_estimado_h": 4.5
+        },
+        {
+            "ticket_id": "BUG-402",
+            "descripcion": "Botón mal alineado en móvil",
+            "severidad": "Baja",
+            "tiempo_estimado_h": 0.5
+        },
+        {
+            "ticket_id": "BUG-403",
+            "descripcion": "Error en cálculo de impuestos",
+            "severidad": "Alta",
+            "tiempo_estimado_h": 6.0
+        },
+        {
+            "ticket_id": "BUG-404",
+            "descripcion": "Icono pixelado en pantalla HD",
+            "severidad": "Media",
+            "tiempo_estimado_h": 2.0
+        }
+    ]
+
+inventario = [
+    {"id_producto": "P001", "nombre": "Teclado Mecánico", "stock": 50, "precio_unitario": 65.50},
+    {"id_producto": "P002", "nombre": "Monitor Curvo 27\"", "stock": 15, "precio_unitario": 289.99},
+    {"id_producto": "P003", "nombre": "Ratón Inalámbrico", "stock": 25, "precio_unitario": 35.75},
+    {"id_producto": "P004", "nombre": "Auriculares Gaming", "stock": 8, "precio_unitario": 89.99}
+]
