@@ -2,14 +2,17 @@
 require_once "models/Task.php";
 require_once "models/User.php";
 
-class TaskController {
+class TaskController
+{
     private $model;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->model = new Task();
     }
 
-    public function list() {
+    public function list()
+    {
         $role = $_GET['role'] ?? 'operador';
         $user = $_GET['user'] ?? '';
 
@@ -26,11 +29,14 @@ class TaskController {
         require "views/tasks/list.php";
     }
 
-    public function create() {
+    public function create()
+    {
         $errors = [];
         $userModel = new User();
         $allUsers = $userModel->getAll();
-        $operators = array_values(array_filter($allUsers, function($u) { return ($u['rol'] ?? '') === 'operador'; }));
+        $operators = array_values(array_filter($allUsers, function ($u) {
+            return ($u['rol'] ?? '') === 'operador';
+        }));
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Validaciones PHP (no HTML)
@@ -71,7 +77,9 @@ class TaskController {
             if ($operarioSel === '') {
                 $errors[] = "Debes seleccionar un operario encargado";
             } else {
-                $validNames = array_map(function($u){ return $u['nombre']; }, $operators);
+                $validNames = array_map(function ($u) {
+                    return $u['nombre'];
+                }, $operators);
                 if (!in_array($operarioSel, $validNames, true)) {
                     $errors[] = "Operario no válido";
                 }
@@ -104,7 +112,8 @@ class TaskController {
         require "views/tasks/create.php";
     }
 
-    public function edit() {
+    public function edit()
+    {
         $tarea = $this->model->getById($_GET['id']);
         $errors = [];
 
@@ -175,7 +184,8 @@ class TaskController {
         require "views/tasks/edit.php";
     }
 
-    public function delete() {
+    public function delete()
+    {
         $this->model->delete($_GET['id']);
         header("Location: index.php?controller=Task&action=list&role=admin");
     }
