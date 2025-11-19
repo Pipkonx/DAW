@@ -66,6 +66,8 @@ Este repositorio contiene los proyectos, ejercicios y prácticas realizados dura
 - **Contenidos**: Sintaxis básica, estructuras de datos, funciones, módulos, manejo de excepciones
 - **[Ver proyectos y ejercicios](./DespliegueDeAplicacionesWeb/)**
 
+### 🌐 [Diseño de Interfaces Web](./DiseñoInterfacesWeb/)
+
 ## 📅 Calendario Académico
 
 | Trimestre | Periodo | Contenidos Principales |
