@@ -9,10 +9,10 @@ include 'conexion.php'; // o require 'conexion.php';
 if ($conexion->connect_error) {
     die(json_encode(["error" => "Error de conexión: " . $conn->connect_error]));
 }
-$id = $_GET['id'];
+$id = $_GET["id"];
 
 // Consulta SQL
-$sql = "SELECT * FROM alumnos where id = $id";
+$sql = "SELECT * FROM alumnos where codigo=".$id;
 $resultado = $conexion->query($sql);
 
 // Array para guardar los resultados

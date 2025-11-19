@@ -1,0 +1,101 @@
+/* EJERCICIO 1 */
+section:nth-child(1) div {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+
+    & div {
+        height: 50px;
+        background-color: gray;
+        margin: 1px;
+        color: white;
+        font-family: arial;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+    }
+}
+
+/* EJERCICIO 2 */
+section:nth-child(2) div {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+
+    & div:nth-child(1) {
+        grid-column: 1 / 4;
+    }
+
+    & div {
+        height: 50px;
+        background-color: gray;
+        margin: 1px;
+        color: white;
+        font-family: arial;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+    }
+}
+
+/* EJERCICIO 3 */
+section:nth-child(3) div {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+
+    & div:nth-child(1) {
+        grid-column: 1 / 4;
+    }
+
+    & div:nth-child(2) {
+        grid-row: 2 / 4;
+        height: 100%;
+    }
+
+    & div {
+        height: 50px;
+        background-color: gray;
+        margin: 1px;
+        color: white;
+        font-family: arial;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+    }
+}
+
+/* EJERCICIO 4 */
+section:nth-child(4) div {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    grid-template-areas:
+        "header header header"
+        "aside main main"
+        "aside main main";
+
+    & div:nth-child(1) {
+        grid-area: header;
+    }
+
+    & div:nth-child(2) {
+        grid-area: aside;
+        height: 100%;
+    }
+
+    & div {
+        height: 50px;
+        background-color: gray;
+        margin: 1px;
+        color: white;
+        font-family: arial;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+    }
+}

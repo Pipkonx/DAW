@@ -1,3 +1,5 @@
+var id_global = null;
+
 // Cuando la página carga
 document.addEventListener("DOMContentLoaded", async () => {
     const tabla = document.getElementById("tabla-alumnos");
@@ -14,12 +16,13 @@ document.addEventListener("DOMContentLoaded", async () => {
             datos.forEach(alumno => {
                 const fila = document.createElement("tr");
                 fila.innerHTML = `
-                    <td>${alumno.id}</td>
+                    <td>${alumno.codigo}</td>
                     <td>${alumno.nombre}</td>
-                    <td>${alumno.apellido}</td>
+                    <td>${alumno.apellidos}</td>
                     <td>${alumno.nota}</td>
-                    <td><button onclick=eliminaalumno(${alumno.id});>✖️</button></td>
-                    <td><button onclick=modificaAlumno(${alumno.id});>✏️</button></td>
+                    <td><button onclick=eliminaalumno(${alumno.codigo});>✖️</button>
+                    <button onclick=modificaalumno(${alumno.codigo});>✏️</button>
+                    <button onclick=verNotas(${alumno.codigo});>Ver</button></td>
                 `;
                 tbody.appendChild(fila);
             });
@@ -35,35 +38,17 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 });
 
-function modificaAlumno(id) {
-    const url = `php/modificaAlumno.php?id=${id}`;
+
+function verNotas(id) {
+    const url = 'php/verNotas.php?id=' + id;
     fetch(url)
-        .then(res => res.json())
+        .then(res => res.text())
         .then(data => {
-            document.querySelector("input#nombre").value = data[0].nombre;
-            document.querySelector("input#apellidos").value = data[0].apellido;
-            document.querySelector("input#nota").value = data[0].nota;
-
+            alert(data);
             console.log(data);
-            // alert(data.message);
+            document.getElementById('lista-notas').innerHTML = data;
         })
-        .catch(err => console.error(err));
-}
-
-function modificar(id) {
-    const nombre = document.getElementById("nombre").value;
-    const apellidos = document.getElementById("apellidos").value;
-    const nota = document.getElementById("nota").value;
-
-    const url = `php/modificaAlumno.php?id=${id}&nombre=${nombre}&apellidos=${apellidos}&nota=${nota}`;
-
-    fetch(url)
-        .then(res => res.json())
-        .then(data => {
-            console.log(data);
-            alert(data.message);
-        })
-        .catch(err => console.error(err));
+        .catch(error => console.error('Error:', error));
 }
 
 
@@ -95,6 +80,33 @@ function altaalumno() {
 function eliminaalumno(id) {
     const url = 'php/borraalumno.php?id=' + id;
 
+    fetch(url)
+        .then(res => res.json())
+        .then(data => {
+            console.log(data);
+            alert(data.message);
+        })
+        .catch(err => console.error(err));
+}
+
+function modificaalumno(id) {
+    const url = 'php/modificaalumno.php?id=' + id;
+    id_global = id;
+    fetch(url)
+        .then(res => res.json())
+        .then(data => {
+            document.getElementById("nombre").value = data[0].nombre;
+            document.getElementById("apellidos").value = data[0].apellidos;
+            document.getElementById("nota").value = data[0].nota;
+        })
+        .catch(err => console.error(err));
+}
+
+function modificaalumno2() {
+    const nombre = document.getElementById("nombre").value;
+    const apellidos = document.getElementById("apellidos").value;
+    const nota = document.getElementById("nota").value;
+    const url = `php/modificaalumno2.php?id=${id_global}&nombre=${encodeURIComponent(nombre)}&apellidos=${encodeURIComponent(apellidos)}&nota=${encodeURIComponent(nota)}`;
     fetch(url)
         .then(res => res.json())
         .then(data => {
