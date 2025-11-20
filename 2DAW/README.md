@@ -55,18 +55,20 @@ Este repositorio contiene los proyectos, ejercicios y prácticas realizados dura
 - **[Ver proyectos y ejercicios](./Python)**
 
 
-### 👾 [Despliegue de Aplicaciones Webs](./DespliegueDeAplicacionesWeb/)
+### 👾 [Despliegue de Aplicaciones Web](./DespliegueDeAplicacionesWeb/)
 
 <div align="center">
-  <img src="https://img.shields.io/badge/Python-3776AB?style=flat-square&logo=python&logoColor=white" alt="Python"/>
+  <img src="https://img.shields.io/badge/Apache-CA2136?style=flat-square&logo=apache&logoColor=white" alt="Apache"/>
+  <img src="https://img.shields.io/badge/Nginx-009639?style=flat-square&logo=nginx&logoColor=white" alt="Nginx"/>
+  <img src="https://img.shields.io/badge/Docker-2496ED?style=flat-square&logo=docker&logoColor=white" alt="Docker"/>
+  <img src="https://img.shields.io/badge/AWS-FF9900?style=flat-square&logo=amazonaws&logoColor=black" alt="AWS"/>
 </div>
 
-- **Descripción**: Introducción a la programación en Python y sus aplicaciones en el desarrollo web.
-- **Tecnologías**: Python por el momento 
-- **Contenidos**: Sintaxis básica, estructuras de datos, funciones, módulos, manejo de excepciones
+- **Descripción**: Configuración, seguridad y despliegue de servicios y aplicaciones web.
+- **Tecnologías**: Apache, Nginx, Docker, AWS
+- **Contenidos**: Servidores web, virtual hosts, seguridad, contenedores, automatización de despliegues
 - **[Ver proyectos y ejercicios](./DespliegueDeAplicacionesWeb/)**
 
-### 🌐 [Diseño de Interfaces Web](./DiseñoInterfacesWeb/)
 
 ## 📅 Calendario Académico
 
@@ -107,12 +109,6 @@ Para cualquier consulta relacionada con este repositorio, puedes contactar a tra
 <div align="center">
   <p>Desarrollado con ❤️ para el Ciclo Formativo de Grado Superior en Desarrollo de Aplicaciones Web</p>
 </div>
-- Contenido: Servidores web, Configuración y optimización
-- Tecnologías: Apache, Nginx, Docker, AWS
-- Seguridad y contenedores
-- Automatización de despliegues
-
-
 ## Cómo Navegar
 
 Cada carpeta de asignatura contiene su propia estructura organizada por temas o proyectos. Consulta los README específicos dentro de cada carpeta para más información detallada sobre cada módulo.

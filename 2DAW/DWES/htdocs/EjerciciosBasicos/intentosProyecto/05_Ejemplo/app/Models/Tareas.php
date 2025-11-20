@@ -3,12 +3,13 @@
 namespace App\Models;
 
 use PDO;
+use App\DB\DB;
 
 class Tareas
 {
     private function db(): PDO
     {
-        return BD::get();
+        return DB::getInstance();
     }
 
     public function listar(): array
@@ -16,7 +17,6 @@ class Tareas
         $sql = 'SELECT id, nifCif, personaNombre, telefono, correo, descripcionTarea, direccionTarea, poblacion, codigoPostal, provincia, estadoTarea, operarioEncargado, fechaRealizacion, anotacionesAnteriores, anotacionesPosteriores FROM tareas ORDER BY id';
         return $this->db()->query($sql)->fetchAll(PDO::FETCH_ASSOC);
     }
-
     public function buscar(int $id): ?array
     {
         $sql = 'SELECT id, nifCif, personaNombre, telefono, correo, descripcionTarea, direccionTarea, poblacion, codigoPostal, provincia, estadoTarea, operarioEncargado, fechaRealizacion, anotacionesAnteriores, anotacionesPosteriores FROM tareas WHERE id = ?';
