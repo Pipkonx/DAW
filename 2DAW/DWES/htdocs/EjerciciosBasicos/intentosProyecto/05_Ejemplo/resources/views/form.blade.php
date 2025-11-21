@@ -2,26 +2,51 @@
     @csrf
     <label>NIF/CIF:</label><br>
     <input type="text" name="nifCif" value="{{ $nifCif }}"><br>
+    {{--? No quiere que pongamos los {!! !!} --}}
+    {{-- {!! \App\Models\Funciones::verErrores('nif_cif') !!} --}}
+    @error('nif_cif')
+        <div class="error">{{ $message }}</div>
+    @enderror
     {!! \App\Models\Funciones::verErrores('nif_cif') !!}
     <br>
 
     <label>Persona de contacto:</label><br>
     <input type="text" name="personaNombre" value="{{ $personaNombre }}"><br>
+    {{-- {!! \App\Models\Funciones::verErrores('nombre_persona') !!} --}}
+    @error('nombre_persona')
+        <div class="error">{{ $message }}</div>
+    @enderror
     {!! \App\Models\Funciones::verErrores('nombre_persona') !!}
+
     <br>
     <label>Teléfono:</label><br>
     <input type="text" name="telefono" value="<?= htmlspecialchars($telefono) ?>"><br>
+    {{-- {!! \App\Models\Funciones::verErrores('telefono') !!} --}}
+    @error('telefono')
+        <div class="error">{{ $message }}</div>
+    @enderror
     {!! \App\Models\Funciones::verErrores('telefono') !!}
+
     <br>
 
     <label>Correo electrónico:</label><br>
     <input type="text" name="correo" value="<?= htmlspecialchars($correo) ?>"><br>
+    {{-- {!! \App\Models\Funciones::verErrores('correo') !!} --}}
+    @error('correo')
+        <div class="error">{{ $message }}</div>
+    @enderror
     {!! \App\Models\Funciones::verErrores('correo') !!}
+
     <br>
 
     <label>Descripción de la tarea:</label><br>
     <textarea name="descripcionTarea"><?= htmlspecialchars($descripcionTarea) ?></textarea><br>
+    {{-- {!! \App\Models\Funciones::verErrores('descripcion_tarea') !!} --}}
+    @error('descripcion_tarea')
+        <div class="error">{{ $message }}</div>
+    @enderror
     {!! \App\Models\Funciones::verErrores('descripcion_tarea') !!}
+
     <br>
 
     <label>Dirección:</label><br>
@@ -63,7 +88,11 @@
 
     <label>Fecha de realización:</label><br>
     <input type="date" name="fechaRealizacion" value="<?= htmlspecialchars($fechaRealizacion) ?>"><br>
+    @error('fecha_realizacion')
+        <div class="error">{{ $message }}</div>
+    @enderror
     {!! \App\Models\Funciones::verErrores('fecha_realizacion') !!}
+
     <br>
 
     <label for="anotacionesAnteriores">Anotaciones anteriores:</label><br>
@@ -77,6 +106,7 @@
     <input type="file" id="fotos" name="fotos[]" multiple><br><br>
 
     @if(isset($id))<input type="hidden" name="id" value="{{ $id }}">@endif
-    <a class="btn btn-cancel" href="{!! url('/') !!}">Cancelar</a> <input type="submit"
+    <a class="btn btn-cancel" href="/EjerciciosBasicos/intentosProyecto/05_Ejemplo/public/tareas">Cancelar</a> <input
+        type="submit" {{-- <a class="btn btn-cancel" href="{!! url('/') !!}">Cancelar</a> <input type="submit" --}}
         value="{{ isset($id) ? 'Guardar cambios' : 'Crear tarea' }}">
 </form>

@@ -1,8 +1,18 @@
 <?php
 namespace App\Models;
 
+/**
+ * Conjunto de funciones de validación y utilidades para la capa de presentación.
+ * Incluye validación de NIF/CIF, teléfonos, render de provincias y manejo de errores.
+ */
 class Funciones
 {
+    /**
+     * Valida un NIF o CIF español.
+     *
+     * @param string $dni Cadena con NIF/CIF.
+     * @return true|string true si es válido; mensaje de error en caso contrario.
+     */
     public static function validarNif($dni)
     {
         $dni = strtoupper($dni); // Convertir a mayúsculas
@@ -78,6 +88,12 @@ class Funciones
     }
 
 
+    /**
+     * Valida un teléfono permitiendo símbolos comunes (+, (), espacios, guiones, puntos).
+     *
+     * @param string $telefono Número de teléfono.
+     * @return true|string true si es válido; mensaje de error si no lo es.
+     */
     public static function telefonoValido($telefono)
     {
         // Permitir solo: +, (), números, espacios, guiones y puntos
@@ -97,6 +113,11 @@ class Funciones
         return true;
     }
 
+    /**
+     * Mapa de código de provincia a nombre.
+     *
+     * @var array<string,string>
+     */
     public static $provincias = [
         "01" => "Araba/Álava",
         "02" => "Albacete",
@@ -152,6 +173,12 @@ class Funciones
         "52" => "Melilla",
     ];
 
+    /**
+     * Imprime opciones HTML <option> de provincias, marcando la seleccionada.
+     *
+     * @param string $provinciaSeleccionada Código de provincia seleccionada.
+     * @return void
+     */
     public static function mostrarProvincias($provinciaSeleccionada = "")
     {
         foreach (self::$provincias as $codigo => $nombre) {
@@ -160,8 +187,19 @@ class Funciones
         }
     }
 
+    /**
+     * Contenedor de mensajes de error por campo.
+     *
+     * @var array<string,string>
+     */
     public static $errores = [];
 
+    /**
+     * Muestra el error asociado a un campo si existe.
+     *
+     * @param string $campo Clave del campo.
+     * @return string|null Devuelve cadena vacía si no hay error; imprime HTML si existe.
+     */
     public static function verErrores($campo)
     {
         if (isset(self::$errores[$campo])) {

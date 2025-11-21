@@ -1,0 +1,109 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* ---------------- NAV ---------------- */
+nav {
+  background-color: #4a90e2;
+  color: white;
+  padding: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+nav ul {
+  list-style: none;
+  display: flex;
+}
+
+nav li {
+  margin: 0 10px;
+}
+
+nav a {
+  color: white;
+  text-decoration: none;
+}
+
+/* ----------------------------------------------------
+   GRID GENERAL
+----------------------------------------------------- */
+.contenedor {
+  display: grid;
+  grid-template-columns: 200px 1fr; 
+  gap: 20px;
+  padding: 20px;
+  background: #fafafa;
+}
+
+/* ---------------- MENÚ ---------------- */
+.menu {
+  display: flex;
+  flex-direction: column;
+}
+
+.menu h3 {
+  margin-bottom: 10px;
+}
+
+button {
+  background-color: #e6e6e6;
+  border: none;
+  padding: 10px;
+  margin: 5px 0;
+  border-radius: 5px;
+  cursor: pointer;
+  text-align: left;
+  color: #555;
+}
+
+/* ---------------- TARJETAS ---------------- */
+.tarjetas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.tarjeta {
+  background: white;
+    /* he intentado ahcerlo con flex grow y basis pero no sale */
+  width: calc(33.33% - 20px);
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* ----------------------------------------------------
+   para moviles
+----------------------------------------------------- */
+@media (max-width: 900px) {
+  .tarjeta {
+    /* lo mismo */
+    width: calc(50% - 20px);
+  }
+}
+
+@media (max-width: 600px) {
+  .contenedor {
+    grid-template-columns: 1fr; 
+  }
+
+  .menu {
+    width: 100%;
+    margin-bottom: 20px;
+    order: 2;
+  }
+
+  .tarjetas {
+    flex-direction: column;
+    order: 1;
+  }
+
+  .tarjeta {
+    width: 100%;
+  }
+}
