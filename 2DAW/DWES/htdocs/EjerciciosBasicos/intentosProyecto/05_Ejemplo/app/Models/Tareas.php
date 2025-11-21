@@ -32,11 +32,36 @@ class Tareas
     public function listar(): array
     {
         $elementosPorPagina = 20;
-        $paginaActual = isset($_GET['pagina']) ? $_GET['pagina'] : 1;
+        $paginaActual = isset($_GET['pagina']) ? (int)$_GET['pagina'] : 1;
+        if ($paginaActual < 1) $paginaActual = 1;
         $inicio = ($paginaActual -1) * $elementosPorPagina;
 
-        $sql = 'SELECT id, nifCif, personaNombre, telefono, correo, descripcionTarea, direccionTarea, poblacion, codigoPostal, provincia, estadoTarea, operarioEncargado, fechaRealizacion, anotacionesAnteriores, anotacionesPosteriores FROM tareas ORDER BY id LIMIT ' . $inicio . ',' . $elementosPorPagina;
-        return $this->db()->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+        // Filtros: q (texto), estado, operario
+        $q = isset($_GET['q']) ? trim((string)$_GET['q']) : '';
+        $estado = isset($_GET['estado']) ? trim((string)$_GET['estado']) : '';
+        $operario = isset($_GET['operario']) ? trim((string)$_GET['operario']) : '';
+        $where = [];
+        $params = [];
+        if ($q !== '') {
+            $where[] = '(personaNombre LIKE ? OR descripcionTarea LIKE ? OR poblacion LIKE ?)';
+            $params[] = '%'.$q.'%';
+            $params[] = '%'.$q.'%';
+            $params[] = '%'.$q.'%';
+        }
+        if ($estado !== '') {
+            $where[] = 'estadoTarea = ?';
+            $params[] = $estado;
+        }
+        if ($operario !== '') {
+            $where[] = 'operarioEncargado = ?';
+            $params[] = $operario;
+        }
+        $sql = 'SELECT id, nifCif, personaNombre, telefono, correo, descripcionTarea, direccionTarea, poblacion, codigoPostal, provincia, estadoTarea, operarioEncargado, fechaRealizacion, anotacionesAnteriores, anotacionesPosteriores FROM tareas';
+        if (!empty($where)) $sql .= ' WHERE ' . implode(' AND ', $where);
+        $sql .= ' ORDER BY id LIMIT ' . $inicio . ',' . $elementosPorPagina;
+        $st = $this->db()->prepare($sql);
+        $st->execute($params);
+        return $st->fetchAll(PDO::FETCH_ASSOC);
     }
 
     /**
@@ -46,7 +71,30 @@ class Tareas
      */
     public function contar(): int
     {
-        $st = $this->db()->query('SELECT COUNT(*) FROM tareas');
+        // Contar con filtros si existen
+        $q = isset($_GET['q']) ? trim((string)$_GET['q']) : '';
+        $estado = isset($_GET['estado']) ? trim((string)$_GET['estado']) : '';
+        $operario = isset($_GET['operario']) ? trim((string)$_GET['operario']) : '';
+        $where = [];
+        $params = [];
+        if ($q !== '') {
+            $where[] = '(personaNombre LIKE ? OR descripcionTarea LIKE ? OR poblacion LIKE ?)';
+            $params[] = '%'.$q.'%';
+            $params[] = '%'.$q.'%';
+            $params[] = '%'.$q.'%';
+        }
+        if ($estado !== '') {
+            $where[] = 'estadoTarea = ?';
+            $params[] = $estado;
+        }
+        if ($operario !== '') {
+            $where[] = 'operarioEncargado = ?';
+            $params[] = $operario;
+        }
+        $sql = 'SELECT COUNT(*) FROM tareas';
+        if (!empty($where)) $sql .= ' WHERE ' . implode(' AND ', $where);
+        $st = $this->db()->prepare($sql);
+        $st->execute($params);
         return (int) $st->fetchColumn();
     }
     /**
@@ -179,5 +227,19 @@ class Tareas
     public function registraAlta(array $datos)
     {
         $this->crear($datos);
+    }
+    /**
+     * Actualiza campos permitidos para operario.
+     *
+     * @param int $id ID de la tarea.
+     * @param array $datos Datos: estadoTarea, anotacionesPosteriores.
+     */
+    public function actualizarOperario(int $id, array $datos): bool
+    {
+        $estado = trim((string)($datos['estadoTarea'] ?? ''));
+        $anotPost = trim((string)($datos['anotacionesPosteriores'] ?? ''));
+        $sql = 'UPDATE tareas SET estadoTarea = ?, anotacionesPosteriores = ? WHERE id = ?';
+        $st = $this->db()->prepare($sql);
+        return $st->execute([$estado, $anotPost, $id]);
     }
 }

@@ -13,11 +13,11 @@
 
   <form action="login" method="POST">
     @csrf
-    <label>Nombre:</label><br>
-    <input type="text" name="nombre" value="{{ $nombre ?? '' }}"><br>
+    <label>Usuario:</label><br>
+    <input type="text" name="usuario" value="{{ $nombre ?? '' }}"><br>
 
-    <label>Contraseña:</label><br>
-    <input type="password" name="contraseña" value="{{ $contraseña ?? '' }}"><br>
+    <label>Clave (plana):</label><br>
+    <input type="password" name="clave" value="{{ $contraseña ?? '' }}"><br>
 
     <label class="inline">
       <input type="checkbox" name="guardar_clave" {{ !empty($guardar_clave) ? 'checked' : '' }}> Guardar clave

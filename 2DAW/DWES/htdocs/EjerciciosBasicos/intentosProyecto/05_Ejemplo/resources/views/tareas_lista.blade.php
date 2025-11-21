@@ -4,8 +4,21 @@
 
 @section('cuerpo')
   <div class="nav">
-    {{-- <a href="{!! url('tareas/crear') !!}" class="btn">Crear nueva tarea</a> --}}
-    <a href="tareas/crear" class="btn">Crear nueva tarea</a>
+    @if(session('rol') === 'admin')
+      <a href="tareas/crear" class="btn">Crear nueva tarea</a>
+    @endif
+    <form action="tareas" method="GET" class="inline" style="margin-left:8px">
+      <input type="text" name="q" placeholder="Buscar" value="{{ $_GET['q'] ?? '' }}" class="btn">
+      <select name="estado" class="btn">
+        <option value="">Estado</option>
+        <option value="B" {{ (($_GET['estado'] ?? '')==='B') ? 'selected' : '' }}>Esperando ser aprobada</option>
+        <option value="P" {{ (($_GET['estado'] ?? '')==='P') ? 'selected' : '' }}>Pendiente</option>
+        <option value="R" {{ (($_GET['estado'] ?? '')==='R') ? 'selected' : '' }}>Realizada</option>
+        <option value="C" {{ (($_GET['estado'] ?? '')==='C') ? 'selected' : '' }}>Cancelada</option>
+      </select>
+      <input type="text" name="operario" placeholder="Operario" value="{{ $_GET['operario'] ?? '' }}" class="btn">
+      <button type="submit" class="btn">Filtrar</button>
+    </form>
   </div>
 
   <h1>Tareas</h1>
@@ -36,11 +49,13 @@
           <td>{{ $t['fechaRealizacion'] }}</td>
           <td>{{ $t['estadoTarea'] }}</td>
           <td>
-            {{--todo NO SE PERMITE USAR EL URL --}}
-            {{-- <a href="{!! url('tareas/'.$t['id'].'/editar') !!}">Editar</a> --}}
+          {{--todo NO SE PERMITE USAR EL URL --}}
+          {{-- <a href="{!! url('tareas/'.$t['id'].'/editar') !!}">Editar</a> --}}
             <a href="tareas/{{ $t['id'] }}/editar">Editar</a>
-            {{-- <form action="{!! url('tareas/' . $t['id'] . '/eliminar') !!}" method="POST" class="inline"> --}}
+            <a href="tareas/{{ $t['id'] }}" class="btn inline">Ver</a>
+            @if(session('rol') === 'admin')
               <a href="tareas/{{  $t['id'] }}/eliminar" class="btn inline">Eliminar</a>
+            @endif
           </td>
         </tr>
       @empty

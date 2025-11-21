@@ -1,0 +1,40 @@
+@extends('layouts/plantilla01')
+
+@section('titulo', 'Gestión de usuarios')
+
+@section('cuerpo')
+  <div class="nav">
+    <a href="usuarios/crear" class="btn">Crear usuario</a>
+  </div>
+  <h1>Usuarios</h1>
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Usuario</th>
+        <th>Rol</th>
+        <th>Guardar clave</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+    @forelse($usuarios as $u)
+      <tr>
+        <td>{{ $u['id'] }}</td>
+        <td>{{ $u['usuario'] }}</td>
+        <td>{{ $u['rol'] }}</td>
+        <td>{{ !empty($u['guardar_clave']) ? 'Sí' : 'No' }}</td>
+        <td>
+          <a href="usuarios/{{ $u['id'] }}/editar" class="btn inline">Editar</a>
+          <form action="usuarios/{{ $u['id'] }}/eliminar" method="POST" class="inline">
+            @csrf
+            <button type="submit" class="btn">Eliminar</button>
+          </form>
+        </td>
+      </tr>
+    @empty
+      <tr><td colspan="5">No hay usuarios</td></tr>
+    @endforelse
+    </tbody>
+  </table>
+@endsection

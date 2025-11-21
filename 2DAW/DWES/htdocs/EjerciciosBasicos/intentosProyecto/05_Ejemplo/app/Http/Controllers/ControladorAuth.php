@@ -19,8 +19,10 @@ class ControladorAuth extends Controller
     public function login()
     {
         if ($_POST) {
-            $nombre = isset($_POST['nombre']) ? trim((string)$_POST['nombre']) : '';
-            $contrasena = isset($_POST['contraseña']) ? (string)$_POST['contraseña'] : '';
+            // Asegurar esquema de usuarios (tabla y admin por defecto)
+            try { (new Usuarios())->asegurarEsquema(); } catch (\Throwable $e) {}
+            $nombre = isset($_POST['usuario']) ? trim((string)$_POST['usuario']) : (isset($_POST['nombre']) ? trim((string)$_POST['nombre']) : '');
+            $contrasena = isset($_POST['clave']) ? (string)$_POST['clave'] : (isset($_POST['contraseña']) ? (string)$_POST['contraseña'] : '');
             $guardar = isset($_POST['guardar_clave']);
 
             $datos = ['nombre' => $nombre, 'contraseña' => $contrasena, 'guardar_clave' => $guardar ? 'on' : ''];
@@ -39,14 +41,15 @@ class ControladorAuth extends Controller
                 return view('autentificar/login', $datos);
             }
 
-            if (!$user || (string)$user['contraseña'] !== $contrasena) {
+            if (!$user || (string)$user['clave'] !== $contrasena) {
                 $datos['errorGeneral'] = 'Nombre o contraseña incorrectos';
                 return view('autentificar/login', $datos);
             }
 
             // Sesión
             $sesionId = session()->getId();
-            session(['usuario_id' => (int)$user['id'], 'usuario_nombre' => (string)$user['nombre']]);
+            $rol = isset($user['rol']) ? strtolower((string)$user['rol']) : 'operario';
+            session(['usuario_id' => (int)$user['id'], 'usuario_nombre' => (string)$user['usuario'], 'rol' => $rol]);
 
             // Preferencias y cookie de clave
             try {
@@ -63,23 +66,15 @@ class ControladorAuth extends Controller
                 setcookie('clave_plana', '', time() - 3600, '/');
             }
 
-            // Volver al listado con mensaje
+            // Cargar y devolver listado de tareas directamente
             $modelo = new Tareas();
-            try {
-                $tareas = $modelo->listar();
-            } catch (\Throwable $e) {
-                $tareas = [];
-            }
+            $tareas = [];
+            try { $tareas = $modelo->listar(); } catch (\Throwable $e) { $tareas = []; }
             $porPagina = 20;
             $paginaActual = isset($_GET['pagina']) ? (int)$_GET['pagina'] : 1;
             if ($paginaActual < 1) $paginaActual = 1;
-            $totalElementos = 0;
-            $totalPaginas = 1;
-            try {
-                $totalElementos = $modelo->contar();
-                $totalPaginas = (int) max(1, ceil($totalElementos / $porPagina));
-            } catch (\Throwable $e3) {
-            }
+            $totalElementos = 0; $totalPaginas = 1;
+            try { $totalElementos = $modelo->contar(); $totalPaginas = (int) max(1, ceil($totalElementos / $porPagina)); } catch (\Throwable $e3) {}
             return view('tareas_lista', ['tareas' => $tareas, 'mensaje' => 'Sesión iniciada correctamente', 'paginaActual' => $paginaActual, 'totalPaginas' => $totalPaginas]);
         }
 
@@ -112,4 +107,3 @@ class ControladorAuth extends Controller
         return view('autentificar/login', ['mensaje' => 'Sesión cerrada']);
     }
 }
-

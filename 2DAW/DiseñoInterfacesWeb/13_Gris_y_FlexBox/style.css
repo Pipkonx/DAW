@@ -32,9 +32,9 @@ nav a {
 /* ----------------------------------------------------
    GRID GENERAL
 ----------------------------------------------------- */
-.contenedor {
+main {
   display: grid;
-  grid-template-columns: 200px 1fr; 
+  grid-template-columns: 200px 1fr;
   gap: 20px;
   padding: 20px;
   background: #fafafa;
@@ -68,9 +68,9 @@ button {
   gap: 20px;
 }
 
-.tarjeta {
+.tarjetas div {
   background: white;
-    /* he intentado ahcerlo con flex grow y basis pero no sale */
+  /* he intentado ahcerlo con flex grow y basis pero no sale */
   width: calc(33.33% - 20px);
   padding: 20px;
   border-radius: 5px;
@@ -81,15 +81,15 @@ button {
    para moviles
 ----------------------------------------------------- */
 @media (max-width: 900px) {
-  .tarjeta {
+  .tarjetas div {
     /* lo mismo */
     width: calc(50% - 20px);
   }
 }
 
 @media (max-width: 600px) {
-  .contenedor {
-    grid-template-columns: 1fr; 
+  main {
+    grid-template-columns: 1fr;
   }
 
   .menu {
@@ -103,7 +103,7 @@ button {
     order: 1;
   }
 
-  .tarjeta {
+  .tarjetas div {
     width: 100%;
   }
 }
