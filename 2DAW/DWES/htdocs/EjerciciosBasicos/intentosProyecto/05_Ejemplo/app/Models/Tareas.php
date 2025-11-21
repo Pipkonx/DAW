@@ -72,29 +72,29 @@ class Tareas
     public function contar(): int
     {
         // Contar con filtros si existen
-        $q = isset($_GET['q']) ? trim((string)$_GET['q']) : '';
+        $texto = isset($_GET['q']) ? trim((string)$_GET['q']) : '';
         $estado = isset($_GET['estado']) ? trim((string)$_GET['estado']) : '';
         $operario = isset($_GET['operario']) ? trim((string)$_GET['operario']) : '';
-        $where = [];
-        $params = [];
-        if ($q !== '') {
-            $where[] = '(personaNombre LIKE ? OR descripcionTarea LIKE ? OR poblacion LIKE ?)';
-            $params[] = '%'.$q.'%';
-            $params[] = '%'.$q.'%';
-            $params[] = '%'.$q.'%';
+        $donde = [];
+        $parametros = [];
+        if ($texto !== '') {
+            $donde[] = '(personaNombre LIKE ? OR descripcionTarea LIKE ? OR poblacion LIKE ?)';
+            $parametros[] = '%'.$texto.'%';
+            $parametros[] = '%'.$texto.'%';
+            $parametros[] = '%'.$texto.'%';
         }
         if ($estado !== '') {
-            $where[] = 'estadoTarea = ?';
-            $params[] = $estado;
+            $donde[] = 'estadoTarea = ?';
+            $parametros[] = $estado;
         }
         if ($operario !== '') {
-            $where[] = 'operarioEncargado = ?';
-            $params[] = $operario;
+            $donde[] = 'operarioEncargado = ?';
+            $parametros[] = $operario;
         }
         $sql = 'SELECT COUNT(*) FROM tareas';
-        if (!empty($where)) $sql .= ' WHERE ' . implode(' AND ', $where);
+        if (!empty($donde)) $sql .= ' WHERE ' . implode(' AND ', $donde);
         $st = $this->db()->prepare($sql);
-        $st->execute($params);
+        $st->execute($parametros);
         return (int) $st->fetchColumn();
     }
     /**
