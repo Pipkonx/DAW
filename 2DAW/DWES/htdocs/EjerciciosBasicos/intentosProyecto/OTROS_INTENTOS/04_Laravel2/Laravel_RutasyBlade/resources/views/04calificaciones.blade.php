@@ -13,7 +13,7 @@
             <td>{{ $alumno['nombre'] }}</td>
             <td>{{ $alumno['calificacion']}}</td>
             <td>
-            @if ({$alumno['calificacion']<5})
+            @if ($alumno['calificacion']<5)
                 Susp.
             @else
                 Aprob.
