@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Funciones;
 use App\Models\Tareas;
-
 /**
  * Controlador HTTP para gestionar tareas: alta, listado, edición y eliminación.
  * Incluye validación de datos mediante la clase `Funciones`.
@@ -25,7 +24,7 @@ class ControladorTareas extends Controller
             return view('autentificar/login', ['errorGeneral' => 'Acceso restringido a administradores']);
         }
         // Crear nueva tarea: GET muestra formulario vacío; POST valida y crea
-        if ($_POST) {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Validar datos
             $this->filtrar();
             if (!empty(Funciones::$errores)) return view('alta', $_POST);
@@ -36,7 +35,7 @@ class ControladorTareas extends Controller
                 // Devolver listado con mensaje sin usar sesiones
                 $tareas = $modelo->listar();
                 $porPagina = 20;
-                $paginaActual = isset($_GET['pagina']) ? (int)$_GET['pagina'] : 1;
+                $paginaActual = $_GET['pagina'] ?? 1;
                 if ($paginaActual < 1) $paginaActual = 1;
                 $totalElementos = $modelo->contar();
                 $totalPaginas = (int) max(1, ceil($totalElementos / $porPagina));
@@ -310,9 +309,16 @@ class ControladorTareas extends Controller
     {
         // Reiniciar errores y extraer datos del formulario
         Funciones::$errores = [];
-        extract($_POST);
 
-        if ($nifCif == "") {
+        $nifCif = $_POST['nifCif'] ?? '';
+        $personaNombre = $_POST['personaNombre'] ?? '';
+        $descripcionTarea = $_POST['descripcionTarea'] ?? '';
+        $correo = $_POST['correo'] ?? '';
+        $telefono = $_POST['telefono'] ?? '';
+        $codigoPostal = $_POST['codigoPostal'] ?? '';
+        $provincia = $_POST['provincia'] ?? '';
+        $fechaRealizacion = $_POST['fechaRealizacion'] ?? '';
+        if ($nifCif === "") {
             Funciones::$errores['nif_cif'] = "Debe introducir el NIF/CIF de la persona encargada de la tarea";
         } else {
             $resultado = Funciones::validarNif($nifCif);

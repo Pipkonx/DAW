@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
 </head>
 
-<body>
+<body class="{{ $isLoginPage ?? false ? 'login-page' : '' }}">
 
   <div class="container">
     <div class="header-actions">

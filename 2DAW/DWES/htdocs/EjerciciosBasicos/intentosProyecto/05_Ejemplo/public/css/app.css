@@ -21,6 +21,20 @@ body {
   background: var(--bg)
 }
 
+body.login-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  /* Asegura que el body ocupe al menos el 100% del viewport height */
+}
+
+body.login-page .container {
+  margin: 0;
+  /* Elimina el margen automático para que flexbox pueda centrarlo */
+  max-width: 400px;
+}
+
 .container {
   max-width: 800px;
   margin: 24px auto;
@@ -59,20 +73,19 @@ a:hover {
 
 .btn {
   display: inline-block;
-  padding: 8px 12px;
+  padding: 12px 24px;
   border: 1px solid var(--border);
   border-radius: 6px;
   background: #f9fafb;
   color: var(--fg);
-  cursor: pointer
+  cursor: pointer;
+  min-width: 180px;
+  max-width: 120px;
+  text-align: center;
 }
 
 .btn:hover {
   background: #f3f4f6
-}
-
-.btn-cancel {
-  background: #fff
 }
 
 .inline {
@@ -107,7 +120,8 @@ textarea {
   padding: 8px;
   border: 1px solid var(--border);
   border-radius: 6px;
-  background: #fff
+  background: #fff;
+  text-align: left;
 }
 
 textarea {
@@ -115,7 +129,10 @@ textarea {
 }
 
 .nav {
-  margin-bottom: 16px
+  margin-bottom: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .actions-container {

@@ -11,8 +11,7 @@
     </div>
     <div class="right-actions">
       <form action="tareas" method="GET" class="inline filter-form">
-        <input type="text" name="q" placeholder="Buscar por descripción o operario" value="{{ $_GET['q'] ?? '' }}"
-          class="btn">
+        <input type="text" name="q" placeholder="Buscar por descripción o operario" value="{{ $_GET['q'] ?? '' }}" style="width: 250px;" class="btn">
         <select name="estado" class="btn">
           <option value="">Estado</option>
           <option value="B" {{ (($_GET['estado'] ?? '') === 'B') ? 'selected' : '' }}>Esperando ser aprobada</option>
@@ -55,10 +54,10 @@
           <td>
             {{--todo NO SE PERMITE USAR EL URL --}}
             {{-- <a href="{!! url('tareas/'.$t['id'].'/editar') !!}">Editar</a> --}}
-            <a href="tareas/{{ $t['id'] }}/editar">Editar</a>
-            <a href="tareas/{{ $t['id'] }}" class="btn inline">Ver</a>
+            <a href="tareas/{{ $t['id'] }}/editar">✏️</a>
+            <a href="tareas/{{ $t['id'] }}" class="inline">👁️</a>
             @if(session('rol') === 'admin')
-              <a href="tareas/{{  $t['id'] }}/eliminar" class="btn inline">Eliminar</a>
+              <a href="tareas/{{  $t['id'] }}/eliminar" class="inline">✖️</a>
             @endif
           </td>
         </tr>

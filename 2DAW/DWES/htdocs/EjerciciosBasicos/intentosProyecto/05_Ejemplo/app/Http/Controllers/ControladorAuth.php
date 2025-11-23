@@ -104,6 +104,6 @@ class ControladorAuth extends Controller
         // No borrar la cookie de preferencia; sólo la clave si existe
         setcookie('clave_plana', '', time() - 3600, '/');
 
-        return view('autentificar/login', ['mensaje' => 'Sesión cerrada']);
+        return view('autentificar/login', ['mensaje' => 'Sesión cerrada', 'isLoginPage' => true]);
     }
 }

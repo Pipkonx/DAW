@@ -25,7 +25,7 @@
 
     <div class="nav">
       <button type="submit" class="btn">Entrar</button>
-      <a href="/EjerciciosBasicos/intentosProyecto/05_Ejemplo/public/" class="btn btn-cancel">Cancelar</a>
+
     </div>
   </form>
 @endsection
