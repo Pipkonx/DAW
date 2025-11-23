@@ -44,6 +44,7 @@ class ControladorTareas extends Controller
             } catch (\Throwable $e) {
                 $datos = $_POST;
                 $datos['errorGeneral'] = 'No se pudo guardar la tarea. Revise la conexión y la tabla.';
+                $datos['formActionUrl'] = 'tareas/crear';
                 return view('alta', $datos);
             }
         }
@@ -63,6 +64,7 @@ class ControladorTareas extends Controller
             'fechaRealizacion' => '',
             'anotacionesAnteriores' => '',
             'anotacionesPosteriores' => '',
+            'formActionUrl' => 'tareas/crear',
         ];
         return view('alta', $datos);
     }
@@ -117,6 +119,7 @@ class ControladorTareas extends Controller
                 if (!empty(Funciones::$errores)) {
                     $datos = $_POST;
                     $datos['id'] = (int)$id;
+                    $datos['formActionUrl'] = 'tareas/' . $id . '/editar';
                     return view('alta', $datos);
                 }
                 try {
@@ -125,6 +128,7 @@ class ControladorTareas extends Controller
                     $datos = $_POST;
                     $datos['id'] = (int)$id;
                     $datos['errorGeneral'] = 'No se pudo actualizar la tarea. Revise la conexión y la tabla.';
+                    $datos['formActionUrl'] = 'tareas/' . $id . '/editar';
                     return view('alta', $datos);
                 }
             } else {
@@ -191,6 +195,7 @@ class ControladorTareas extends Controller
             return view('tareas_lista', ['tareas' => $tareas, 'errorGeneral' => 'No se pudo cargar la tarea para edición.', 'paginaActual' => $paginaActual, 'totalPaginas' => $totalPaginas]);
         }
         $tarea['id'] = (int)$id;
+        $tarea['formActionUrl'] = 'tareas/' . $id . '/editar';
         // Vista según rol
         if ($rol === 'admin') return view('alta', $tarea);
         return view('operario', $tarea);

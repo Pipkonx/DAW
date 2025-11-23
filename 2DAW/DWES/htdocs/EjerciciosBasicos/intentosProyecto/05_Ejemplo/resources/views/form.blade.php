@@ -1,4 +1,4 @@
-<form action="{{ isset($id) ? url('tareas/' . $id . '/editar') : url('tareas/crear') }}" method="POST" enctype="multipart/form-data">
+<form action="{{ $formActionUrl }}" method="POST" enctype="multipart/form-data">
     @csrf
     <label>NIF/CIF:</label><br>
     <input type="text" name="nifCif" value="{{ $nifCif }}"><br>
@@ -7,7 +7,7 @@
     @error('nif_cif')
         <div class="error">{{ $message }}</div>
     @enderror
-    {!! \App\Models\Funciones::verErrores('nif_cif') !!}
+
     <br>
 
     <label>Persona de contacto:</label><br>
@@ -16,7 +16,7 @@
     @error('nombre_persona')
         <div class="error">{{ $message }}</div>
     @enderror
-    {!! \App\Models\Funciones::verErrores('nombre_persona') !!}
+
 
     <br>
     <label>Teléfono:</label><br>
@@ -25,7 +25,7 @@
     @error('telefono')
         <div class="error">{{ $message }}</div>
     @enderror
-    {!! \App\Models\Funciones::verErrores('telefono') !!}
+
 
     <br>
 
@@ -35,7 +35,7 @@
     @error('correo')
         <div class="error">{{ $message }}</div>
     @enderror
-    {!! \App\Models\Funciones::verErrores('correo') !!}
+
 
     <br>
 
@@ -45,7 +45,7 @@
     @error('descripcion_tarea')
         <div class="error">{{ $message }}</div>
     @enderror
-    {!! \App\Models\Funciones::verErrores('descripcion_tarea') !!}
+
 
     <br>
 
@@ -63,7 +63,7 @@
         <option value="">Seleccione provincia</option>
         <?php \App\Models\Funciones::mostrarProvincias($provincia) ?>
     </select><br>
-    {!! \App\Models\Funciones::verErrores('provincia') !!}
+
     <br>
 
     <label>Estado:</label><br>
@@ -91,7 +91,7 @@
     @error('fecha_realizacion')
         <div class="error">{{ $message }}</div>
     @enderror
-    {!! \App\Models\Funciones::verErrores('fecha_realizacion') !!}
+
 
     <br>
 
