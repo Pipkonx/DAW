@@ -29,7 +29,7 @@ class ControladorAuth extends Controller
 
             if ($nombre === '' || $contrasena === '') {
                 $datos['errorGeneral'] = 'Debe introducir nombre y contraseña';
-                return view('autentificar/login', array_merge($datos, ['isLoginPage' => true]));
+                return view('autenticacion/login', array_merge($datos, ['isLoginPage' => true]));
             }
 
             $usuarios = new Usuarios();
@@ -38,12 +38,12 @@ class ControladorAuth extends Controller
                 $user = $usuarios->buscarPorNombre($nombre);
             } catch (\Throwable $e) {
                 $datos['errorGeneral'] = 'No se pudo acceder a usuarios';
-                return view('autentificar/login', array_merge($datos, ['isLoginPage' => true]));
+                return view('autenticacion/login', array_merge($datos, ['isLoginPage' => true]));
             }
 
             if (!$user || (string)$user['clave'] !== $contrasena) {
                 $datos['errorGeneral'] = 'Nombre o contraseña incorrectos';
-                return view('autentificar/login', array_merge($datos, ['isLoginPage' => true]));
+                return view('autenticacion/login', array_merge($datos, ['isLoginPage' => true]));
             }
 
             // Sesión
@@ -75,7 +75,7 @@ class ControladorAuth extends Controller
             if ($paginaActual < 1) $paginaActual = 1;
             $totalElementos = 0; $totalPaginas = 1;
             try { $totalElementos = $modelo->contar(); $totalPaginas = (int) max(1, ceil($totalElementos / $porPagina)); } catch (\Throwable $e3) {}
-            return view('tareas_lista', ['tareas' => $tareas, 'mensaje' => 'Sesión iniciada correctamente', 'paginaActual' => $paginaActual, 'totalPaginas' => $totalPaginas]);
+            return view('tareas/lista', ['tareas' => $tareas, 'mensaje' => 'Sesión iniciada correctamente', 'paginaActual' => $paginaActual, 'totalPaginas' => $totalPaginas]);
         }
 
         // GET: precargar valores desde cookies
@@ -104,6 +104,6 @@ class ControladorAuth extends Controller
         // No borrar la cookie de preferencia; sólo la clave si existe
         setcookie('clave_plana', '', time() - 3600, '/');
 
-        return view('autentificar/login', ['mensaje' => 'Sesión cerrada', 'isLoginPage' => true]);
+        return view('autenticacion/login', ['mensaje' => 'Sesión cerrada', 'isLoginPage' => true]);
     }
 }

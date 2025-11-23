@@ -15,7 +15,7 @@ class ControladorUsuarios extends Controller
     private function requireAdmin()
     {
         if (session('rol') !== 'admin') {
-            return view('autentificar/login', ['errorGeneral' => 'Acceso restringido a administradores']);
+            return view('autenticacion/login', ['errorGeneral' => 'Acceso restringido a administradores']);
         }
         return null;
     }
@@ -26,7 +26,7 @@ class ControladorUsuarios extends Controller
         $m = new Usuarios();
         $usuarios = [];
         try { $usuarios = $m->listar(); } catch (\Throwable $e) { $usuarios = []; }
-        return view('usuarios_lista', ['usuarios' => $usuarios]);
+        return view('usuarios/lista', ['usuarios' => $usuarios]);
     }
 
     public function crear()
@@ -37,14 +37,14 @@ class ControladorUsuarios extends Controller
             $clave = (string)($_POST['clave'] ?? '');
             $rol = strtolower((string)($_POST['rol'] ?? 'operario'));
             if ($usuario === '' || $clave === '' || !in_array($rol, ['admin','operario'])) {
-                return view('usuarios_form', ['errorGeneral' => 'Datos inválidos', 'usuario' => $usuario, 'clave' => $clave, 'rol' => $rol]);
+                return view('usuarios/formulario', ['errorGeneral' => 'Datos inválidos', 'usuario' => $usuario, 'clave' => $clave, 'rol' => $rol]);
             }
             try { (new Usuarios())->crear($usuario, $clave, $rol); } catch (\Throwable $e) {
-                return view('usuarios_form', ['errorGeneral' => 'No se pudo crear el usuario', 'usuario' => $usuario, 'clave' => $clave, 'rol' => $rol]);
+                return view('usuarios/formulario', ['errorGeneral' => 'No se pudo crear el usuario', 'usuario' => $usuario, 'clave' => $clave, 'rol' => $rol]);
             }
             return $this->listar();
         }
-        return view('usuarios_form', ['usuario' => '', 'clave' => '', 'rol' => 'operario']);
+        return view('usuarios/formulario', ['usuario' => '', 'clave' => '', 'rol' => 'operario']);
     }
 
     public function editar($id)
@@ -56,10 +56,10 @@ class ControladorUsuarios extends Controller
             $clave = (string)($_POST['clave'] ?? '');
             $rol = strtolower((string)($_POST['rol'] ?? 'operario'));
             if ($usuario === '' || $clave === '' || !in_array($rol, ['admin','operario'])) {
-                return view('usuarios_form', ['errorGeneral' => 'Datos inválidos', 'id' => (int)$id, 'usuario' => $usuario, 'clave' => $clave, 'rol' => $rol]);
+                return view('usuarios/formulario', ['errorGeneral' => 'Datos inválidos', 'id' => (int)$id, 'usuario' => $usuario, 'clave' => $clave, 'rol' => $rol]);
             }
             try { $m->actualizar((int)$id, $usuario, $clave, $rol); } catch (\Throwable $e) {
-                return view('usuarios_form', ['errorGeneral' => 'No se pudo actualizar', 'id' => (int)$id, 'usuario' => $usuario, 'clave' => $clave, 'rol' => $rol]);
+                return view('usuarios/formulario', ['errorGeneral' => 'No se pudo actualizar', 'id' => (int)$id, 'usuario' => $usuario, 'clave' => $clave, 'rol' => $rol]);
             }
             return $this->listar();
         }
@@ -67,7 +67,7 @@ class ControladorUsuarios extends Controller
         try { $u = $m->buscarPorId((int)$id); } catch (\Throwable $e) { $u = null; }
         if (!$u) return $this->listar();
         $u['id'] = (int)$id;
-        return view('usuarios_form', $u);
+        return view('usuarios/formulario', $u);
     }
 
     public function eliminar($id)

@@ -21,13 +21,13 @@ class ControladorTareas extends Controller
     public function crear()
     {
         if (session('rol') !== 'admin') {
-            return view('autentificar/login', ['errorGeneral' => 'Acceso restringido a administradores']);
+            return view('autenticacion/login', ['errorGeneral' => 'Acceso restringido a administradores']);
         }
         // Crear nueva tarea: GET muestra formulario vacío; POST valida y crea
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Validar datos
             $this->filtrar();
-            if (!empty(Funciones::$errores)) return view('alta', $_POST);
+            if (!empty(Funciones::$errores)) return view('tareas/alta_edicion', $_POST);
 
             $modelo = new Tareas();
             try {
@@ -39,12 +39,12 @@ class ControladorTareas extends Controller
                 if ($paginaActual < 1) $paginaActual = 1;
                 $totalElementos = $modelo->contar();
                 $totalPaginas = (int) max(1, ceil($totalElementos / $porPagina));
-                return view('tareas_lista', ['tareas' => $tareas, 'mensaje' => 'Tarea creada correctamente', 'paginaActual' => $paginaActual, 'totalPaginas' => $totalPaginas]);
+                return view('tareas/lista', ['tareas' => $tareas, 'mensaje' => 'Tarea creada correctamente', 'paginaActual' => $paginaActual, 'totalPaginas' => $totalPaginas]);
             } catch (\Throwable $e) {
                 $datos = $_POST;
                 $datos['errorGeneral'] = 'No se pudo guardar la tarea. Revise la conexión y la tabla.';
                 $datos['formActionUrl'] = 'tareas/crear';
-                return view('alta', $datos);
+                return view('tareas/alta_edicion', $datos);
             }
         }
 
@@ -65,7 +65,7 @@ class ControladorTareas extends Controller
             'anotacionesPosteriores' => '',
             'formActionUrl' => 'tareas/crear',
         ];
-        return view('alta', $datos);
+        return view('tareas/alta_edicion', $datos);
     }
 
     /**
@@ -95,7 +95,7 @@ class ControladorTareas extends Controller
         }
         $datos = ['tareas' => $tareas, 'paginaActual' => $paginaActual, 'totalPaginas' => $totalPaginas];
         if ($error) $datos['errorGeneral'] = $error;
-        return view('tareas_lista', $datos);
+        return view('tareas/lista', $datos);
     }
 
     /**
@@ -119,7 +119,7 @@ class ControladorTareas extends Controller
                     $datos = $_POST;
                     $datos['id'] = (int)$id;
                     $datos['formActionUrl'] = 'tareas/' . $id . '/editar';
-                    return view('alta', $datos);
+                    return view('tareas/alta_edicion', $datos);
                 }
                 try {
                     $modelo->actualizar((int)$id, $_POST);
@@ -128,14 +128,14 @@ class ControladorTareas extends Controller
                     $datos['id'] = (int)$id;
                     $datos['errorGeneral'] = 'No se pudo actualizar la tarea. Revise la conexión y la tabla.';
                     $datos['formActionUrl'] = 'tareas/' . $id . '/editar';
-                    return view('alta', $datos);
+                    return view('tareas/alta_edicion', $datos);
                 }
             } else {
                 // Operario: solo estado y anotaciones posteriores; evidencia por archivos
                 $estado = trim((string)($_POST['estadoTarea'] ?? ''));
                 if (!in_array($estado, ['B','P','R','C'])) {
                     $datos = $_POST; $datos['id'] = (int)$id; $datos['errorGeneral'] = 'Estado no válido';
-                    return view('operario', $datos);
+                    return view('tareas/edicion_operario', $datos);
                 }
                 try {
                     $modelo->actualizarOperario((int)$id, $_POST);
@@ -154,7 +154,7 @@ class ControladorTareas extends Controller
                     }
                 } catch (\Throwable $e) {
                     $datos = $_POST; $datos['id'] = (int)$id; $datos['errorGeneral'] = 'No se pudo actualizar la tarea como operario';
-                    return view('operario', $datos);
+                    return view('tareas/edicion_operario', $datos);
                 }
             }
             $tareas = $modelo->listar();
@@ -171,7 +171,7 @@ class ControladorTareas extends Controller
             $tarea = $modelo->buscar((int)$id);
         } catch (\Throwable $e) {
             $tareas = [];
-            return view('tareas_lista', ['tareas' => $tareas, 'errorGeneral' => 'No se pudo cargar la tarea para edición.']);
+            return view('tareas/lista', ['tareas' => $tareas, 'errorGeneral' => 'No se pudo cargar la tarea para edición.']);
         }
         if (!$tarea) {
             // Si no existe la tarea, mostrar listado con mensaje de error sin redirigir a raíz
@@ -191,13 +191,13 @@ class ControladorTareas extends Controller
                 $totalPaginas = (int) max(1, ceil($totalElementos / $porPagina));
             } catch (\Throwable $e3) {
             }
-            return view('tareas_lista', ['tareas' => $tareas, 'errorGeneral' => 'No se pudo cargar la tarea para edición.', 'paginaActual' => $paginaActual, 'totalPaginas' => $totalPaginas]);
+            return view('tareas/lista', ['tareas' => $tareas, 'errorGeneral' => 'No se pudo cargar la tarea para edición.', 'paginaActual' => $paginaActual, 'totalPaginas' => $totalPaginas]);
         }
         $tarea['id'] = (int)$id;
         $tarea['formActionUrl'] = 'tareas/' . $id . '/editar';
         // Vista según rol
-        if ($rol === 'admin') return view('alta', $tarea);
-        return view('operario', $tarea);
+        if ($rol === 'admin') return view('tareas/alta_edicion', $tarea);
+        return view('tareas/edicion_operario', $tarea);
     }
 
     /**
@@ -209,7 +209,7 @@ class ControladorTareas extends Controller
     public function eliminar($id)
     {
         if (session('rol') !== 'admin') {
-            return view('autentificar/login', ['errorGeneral' => 'Acceso restringido a administradores']);
+            return view('autenticacion/login', ['errorGeneral' => 'Acceso restringido a administradores']);
         }
         $modelo = new Tareas();
         try {
@@ -221,7 +221,7 @@ class ControladorTareas extends Controller
             $totalElementos = $modelo->contar();
             // ceil devuelve el entero más pequeño que es mayor o igual que un número dado
             $totalPaginas = (int) max(1, ceil($totalElementos / $porPagina));
-            return view('tareas_lista', ['tareas' => $tareas, 'mensaje' => 'Tarea eliminada correctamente', 'paginaActual' => $paginaActual, 'totalPaginas' => $totalPaginas]);
+            return view('tareas/lista', ['tareas' => $tareas, 'mensaje' => 'Tarea eliminada correctamente', 'paginaActual' => $paginaActual, 'totalPaginas' => $totalPaginas]);
         } catch (\Throwable $e) {
             try {
                 $tareas = $modelo->listar();
@@ -238,7 +238,7 @@ class ControladorTareas extends Controller
                 $totalPaginas = (int) max(1, ceil($totalElementos / $porPagina));
             } catch (\Throwable $e3) {
             }
-            return view('tareas_lista', ['tareas' => $tareas, 'errorGeneral' => 'No se pudo eliminar la tarea.', 'paginaActual' => $paginaActual, 'totalPaginas' => $totalPaginas]);
+            return view('tareas/lista', ['tareas' => $tareas, 'errorGeneral' => 'No se pudo eliminar la tarea.', 'paginaActual' => $paginaActual, 'totalPaginas' => $totalPaginas]);
         }
     }
 
@@ -251,7 +251,7 @@ class ControladorTareas extends Controller
     public function confirmarEliminar($id)
     {
         if (session('rol') !== 'admin') {
-            return view('autentificar/login', ['errorGeneral' => 'Acceso restringido a administradores']);
+            return view('autenticacion/login', ['errorGeneral' => 'Acceso restringido a administradores']);
         }
         $modelo = new Tareas();
         try {
@@ -277,10 +277,10 @@ class ControladorTareas extends Controller
                 $totalPaginas = (int) max(1, ceil($totalElementos / $porPagina));
             } catch (\Throwable $e3) {
             }
-            return view('tareas_lista', ['tareas' => $tareas, 'errorGeneral' => 'No se pudo cargar la tarea para eliminación.', 'paginaActual' => $paginaActual, 'totalPaginas' => $totalPaginas]);
+            return view('tareas/lista', ['tareas' => $tareas, 'errorGeneral' => 'No se pudo cargar la tarea para eliminación.', 'paginaActual' => $paginaActual, 'totalPaginas' => $totalPaginas]);
         }
         $tarea['id'] = (int)$id;
-        return view('confirmarEliminar', $tarea);
+        return view('tareas/confirmar_eliminacion', $tarea);
     }
 
     /**
@@ -294,9 +294,9 @@ class ControladorTareas extends Controller
         if (!$t) {
             $tareas = []; $porPagina = 20; $paginaActual = 1; $totalPaginas = 1;
             try { $tareas = $m->listar(); $totalPaginas = (int) max(1, ceil($m->contar() / $porPagina)); } catch (\Throwable $e2) {}
-            return view('tareas_lista', ['tareas' => $tareas, 'errorGeneral' => 'La tarea no existe', 'paginaActual' => $paginaActual, 'totalPaginas' => $totalPaginas]);
+            return view('tareas/lista', ['tareas' => $tareas, 'errorGeneral' => 'La tarea no existe', 'paginaActual' => $paginaActual, 'totalPaginas' => $totalPaginas]);
         }
-        return view('tarea_detalle', $t);
+        return view('tareas/detalle', $t);
     }
 
     /**

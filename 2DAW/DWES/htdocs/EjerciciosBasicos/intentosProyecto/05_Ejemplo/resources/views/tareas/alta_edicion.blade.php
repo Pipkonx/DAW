@@ -13,6 +13,6 @@
    <div class="msg">{{ $mensaje }}</div>
    @endif
 
-   @include('form')
+   @include('tareas/form')
 
 @endsection
