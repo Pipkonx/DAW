@@ -15,6 +15,22 @@ a:hover { text-decoration: underline }
 table { width:100%; border-collapse: collapse; margin: 12px 0 }
 th,td { border:1px solid var(--border); padding:8px; text-align:left }
 form label { display:block; font-weight:500; margin:8px 0 4px }
-input[type=text], input[type=date], select, textarea { width:100%; padding:8px; border:1px solid var(--border); border-radius:6px; background:#fff }
+input[type=text], input[type=password], input[type=date], select, textarea { width:100%; padding:8px; border:1px solid var(--border); border-radius:6px; background:#fff }
 textarea { min-height: 100px }
 .nav { margin-bottom: 16px }
+
+.actions-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.filter-form {
+  display: flex;
+  gap: 8px;
+}
+
+.logout-form {
+  margin-left: auto; /* Empuja el formulario de logout a la derecha */
+}

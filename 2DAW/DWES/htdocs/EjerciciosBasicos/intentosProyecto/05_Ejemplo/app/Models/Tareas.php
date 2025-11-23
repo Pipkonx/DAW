@@ -39,11 +39,11 @@ class Tareas
         // Filtros: q (texto), estado, operario
         $q = isset($_GET['q']) ? trim((string)$_GET['q']) : '';
         $estado = isset($_GET['estado']) ? trim((string)$_GET['estado']) : '';
-        $operario = isset($_GET['operario']) ? trim((string)$_GET['operario']) : '';
         $where = [];
         $params = [];
         if ($q !== '') {
-            $where[] = '(personaNombre LIKE ? OR descripcionTarea LIKE ? OR poblacion LIKE ?)';
+            $where[] = '(personaNombre LIKE ? OR descripcionTarea LIKE ? OR poblacion LIKE ? OR operarioEncargado LIKE ?)';
+            $params[] = '%'.$q.'%';
             $params[] = '%'.$q.'%';
             $params[] = '%'.$q.'%';
             $params[] = '%'.$q.'%';
@@ -51,10 +51,6 @@ class Tareas
         if ($estado !== '') {
             $where[] = 'estadoTarea = ?';
             $params[] = $estado;
-        }
-        if ($operario !== '') {
-            $where[] = 'operarioEncargado = ?';
-            $params[] = $operario;
         }
         $sql = 'SELECT id, nifCif, personaNombre, telefono, correo, descripcionTarea, direccionTarea, poblacion, codigoPostal, provincia, estadoTarea, operarioEncargado, fechaRealizacion, anotacionesAnteriores, anotacionesPosteriores FROM tareas';
         if (!empty($where)) $sql .= ' WHERE ' . implode(' AND ', $where);
@@ -74,11 +70,11 @@ class Tareas
         // Contar con filtros si existen
         $texto = isset($_GET['q']) ? trim((string)$_GET['q']) : '';
         $estado = isset($_GET['estado']) ? trim((string)$_GET['estado']) : '';
-        $operario = isset($_GET['operario']) ? trim((string)$_GET['operario']) : '';
         $donde = [];
         $parametros = [];
         if ($texto !== '') {
-            $donde[] = '(personaNombre LIKE ? OR descripcionTarea LIKE ? OR poblacion LIKE ?)';
+            $donde[] = '(personaNombre LIKE ? OR descripcionTarea LIKE ? OR poblacion LIKE ? OR operarioEncargado LIKE ?)';
+            $parametros[] = '%'.$texto.'%';
             $parametros[] = '%'.$texto.'%';
             $parametros[] = '%'.$texto.'%';
             $parametros[] = '%'.$texto.'%';
@@ -86,10 +82,6 @@ class Tareas
         if ($estado !== '') {
             $donde[] = 'estadoTarea = ?';
             $parametros[] = $estado;
-        }
-        if ($operario !== '') {
-            $donde[] = 'operarioEncargado = ?';
-            $parametros[] = $operario;
         }
         $sql = 'SELECT COUNT(*) FROM tareas';
         if (!empty($donde)) $sql .= ' WHERE ' . implode(' AND ', $donde);

@@ -16,7 +16,7 @@
     <label>Usuario:</label><br>
     <input type="text" name="usuario" value="{{ $nombre ?? '' }}"><br>
 
-    <label>Clave (plana):</label><br>
+    <label>Contraseña:</label><br>
     <input type="password" name="clave" value="{{ $contraseña ?? '' }}"><br>
 
     <label class="inline">

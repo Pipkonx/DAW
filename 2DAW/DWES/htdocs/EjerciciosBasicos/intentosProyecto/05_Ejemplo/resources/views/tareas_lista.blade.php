@@ -3,22 +3,25 @@
 @section('titulo', 'Listado de Tareas')
 
 @section('cuerpo')
-  <div class="nav">
-    @if(session('rol') === 'admin')
-      <a href="tareas/crear" class="btn">Crear nueva tarea</a>
-    @endif
-    <form action="tareas" method="GET" class="inline" style="margin-left:8px">
-      <input type="text" name="q" placeholder="Buscar" value="{{ $_GET['q'] ?? '' }}" class="btn">
-      <select name="estado" class="btn">
-        <option value="">Estado</option>
-        <option value="B" {{ (($_GET['estado'] ?? '') === 'B') ? 'selected' : '' }}>Esperando ser aprobada</option>
-        <option value="P" {{ (($_GET['estado'] ?? '') === 'P') ? 'selected' : '' }}>Pendiente</option>
-        <option value="R" {{ (($_GET['estado'] ?? '') === 'R') ? 'selected' : '' }}>Realizada</option>
-        <option value="C" {{ (($_GET['estado'] ?? '') === 'C') ? 'selected' : '' }}>Cancelada</option>
-      </select>
-      <input type="text" name="operario" placeholder="Operario" value="{{ $_GET['operario'] ?? '' }}" class="btn">
-      <button type="submit" class="btn">Filtrar</button>
-    </form>
+  <div class="actions-container">
+    <div class="left-actions">
+      @if(session('rol') === 'admin')
+        <a href="tareas/crear" class="btn">Crear nueva tarea</a>
+      @endif
+    </div>
+    <div class="right-actions">
+      <form action="tareas" method="GET" class="inline filter-form">
+        <input type="text" name="q" placeholder="Buscar por descripción o operario" value="{{ $_GET['q'] ?? '' }}" class="btn">
+        <select name="estado" class="btn">
+          <option value="">Estado</option>
+          <option value="B" {{ (($_GET['estado'] ?? '') === 'B') ? 'selected' : '' }}>Esperando ser aprobada</option>
+          <option value="P" {{ (($_GET['estado'] ?? '') === 'P') ? 'selected' : '' }}>Pendiente</option>
+          <option value="R" {{ (($_GET['estado'] ?? '') === 'R') ? 'selected' : '' }}>Realizada</option>
+          <option value="C" {{ (($_GET['estado'] ?? '') === 'C') ? 'selected' : '' }}>Cancelada</option>
+        </select>
+        <button type="submit" class="btn">Filtrar</button>
+      </form>
+    </div>
   </div>
 
   <h1>Tareas</h1>

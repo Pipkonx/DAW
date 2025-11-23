@@ -29,7 +29,7 @@ class ControladorAuth extends Controller
 
             if ($nombre === '' || $contrasena === '') {
                 $datos['errorGeneral'] = 'Debe introducir nombre y contraseña';
-                return view('autentificar/login', $datos);
+                return view('autentificar/login', array_merge($datos, ['isLoginPage' => true]));
             }
 
             $usuarios = new Usuarios();
@@ -38,12 +38,12 @@ class ControladorAuth extends Controller
                 $user = $usuarios->buscarPorNombre($nombre);
             } catch (\Throwable $e) {
                 $datos['errorGeneral'] = 'No se pudo acceder a usuarios';
-                return view('autentificar/login', $datos);
+                return view('autentificar/login', array_merge($datos, ['isLoginPage' => true]));
             }
 
             if (!$user || (string)$user['clave'] !== $contrasena) {
                 $datos['errorGeneral'] = 'Nombre o contraseña incorrectos';
-                return view('autentificar/login', $datos);
+                return view('autentificar/login', array_merge($datos, ['isLoginPage' => true]));
             }
 
             // Sesión
@@ -82,7 +82,7 @@ class ControladorAuth extends Controller
         $nombre = '';
         $contrasena = isset($_COOKIE['clave_plana']) ? (string)$_COOKIE['clave_plana'] : '';
         $guardar = isset($_COOKIE['guardar_clave']) && $_COOKIE['guardar_clave'] === '1';
-        return view('autentificar/login', ['nombre' => $nombre, 'contraseña' => $contrasena, 'guardar_clave' => $guardar ? 'on' : '']);
+        return view('autentificar/login', ['nombre' => $nombre, 'contraseña' => $contrasena, 'guardar_clave' => $guardar ? 'on' : '', 'isLoginPage' => true]);
     }
 
     /**

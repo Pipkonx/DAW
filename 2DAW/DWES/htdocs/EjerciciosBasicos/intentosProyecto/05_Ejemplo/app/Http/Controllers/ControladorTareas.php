@@ -160,7 +160,7 @@ class ControladorTareas extends Controller
             if ($paginaActual < 1) $paginaActual = 1;
             $totalElementos = $modelo->contar();
             $totalPaginas = (int) max(1, ceil($totalElementos / $porPagina));
-            return view('tareas_lista', ['tareas' => $tareas, 'mensaje' => 'Tarea actualizada correctamente', 'paginaActual' => $paginaActual, 'totalPaginas' => $totalPaginas]);
+            return redirect('/tareas')->with('mensaje', 'Tarea actualizada correctamente');
         }
 
         $modelo = new Tareas();

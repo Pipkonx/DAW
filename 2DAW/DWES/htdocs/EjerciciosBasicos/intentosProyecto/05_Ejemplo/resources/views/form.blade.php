@@ -1,4 +1,4 @@
-<form action="" method="POST" enctype="multipart/form-data">
+<form action="{{ isset($id) ? url('tareas/' . $id . '/editar') : url('tareas/crear') }}" method="POST" enctype="multipart/form-data">
     @csrf
     <label>NIF/CIF:</label><br>
     <input type="text" name="nifCif" value="{{ $nifCif }}"><br>
