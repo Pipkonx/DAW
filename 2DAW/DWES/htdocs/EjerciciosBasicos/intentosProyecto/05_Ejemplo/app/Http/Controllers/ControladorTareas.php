@@ -366,4 +366,7 @@ class ControladorTareas extends Controller
         if ($fechaRealizacion == "") {
             Funciones::$errores['fecha_realizacion'] = "Debe introducir la fecha de realización de la tarea";
         } else if ($fechaRealizacion <= $fechaActual) {
-            Funciones::$errores['fecha_realizacion'] = "La fecha de realización debe ser posterior a la
+            Funciones::$errores['fecha_realizacion'] = "La fecha de realización debe ser posterior a la fecha actual";
+        }
+    }
+}
