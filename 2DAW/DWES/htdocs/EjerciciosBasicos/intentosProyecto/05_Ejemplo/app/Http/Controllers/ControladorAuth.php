@@ -20,11 +20,13 @@ class ControladorAuth extends Controller
     {
         if ($_POST) {
             // Asegurar esquema de usuarios (tabla y admin por defecto)
-            try { (new Usuarios())->asegurarEsquema(); } catch (\Throwable $e) {}
-            $nombre = isset($_POST['usuario']) ? trim((string)$_POST['usuario']) : (isset($_POST['nombre']) ? trim((string)$_POST['nombre']) : '');
-            $contrasena = isset($_POST['clave']) ? (string)$_POST['clave'] : (isset($_POST['contraseña']) ? (string)$_POST['contraseña'] : '');
+            try {
+                (new Usuarios())->asegurarEsquema();
+            } catch (\Throwable $e) {
+            }
+            $nombre = $_POST['usuario'];
+            $contrasena = $_POST['clave'];
             $guardar = isset($_POST['guardar_clave']);
-
             $datos = ['nombre' => $nombre, 'contraseña' => $contrasena, 'guardar_clave' => $guardar ? 'on' : ''];
 
             if ($nombre === '' || $contrasena === '') {
@@ -67,22 +69,32 @@ class ControladorAuth extends Controller
                 setcookie('clave_plana', '', time() - 3600, '/');
             }
 
-            // PAGINACION
+            // PAGINAION
             // Cargar y devolver listado de tareas directamente
             $modelo = new Tareas();
             $tareas = [];
-            try { $tareas = $modelo->listar(); } catch (\Throwable $e) { $tareas = []; }
-            $porPagina = 20;
+            $porPagina = ControladorTareas::TAREASXPAGINA;
             $paginaActual = isset($_GET['pagina']) ? (int)$_GET['pagina'] : 1;
+            try {
+                $tareas = $modelo->listar($porPagina, $paginaActual);
+            } catch (\Throwable $e) {
+                $tareas = [];
+            }
             if ($paginaActual < 1) $paginaActual = 1;
-            $totalElementos = 0; $totalPaginas = 1;
-            try { $totalElementos = $modelo->contar(); $totalPaginas = (int) max(1, ceil($totalElementos / $porPagina)); } catch (\Throwable $e3) {}
+            $totalElementos = 0;
+            $totalPaginas = 1;
+            // ceil es para redondear al enterro mayor o igual
+            try {
+                $totalElementos = $modelo->contar();
+                $totalPaginas = (int) max(1, ceil($totalElementos / $porPagina));
+            } catch (\Throwable $e3) {
+            }
             return view('tareas/lista', ['tareas' => $tareas, 'mensaje' => 'Sesión iniciada correctamente', 'paginaActual' => $paginaActual, 'totalPaginas' => $totalPaginas]);
         }
 
         // GET: precargar valores desde cookies
         $nombre = '';
-        $contrasena = isset($_COOKIE['clave_plana']) ? (string)$_COOKIE['clave_plana'] : '';
+        $contrasena = isset($_COOKIE['clave_plana']);
         $guardar = isset($_COOKIE['guardar_clave']) && $_COOKIE['guardar_clave'] === '1';
         return view('autenticacion/login', ['nombre' => $nombre, 'contraseña' => $contrasena, 'guardar_clave' => $guardar ? 'on' : '', 'isLoginPage' => true]);
     }

@@ -150,3 +150,14 @@ textarea {
 .logout-form {
   margin-left: auto;
 }
+
+.form-group-inline {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.form-label-inline {
+  margin-right: 10px;
+  min-width: 80px;
+}

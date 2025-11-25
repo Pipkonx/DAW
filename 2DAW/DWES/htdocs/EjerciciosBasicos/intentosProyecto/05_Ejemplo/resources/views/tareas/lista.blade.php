@@ -72,23 +72,29 @@
     </tbody>
   </table>
 
-  {{--todo PAGINACION --}}
-  {{-- Stack Overflow: https://es.stackoverflow.com/questions/605864/agregar-paginaci%C3%B3n-php --}}
   @if(isset($totalPaginas) && $totalPaginas > 1)
     <div class="nav">
+      @php
+        $queryString = http_build_query(array_merge($_GET, ['pagina' => 1]));
+      @endphp
       @if($paginaActual > 1)
-        <a href="tareas?pagina={{ $paginaActual - 1 }}" class="btn">&laquo; Anterior</a>
+        <a href="tareas?{{ http_build_query(array_merge($_GET, ['pagina' => 1])) }}" class="btn">&laquo;&laquo; Primera</a>
+        <a href="tareas?{{ http_build_query(array_merge($_GET, ['pagina' => $paginaActual - 1])) }}" class="btn">&laquo; Anterior</a>
       @endif
-      @for($i = 1; $i <= $totalPaginas; $i++)
-        @if($i == $paginaActual)
-          <span class="btn">{{ $i }}</span>
-        @else
-          <a href="tareas?pagina={{ $i }}" class="btn">{{ $i }}</a>
-        @endif
-      @endfor
+      <span>Página {{ $paginaActual }} de {{ $totalPaginas }}</span>
       @if($paginaActual < $totalPaginas)
-        <a href="tareas?pagina={{ $paginaActual + 1 }}" class="btn">Siguiente &raquo;</a>
+        <a href="tareas?{{ http_build_query(array_merge($_GET, ['pagina' => $paginaActual + 1])) }}" class="btn">Siguiente &raquo;</a>
+        <a href="tareas?{{ http_build_query(array_merge($_GET, ['pagina' => $totalPaginas])) }}" class="btn">Última &raquo;&raquo;</a>
       @endif
+      <form action="tareas" method="GET" class="inline">
+        @foreach($_GET as $key => $value)
+          @if($key !== 'pagina')
+            <input type="hidden" name="{{ $key }}" value="{{ $value }}">
+          @endif
+        @endforeach
+        <input type="number" name="pagina" value="{{ $paginaActual }}" min="1" max="{{ $totalPaginas }}" class="btn" style="width: 70px;">
+        <button type="submit" class="btn">Ir</button>
+      </form>
     </div>
   @endif
 @endsection

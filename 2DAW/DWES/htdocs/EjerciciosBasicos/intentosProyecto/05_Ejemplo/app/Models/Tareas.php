@@ -36,25 +36,20 @@ class Tareas
         // Filtros: q (texto), estado, operario
         $q = isset($_GET['q']) ? trim((string)$_GET['q']) : '';
         $estado = isset($_GET['estado']) ? trim((string)$_GET['estado']) : '';
-        $where = [];
-        $params = [];
-        if ($q !== '') {
-            $where[] = '(personaNombre LIKE ? OR descripcionTarea LIKE ? OR poblacion LIKE ? OR operarioEncargado LIKE ?)';
-            $params[] = '%' . $q . '%';
-            $params[] = '%' . $q . '%';
-            $params[] = '%' . $q . '%';
-            $params[] = '%' . $q . '%';
-        }
-        if ($estado !== '') {
-            $where[] = 'estadoTarea = ?';
-            $params[] = $estado;
-        }
+
         $sql = 'SELECT id, nifCif, personaNombre, telefono, correo, descripcionTarea, direccionTarea, poblacion, codigoPostal, provincia, estadoTarea, operarioEncargado, fechaRealizacion, anotacionesAnteriores, anotacionesPosteriores FROM tareas';
-        if (!empty($where)) $sql .= ' WHERE ' . implode(' AND ', $where);
-        $sql .= ' ORDER BY id LIMIT ' . $inicio . ',' . $elementosPorPagina;
-        $st = $this->db()->prepare($sql);
-        $st->execute($params);
-        return $st->fetchAll(PDO::FETCH_ASSOC);
+
+        // Construir WHERE a mano
+        if ($q !== '' && $estado !== '') {
+            $sql .= " WHERE (personaNombre LIKE '%$q%' OR descripcionTarea LIKE '%$q%' OR poblacion LIKE '%$q%' OR operarioEncargado LIKE '%$q%') AND estadoTarea = '$estado'";
+        } elseif ($q !== '') {
+            $sql .= " WHERE (personaNombre LIKE '%$q%' OR descripcionTarea LIKE '%$q%' OR poblacion LIKE '%$q%' OR operarioEncargado LIKE '%$q%')";
+        } elseif ($estado !== '') {
+            $sql .= " WHERE estadoTarea = '$estado'";
+        }
+
+        $sql .= " ORDER BY id LIMIT $inicio, $elementosPorPagina";
+        return $this->db()->query($sql)->fetchAll(PDO::FETCH_ASSOC);
     }
 
     /**
@@ -64,27 +59,23 @@ class Tareas
      */
     public function contar(): int
     {
-        // Contar con filtros si existen
         $texto = isset($_GET['q']) ? trim((string)$_GET['q']) : '';
         $estado = isset($_GET['estado']) ? trim((string)$_GET['estado']) : '';
-        $donde = [];
-        $parametros = [];
-        if ($texto !== '') {
-            $donde[] = '(personaNombre LIKE ? OR descripcionTarea LIKE ? OR poblacion LIKE ? OR operarioEncargado LIKE ?)';
-            $parametros[] = '%' . $texto . '%';
-            $parametros[] = '%' . $texto . '%';
-            $parametros[] = '%' . $texto . '%';
-            $parametros[] = '%' . $texto . '%';
+
+        if ($texto !== '' && $estado !== '') {
+            $sql = "SELECT COUNT(*) FROM tareas
+                    WHERE (personaNombre LIKE '%$texto%' OR descripcionTarea LIKE '%$texto%' OR poblacion LIKE '%$texto%' OR operarioEncargado LIKE '%$texto%')
+                      AND estadoTarea = '$estado'";
+        } elseif ($texto !== '') {
+            $sql = "SELECT COUNT(*) FROM tareas
+                    WHERE personaNombre LIKE '%$texto%' OR descripcionTarea LIKE '%$texto%' OR poblacion LIKE '%$texto%' OR operarioEncargado LIKE '%$texto%'";
+        } elseif ($estado !== '') {
+            $sql = "SELECT COUNT(*) FROM tareas WHERE estadoTarea = '$estado'";
+        } else {
+            $sql = 'SELECT COUNT(*) FROM tareas';
         }
-        if ($estado !== '') {
-            $donde[] = 'estadoTarea = ?';
-            $parametros[] = $estado;
-        }
-        $sql = 'SELECT COUNT(*) FROM tareas';
-        if (!empty($donde)) $sql .= ' WHERE ' . implode(' AND ', $donde);
-        $st = $this->db()->prepare($sql);
-        $st->execute($parametros);
-        return (int) $st->fetchColumn();
+
+        return (int) $this->db()->query($sql)->fetchColumn();
     }
     /**
      * Busca una tarea por su identificador.
@@ -92,10 +83,10 @@ class Tareas
      * @param int $id Identificador de la tarea.
      * @return array|null Datos de la tarea o null si no existe.
      */
+    
+    // la ?array es para indicar si puede devolver null
     public function buscar(int $id): ?array
     {
-
-
         $sql = 'SELECT id, nifCif, personaNombre, telefono, correo, descripcionTarea, direccionTarea, poblacion, codigoPostal, provincia, estadoTarea, operarioEncargado, fechaRealizacion, anotacionesAnteriores, anotacionesPosteriores FROM tareas WHERE id = ?';
         $st = $this->db()->prepare($sql);
         $st->execute([$id]);
