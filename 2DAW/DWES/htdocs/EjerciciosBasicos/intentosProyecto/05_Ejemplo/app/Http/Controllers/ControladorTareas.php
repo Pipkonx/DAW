@@ -14,7 +14,7 @@ use App\Models\Tareas;
  */
 class ControladorTareas extends Controller
 {
-    const TAREASXPAGINA = 20;
+    const TAREASXPAGINA = 5;
     /**
      * Crea una nueva tarea.
      *

@@ -26,8 +26,9 @@
         <td>{{ !empty($u['guardar_clave']) ? 'Sí' : 'No' }}</td>
         <td>
           <a href="usuarios/{{ $u['id'] }}/editar" class="btn inline">Editar</a>
-          <form action="usuarios/{{ $u['id'] }}/eliminar" method="POST" class="inline">
+          <form action="usuarios/eliminar" method="POST" class="inline">
             @csrf
+            <input type="hidden" name="id" value="{{ $u['id'] }}">
             <button type="submit" class="btn">Eliminar</button>
           </form>
         </td>

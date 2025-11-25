@@ -25,4 +25,4 @@ Route::any('/logout', [ControladorAuth::class, 'logout']);
 Route::any('/usuarios', [ControladorUsuarios::class, 'listar']);
 Route::any('/usuarios/crear', [ControladorUsuarios::class, 'crear']);
 Route::any('/usuarios/{id}/editar', [ControladorUsuarios::class, 'editar']);
-Route::post('/usuarios/{id}/eliminar', [ControladorUsuarios::class, 'eliminar']);
+Route::post('/usuarios/eliminar', [ControladorUsuarios::class, 'eliminar']);

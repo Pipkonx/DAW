@@ -40,6 +40,7 @@ class ControladorUsuarios extends Controller
             $usuario = trim((string)($_POST['usuario'] ?? ''));
             $clave = (string)($_POST['clave'] ?? '');
             $rol = strtolower((string)($_POST['rol'] ?? 'operario'));
+            //con in_array comprobamos si el rol es valido
             if ($usuario === '' || $clave === '' || !in_array($rol, ['admin', 'operario'])) {
                 return view('usuarios/formulario', ['errorGeneral' => 'Datos inválidos', 'usuario' => $usuario, 'clave' => $clave, 'rol' => $rol]);
             }
@@ -82,12 +83,18 @@ class ControladorUsuarios extends Controller
         return view('usuarios/formulario', $u);
     }
 
-    public function eliminar($id)
+    public function eliminar()
     {
         if ($r = $this->requireAdmin()) return $r;
+        $id = (int)($_POST['id'] ?? 0);
+        if ($id === 0) {
+            // Manejar el error si el ID no está presente o es inválido
+            return $this->listar(); // O redirigir a una página de error
+        }
         try {
-            (new Usuarios())->eliminar((int)$id);
+            (new Usuarios())->eliminar($id);
         } catch (\Throwable $e) {
+            // Manejar el error de eliminación si es necesario
         }
         return $this->listar();
     }

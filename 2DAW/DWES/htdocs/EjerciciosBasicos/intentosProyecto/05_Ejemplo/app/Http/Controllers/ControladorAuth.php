@@ -31,7 +31,8 @@ class ControladorAuth extends Controller
 
             if ($nombre === '' || $contrasena === '') {
                 $datos['errorGeneral'] = 'Debe introducir nombre y contraseña';
-                return view('autenticacion/login', array_merge($datos, ['isLoginPage' => true]));
+                $datos['isLoginPage'] = true;
+                return view('autenticacion/login', $datos);
             }
 
             $usuarios = new Usuarios();

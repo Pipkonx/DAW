@@ -34,8 +34,8 @@ class Tareas
         $inicio = ($paginaActual - 1) * $elementosPorPagina;
 
         // Filtros: q (texto), estado, operario
-        $q = isset($_GET['q']) ? trim((string)$_GET['q']) : '';
-        $estado = isset($_GET['estado']) ? trim((string)$_GET['estado']) : '';
+        $q = isset($_GET['q']) ? trim($_GET['q']) : '';
+        $estado = isset($_GET['estado']) ? trim($_GET['estado']) : '';
 
         $sql = 'SELECT id, nifCif, personaNombre, telefono, correo, descripcionTarea, direccionTarea, poblacion, codigoPostal, provincia, estadoTarea, operarioEncargado, fechaRealizacion, anotacionesAnteriores, anotacionesPosteriores FROM tareas';
 

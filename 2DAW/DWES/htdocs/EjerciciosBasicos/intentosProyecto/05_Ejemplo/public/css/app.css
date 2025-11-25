@@ -133,6 +133,8 @@ textarea {
   display: flex;
   justify-content: center;
   align-items: center;
+  gap: 10px; /* Espacio entre elementos */
+  flex-wrap: wrap; /* Permite que los elementos salten de línea */
 }
 
 .actions-container {
@@ -151,13 +153,13 @@ textarea {
   margin-left: auto;
 }
 
-.form-group-inline {
+.fila-formulario {
   display: flex;
   align-items: center;
   margin-bottom: 10px;
 }
 
-.form-label-inline {
+.etiqueta-fila-formulario {
   margin-right: 10px;
   min-width: 80px;
 }
