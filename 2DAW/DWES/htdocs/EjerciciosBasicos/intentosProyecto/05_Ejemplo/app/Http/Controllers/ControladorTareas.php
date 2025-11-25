@@ -167,7 +167,7 @@ class ControladorTareas extends Controller
                     return view('tareas/edicion_operario', $datos);
                 }
             }
-            $tareas = $modelo->listar();
+            $tareas = $modelo->listar(self::TAREASXPAGINA, $paginaActual);
             $paginaActual = isset($_GET['pagina']) ? (int)$_GET['pagina'] : 1;
             if ($paginaActual < 1) $paginaActual = 1;
             $totalElementos = $modelo->contar();
@@ -186,7 +186,7 @@ class ControladorTareas extends Controller
             // Si no existe la tarea, mostrar listado con mensaje de error sin redirigir a raíz
             $tareas = [];
             try {
-                $tareas = $modelo->listar();
+                $tareas = $modelo->listar(self::TAREASXPAGINA, $paginaActual);
             } catch (\Throwable $e2) {
                 $tareas = [];
             }
