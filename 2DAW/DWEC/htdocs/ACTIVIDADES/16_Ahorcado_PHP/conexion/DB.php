@@ -1,17 +1,15 @@
 <?php
 
+use conexion\configDB;
+
 class Database {
     private static $instance = null;
     private $conn;
 
-    private $host = 'localhost';
-    private $db = 'ahrocado';
-    private $user = 'root';
-    private $pass = '';
-
     private function __construct() {
         try {
-            $this->conn = new PDO('mysql:host=' . $this->host . ';dbname=' . $this->db, $this->user, $this->pass);
+            $config = require __DIR__ . '/../conexion/configDB.php';
+            $this->conn = new PDO('mysql:host=' . $config['host'] . ';dbname=' . $config['db'], $config['user'], $config['pass']);
             $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             $this->conn->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
         } catch (PDOException $e) {

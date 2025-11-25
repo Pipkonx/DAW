@@ -29,12 +29,9 @@ class Tareas
      *
      * @return array Lista de tareas como arrays asociativos.
      */
-    public function listar(): array
+    public function listar(int $elementosPorPagina, int $paginaActual): array
     {
-        $elementosPorPagina = 20;
-        $paginaActual = isset($_GET['pagina']) ? (int)$_GET['pagina'] : 1;
-        if ($paginaActual < 1) $paginaActual = 1;
-        $inicio = ($paginaActual -1) * $elementosPorPagina;
+        $inicio = ($paginaActual - 1) * $elementosPorPagina;
 
         // Filtros: q (texto), estado, operario
         $q = isset($_GET['q']) ? trim((string)$_GET['q']) : '';
@@ -43,10 +40,10 @@ class Tareas
         $params = [];
         if ($q !== '') {
             $where[] = '(personaNombre LIKE ? OR descripcionTarea LIKE ? OR poblacion LIKE ? OR operarioEncargado LIKE ?)';
-            $params[] = '%'.$q.'%';
-            $params[] = '%'.$q.'%';
-            $params[] = '%'.$q.'%';
-            $params[] = '%'.$q.'%';
+            $params[] = '%' . $q . '%';
+            $params[] = '%' . $q . '%';
+            $params[] = '%' . $q . '%';
+            $params[] = '%' . $q . '%';
         }
         if ($estado !== '') {
             $where[] = 'estadoTarea = ?';
@@ -74,10 +71,10 @@ class Tareas
         $parametros = [];
         if ($texto !== '') {
             $donde[] = '(personaNombre LIKE ? OR descripcionTarea LIKE ? OR poblacion LIKE ? OR operarioEncargado LIKE ?)';
-            $parametros[] = '%'.$texto.'%';
-            $parametros[] = '%'.$texto.'%';
-            $parametros[] = '%'.$texto.'%';
-            $parametros[] = '%'.$texto.'%';
+            $parametros[] = '%' . $texto . '%';
+            $parametros[] = '%' . $texto . '%';
+            $parametros[] = '%' . $texto . '%';
+            $parametros[] = '%' . $texto . '%';
         }
         if ($estado !== '') {
             $donde[] = 'estadoTarea = ?';
@@ -98,7 +95,7 @@ class Tareas
     public function buscar(int $id): ?array
     {
 
-     
+
         $sql = 'SELECT id, nifCif, personaNombre, telefono, correo, descripcionTarea, direccionTarea, poblacion, codigoPostal, provincia, estadoTarea, operarioEncargado, fechaRealizacion, anotacionesAnteriores, anotacionesPosteriores FROM tareas WHERE id = ?';
         $st = $this->db()->prepare($sql);
         $st->execute([$id]);

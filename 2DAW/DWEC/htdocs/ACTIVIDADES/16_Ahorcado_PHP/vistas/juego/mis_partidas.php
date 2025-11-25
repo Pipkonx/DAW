@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/../../conexion/config.php';
+require_once __DIR__ . '/../../conexion/DB.php';
 
 $login = isset($_GET['login']) ? trim($_GET['login']) : '';
 $pdo = Database::getInstance()->getConnection();

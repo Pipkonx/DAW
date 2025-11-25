@@ -13,13 +13,12 @@ if ($conexion->connect_error) {
 $sql = "SELECT * FROM alumnos";
 $resultado = $conexion->query($sql);
 $cadena = "";
-    if ($resultado && $resultado->num_rows > 0) {
-        while ($fila = $resultado->fetch_assoc()) {
-            $cadena = $cadena."<li>".htmlspecialchars($fila['nombre']) . "</li>";
-        }
-    } else {
-        echo "<tr><td colspan='3'>No hay registros en la tabla alumnos.</td></tr>";
+if ($resultado && $resultado->num_rows > 0) {
+    while ($fila = $resultado->fetch_assoc()) {
+        $cadena = $cadena . "<li>" . $fila['nombre'] . "</li>";
     }
-    echo $cadena;
-    $conexion->close();
-    ?>
+} else {
+    echo "<tr><td colspan='3'>No hay registros en la tabla alumnos.</td></tr>";
+}
+echo $cadena;
+$conexion->close();

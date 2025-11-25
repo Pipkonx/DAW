@@ -1,11 +1,6 @@
 <?php
-require_once __DIR__ . '/../conexion/config.php';
-
-function redirect($path)
-{
-    header('Location: ' . $path);
-    exit;
-}
+require_once __DIR__ . '/../conexion/DB.php';
+require_once __DIR__ . '/utils.php';
 
 $pdo = Database::getInstance()->getConnection();
 
@@ -59,7 +54,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     if (!$pal) {
         redirect('../vistas/juego/configurar.php?login=' . urlencode($login) . '&error=No+hay+palabras+para+esa+categor%C3%ADa+dificultad');
     }
-
     // el intval convertimos el id de la palabra a entero
     $idPalabra = intval($pal['id_palabra']);
     $texto = $pal['texto_palabra'];

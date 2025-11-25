@@ -3,49 +3,107 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Listado de Alumnos (AJAX)</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <title>Listado de Alumnos</title>
+    <style>
+      * { box-sizing: border-box }
+      body { margin: 16px; font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif }
+      .wrap { max-width: 980px; margin: 0 auto }
+      h1, h2 { margin: 0 0 12px }
+      .mb-3 { margin-bottom: 12px }
+
+      .grid { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-start }
+      .grid > section { flex: 1 1 420px }
+      .grid > label { flex: 0 0 160px }
+      .grid > input { flex: 1 1 auto }
+
+      label { font-weight: 600 }
+      input { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px }
+
+      table { width: 100%; border-collapse: collapse }
+      th, td { border: 1px solid #ddd; padding: 8px; text-align: left }
+      thead th { background: #f7f7f7 }
+
+      button { appearance: none; border: 1px solid #bbb; background: #eee; padding: 8px 12px; border-radius: 4px; cursor: pointer }
+      button:hover { background: #e2e2e2 }
+
+      ul { list-style: none; padding: 0; margin: 0 }
+      ul li { border: 1px solid #ddd; padding: 8px; border-radius: 4px; margin-bottom: 8px; background: #fff }
+
+      #cargando { padding: 8px; color: #555 }
+      td a { margin-right: 8px; text-decoration: none }
+    </style>
 </head>
 
 <body>
-    <div class="container">
-        <h1>Listado de Alumnos (desde JSON)</h1>
+    <div class="wrap">
+        <h1>Alumnos</h1>
 
         <div id="cargando">Cargando alumnos...</div>
-        <table class="table" id="tabla-alumnos" style="display: none;">
+        <table id="tabla-alumnos" style="display: none;">
             <thead>
                 <tr>
                     <th>ID</th>
                     <th>Nombre</th>
                     <th>Apellidos</th>
                     <th>Nota</th>
-                    <th></th>
+                    <th>Acciones</th>
                 </tr>
             </thead>
             <tbody></tbody>
         </table>
-        <br><br>
-        <button onclick="cargalista();">Carga Lista</button><br>
-        Lista alumnos:
+        <div class="mb-3">
+            <button onclick="cargalista();">Carga Lista</button>
+        </div>
+        <p>Lista alumnos:</p>
         <ul id="lista-alumnos">
 
         </ul>
         <hr>
-        Nombre: <input type="text" id="nombre"><br>
-        Apellidos: <input type="text" id="apellidos"><br>
-        Nota: <input type="text" id="nota"><br>
-        <button onclick="altaalumno();">Alta alumno</button>
-        <button onclick="modificaalumno2();">Modifica alumno</button>
-        <br>
-        Lista notas:
-        <ul id="lista-notas">
+        <div class="grid">
+            <section>
+                <h2>Alta Alumno</h2>
+                <div class="grid mb-3">
+                    <label for="nombre">Nombre:</label>
+                    <input type="text" id="nombre" placeholder="Nombre Alumno">
+                </div>
+                <div class="grid mb-3">
+                    <label for="apellidos">Apellidos:</label>
+                    <input type="text" id="apellidos" placeholder="Apellidos Alumno">
+                </div>
+                <div class="grid mb-3">
+                    <label for="nota">Nota:</label>
+                    <input type="text" id="nota" placeholder="Nota alumno">
+                </div>
+                <div class="mb-3">
+                    <button onclick="altaalumno();">Alta alumno</button>
+                    <button onclick="modificaalumno2();">Modifica alumno</button>
+                </div>
+            </section>
 
-        </ul>
+            <section>
+                <!-- actualizar notas -->
+                <h2 id="nombre-alumno-editando">Editando notas de: </h2>
+                <div class="grid mb-3">
+                    <label for="id-alumno">ID:</label>
+                    <input type="text" id="id-alumno" placeholder="Introduce ID del alumno" readonly>
+                </div>
+                <div class="grid mb-3">
+                    <label for="asignatura">Asignatura:</label>
+                    <input type="text" id="asignatura" placeholder="Nombre de la asignatura">
+                </div>
+                <div class="grid mb-3">
+                    <label for="nota-alumno">Nota:</label>
+                    <input type="text" id="nota-alumno" placeholder="Nueva nota">
+                </div>
+                <div class="mb-3">
+                    <button onclick="actualizarNota();">Actualizar Nota</button>
+                    <button onclick="agregarNuevaNota();">Agregar Nota</button>
+                </div>
+                <p>Lista notas:</p>
+                <ul id="lista-notas"></ul>
+            </section>
+        </div>
     </div>
-</body>
-
-
-<script src="js/utiles.js"></script>
-
+    <script src="js/utiles.js"></script>
+  </body>
 </html>

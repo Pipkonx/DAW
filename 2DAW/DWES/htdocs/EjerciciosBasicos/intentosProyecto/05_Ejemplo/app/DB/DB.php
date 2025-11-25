@@ -36,6 +36,9 @@ use PDO;
  * Singleton de conexión a base de datos (PDO) para la aplicación.
  * Lee configuración desde `app/Config/config.php` y entrega una única instancia.
  */
+
+
+// CONEXION SINGLESTONE
 class DB
 {
     /**

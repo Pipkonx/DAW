@@ -11,7 +11,8 @@
     </div>
     <div class="right-actions">
       <form action="tareas" method="GET" class="inline filter-form">
-        <input type="text" name="q" placeholder="Buscar por descripción o operario" value="{{ $_GET['q'] ?? '' }}" style="width: 250px;" class="btn">
+        <input type="text" name="q" placeholder="Buscar por descripción o operario" value="{{ $_GET['q'] ?? '' }}"
+          style="width: 250px;" class="btn">
         <select name="estado" class="btn">
           <option value="">Estado</option>
           <option value="B" {{ (($_GET['estado'] ?? '') === 'B') ? 'selected' : '' }}>Esperando ser aprobada</option>

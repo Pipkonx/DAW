@@ -1,9 +1,7 @@
 <?php
-// Encabezado para indicar que la respuesta es JSON
 header('Content-Type: application/json; charset=utf-8');
 
-// Incluir el archivo de conexión
-include 'conexion.php'; // o require 'conexion.php';
+include 'conexion.php';
 
 // Verificar conexión
 if ($conexion->connect_error) {
@@ -11,7 +9,8 @@ if ($conexion->connect_error) {
 }
 
 // Consulta SQL
-$sql = "SELECT * FROM alumnos";
+// Con el avg hacemos la media de notas para que las muestre con 2 decimales en base a las notas
+$sql = "SELECT a.codigo, a.nombre, a.apellidos, AVG(n.nota) AS nota_media FROM alumnos a LEFT JOIN notas n ON a.codigo = n.codigoAlumno GROUP BY a.codigo, a.nombre, a.apellidos";
 $resultado = $conexion->query($sql);
 
 // Array para guardar los resultados
@@ -23,11 +22,9 @@ if ($resultado && $resultado->num_rows > 0) {
     }
     // Devolver los datos como JSON
     echo json_encode($alumnos, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
-    
 } else {
     echo json_encode(["mensaje" => "No hay registros en la tabla alumnos."]);
 }
 
 // Cerrar conexión
 $conexion->close();
-?>

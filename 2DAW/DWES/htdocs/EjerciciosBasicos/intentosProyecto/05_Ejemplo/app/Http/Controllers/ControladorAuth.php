@@ -58,6 +58,7 @@ class ControladorAuth extends Controller
                 // sin bloqueo
             }
 
+            // COOKIES
             if ($guardar) {
                 setcookie('guardar_clave', '1', time() + 60 * 60 * 24 * 30, '/');
                 setcookie('clave_plana', $contrasena, time() + 60 * 60 * 24 * 30, '/');
@@ -66,6 +67,7 @@ class ControladorAuth extends Controller
                 setcookie('clave_plana', '', time() - 3600, '/');
             }
 
+            // PAGINACION
             // Cargar y devolver listado de tareas directamente
             $modelo = new Tareas();
             $tareas = [];
@@ -82,7 +84,7 @@ class ControladorAuth extends Controller
         $nombre = '';
         $contrasena = isset($_COOKIE['clave_plana']) ? (string)$_COOKIE['clave_plana'] : '';
         $guardar = isset($_COOKIE['guardar_clave']) && $_COOKIE['guardar_clave'] === '1';
-        return view('autentificar/login', ['nombre' => $nombre, 'contraseña' => $contrasena, 'guardar_clave' => $guardar ? 'on' : '', 'isLoginPage' => true]);
+        return view('autenticacion/login', ['nombre' => $nombre, 'contraseña' => $contrasena, 'guardar_clave' => $guardar ? 'on' : '', 'isLoginPage' => true]);
     }
 
     /**

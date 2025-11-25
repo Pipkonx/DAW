@@ -25,7 +25,11 @@ class ControladorUsuarios extends Controller
         if ($r = $this->requireAdmin()) return $r;
         $m = new Usuarios();
         $usuarios = [];
-        try { $usuarios = $m->listar(); } catch (\Throwable $e) { $usuarios = []; }
+        try {
+            $usuarios = $m->listar();
+        } catch (\Throwable $e) {
+            $usuarios = [];
+        }
         return view('usuarios/lista', ['usuarios' => $usuarios]);
     }
 
@@ -36,10 +40,12 @@ class ControladorUsuarios extends Controller
             $usuario = trim((string)($_POST['usuario'] ?? ''));
             $clave = (string)($_POST['clave'] ?? '');
             $rol = strtolower((string)($_POST['rol'] ?? 'operario'));
-            if ($usuario === '' || $clave === '' || !in_array($rol, ['admin','operario'])) {
+            if ($usuario === '' || $clave === '' || !in_array($rol, ['admin', 'operario'])) {
                 return view('usuarios/formulario', ['errorGeneral' => 'Datos inválidos', 'usuario' => $usuario, 'clave' => $clave, 'rol' => $rol]);
             }
-            try { (new Usuarios())->crear($usuario, $clave, $rol); } catch (\Throwable $e) {
+            try {
+                (new Usuarios())->crear($usuario, $clave, $rol);
+            } catch (\Throwable $e) {
                 return view('usuarios/formulario', ['errorGeneral' => 'No se pudo crear el usuario', 'usuario' => $usuario, 'clave' => $clave, 'rol' => $rol]);
             }
             return $this->listar();
@@ -55,16 +61,22 @@ class ControladorUsuarios extends Controller
             $usuario = trim((string)($_POST['usuario'] ?? ''));
             $clave = (string)($_POST['clave'] ?? '');
             $rol = strtolower((string)($_POST['rol'] ?? 'operario'));
-            if ($usuario === '' || $clave === '' || !in_array($rol, ['admin','operario'])) {
+            if ($usuario === '' || $clave === '' || !in_array($rol, ['admin', 'operario'])) {
                 return view('usuarios/formulario', ['errorGeneral' => 'Datos inválidos', 'id' => (int)$id, 'usuario' => $usuario, 'clave' => $clave, 'rol' => $rol]);
             }
-            try { $m->actualizar((int)$id, $usuario, $clave, $rol); } catch (\Throwable $e) {
+            try {
+                $m->actualizar((int)$id, $usuario, $clave, $rol);
+            } catch (\Throwable $e) {
                 return view('usuarios/formulario', ['errorGeneral' => 'No se pudo actualizar', 'id' => (int)$id, 'usuario' => $usuario, 'clave' => $clave, 'rol' => $rol]);
             }
             return $this->listar();
         }
         $u = null;
-        try { $u = $m->buscarPorId((int)$id); } catch (\Throwable $e) { $u = null; }
+        try {
+            $u = $m->buscarPorId((int)$id);
+        } catch (\Throwable $e) {
+            $u = null;
+        }
         if (!$u) return $this->listar();
         $u['id'] = (int)$id;
         return view('usuarios/formulario', $u);
@@ -73,8 +85,10 @@ class ControladorUsuarios extends Controller
     public function eliminar($id)
     {
         if ($r = $this->requireAdmin()) return $r;
-        try { (new Usuarios())->eliminar((int)$id); } catch (\Throwable $e) {}
+        try {
+            (new Usuarios())->eliminar((int)$id);
+        } catch (\Throwable $e) {
+        }
         return $this->listar();
     }
 }
-

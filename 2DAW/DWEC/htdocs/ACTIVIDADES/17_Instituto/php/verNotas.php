@@ -8,18 +8,16 @@ if ($conexion->connect_error) {
 }
 $id = $_GET["id"];
 
-$sql = "SELECT * FROM notas WHERE codigoAlumno=" . intval($id);
+$sql = "SELECT * FROM notas WHERE codigoAlumno=" . $id;
 $resultado = $conexion->query($sql);
 
 $lineas = [];
 
 if ($resultado && $resultado->num_rows > 0) {
     while ($fila = $resultado->fetch_assoc()) {
-        $asignatura = isset($fila['asignatura']) ? $fila['asignatura'] : (isset($fila['codigoAsignatura']) ? $fila['codigoAsignatura'] : 'Asignatura');
-        $nota = isset($fila['nota']) ? $fila['nota'] : '';
-        $lineas[] = $asignatura . ': ' . $nota;
+        $lineas[] =  $fila;
     }
-    echo implode("\n", $lineas);
+    echo json_encode($lineas);
 } else {
     echo "No hay registros en la tabla notas.";
 }

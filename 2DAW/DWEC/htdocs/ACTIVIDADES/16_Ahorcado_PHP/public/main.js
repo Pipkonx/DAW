@@ -277,6 +277,7 @@ function initConfigPage() {
   fetch("../../contorlador/juego.php?action=categorias")
     .then((r) => r.json())
     .then((data) => {
+      console.log("Categories data:", data);
       sel.innerHTML = "";
       if (!Array.isArray(data) || data.length === 0) {
         sel.innerHTML = '<option value="">Sin categorías</option>';

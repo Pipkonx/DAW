@@ -101,7 +101,7 @@ class Usuarios
             try {
                 $this->db()->exec("ALTER TABLE usuarios ADD COLUMN rol VARCHAR(20) NOT NULL DEFAULT 'operario'");
             } catch (\Throwable $e) {
-                // Ignorar
+                // Ignoramos el error si la columna ya existe para eso es el THROWABLE
             }
             // Marcar admin si existe un usuario llamado 'admin'
             try {
@@ -194,4 +194,3 @@ class Usuarios
         return $row ?: null;
     }
 }
-

@@ -1,11 +1,6 @@
 <?php
-require_once __DIR__ . '/../conexion/config.php';
-
-function redirect($path)
-{
-    header('Location: ' . $path);
-    exit;
-}
+require_once __DIR__ . '/../conexion/DB.php';
+require_once __DIR__ . '/utils.php';
 
 // Conexión PDO
 $pdo = Database::getInstance()->getConnection();

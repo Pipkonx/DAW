@@ -4,12 +4,17 @@ namespace App\Http\Controllers;
 
 use App\Models\Funciones;
 use App\Models\Tareas;
+
+
+
+
 /**
  * Controlador HTTP para gestionar tareas: alta, listado, edición y eliminación.
  * Incluye validación de datos mediante la clase `Funciones`.
  */
 class ControladorTareas extends Controller
 {
+    const TAREASXPAGINA = 20;
     /**
      * Crea una nueva tarea.
      *
@@ -33,12 +38,11 @@ class ControladorTareas extends Controller
             try {
                 $modelo->crear($_POST);
                 // Devolver listado con mensaje sin usar sesiones
-                $tareas = $modelo->listar();
-                $porPagina = 20;
+                $tareas = $modelo->listar(self::TAREASXPAGINA, $paginaActual);
                 $paginaActual = $_GET['pagina'] ?? 1;
                 if ($paginaActual < 1) $paginaActual = 1;
                 $totalElementos = $modelo->contar();
-                $totalPaginas = (int) max(1, ceil($totalElementos / $porPagina));
+                $totalPaginas = (int) max(1, ceil($totalElementos / self::TAREASXPAGINA));
                 return view('tareas/lista', ['tareas' => $tareas, 'mensaje' => 'Tarea creada correctamente', 'paginaActual' => $paginaActual, 'totalPaginas' => $totalPaginas]);
             } catch (\Throwable $e) {
                 $datos = $_POST;
@@ -73,24 +77,24 @@ class ControladorTareas extends Controller
      *
      * @return mixed Vista con la lista de tareas y datos de paginación.
      */
+
     public function listar()
     {
         $modelo = new Tareas();
         $error = '';
         try {
-            $tareas = $modelo->listar();
+            $tareas = $modelo->listar(self::TAREASXPAGINA, $paginaActual);
         } catch (\Throwable $e) {
             $tareas = [];
             $error = 'No se pudo obtener el listado de tareas.';
         }
-        $porPagina = 20;
         $paginaActual = isset($_GET['pagina']) ? (int)$_GET['pagina'] : 1;
         if ($paginaActual < 1) $paginaActual = 1;
         $totalElementos = 0;
         $totalPaginas = 1;
         try {
             $totalElementos = $modelo->contar();
-            $totalPaginas = (int) max(1, ceil($totalElementos / $porPagina));
+            $totalPaginas = (int) max(1, ceil($totalElementos / self::TAREASXPAGINA));
         } catch (\Throwable $e) {
         }
         $datos = ['tareas' => $tareas, 'paginaActual' => $paginaActual, 'totalPaginas' => $totalPaginas];
@@ -133,14 +137,18 @@ class ControladorTareas extends Controller
             } else {
                 // Operario: solo estado y anotaciones posteriores; evidencia por archivos
                 $estado = trim((string)($_POST['estadoTarea'] ?? ''));
-                if (!in_array($estado, ['B','P','R','C'])) {
-                    $datos = $_POST; $datos['id'] = (int)$id; $datos['errorGeneral'] = 'Estado no válido';
+                if (!in_array($estado, ['B', 'P', 'R', 'C'])) {
+                    $datos = $_POST;
+                    $datos['id'] = (int)$id;
+                    $datos['errorGeneral'] = 'Estado no válido';
                     return view('tareas/edicion_operario', $datos);
                 }
                 try {
                     $modelo->actualizarOperario((int)$id, $_POST);
                     // Guardar evidencias
                     $base = __DIR__ . '/../../../public/evidencias/' . (int)$id;
+                    // @ operador de control de errores PHP , suprime el mensaje de error
+                    // con mkdir con is dir podemos crear directorios o comprobar o moverlos con move
                     if (!is_dir($base)) @mkdir($base, 0777, true);
                     if (isset($_FILES['fichero_resumen']) && is_uploaded_file($_FILES['fichero_resumen']['tmp_name'])) {
                         @move_uploaded_file($_FILES['fichero_resumen']['tmp_name'], $base . '/resumen_' . time() . '_' . basename($_FILES['fichero_resumen']['name']));
@@ -153,16 +161,17 @@ class ControladorTareas extends Controller
                         }
                     }
                 } catch (\Throwable $e) {
-                    $datos = $_POST; $datos['id'] = (int)$id; $datos['errorGeneral'] = 'No se pudo actualizar la tarea como operario';
+                    $datos = $_POST;
+                    $datos['id'] = (int)$id;
+                    $datos['errorGeneral'] = 'No se pudo actualizar la tarea como operario';
                     return view('tareas/edicion_operario', $datos);
                 }
             }
             $tareas = $modelo->listar();
-            $porPagina = 20;
             $paginaActual = isset($_GET['pagina']) ? (int)$_GET['pagina'] : 1;
             if ($paginaActual < 1) $paginaActual = 1;
             $totalElementos = $modelo->contar();
-            $totalPaginas = (int) max(1, ceil($totalElementos / $porPagina));
+            $totalPaginas = (int) max(1, ceil($totalElementos / self::TAREASXPAGINA));
             return redirect('/tareas')->with('mensaje', 'Tarea actualizada correctamente');
         }
 
@@ -181,14 +190,13 @@ class ControladorTareas extends Controller
             } catch (\Throwable $e2) {
                 $tareas = [];
             }
-            $porPagina = 20;
             $paginaActual = isset($_GET['pagina']) ? (int)$_GET['pagina'] : 1;
             if ($paginaActual < 1) $paginaActual = 1;
             $totalElementos = 0;
             $totalPaginas = 1;
             try {
                 $totalElementos = $modelo->contar();
-                $totalPaginas = (int) max(1, ceil($totalElementos / $porPagina));
+                $totalPaginas = (int) max(value: 1, values: ceil($totalElementos / self::TAREASXPAGINA));
             } catch (\Throwable $e3) {
             }
             return view('tareas/lista', ['tareas' => $tareas, 'errorGeneral' => 'No se pudo cargar la tarea para edición.', 'paginaActual' => $paginaActual, 'totalPaginas' => $totalPaginas]);
@@ -215,12 +223,11 @@ class ControladorTareas extends Controller
         try {
             $modelo->eliminar((int)$id);
             $tareas = $modelo->listar();
-            $porPagina = 20;
             $paginaActual = isset($_GET['pagina']) ? (int)$_GET['pagina'] : 1;
             if ($paginaActual < 1) $paginaActual = 1;
             $totalElementos = $modelo->contar();
             // ceil devuelve el entero más pequeño que es mayor o igual que un número dado
-            $totalPaginas = (int) max(1, ceil($totalElementos / $porPagina));
+            $totalPaginas = (int) max(1, ceil($totalElementos / self::TAREASXPAGINA));
             return view('tareas/lista', ['tareas' => $tareas, 'mensaje' => 'Tarea eliminada correctamente', 'paginaActual' => $paginaActual, 'totalPaginas' => $totalPaginas]);
         } catch (\Throwable $e) {
             try {
@@ -228,14 +235,13 @@ class ControladorTareas extends Controller
             } catch (\Throwable $e2) {
                 $tareas = [];
             }
-            $porPagina = 20;
             $paginaActual = isset($_GET['pagina']) ? (int)$_GET['pagina'] : 1;
             if ($paginaActual < 1) $paginaActual = 1;
             $totalElementos = 0;
             $totalPaginas = 1;
             try {
                 $totalElementos = $modelo->contar();
-                $totalPaginas = (int) max(1, ceil($totalElementos / $porPagina));
+                $totalPaginas = (int) max(1, ceil($totalElementos / self::TAREASXPAGINA));
             } catch (\Throwable $e3) {
             }
             return view('tareas/lista', ['tareas' => $tareas, 'errorGeneral' => 'No se pudo eliminar la tarea.', 'paginaActual' => $paginaActual, 'totalPaginas' => $totalPaginas]);
@@ -267,14 +273,13 @@ class ControladorTareas extends Controller
             } catch (\Throwable $e2) {
                 $tareas = [];
             }
-            $porPagina = 20;
             $paginaActual = isset($_GET['pagina']) ? (int)$_GET['pagina'] : 1;
             if ($paginaActual < 1) $paginaActual = 1;
             $totalElementos = 0;
             $totalPaginas = 1;
             try {
                 $totalElementos = $modelo->contar();
-                $totalPaginas = (int) max(1, ceil($totalElementos / $porPagina));
+                $totalPaginas = (int) max(1, ceil($totalElementos / self::TAREASXPAGINA));
             } catch (\Throwable $e3) {
             }
             return view('tareas/lista', ['tareas' => $tareas, 'errorGeneral' => 'No se pudo cargar la tarea para eliminación.', 'paginaActual' => $paginaActual, 'totalPaginas' => $totalPaginas]);
@@ -290,10 +295,20 @@ class ControladorTareas extends Controller
     {
         $m = new Tareas();
         $t = null;
-        try { $t = $m->buscar((int)$id); } catch (\Throwable $e) { $t = null; }
+        try {
+            $t = $m->buscar((int)$id);
+        } catch (\Throwable $e) {
+            $t = null;
+        }
         if (!$t) {
-            $tareas = []; $porPagina = 20; $paginaActual = 1; $totalPaginas = 1;
-            try { $tareas = $m->listar(); $totalPaginas = (int) max(1, ceil($m->contar() / $porPagina)); } catch (\Throwable $e2) {}
+            $tareas = [];
+            $paginaActual = 1;
+            $totalPaginas = 1;
+            try {
+                $tareas = $m->listar();
+                $totalPaginas = (int) max(1, ceil($m->contar() / self::TAREASXPAGINA));
+            } catch (\Throwable $e2) {
+            }
             return view('tareas/lista', ['tareas' => $tareas, 'errorGeneral' => 'La tarea no existe', 'paginaActual' => $paginaActual, 'totalPaginas' => $totalPaginas]);
         }
         return view('tareas/detalle', $t);
@@ -351,7 +366,4 @@ class ControladorTareas extends Controller
         if ($fechaRealizacion == "") {
             Funciones::$errores['fecha_realizacion'] = "Debe introducir la fecha de realización de la tarea";
         } else if ($fechaRealizacion <= $fechaActual) {
-            Funciones::$errores['fecha_realizacion'] = "La fecha de realización debe ser posterior a la fecha actual";
-        }
-    }
-}
+            Funciones::$errores['fecha_realizacion'] = "La fecha de realización debe ser posterior a la

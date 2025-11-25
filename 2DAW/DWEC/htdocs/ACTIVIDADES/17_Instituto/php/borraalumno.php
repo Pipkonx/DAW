@@ -14,7 +14,7 @@ if ($conexion->connect_error) {
 $id    = $_GET['id'];
 
 // Consulta (NO segura si los datos vienen del usuario)
-$sql = "DELETE FROM alumnos where codigo=".$id;
+$sql = "DELETE FROM alumnos where codigo=" . $id;
 
 // Ejecutar
 if (mysqli_query($conexion, $sql)) {
@@ -28,4 +28,3 @@ if (mysqli_query($conexion, $sql)) {
         "message" => mysqli_error($conexion)
     ]);
 }
-?>
