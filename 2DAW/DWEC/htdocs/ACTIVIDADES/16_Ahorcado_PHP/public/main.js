@@ -104,8 +104,9 @@ function renderizarAlfabeto() {
     const btn = document.createElement("button");
     btn.textContent = letras[i];
     btn.className = "letra";
-    btn.disabled = juegoFinalizado;
-    btn.addEventListener("click", () => elegir(letras[i].toLowerCase()));
+    //todo DUDA SABER DONDE PONER EL DISABLED
+    // btn.disabled = juegoFinalizado;
+    btn.addEventListener("click", (event) => elegir(letras[i].toLowerCase(), event.target));
     cont.appendChild(btn);
   }
 }
@@ -127,9 +128,13 @@ function deshabilitarAlfabeto() {
  * Actualiza el estado del juego (fallos, letrasAdivinadas) y la interfaz de usuario.
  * @param {string} letra - La letra elegida por el jugador.
  */
-function elegir(letra) {
-    if (juegoFinalizado || letrasAdivinadas.has(letra)) return;
+function elegir(letra, buttonElement) {
+  if (juegoFinalizado || letrasAdivinadas.has(letra)) return;
   letrasAdivinadas.add(letra);
+  if (buttonElement) {
+    // deshabilitar las letras que vamos clickeando para evitar que se intenten volver a clickear
+    buttonElement.disabled = true;
+  }
   if (palabraSecreta.indexOf(letra) !== -1) {
     actualizarPalabra();
     establecerMensaje("Bien");
