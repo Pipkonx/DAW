@@ -23,7 +23,7 @@
 
     <p>Usuario: <?= $nombreUsuario ? $nombreUsuario : 'Invitado' ?></p>
 
-    <form action="../../contorlador/juego.php" method="post">
+    <form action="../../contorlador/juegoController.php" method="post">
         <input type="hidden" name="action" value="start">
         <input type="hidden" name="login" value="<?= $nombreUsuario ?>">
 
@@ -48,7 +48,7 @@
 
     <script src="../public/main.js"></script>
     <p>
-        <a href="mis_partidas.php?login=<?= urlencode($nombreUsuario) ?>">Ver mis partidas</a>
+        <a href="misPartidasView.php?login=<?= urlencode($nombreUsuario) ?>">Ver mis partidas</a>
     </p>
 </body>
 

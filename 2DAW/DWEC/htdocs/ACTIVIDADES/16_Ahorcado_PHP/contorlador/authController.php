@@ -1,7 +1,7 @@
 <?php
 // Incluye los archivos necesarios para la conexión a la base de datos y utilidades.
 require_once __DIR__ . '/../conexion/DB.php';
-require_once __DIR__ . '/utils.php';
+require_once __DIR__ . '/utilsController.php';
 
 // Obtiene una instancia de la conexión a la base de datos.
 $pdo = DB::getInstance()->getConnection();
@@ -18,7 +18,7 @@ function manejarInicioSesion(PDO $conexion, string $nombreUsuario, string $contr
 {
     // Verifica que el nombre de usuario y la contraseña no estén vacíos.
     if ($nombreUsuario === '' || $contrasena === '') {
-        redirect('../vistas/autentificarse/login.php?error=Credenciales+inv%C3%A1lidas');
+        redirect('../vistas/autentificarse/loginView.php?error=Credenciales+inv%C3%A1lidas');
     }
 
     // Prepara y ejecuta una consulta para obtener el ID y la contraseña hasheada del jugador.
@@ -28,16 +28,16 @@ function manejarInicioSesion(PDO $conexion, string $nombreUsuario, string $contr
 
     // Verifica si el usuario existe.
     if (!$usuario) {
-        redirect('../vistas/autentificarse/login.php?error=Usuario+no+encontrado');
+        redirect('../vistas/autentificarse/loginView.php?error=Usuario+no+encontrado');
     }
 
     // Verifica si la contraseña proporcionada coincide con la contraseña almacenada.
     if ($contrasena !== $usuario['contrasena']) {
-        redirect('../vistas/autentificarse/login.php?error=Contrase%C3%B1a+incorrecta');
+        redirect('../vistas/autentificarse/loginView.php?error=Contrase%C3%B1a+incorrecta');
     }
 
     // Si las credenciales son válidas, redirige al usuario a la página de configuración del juego.
-    redirect('../vistas/juego/configurar.php?login=' . urlencode($nombreUsuario));
+    redirect('../vistas/juego/configurarView.php?login=' . urlencode($nombreUsuario));
 }
 
 /**
@@ -74,7 +74,7 @@ function manejarRegistro(PDO $conexion, string $nombreUsuario, string $contrasen
     $insertarUsuario->execute([$nombreUsuario, $contrasena]);
 
     // Redirige al usuario a la página de inicio de sesión con un mensaje de éxito.
-    redirect('../vistas/autentificarse/login.php?ok=Registro+completado&login=' . urlencode($nombreUsuario));
+    redirect('../vistas/autentificarse/loginView.php?ok=Registro+exitoso&login=' . urlencode($nombreUsuario));
 }
 
 // Determina la acción a realizar basándose en los datos POST.

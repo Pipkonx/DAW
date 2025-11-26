@@ -1,7 +1,7 @@
 <?php
 
 require_once __DIR__ . '/../conexion/DB.php';
-require_once __DIR__ . '/utils.php';
+require_once __DIR__ . '/utilsController.php';
 
 $pdo = DB::getInstance()->getConnection();
 
@@ -55,7 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     $idPalabra = intval($palabraSeleccionada['id_palabra']);
     $textoPalabra = $palabraSeleccionada['texto_palabra'];
 
-    $urlRedireccion = '../vistas/juego/partida.php?login=' . urlencode($nombreUsuario)
+    $urlRedireccion = '../vistas/juego/partidaView.php?login=' . urlencode($nombreUsuario)
         . '&id_palabra=' . $idPalabra
         . '&palabra=' . urlencode($textoPalabra)
         . '&dificultad=' . urlencode($dificultadJuego)
@@ -92,7 +92,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     $fechaActual = date('Y-m-d H:i:s');
     $insertarPartida->execute([$idJugador, $idPalabraJugada, $fechaActual, $letrasAcertadas, $letrasFalladas, $palabraAcertada, $puntuacionObtenida]);
 
-    redirect('../vistas/juego/configurar.php?login=' . urlencode($nombreUsuario) . '&ok=Partida+guardada');
+    redirect('../vistas/juego/configurarView.php?login=' . urlencode($nombreUsuario) . '&ok=Partida+guardada');
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'login_json') {

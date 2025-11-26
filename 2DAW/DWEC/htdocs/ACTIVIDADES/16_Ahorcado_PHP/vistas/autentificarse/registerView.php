@@ -17,7 +17,7 @@
         <p><?= $mensajeError ?></p>
     <?php endif; ?>
 
-    <form action="../../contorlador/auth.php" method="post">
+    <form action="../../contorlador/authController.php" method="post">
         <input type="hidden" name="action" value="register">
 
         <label for="login">Usuario</label>
@@ -32,7 +32,7 @@
         <button type="submit">Crear cuenta</button>
     </form>
 
-    <p>Ya estás registrado? <a href="login.php">Iniciar sesión</a></p>
+    <p>Ya estás registrado? <a href="loginView.php">Iniciar sesión</a></p>
 </body>
 
 </html>

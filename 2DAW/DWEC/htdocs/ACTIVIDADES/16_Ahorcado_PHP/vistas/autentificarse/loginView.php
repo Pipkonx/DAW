@@ -6,10 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
     <?php
-    /**
-     * Inicializa las variables para mostrar mensajes de error, éxito y el nombre de usuario
-     * recuperados de los parámetros GET de la URL.
-     */
     $mensajeError = isset($_GET['error']) ? htmlspecialchars($_GET['error']) : '';
     $mensajeExito = isset($_GET['ok']) ? htmlspecialchars($_GET['ok']) : '';
     $nombreUsuario = isset($_GET['login']) ? htmlspecialchars($_GET['login']) : '';
@@ -26,7 +22,7 @@
         <p><?= $mensajeExito ?><?= $nombreUsuario ? ' — Usuario: ' . $nombreUsuario : '' ?></p>
     <?php endif; ?>
 
-    <form action="../../contorlador/auth.php" method="post">
+    <form action="../../contorlador/authController.php" method="post">
         <input type="hidden" name="action" value="login">
         <label for="login">Usuario</label>
         <input type="text" id="login" name="login" required>
@@ -37,7 +33,7 @@
         <button type="submit">Entrar</button>
     </form>
 
-    <p>Necesitas cuenta? <a href="register.php">Registrarse</a></p>
+    <p>Necesitas cuenta? <a href="registerView.php">Registrarse</a></p>
 </body>
 
 </html>

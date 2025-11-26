@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Partida</title>
     <?php
+    require_once '../../contorlador/juegoController.php';
     $nombreUsuario = $_GET['login'] ?? 'Invitado';
     $idPalabraSecreta = $_GET['id_palabra'] ?? '';
     $palabraSecreta = $_GET['palabra'] ?? '';
@@ -27,7 +28,7 @@
 
     </div>
 
-    <form id="finalForm" action="../../contorlador/juego.php" method="post" style="display:none">
+    <form id="finalForm" action="../../contorlador/juegoController.php" method="post" style="display:none">
         <input type="hidden" name="action" value="finalizar">
         <input type="hidden" name="login" value="<?= $nombreUsuario ?>">
         <input type="hidden" name="id_palabra" value="<?= $idPalabraSecreta ?>">

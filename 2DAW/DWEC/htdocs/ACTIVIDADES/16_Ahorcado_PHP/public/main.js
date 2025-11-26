@@ -32,7 +32,7 @@ function iniciarJuego() {
 
 /**
  * Termina la partida actual del juego.
- * Establece el estado del juego como finalizado, revela la palabra secreta,
+ * Establece el estado del juego como juegoFinalizado, revela la palabra secreta,
  * muestra un mensaje de fin de partida y deshabilita el teclado.
  */
 function terminarJuego() {
@@ -44,7 +44,7 @@ function terminarJuego() {
 
 /**
  * Actualiza la representación visual de la palabra secreta en la interfaz de usuario.
- * Muestra las letras adivinadas y guiones bajos para las letras no adivinadas.
+ * Muestra las letras letrasAdivinadas.
  * También verifica si el jugador ha ganado después de cada actualización.
  */
 function actualizarPalabra() {
@@ -56,7 +56,7 @@ function actualizarPalabra() {
     } else {
       display += "_";
     }
-    if (i < secreta.length - 1) display += " ";
+    if (i < palabraSecreta.length - 1) display += " ";
   }
   document.getElementById("palabras").textContent = display;
   verificarVictoria();
@@ -70,7 +70,7 @@ function revelarPalabra() {
   let mostrar = "";
   for (let i = 0; i < palabraSecreta.length; i++) {
     mostrar += palabraSecreta[i];
-    if (i < secreta.length - 1) mostrar += " ";
+    if (i < palabraSecreta.length - 1) mostrar += " ";
   }
   const el = document.getElementById("palabras");
   if (el) el.textContent = mostrar;
@@ -124,7 +124,7 @@ function deshabilitarAlfabeto() {
 /**
  * Procesa la elección de una letra por parte del jugador.
  * Verifica si la letra ha sido adivinada o si la partida ha terminado.
- * Actualiza el estado del juego (fallos, letras adivinadas) y la interfaz de usuario.
+ * Actualiza el estado del juego (fallos, letrasAdivinadas) y la interfaz de usuario.
  * @param {string} letra - La letra elegida por el jugador.
  */
 function elegir(letra) {
@@ -148,7 +148,7 @@ function elegir(letra) {
 
 /**
  * Verifica si el jugador ha ganado la partida.
- * Si todas las letras de la palabra secreta han sido adivinadas, el juego termina con victoria.
+ * Si todas las letras de la palabra secreta han sido letrasAdivinadas, el juego termina con victoria.
  */
 function verificarVictoria() {
   let ganado = true;
@@ -166,69 +166,12 @@ function verificarVictoria() {
   }
 }
 
-function establecerMensaje(msg) {
-  const el = document.getElementById("mensaje");
-  if (el) el.textContent = msg;
-}
 
-function renderizarAlfabeto() {
-  const cont = document.getElementById("teclado");
-  if (!cont) return;
-  cont.innerHTML = "";
-  const letras = [
-    "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "Ñ", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z",
-  ];
-  for (let i = 0; i < letras.length; i++) {
-    const btn = document.createElement("button");
-    btn.textContent = letras[i];
-    btn.className = "letra";
-    btn.disabled = finalizado;
-    btn.addEventListener("click", () => elegir(letras[i].toLowerCase()));
-    cont.appendChild(btn);
-  }
-}
 
-function deshabilitarAlfabeto() {
-  const botones = document.querySelectorAll(".letra");
-  for (let i = 0; i < botones.length; i++) {
-    botones[i].disabled = true;
-  }
-}
 
-function elegir(letra) {
-  if (finalizado || adivinadas.has(letra)) return;
-  adivinadas.add(letra);
-  if (secreta.indexOf(letra) !== -1) {
-    actualizarPalabra();
-    establecerMensaje("Bien");
-  } else {
-    fallos++;
-    actualizarFallos();
-    establecerMensaje("Letra incorrecta");
-    if (fallos >= maxfallos) {
-      finalizado = true;
-      establecerMensaje("Has perdido, la palabra era: " + secreta);
-      revelarPalabra();
-      deshabilitarAlfabeto();
-      enviarResultados(false);
-    }
-  }
-}
 
-function actualizarPalabra() {
-  let display = "";
-  for (let i = 0; i < secreta.length; i++) {
-    if (adivinadas.has(secreta[i])) {
-      display += secreta[i];
-    } else {
-      display += "_";
-    }
-    if (i < secreta.length - 1) display += " ";
-  }
-  const el = document.getElementById("palabras");
-  if (el) el.textContent = display;
-  verificarVictoria();
-}
+
+
 
 function terminarJuego() {
   juegoFinalizado = true;
