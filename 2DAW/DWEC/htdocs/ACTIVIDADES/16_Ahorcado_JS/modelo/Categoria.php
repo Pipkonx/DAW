@@ -6,7 +6,7 @@ class Categoria
     private $pdo;
     public function __construct()
     {
-        $this->pdo = Database::getInstance()->getConnection();
+        $this->pdo = DB::getInstance()->getConnection();
     }
     public function all(): array
     {

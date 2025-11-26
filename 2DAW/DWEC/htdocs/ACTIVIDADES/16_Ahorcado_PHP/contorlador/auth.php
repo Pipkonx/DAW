@@ -3,10 +3,9 @@ require_once __DIR__ . '/../conexion/DB.php';
 require_once __DIR__ . '/utils.php';
 
 // Conexión PDO
-$pdo = Database::getInstance()->getConnection();
+$pdo = DB::getInstance()->getConnection();
 
-//! LOGIN ver si puedo poner directamente $_POST
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'login') {
+if ($_POST) {
     $login = trim($_POST['login'] ?? '');
     $password = $_POST['password'] ?? '';
 

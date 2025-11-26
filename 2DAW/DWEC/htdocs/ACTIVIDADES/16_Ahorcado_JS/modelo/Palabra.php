@@ -6,7 +6,7 @@ class Palabra
     private $pdo;
     public function __construct()
     {
-        $this->pdo = Database::getInstance()->getConnection();
+        $this->pdo = DB::getInstance()->getConnection();
     }
 
     public function randomByCategoriaAndDificultad(int $categoria, string $dificultad): ?array

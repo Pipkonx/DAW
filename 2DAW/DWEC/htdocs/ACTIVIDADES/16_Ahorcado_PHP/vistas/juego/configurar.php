@@ -30,6 +30,10 @@
         <label for="categoria">Categoría</label>
         <select id="categoria" name="categoria" required>
             <option value="">Seleccionar Categoria</option>
+            <option value="1">Animales</option>
+            <option value="2">Colores</option>
+            <option value="3">Frutas</option>
+            <option value="4">Países</option>
         </select>
 
         <label for="dificultad">Dificultad</label>

@@ -6,7 +6,7 @@ class Partida
     private $pdo;
     public function __construct()
     {
-        $this->pdo = Database::getInstance()->getConnection();
+        $this->pdo = DB::getInstance()->getConnection();
     }
 
     public function insert(int $idJugador, int $idPalabra, string $fecha, int $letrasAcertadas, int $letrasFalladas, int $palabraAcertada, int $puntuacion): void

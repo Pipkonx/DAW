@@ -2,11 +2,13 @@
 
 use conexion\configDB;
 
-class Database {
+class DB
+{
     private static $instance = null;
     private $conn;
 
-    private function __construct() {
+    private function __construct()
+    {
         try {
             $config = require __DIR__ . '/../conexion/configDB.php';
             $this->conn = new PDO('mysql:host=' . $config['host'] . ';dbname=' . $config['db'], $config['user'], $config['pass']);
@@ -17,20 +19,17 @@ class Database {
         }
     }
 
-    public static function getInstance() {
+    public static function getInstance()
+    {
         if (self::$instance === null) {
-            self::$instance = new Database();
+            self::$instance = new DB();
         }
         return self::$instance;
     }
 
-    public function getConnection() {
+    public function getConnection()
+    {
         return $this->conn;
     }
 
-    //! esto realmente no hace falta para lo que estoy haciendo
-    // Opcional: para evitar la clonación
-    private function __clone() {}
-    // Opcional: para evitar la deserialización
-    public function __wakeup() {}
 }

@@ -2,7 +2,7 @@
 require_once __DIR__ . '/../../conexion/DB.php';
 
 $login = isset($_GET['login']) ? trim($_GET['login']) : '';
-$pdo = Database::getInstance()->getConnection();
+$pdo = DB::getInstance()->getConnection();
 
 $error = '';
 $partidas = [];
@@ -31,11 +31,13 @@ if ($login === '') {
 ?>
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mis Partidas</title>
 </head>
+
 <body>
     <h1>Mis Partidas</h1>
     <div class="meta">
@@ -79,4 +81,5 @@ if ($login === '') {
         <a href="configurar.php?login=<?= urlencode($login) ?>">Volver a Configurar Juego</a>
     </div>
 </body>
+
 </html>

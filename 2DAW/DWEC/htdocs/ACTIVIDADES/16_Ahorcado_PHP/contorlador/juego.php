@@ -2,7 +2,7 @@
 require_once __DIR__ . '/../conexion/DB.php';
 require_once __DIR__ . '/utils.php';
 
-$pdo = Database::getInstance()->getConnection();
+$pdo = DB::getInstance()->getConnection();
 
 // Obtener categorías
 if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['action'] === 'categorias') {

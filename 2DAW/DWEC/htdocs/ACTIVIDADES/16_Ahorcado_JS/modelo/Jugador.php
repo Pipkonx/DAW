@@ -6,9 +6,8 @@ class Jugador
     private $pdo;
     public function __construct()
     {
-        $this->pdo = Database::getInstance()->getConnection();
+        $this->pdo = DB::getInstance()->getConnection();
     }
-
     public function getIdByLogin(string $login): ?int
     {
         $stmt = $this->pdo->prepare('SELECT id_jugador FROM JUGADORES WHERE login = ? LIMIT 1');

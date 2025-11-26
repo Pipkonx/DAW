@@ -5,7 +5,8 @@ require_once __DIR__ . '/../modelo/Palabra.php';
 require_once __DIR__ . '/../modelo/Jugador.php';
 require_once __DIR__ . '/../modelo/Partida.php';
 
-$pdo = Database::getInstance()->getConnection();
+$pdo = DB::getInstance()->getConnection();
+
 $categoriaModel = new Categoria();
 $palabraModel = new Palabra();
 $jugadorModel = new Jugador();
