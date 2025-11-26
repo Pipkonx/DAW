@@ -14,9 +14,10 @@
 
   <div class="nav">
     <a href="/EjerciciosBasicos/intentosProyecto/05_Ejemplo/public/tareas" class="btn btn-cancel">Cancelar</a>
-    <form action="/EjerciciosBasicos/intentosProyecto/05_Ejemplo/public/tareas/{{ $id }}/eliminar" method="POST"
+    <form action="/EjerciciosBasicos/intentosProyecto/05_Ejemplo/public/tareas/eliminar" method="POST"
       class="inline">
       @csrf
+      <input type="hidden" name="id" value="{{ $id }}">
       <button type="submit" class="btn">Confirmar eliminación</button>
     </form>
   </div>

@@ -1,31 +1,30 @@
 <?php
 require_once __DIR__ . '/../../conexion/DB.php';
 
-$login = isset($_GET['login']) ? trim($_GET['login']) : '';
+$nombreUsuario = isset($_GET['login']) ? trim($_GET['login']) : '';
 $pdo = DB::getInstance()->getConnection();
 
-$error = '';
-$partidas = [];
-$usuario = null;
+$mensajeError = '';
+$listaPartidas = [];
+$datosUsuario = null;
 
-if ($login === '') {
-    $error = 'Falta el usuario (login).';
+if ($nombreUsuario === '') {
+    $mensajeError = 'Falta el usuario (login).';
 } else {
-    // Obtener usuario
-    $stmt = $pdo->prepare('SELECT id_jugador, login FROM JUGADORES WHERE login = ? LIMIT 1');
-    $stmt->execute([$login]);
-    $usuario = $stmt->fetch();
-    if (!$usuario) {
-        $error = 'Usuario no encontrado.';
+    $declaracionUsuario = $pdo->prepare('SELECT id_jugador, login FROM JUGADORES WHERE login = ? LIMIT 1');
+    $declaracionUsuario->execute([$nombreUsuario]);
+    $datosUsuario = $declaracionUsuario->fetch();
+
+    if (!$datosUsuario) {
+        $mensajeError = 'Usuario no encontrado.';
     } else {
-        // Cargar partidas del usuario
-        $q = $pdo->prepare('SELECT p.id_partida, p.fecha_partida, p.letras_acertadas, p.letras_falladas, p.palabra_acertada, p.puntuacion_obtenida, w.texto_palabra
+        $consultaPartidas = $pdo->prepare('SELECT p.id_partida, p.fecha_partida, p.letras_acertadas, p.letras_falladas, p.palabra_acertada, p.puntuacion_obtenida, w.texto_palabra
                             FROM PARTIDAS p
                             JOIN PALABRAS w ON w.id_palabra = p.id_palabra_jugada
                             WHERE p.id_jugador = ?
                             ORDER BY p.fecha_partida DESC');
-        $q->execute([intval($usuario['id_jugador'])]);
-        $partidas = $q->fetchAll();
+        $consultaPartidas->execute([intval($datosUsuario['id_jugador'])]);
+        $listaPartidas = $consultaPartidas->fetchAll();
     }
 }
 ?>
@@ -41,13 +40,13 @@ if ($login === '') {
 <body>
     <h1>Mis Partidas</h1>
     <div class="meta">
-        Usuario: <?= htmlspecialchars($login) ?>
+        Usuario: <?= htmlspecialchars($nombreUsuario) ?>
     </div>
 
-    <?php if ($error): ?>
-        <p class="empty"><?= htmlspecialchars($error) ?></p>
+    <?php if ($mensajeError): ?>
+        <p class="empty"><?= htmlspecialchars($mensajeError) ?></p>
     <?php else: ?>
-        <?php if (empty($partidas)): ?>
+        <?php if (empty($listaPartidas)): ?>
             <p class="empty">Aún no tienes partidas registradas.</p>
         <?php else: ?>
             <table>
@@ -62,14 +61,14 @@ if ($login === '') {
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach ($partidas as $p): ?>
+                    <?php foreach ($listaPartidas as $partida): ?>
                         <tr>
-                            <td><?= htmlspecialchars($p['fecha_partida']) ?></td>
-                            <td><?= htmlspecialchars($p['texto_palabra']) ?></td>
-                            <td><?= intval($p['letras_acertadas']) ?></td>
-                            <td><?= intval($p['letras_falladas']) ?></td>
-                            <td><?= intval($p['palabra_acertada']) ? 'Sí' : 'No' ?></td>
-                            <td><?= intval($p['puntuacion_obtenida']) ?></td>
+                            <td><?= htmlspecialchars($partida['fecha_partida']) ?></td>
+                            <td><?= htmlspecialchars($partida['texto_palabra']) ?></td>
+                            <td><?= intval($partida['letras_acertadas']) ?></td>
+                            <td><?= intval($partida['letras_falladas']) ?></td>
+                            <td><?= intval($partida['palabra_acertada']) ? 'Sí' : 'No' ?></td>
+                            <td><?= intval($partida['puntuacion_obtenida']) ?></td>
                         </tr>
                     <?php endforeach; ?>
                 </tbody>
@@ -78,7 +77,7 @@ if ($login === '') {
     <?php endif; ?>
 
     <div class="actions">
-        <a href="configurar.php?login=<?= urlencode($login) ?>">Volver a Configurar Juego</a>
+        <a href="configurar.php?login=<?= urlencode($nombreUsuario) ?>">Volver a Configurar Juego</a>
     </div>
 </body>
 

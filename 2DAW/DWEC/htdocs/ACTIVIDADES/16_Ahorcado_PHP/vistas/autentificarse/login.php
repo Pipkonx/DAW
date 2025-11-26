@@ -6,20 +6,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
     <?php
-    $error = isset($_GET['error']) ? htmlspecialchars($_GET['error']) : '';
-    $ok = isset($_GET['ok']) ? htmlspecialchars($_GET['ok']) : '';
-    $login = isset($_GET['login']) ? htmlspecialchars($_GET['login']) : '';
+    /**
+     * Inicializa las variables para mostrar mensajes de error, éxito y el nombre de usuario
+     * recuperados de los parámetros GET de la URL.
+     */
+    $mensajeError = isset($_GET['error']) ? htmlspecialchars($_GET['error']) : '';
+    $mensajeExito = isset($_GET['ok']) ? htmlspecialchars($_GET['ok']) : '';
+    $nombreUsuario = isset($_GET['login']) ? htmlspecialchars($_GET['login']) : '';
     ?>
 </head>
 
 <body>
     <h1>Login</h1>
 
-    <?php if ($error): ?>
-        <p><?= $error ?></p>
+    <?php if ($mensajeError): ?>
+        <p><?= $mensajeError ?></p>
     <?php endif; ?>
-    <?php if ($ok): ?>
-        <p><?= $ok ?><?= $login ? ' — Usuario: ' . $login : '' ?></p>
+    <?php if ($mensajeExito): ?>
+        <p><?= $mensajeExito ?><?= $nombreUsuario ? ' — Usuario: ' . $nombreUsuario : '' ?></p>
     <?php endif; ?>
 
     <form action="../../contorlador/auth.php" method="post">

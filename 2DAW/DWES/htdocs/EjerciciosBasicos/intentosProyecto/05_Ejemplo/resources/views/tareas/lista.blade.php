@@ -6,11 +6,11 @@
   <div class="actions-container">
     <div class="left-actions">
       @if(session('rol') === 'admin')
-        <a href="tareas/crear" class="btn">Crear nueva tarea</a>
+        <a href="/EjerciciosBasicos/intentosProyecto/05_Ejemplo/public/tareas/crear" class="btn">Crear nueva tarea</a>
       @endif
     </div>
     <div class="right-actions">
-      <form action="tareas" method="GET" class="inline filter-form">
+      <form action="/EjerciciosBasicos/intentosProyecto/05_Ejemplo/public/tareas" method="GET" class="inline filter-form">
         <input type="text" name="q" placeholder="Buscar por descripción o operario" value="{{ $_GET['q'] ?? '' }}"
           style="width: 250px;" class="btn">
         <select name="estado" class="btn">
@@ -55,10 +55,10 @@
           <td>
             {{--todo NO SE PERMITE USAR EL URL --}}
             {{-- <a href="{!! url('tareas/'.$t['id'].'/editar') !!}">Editar</a> --}}
-            <a href="tareas/{{ $t['id'] }}/editar">✏️</a>
-            <a href="tareas/{{ $t['id'] }}" class="inline">👁️</a>
+            <a href="/EjerciciosBasicos/intentosProyecto/05_Ejemplo/public/tareas/editar?id={{ $t['id'] }}">✏️</a>
+            <a href="/EjerciciosBasicos/intentosProyecto/05_Ejemplo/public/tareas/detalle?id={{ $t['id'] }}" class="inline">👁️</a>
             @if(session('rol') === 'admin')
-              <a href="tareas/{{  $t['id'] }}/eliminar" class="inline">✖️</a>
+              <a href="/EjerciciosBasicos/intentosProyecto/05_Ejemplo/public/tareas/confirmarEliminar?id={{  $t['id'] }}" class="inline">✖️</a>
             @endif
           </td>
         </tr>
@@ -78,15 +78,15 @@
         $queryString = http_build_query(array_merge($_GET, ['pagina' => 1]));
       @endphp
       @if($paginaActual > 1)
-        <a href="tareas?{{ http_build_query(array_merge($_GET, ['pagina' => 1])) }}" class="btn">&laquo;&laquo; Primera</a>
-        <a href="tareas?{{ http_build_query(array_merge($_GET, ['pagina' => $paginaActual - 1])) }}" class="btn">&laquo; Anterior</a>
+        <a href="/EjerciciosBasicos/intentosProyecto/05_Ejemplo/public/tareas?{{ http_build_query(array_merge($_GET, ['pagina' => 1])) }}" class="btn">&laquo;&laquo; Primera</a>
+        <a href="/EjerciciosBasicos/intentosProyecto/05_Ejemplo/public/tareas?{{ http_build_query(array_merge($_GET, ['pagina' => $paginaActual - 1])) }}" class="btn">&laquo; Anterior</a>
       @endif
       <span>Página {{ $paginaActual }} de {{ $totalPaginas }}</span>
       @if($paginaActual < $totalPaginas)
-        <a href="tareas?{{ http_build_query(array_merge($_GET, ['pagina' => $paginaActual + 1])) }}" class="btn">Siguiente &raquo;</a>
-        <a href="tareas?{{ http_build_query(array_merge($_GET, ['pagina' => $totalPaginas])) }}" class="btn">Última &raquo;&raquo;</a>
+        <a href="/EjerciciosBasicos/intentosProyecto/05_Ejemplo/public/tareas?{{ http_build_query(array_merge($_GET, ['pagina' => $paginaActual + 1])) }}" class="btn">Siguiente &raquo;</a>
+        <a href="/EjerciciosBasicos/intentosProyecto/05_Ejemplo/public/tareas?{{ http_build_query(array_merge($_GET, ['pagina' => $totalPaginas])) }}" class="btn">Última &raquo;&raquo;</a>
       @endif
-      <form action="tareas" method="GET" class="inline">
+      <form action="/EjerciciosBasicos/intentosProyecto/05_Ejemplo/public/tareas" method="GET" class="inline">
         @foreach($_GET as $key => $value)
           @if($key !== 'pagina')
             <input type="hidden" name="{{ $key }}" value="{{ $value }}">

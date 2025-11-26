@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Funciones;
 use App\Models\Tareas;
+use Illuminate\Support\Facades\Log;
 
 
 
@@ -47,7 +48,7 @@ class ControladorTareas extends Controller
             } catch (\Throwable $e) {
                 $datos = $_POST;
                 $datos['errorGeneral'] = 'No se pudo guardar la tarea. Revise la conexión y la tabla.';
-                $datos['formActionUrl'] = 'tareas/crear';
+                $datos['formActionUrl'] = url('tareas/crear');
                 return view('tareas/alta_edicion', $datos);
             }
         }
@@ -67,7 +68,7 @@ class ControladorTareas extends Controller
             'fechaRealizacion' => '',
             'anotacionesAnteriores' => '',
             'anotacionesPosteriores' => '',
-            'formActionUrl' => 'tareas/crear',
+            'formActionUrl' => url('tareas/crear'),
         ];
         return view('tareas/alta_edicion', $datos);
     }
@@ -108,78 +109,92 @@ class ControladorTareas extends Controller
      * @param int|string $id Identificador de la tarea.
      * @return mixed Vista de alta con datos o listado con mensaje.
      */
-    public function editar($id)
+    public function editar()
     {
+        Log::info('Entrando en el método editar');
+        $id = $_GET['id'] ?? null;
         $rol = (string) session('rol');
+        Log::info('ID de tarea: ' . $id . ', Rol de usuario: ' . $rol);
         // Si es POST, validar y actualizar; si es GET, cargar datos
         if ($_POST) {
+            Log::info('Petición POST recibida');
             $modelo = new Tareas();
             if ($rol === 'admin') {
+                Log::info('Rol: admin');
                 $this->filtrar();
                 if (!empty(Funciones::$errores)) {
+                    Log::warning('Errores de validación para admin: ' . json_encode(Funciones::$errores));
                     $datos = $_POST;
                     $datos['id'] = (int)$id;
-                    $datos['formActionUrl'] = 'tareas/' . $id . '/editar';
+                    $datos['formActionUrl'] = '/EjerciciosBasicos/intentosProyecto/05_Ejemplo/public/tareas/editar?id=' . $id;
                     return view('tareas/alta_edicion', $datos);
                 }
                 try {
+                    Log::info('Intentando actualizar tarea como admin. ID: ' . $id);
                     $modelo->actualizar((int)$id, $_POST);
+                    Log::info('Tarea actualizada correctamente por admin. ID: ' . $id);
                 } catch (\Throwable $e) {
+                    Log::error('Error al actualizar tarea como admin. ID: ' . $id . '. Error: ' . $e->getMessage());
                     $datos = $_POST;
                     $datos['id'] = (int)$id;
                     $datos['errorGeneral'] = 'No se pudo actualizar la tarea. Revise la conexión y la tabla.';
-                    $datos['formActionUrl'] = 'tareas/' . $id . '/editar';
+                    $datos['formActionUrl'] = '/EjerciciosBasicos/intentosProyecto/05_Ejemplo/public/tareas/editar?id=' . $id;
                     return view('tareas/alta_edicion', $datos);
                 }
             } else {
+                Log::info('Rol: operario');
                 // Operario: solo estado y anotaciones posteriores; evidencia por archivos
                 $estado = trim((string)($_POST['estadoTarea'] ?? ''));
                 if (!in_array($estado, ['B', 'P', 'R', 'C'])) {
+                    Log::warning('Estado no válido para operario: ' . $estado);
                     $datos = $_POST;
                     $datos['id'] = (int)$id;
                     $datos['errorGeneral'] = 'Estado no válido';
                     return view('tareas/edicion_operario', $datos);
                 }
                 try {
+                    Log::info('Intentando actualizar tarea como operario. ID: ' . $id);
                     $modelo->actualizarOperario((int)$id, $_POST);
+                    Log::info('Tarea actualizada correctamente por operario. ID: ' . $id);
                     // Guardar evidencias
                     $base = __DIR__ . '/../../../public/evidencias/' . (int)$id;
-                    // @ operador de control de errores PHP , suprime el mensaje de error
-                    // con mkdir con is dir podemos crear directorios o comprobar o moverlos con move
                     if (!is_dir($base)) @mkdir($base, 0777, true);
                     if (isset($_FILES['fichero_resumen']) && is_uploaded_file($_FILES['fichero_resumen']['tmp_name'])) {
                         @move_uploaded_file($_FILES['fichero_resumen']['tmp_name'], $base . '/resumen_' . time() . '_' . basename($_FILES['fichero_resumen']['name']));
+                        Log::info('Fichero resumen guardado para tarea ID: ' . $id);
                     }
                     if (isset($_FILES['fotos'])) {
                         foreach ((array)$_FILES['fotos']['tmp_name'] as $i => $tmp) {
                             if (is_uploaded_file($tmp)) {
                                 @move_uploaded_file($tmp, $base . '/foto_' . time() . '_' . basename($_FILES['fotos']['name'][$i]));
+                                Log::info('Foto guardada para tarea ID: ' . $id);
                             }
                         }
                     }
                 } catch (\Throwable $e) {
+                    Log::error('Error al actualizar tarea como operario. ID: ' . $id . '. Error: ' . $e->getMessage());
                     $datos = $_POST;
                     $datos['id'] = (int)$id;
                     $datos['errorGeneral'] = 'No se pudo actualizar la tarea como operario';
                     return view('tareas/edicion_operario', $datos);
                 }
             }
-            $paginaActual = isset($_GET['pagina']) ? (int)$_GET['pagina'] : 1;
-            if ($paginaActual < 1) $paginaActual = 1;
-            $tareas = $modelo->listar(self::TAREASXPAGINA, $paginaActual);
-            $totalElementos = $modelo->contar();
-            $totalPaginas = (int) max(1, ceil($totalElementos / self::TAREASXPAGINA));
-            return redirect('/tareas')->with('mensaje', 'Tarea actualizada correctamente');
+            Log::info('Redirigiendo a la lista de tareas después de POST. ID: ' . $id);
+            return redirect(url('tareas'))->with('mensaje', 'Tarea actualizada correctamente');
         }
 
+        Log::info('Petición GET recibida para editar tarea. ID: ' . $id);
         $modelo = new Tareas();
         try {
             $tarea = $modelo->buscar((int)$id);
+            Log::info('Tarea encontrada para edición. ID: ' . $id);
         } catch (\Throwable $e) {
+            Log::error('Error al buscar tarea para edición. ID: ' . $id . '. Error: ' . $e->getMessage());
             $tareas = [];
             return view('tareas/lista', ['tareas' => $tareas, 'errorGeneral' => 'No se pudo cargar la tarea para edición.']);
         }
         if (!$tarea) {
+            Log::warning('Tarea no encontrada para edición. ID: ' . $id);
             // Si no existe la tarea, mostrar listado con mensaje de error sin redirigir a raíz
             $tareas = [];
             $paginaActual = isset($_GET['pagina']) ? (int)$_GET['pagina'] : 1;
@@ -191,14 +206,19 @@ class ControladorTareas extends Controller
                 $totalElementos = $modelo->contar();
                 $totalPaginas = (int) max(1, ceil($totalElementos / self::TAREASXPAGINA));
             } catch (\Throwable $e2) {
+                Log::error('Error al listar tareas después de no encontrar tarea para edición. Error: ' . $e2->getMessage());
                 $tareas = [];
             }
             return view('tareas/lista', ['tareas' => $tareas, 'errorGeneral' => 'No se pudo cargar la tarea para edición.', 'paginaActual' => $paginaActual, 'totalPaginas' => $totalPaginas]);
         }
         $tarea['id'] = (int)$id;
-        $tarea['formActionUrl'] = 'tareas/' . $id . '/editar';
+        $tarea['formActionUrl'] = '/EjerciciosBasicos/intentosProyecto/05_Ejemplo/public/tareas/editar?id=' . $id;
         // Vista según rol
-        if ($rol === 'admin') return view('tareas/alta_edicion', $tarea);
+        if ($rol === 'admin') {
+            Log::info('Mostrando vista de edición para admin. ID: ' . $id);
+            return view('tareas/alta_edicion', $tarea);
+        }
+        Log::info('Mostrando vista de edición para operario. ID: ' . $id);
         return view('tareas/edicion_operario', $tarea);
     }
 
@@ -208,8 +228,9 @@ class ControladorTareas extends Controller
      * @param int|string $id Identificador de la tarea.
      * @return mixed Vista de listado con mensaje o error.
      */
-    public function eliminar($id)
+    public function eliminar()
     {
+        $id = $_POST['id'] ?? null;
         if (session('rol') !== 'admin') {
             return view('autenticacion/login', ['errorGeneral' => 'Acceso restringido a administradores']);
         }
@@ -218,10 +239,7 @@ class ControladorTareas extends Controller
         if ($paginaActual < 1) $paginaActual = 1;
         try {
             $modelo->eliminar((int)$id);
-            $tareas = $modelo->listar(self::TAREASXPAGINA, $paginaActual);
-            $totalElementos = $modelo->contar();
-            $totalPaginas = (int) max(1, ceil($totalElementos / self::TAREASXPAGINA));
-            return view('tareas/lista', ['tareas' => $tareas, 'mensaje' => 'Tarea eliminada correctamente', 'paginaActual' => $paginaActual, 'totalPaginas' => $totalPaginas]);
+            return redirect(url('tareas'))->with('mensaje', 'Tarea eliminada correctamente');
         } catch (\Throwable $e) {
             $tareas = [];
             $totalElementos = 0;
@@ -243,8 +261,9 @@ class ControladorTareas extends Controller
      * @param int|string $id Identificador de la tarea.
      * @return mixed Vista de confirmación con datos de la tarea.
      */
-    public function confirmarEliminar($id)
+    public function confirmarEliminar()
     {
+        $id = $_GET['id'] ?? null;
         if (session('rol') !== 'admin') {
             return view('autenticacion/login', ['errorGeneral' => 'Acceso restringido a administradores']);
         }
@@ -277,8 +296,9 @@ class ControladorTareas extends Controller
     /**
      * Muestra detalle de una tarea (ambos roles).
      */
-    public function detalle($id)
+    public function detalle()
     {
+        $id = $_GET['id'] ?? null;
         $m = new Tareas();
         $t = null;
         try {

@@ -1,107 +1,163 @@
 <?php
+
 require_once __DIR__ . '/../conexion/DB.php';
 require_once __DIR__ . '/utils.php';
 
 $pdo = DB::getInstance()->getConnection();
 
-// Obtener categorías
 if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['action'] === 'categorias') {
-    $stmt = $pdo->query('SELECT id_categoria, nombre_categoria FROM CATEGORIAS ORDER BY nombre_categoria');
-    $cats = $stmt->fetchAll();
+    $declaracion = $pdo->query('SELECT id_categoria, nombre_categoria FROM CATEGORIAS ORDER BY nombre_categoria');
+    $categorias = $declaracion->fetchAll();
     header('Content-Type: application/json');
-    // json_encode convierte el array en una cadena json
-    echo json_encode($cats);
+    echo json_encode($categorias);
     exit;
 }
 
-// para iniciar la partida seleccionar la dificultad y la categoria de la palabra
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'start') {
-    $login = trim($_POST['login'] ?? '');
-    $categoria = isset($_POST['categoria']) ? intval($_POST['categoria']) : 0;
-    $dificultad = $_POST['dificultad'] ?? '';
+    $nombreUsuario = trim($_POST['login'] ?? '');
+    $idCategoria = isset($_POST['categoria']) ? intval($_POST['categoria']) : 0;
+    $dificultadJuego = $_POST['dificultad'] ?? '';
 
-    if ($login === '' || $categoria <= 0 || $dificultad === '') {
-        redirect('../vistas/juego/configurar.php?login=' . urlencode($login) . '&error=Datos+inv%C3%A1lidos');
+    if ($nombreUsuario === '' || $idCategoria <= 0 || $dificultadJuego === '') {
+        redirect('../vistas/juego/configurar.php?login=' . urlencode($nombreUsuario) . '&error=Datos+inv%C3%A1lidos');
     }
 
-    // dificultad y maximo de fallos
-    $lenCond = '';
-    $maxFallos = 6;
-    switch ($dificultad) {
+    $condicionLongitud = '';
+    $maximoFallos = 6;
+
+    switch ($dificultadJuego) {
         case 'facil':
-            $lenCond = 'CHAR_LENGTH(texto_palabra) <= 5';
-            $maxFallos = 8;
+            $condicionLongitud = 'CHAR_LENGTH(texto_palabra) <= 5';
+            $maximoFallos = 8;
             break;
         case 'media':
-            $lenCond = 'CHAR_LENGTH(texto_palabra) BETWEEN 6 AND 8';
-            $maxFallos = 6;
+            $condicionLongitud = 'CHAR_LENGTH(texto_palabra) BETWEEN 6 AND 8';
+            $maximoFallos = 6;
             break;
         case 'dificil':
-            $lenCond = 'CHAR_LENGTH(texto_palabra) >= 9';
-            $maxFallos = 5;
+            $condicionLongitud = 'CHAR_LENGTH(texto_palabra) >= 9';
+            $maximoFallos = 5;
             break;
         default:
-            redirect('../vistas/juego/configurar.php?login=' . urlencode($login) . '&error=Dificultad+inv%C3%A1lida');
+            redirect('../vistas/juego/configurar.php?login=' . urlencode($nombreUsuario) . '&error=Dificultad+inv%C3%A1lida');
     }
 
-    // Seleccionar palabra aleatoria que cumpla categoría y dificultad
-    $sql = "SELECT id_palabra, texto_palabra FROM PALABRAS WHERE id_categoria = ? AND 
-    -- rand es para seleccionar una palabra aleatoria de la categoria y dificultad
-    $lenCond ORDER BY RAND() LIMIT 1";
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute([$categoria]);
-    $pal = $stmt->fetch();
-    if (!$pal) {
-        redirect('../vistas/juego/configurar.php?login=' . urlencode($login) . '&error=No+hay+palabras+para+esa+categor%C3%ADa+dificultad');
-    }
-    // el intval convertimos el id de la palabra a entero
-    $idPalabra = intval($pal['id_palabra']);
-    $texto = $pal['texto_palabra'];
+    $sqlPalabra = "SELECT id_palabra, texto_palabra FROM PALABRAS WHERE id_categoria = ? AND " .
+        $condicionLongitud . " ORDER BY RAND() LIMIT 1";
+    $declaracion = $pdo->prepare($sqlPalabra);
+    $declaracion->execute([$idCategoria]);
+    $palabraSeleccionada = $declaracion->fetch();
 
-    // Redirigir a la vista de partida con parámetros necesarios
-    $url = '../vistas/juego/partida.php?login=' . urlencode($login)
+    if (!$palabraSeleccionada) {
+        redirect('../vistas/juego/configurar.php?login=' . urlencode($nombreUsuario) . '&error=No+hay+palabras+para+esa+categor%C3%ADa+dificultad');
+    }
+
+    $idPalabra = intval($palabraSeleccionada['id_palabra']);
+    $textoPalabra = $palabraSeleccionada['texto_palabra'];
+
+    $urlRedireccion = '../vistas/juego/partida.php?login=' . urlencode($nombreUsuario)
         . '&id_palabra=' . $idPalabra
-        . '&palabra=' . urlencode($texto)
-        . '&dificultad=' . urlencode($dificultad)
-        . '&maxfallos=' . $maxFallos;
-    redirect($url);
+        . '&palabra=' . urlencode($textoPalabra)
+        . '&dificultad=' . urlencode($dificultadJuego)
+        . '&maxfallos=' . $maximoFallos;
+    redirect($urlRedireccion);
 }
 
-// Finalizar partida y guardar en BD
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'finalizar') {
-    $login = trim($_POST['login'] ?? '');
-    $idPalabra = intval($_POST['id_palabra'] ?? 0);
+    $nombreUsuario = trim($_POST['login'] ?? '');
+    $idPalabraJugada = intval($_POST['id_palabra'] ?? 0);
     $letrasAcertadas = intval($_POST['letras_acertadas'] ?? 0);
     $letrasFalladas = intval($_POST['letras_falladas'] ?? 0);
     $palabraAcertada = isset($_POST['palabra_acertada']) && ($_POST['palabra_acertada'] == '1' || $_POST['palabra_acertada'] === 'true') ? 1 : 0;
-    $puntuacion = intval($_POST['puntuacion_obtenida'] ?? 0);
+    $puntuacionObtenida = intval($_POST['puntuacion_obtenida'] ?? 0);
 
-    if ($login === '' || $idPalabra <= 0) {
-        // http_response_code es para devolver el codigo de estado http
+    if ($nombreUsuario === '' || $idPalabraJugada <= 0) {
         http_response_code(400);
         echo 'Datos inválidos';
         exit;
     }
 
-    // Obtener id_jugador
-    $u = $pdo->prepare('SELECT id_jugador FROM JUGADORES WHERE login = ? LIMIT 1');
-    $u->execute([$login]);
-    $row = $u->fetch();
-    if (!$row) {
+    $declaracionUsuario = $pdo->prepare('SELECT id_jugador FROM JUGADORES WHERE login = ? LIMIT 1');
+    $declaracionUsuario->execute([$nombreUsuario]);
+    $filaJugador = $declaracionUsuario->fetch();
+
+    if (!$filaJugador) {
         http_response_code(404);
         echo 'Jugador no encontrado';
         exit;
     }
-    $idJugador = intval($row['id_jugador']);
+    $idJugador = intval($filaJugador['id_jugador']);
 
-    // Insertar partida
-    $ins = $pdo->prepare('INSERT INTO PARTIDAS (id_jugador, id_palabra_jugada, fecha_partida, letras_acertadas, letras_falladas, palabra_acertada, puntuacion_obtenida) VALUES (?, ?, ?, ?, ?, ?, ?)');
-    $fecha = date('Y-m-d H:i:s');
-    $ins->execute([$idJugador, $idPalabra, $fecha, $letrasAcertadas, $letrasFalladas, $palabraAcertada, $puntuacion]);
+    $insertarPartida = $pdo->prepare('INSERT INTO PARTIDAS (id_jugador, id_palabra_jugada, fecha_partida, letras_acertadas, letras_falladas, palabra_acertada, puntuacion_obtenida) VALUES (?, ?, ?, ?, ?, ?, ?)');
+    $fechaActual = date('Y-m-d H:i:s');
+    $insertarPartida->execute([$idJugador, $idPalabraJugada, $fechaActual, $letrasAcertadas, $letrasFalladas, $palabraAcertada, $puntuacionObtenida]);
 
-    // Volver a configuración con mensaje
-    redirect('../vistas/juego/configurar.php?login=' . urlencode($login) . '&ok=Partida+guardada');
+    redirect('../vistas/juego/configurar.php?login=' . urlencode($nombreUsuario) . '&ok=Partida+guardada');
 }
 
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'login_json') {
+    header('Content-Type: application/json');
+    $nombreUsuario = trim($_POST['login'] ?? '');
+    $contrasena = $_POST['password'] ?? '';
+
+    if (empty($nombreUsuario) || empty($contrasena)) {
+        echo json_encode(['error' => 'Usuario o contraseña vacíos.']);
+        exit;
+    }
+
+    $declaracion = $pdo->prepare('SELECT id_jugador, login, password FROM JUGADORES WHERE login = ? LIMIT 1');
+    $declaracion->execute([$nombreUsuario]);
+    $usuario = $declaracion->fetch();
+
+    if ($usuario && password_verify($contrasena, $usuario['password'])) {
+        echo json_encode(['ok' => true, 'login' => $usuario['login']]);
+        exit;
+    } else {
+        echo json_encode(['error' => 'Credenciales inválidas.']);
+        exit;
+    }
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'register_json') {
+    header('Content-Type: application/json');
+    $nombreUsuario = trim($_POST['login'] ?? '');
+    $contrasena = $_POST['password'] ?? '';
+
+    // Verifica si el nombre de usuario o la contraseña están vacíos.
+    if (empty($nombreUsuario) || empty($contrasena)) {
+        // Si están vacíos, envía un mensaje de error en formato JSON.
+        echo json_encode(['error' => 'Usuario o contraseña vacíos.']);
+        exit;
+    }
+
+    // Verifica si el nombre de usuario ya existe en la base de datos.
+    $declaracion = $pdo->prepare('SELECT id_jugador FROM JUGADORES WHERE login = ? LIMIT 1');
+    $declaracion->execute([$nombreUsuario]);
+    if ($declaracion->fetch()) {
+        // Si el usuario ya existe, envía un mensaje de error en formato JSON.
+        echo json_encode(['error' => 'El nombre de usuario ya existe.']);
+        exit;
+    }
+
+    // Hashea la contraseña para almacenarla de forma segura.
+    $contrasenaHasheada = password_hash($contrasena, PASSWORD_DEFAULT);
+
+    // Inserta el nuevo usuario en la base de datos.
+    $declaracion = $pdo->prepare('INSERT INTO JUGADORES (login, password) VALUES (?, ?)');
+    if ($declaracion->execute([$nombreUsuario, $contrasenaHasheada])) {
+        // Si el registro es exitoso, envía un mensaje de éxito en formato JSON.
+        echo json_encode(['ok' => true, 'message' => 'Registro completado.']);
+        exit;
+    } else {
+        // Si ocurre un error al registrar, envía un mensaje de error en formato JSON.
+        echo json_encode(['error' => 'Error al registrar el usuario.']);
+        exit;
+    }
+}
+
+// Si ninguna de las acciones anteriores se ejecutó, significa que la acción no es soportada.
+// Envía un código de estado HTTP 400 y un mensaje de error.
 http_response_code(400);
 echo 'Acción no soportada';
+
+?>

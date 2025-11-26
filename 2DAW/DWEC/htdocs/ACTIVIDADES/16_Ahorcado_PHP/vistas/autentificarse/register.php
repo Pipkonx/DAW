@@ -5,14 +5,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registro</title>
-    <?php $error = isset($_GET['error']) ? htmlspecialchars($_GET['error']) : ''; ?>
+    <?php
+    $mensajeError = isset($_GET['error']) ? htmlspecialchars($_GET['error']) : '';
+    ?>
 </head>
 
 <body>
     <h1>Registrarse</h1>
 
-    <?php if ($error): ?>
-        <p><?= $error ?></p>
+    <?php if ($mensajeError): ?>
+        <p><?= $mensajeError ?></p>
     <?php endif; ?>
 
     <form action="../../contorlador/auth.php" method="post">

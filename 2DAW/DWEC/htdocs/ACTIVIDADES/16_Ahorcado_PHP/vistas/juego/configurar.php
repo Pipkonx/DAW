@@ -6,26 +6,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Configurar Juego</title>
     <?php
-    $login = isset($_GET['login']) ? htmlspecialchars($_GET['login']) : '';
-    $error = isset($_GET['error']) ? htmlspecialchars($_GET['error']) : '';
-    $ok = isset($_GET['ok']) ? htmlspecialchars($_GET['ok']) : '';
+    $nombreUsuario = isset($_GET['login']) ? htmlspecialchars($_GET['login']) : '';
+    $mensajeError = isset($_GET['error']) ? htmlspecialchars($_GET['error']) : '';
+    $mensajeExito = isset($_GET['ok']) ? htmlspecialchars($_GET['ok']) : '';
     ?>
 </head>
 
 <body>
     <h1>Configurar Juego</h1>
-    <?php if ($error): ?>
-        <p><?= $error ?></p>
+    <?php if ($mensajeError): ?>
+        <p><?= $mensajeError ?></p>
     <?php endif; ?>
-    <?php if ($ok): ?>
-        <p><?= $ok ?></p>
+    <?php if ($mensajeExito): ?>
+        <p><?= $mensajeExito ?></p>
     <?php endif; ?>
 
-    <p>Usuario: <?= $login ? $login : 'Invitado' ?></p>
+    <p>Usuario: <?= $nombreUsuario ? $nombreUsuario : 'Invitado' ?></p>
 
     <form action="../../contorlador/juego.php" method="post">
         <input type="hidden" name="action" value="start">
-        <input type="hidden" name="login" value="<?= $login ?>">
+        <input type="hidden" name="login" value="<?= $nombreUsuario ?>">
 
         <label for="categoria">Categoría</label>
         <select id="categoria" name="categoria" required>
@@ -48,7 +48,7 @@
 
     <script src="../public/main.js"></script>
     <p>
-        <a href="mis_partidas.php?login=<?= urlencode($login) ?>">Ver mis partidas</a>
+        <a href="mis_partidas.php?login=<?= urlencode($nombreUsuario) ?>">Ver mis partidas</a>
     </p>
 </body>
 

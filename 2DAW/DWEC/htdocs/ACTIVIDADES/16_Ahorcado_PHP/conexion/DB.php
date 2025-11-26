@@ -5,15 +5,19 @@ use conexion\configDB;
 class DB
 {
     private static $instance = null;
-    private $conn;
+    private $conexion;
 
     private function __construct()
     {
         try {
-            $config = require __DIR__ . '/../conexion/configDB.php';
-            $this->conn = new PDO('mysql:host=' . $config['host'] . ';dbname=' . $config['db'], $config['user'], $config['pass']);
-            $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            $this->conn->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+            $configuracion = require __DIR__ . '/../conexion/configDB.php';
+            $this->conexion = new PDO(
+                'mysql:host=' . $configuracion['host'] . ';dbname=' . $configuracion['db'],
+                $configuracion['user'],
+                $configuracion['pass']
+            );
+            $this->conexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $this->conexion->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
             die("Error de conexión: " . $e->getMessage());
         }
@@ -29,7 +33,6 @@ class DB
 
     public function getConnection()
     {
-        return $this->conn;
+        return $this->conexion;
     }
-
 }

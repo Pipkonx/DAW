@@ -4,7 +4,7 @@
 
 @section('cuerpo')
   <div class="nav">
-    <a href="usuarios/crear" class="btn">Crear usuario</a>
+    <a href="/EjerciciosBasicos/intentosProyecto/05_Ejemplo/public/usuarios/crear" class="btn">Crear usuario</a>
   </div>
   <h1>Usuarios</h1>
   <table>
@@ -25,8 +25,8 @@
         <td>{{ $u['rol'] }}</td>
         <td>{{ !empty($u['guardar_clave']) ? 'Sí' : 'No' }}</td>
         <td>
-          <a href="usuarios/{{ $u['id'] }}/editar" class="btn inline">Editar</a>
-          <form action="usuarios/eliminar" method="POST" class="inline">
+          <a href="/EjerciciosBasicos/intentosProyecto/05_Ejemplo/public/usuarios/editar?id={{ $u['id'] }}" class="btn inline">Editar</a>
+          <form action="/EjerciciosBasicos/intentosProyecto/05_Ejemplo/public/usuarios/eliminar" method="POST" class="inline">
             @csrf
             <input type="hidden" name="id" value="{{ $u['id'] }}">
             <button type="submit" class="btn">Eliminar</button>

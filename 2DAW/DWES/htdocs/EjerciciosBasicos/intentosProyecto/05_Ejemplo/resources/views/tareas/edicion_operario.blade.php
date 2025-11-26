@@ -7,7 +7,7 @@
   @if(!empty($errorGeneral))
     <div class="error">{{ $errorGeneral }}</div>
   @endif
-  <form action="/EjerciciosBasicos/intentosProyecto/05_Ejemplo/public/tareas/{{ $id }}/editar" method="POST"
+  <form action="/EjerciciosBasicos/intentosProyecto/05_Ejemplo/public/tareas/editar?id={{ $id }}" method="POST"
     enctype="multipart/form-data">
     @csrf
     <label>Estado:</label><br>

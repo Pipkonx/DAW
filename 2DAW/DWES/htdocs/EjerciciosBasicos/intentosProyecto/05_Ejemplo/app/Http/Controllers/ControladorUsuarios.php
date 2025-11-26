@@ -54,8 +54,10 @@ class ControladorUsuarios extends Controller
         return view('usuarios/formulario', ['usuario' => '', 'clave' => '', 'rol' => 'operario']);
     }
 
-    public function editar($id)
+    public function editar()
     {
+        $id = $_GET['id'] ?? null;
+
         if ($r = $this->requireAdmin()) return $r;
         $m = new Usuarios();
         if ($_POST) {
@@ -82,7 +84,6 @@ class ControladorUsuarios extends Controller
         $u['id'] = (int)$id;
         return view('usuarios/formulario', $u);
     }
-
     public function eliminar()
     {
         if ($r = $this->requireAdmin()) return $r;

@@ -21,6 +21,6 @@
   </table>
   <div class="nav">
     <a href="/EjerciciosBasicos/intentosProyecto/05_Ejemplo/public/tareas" class="btn">Volver</a>
-    <a href="/EjerciciosBasicos/intentosProyecto/05_Ejemplo/public/tareas/{{ $id }}/editar" class="btn">Editar</a>
+    <a href="/EjerciciosBasicos/intentosProyecto/05_Ejemplo/public/tareas/editar?id={{ $id }}" class="btn">Editar</a>
   </div>
 @endsection

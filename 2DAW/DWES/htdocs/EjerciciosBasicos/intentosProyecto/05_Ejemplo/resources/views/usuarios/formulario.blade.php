@@ -7,7 +7,7 @@
   @if(!empty($errorGeneral))
     <div class="error">{{ $errorGeneral }}</div>
   @endif
-  <form action="{{ isset($id) ? 'usuarios/'.$id.'/editar' : 'usuarios/crear' }}" method="POST">
+  <form action="{{ isset($id) ? '/EjerciciosBasicos/intentosProyecto/05_Ejemplo/public/usuarios/editar?id='.$id : '/EjerciciosBasicos/intentosProyecto/05_Ejemplo/public/usuarios/crear' }}" method="POST">
     @csrf
     <label>Usuario:</label><br>
     <input type="text" name="usuario" value="{{ $usuario ?? '' }}"><br>
@@ -19,6 +19,6 @@
       <option value="admin" {{ ($rol ?? '') === 'admin' ? 'selected' : '' }}>Admin</option>
     </select><br><br>
     <button type="submit" class="btn">Guardar</button>
-    <a href="usuarios" class="btn btn-cancel">Cancelar</a>
+    <a href="/EjerciciosBasicos/intentosProyecto/05_Ejemplo/public/usuarios" class="btn btn-cancel">Cancelar</a>
   </form>
 @endsection
