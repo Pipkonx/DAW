@@ -111,7 +111,7 @@ class Tareas
         return $this->db()->query($sql)->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function listarPorOperario(int $elementoPorPagina, int $paginaactual): array
+    public function listarPorOperario(int $elementoPorPagina, int $paginaactual, string $operarioEncargado): array
     {
         $inicio = ($paginaactual - 1) * $elementoPorPagina;
 
@@ -119,19 +119,29 @@ class Tareas
         $q = isset($_GET['q']) ? trim($_GET['q']) : '';
         $estado = isset($_GET['estado']) ? trim($_GET['estado']) : '';
 
+        // Se ha eliminado el filtro estricto WHERE operarioEncargado = :operario para permitir ver todas las tareas
         $sql = 'SELECT id, nifCif, personaNombre, telefono, correo, descripcionTarea, direccionTarea, poblacion, codigoPostal, provincia, estadoTarea, operarioEncargado, fechaRealizacion, anotacionesAnteriores, anotacionesPosteriores FROM tareas';
 
-        // Construir WHERE a mano
-        if ($q !== '' && $estado !== '') {
-            $sql .= " WHERE (personaNombre LIKE '%$q%' OR descripcionTarea LIKE '%$q%' OR poblacion LIKE '%$q%' OR operarioEncargado LIKE '%$q%') AND estadoTarea = '$estado'";
-        } elseif ($q !== '') {
-            $sql .= " WHERE (personaNombre LIKE '%$q%' OR descripcionTarea LIKE '%$q%' OR poblacion LIKE '%$q%' OR operarioEncargado LIKE '%$q%')";
-        } elseif ($estado !== '') {
-            $sql .= " WHERE estadoTarea = '$estado'";
+        // Construir WHERE a mano (si se quiere filtrar por operario en la búsqueda, se hace aquí abajo, pero no forzado)
+        $conditions = [];
+        
+        if ($q !== '') {
+            $conditions[] = "(personaNombre LIKE '%$q%' OR descripcionTarea LIKE '%$q%' OR poblacion LIKE '%$q%' OR operarioEncargado LIKE '%$q%')";
+        }
+        if ($estado !== '') {
+            $conditions[] = "estadoTarea = '$estado'";
+        }
+
+        if (!empty($conditions)) {
+            $sql .= " WHERE " . implode(' AND ', $conditions);
         }
 
         $sql .= " ORDER BY id LIMIT $inicio, $elementoPorPagina";
-        return $this->db()->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+        
+        $st = $this->db()->prepare($sql);
+        // Ya no necesitamos pasar el parámetro :operario porque no se usa en la query principal obligatoria
+        $st->execute(); 
+        return $st->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function contarPorOperario(string $operarioEncargado): int
@@ -139,18 +149,22 @@ class Tareas
         $q = isset($_GET['q']) ? trim((string)$_GET['q']) : '';
         $estado = isset($_GET['estado']) ? trim((string)$_GET['estado']) : '';
 
-        $sql = 'SELECT COUNT(*) FROM tareas WHERE operarioEncargado = :operarioEncargado';
-        $params = [':operarioEncargado' => $operarioEncargado];
+        // Eliminado filtro estricto por operarioEncargado para conteo también
+        $sql = 'SELECT COUNT(*) FROM tareas';
+        $params = [];
+        
+        $conditions = [];
 
-        if ($q !== '' && $estado !== '') {
-            $sql .= " AND (personaNombre LIKE '%$q%' OR descripcionTarea LIKE '%$q%' OR poblacion LIKE '%$q%')";
-            $sql .= " AND estadoTarea = :estado";
+        if ($q !== '') {
+            $conditions[] = "(personaNombre LIKE '%$q%' OR descripcionTarea LIKE '%$q%' OR poblacion LIKE '%$q%' OR operarioEncargado LIKE '%$q%')";
+        }
+        if ($estado !== '') {
+            $conditions[] = "estadoTarea = :estado";
             $params[':estado'] = $estado;
-        } elseif ($q !== '') {
-            $sql .= " AND (personaNombre LIKE '%$q%' OR descripcionTarea LIKE '%$q%' OR poblacion LIKE '%$q%')";
-        } elseif ($estado !== '') {
-            $sql .= " AND estadoTarea = :estado";
-            $params[':estado'] = $estado;
+        }
+        
+        if (!empty($conditions)) {
+            $sql .= " WHERE " . implode(' AND ', $conditions);
         }
 
         $st = $this->db()->prepare($sql);

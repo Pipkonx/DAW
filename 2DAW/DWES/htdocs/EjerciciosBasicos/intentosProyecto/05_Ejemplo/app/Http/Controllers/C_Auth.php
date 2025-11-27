@@ -9,7 +9,7 @@ use App\Models\Tareas;
  * Controlador de autenticación simple con contraseña plana,
  * sesión y cookie para recordar la clave.
  */
-class ControladorAuth extends Controller
+class C_Auth extends C_Controller
 {
     /**
      * Muestra el formulario de login y procesa el inicio de sesión.
@@ -50,9 +50,13 @@ class ControladorAuth extends Controller
             }
 
             // Sesión
-            $sesionId = session()->getId();
+            if (session_status() == PHP_SESSION_NONE) { session_start(); }
+            $sesionId = session_id();
             $rol = isset($user['rol']) ? strtolower((string)$user['rol']) : 'operario';
-            session(['usuario_id' => (int)$user['id'], 'usuario_nombre' => (string)$user['usuario'], 'rol' => $rol]);
+            $_SESSION['usuario_id'] = (int)$user['id'];
+            $_SESSION['usuario_nombre'] = (string)$user['usuario'];
+            $_SESSION['nombre_operario'] = (string)$user['usuario'];
+            $_SESSION['rol'] = $rol;
 
             // Preferencias y cookie de clave
             try {
@@ -74,21 +78,17 @@ class ControladorAuth extends Controller
             // Cargar y devolver listado de tareas directamente
             $modelo = new Tareas();
             $tareas = [];
-            $porPagina = 5;
-            $paginaActual = isset($_GET['pagina']) ? (int)$_GET['pagina'] : 1;
+
+            // Get pagination data
+            $paginationData = $this->getPaginationData($modelo);
+            $paginaActual = $paginationData['paginaActual'];
+            $totalElementos = $paginationData['totalElementos'];
+            $totalPaginas = $paginationData['totalPaginas'];
+
             try {
-                $tareas = $modelo->listar($porPagina, $paginaActual);
+                $tareas = $modelo->listar(self::TAREAS_POR_PAGINA, $paginaActual);
             } catch (\Throwable $e) {
                 $tareas = [];
-            }
-            if ($paginaActual < 1) $paginaActual = 1;
-            $totalElementos = 0;
-            $totalPaginas = 1;
-            // ceil es para redondear al enterro mayor o igual
-            try {
-                $totalElementos = $modelo->contar();
-                $totalPaginas = (int) max(1, ceil($totalElementos / $porPagina));
-            } catch (\Throwable $e3) {
             }
             return view('tareas/lista', ['tareas' => $tareas, 'mensaje' => 'Sesión iniciada correctamente', 'paginaActual' => $paginaActual, 'totalPaginas' => $totalPaginas]);
         }
@@ -107,14 +107,16 @@ class ControladorAuth extends Controller
      */
     public function logout()
     {
-        $id = (int) session('usuario_id', 0);
+        if (session_status() == PHP_SESSION_NONE) { session_start(); }
+        $id = (int) ($_SESSION['usuario_id'] ?? 0);
         if ($id) {
             try {
                 (new Usuarios())->actualizarSesionYPreferencias($id, null, isset($_COOKIE['guardar_clave']) && $_COOKIE['guardar_clave'] === '1');
             } catch (\Throwable $e) {
             }
         }
-        session()->forget(['usuario_id', 'usuario_nombre']);
+        session_unset();
+        session_destroy();
 
         // No borrar la cookie de preferencia; sólo la clave si existe
         setcookie('clave_plana', '', time() - 3600, '/');

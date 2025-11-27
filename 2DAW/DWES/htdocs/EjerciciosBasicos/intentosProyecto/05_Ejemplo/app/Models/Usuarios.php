@@ -14,6 +14,8 @@ class Usuarios
     /**
      * Comprueba si existe una columna en la tabla usuarios.
      */
+
+    // el hascolumn es para comprobar si existe una de las columnas que se pasa como parametro
     private function hasColumn(string $column): bool
     {
         try {

@@ -73,13 +73,15 @@
 
         <br>
 
-        <label>Estado:</label><br>
-        <select name="estadoTarea">
-            <option value="B" {{ (($_POST['estadoTarea'] ?? ($estadoTarea ?? '')) == "B") ? "selected" : "" }}>Esperando ser aprobada</option>
-            <option value="P" {{ (($_POST['estadoTarea'] ?? ($estadoTarea ?? '')) == "P") ? "selected" : "" }}>Pendiente</option>
-            <option value="R" {{ (($_POST['estadoTarea'] ?? ($estadoTarea ?? '')) == "R") ? "selected" : "" }}>Realizada</option>
-            <option value="C" {{ (($_POST['estadoTarea'] ?? ($estadoTarea ?? '')) == "C") ? "selected" : "" }}>Cancelada</option>
-        </select><br><br>
+        <label>Estado:</label>
+        <span class="radio-group-item"><input type="radio" id="estadoB" name="estadoTarea" value="B" {{ (($_POST['estadoTarea'] ?? ($estadoTarea ?? '')) == "B") ? "checked" : "" }}> <label
+                for="estadoB">Esperando ser aprobada</label></span>
+        <span class="radio-group-item"><input type="radio" id="estadoP" name="estadoTarea" value="P" {{ (($_POST['estadoTarea'] ?? ($estadoTarea ?? '')) == "P") ? "checked" : "" }}> <label
+                for="estadoP">Pendiente</label></span>
+        <span class="radio-group-item"><input type="radio" id="estadoR" name="estadoTarea" value="R" {{ (($_POST['estadoTarea'] ?? ($estadoTarea ?? '')) == "R") ? "checked" : "" }}> <label
+                for="estadoR">Realizada</label></span>
+        <span class="radio-group-item"><input type="radio" id="estadoC" name="estadoTarea" value="C" {{ (($_POST['estadoTarea'] ?? ($estadoTarea ?? '')) == "C") ? "checked" : "" }}> <label
+                for="estadoC">Cancelada</label></span>
 
         <label>Operario encargado:</label><br>
         <select name="operarioEncargado">
@@ -97,14 +99,16 @@
         </select><br><br>
 
         <label>Fecha de realización:</label><br>
-        <input type="date" name="fechaRealizacion" value="{{ htmlspecialchars($_POST['fechaRealizacion'] ?? ($fechaRealizacion ?? '')) }}"><br>
+        <input type="date" name="fechaRealizacion"
+            value="{{ htmlspecialchars($_POST['fechaRealizacion'] ?? ($fechaRealizacion ?? '')) }}"><br>
         {!! \App\Models\Funciones::verErrores('fecha_realizacion') !!}
 
 
         <br>
 
         <label for="anotacionesAnteriores">Anotaciones anteriores:</label><br>
-        <textarea id="anotacionesAnteriores" name="anotacionesAnteriores">{{ htmlspecialchars($_POST['anotacionesAnteriores'] ?? ($anotacionesAnteriores ?? '')) }}</textarea><br><br>
+        <textarea id="anotacionesAnteriores"
+            name="anotacionesAnteriores">{{ htmlspecialchars($_POST['anotacionesAnteriores'] ?? ($anotacionesAnteriores ?? '')) }}</textarea><br><br>
 
         <label for="fichero_resumen">Fichero resumen:</label>
         <input type="file" id="fichero_resumen" name="fichero_resumen"><br><br>
@@ -113,7 +117,9 @@
         <input type="file" id="fotos" name="fotos[]" multiple><br><br>
 
         @if(isset($id))<input type="hidden" name="id" value="{{ $id }}">@endif
-        <a class="btn btn-cancel" href="{{ url('admin/tareas') }}">Cancelar</a>
-        <input type="submit" {{-- <a class="btn btn-cancel" href="{!! url('/') !!}">Cancelar</a> <input type="submit"
-            --}} value="{{ isset($id) ? 'Guardar cambios' : 'Crear tarea' }}">
+        @php
+            $rutaBase = (isset($_SESSION['rol']) && $_SESSION['rol'] === 'operario') ? 'operario/tareas' : 'admin/tareas';
+        @endphp
+        <a class="btn btn-cancel" href="{{ url($rutaBase) }}">Cancelar</a>
+        <input type="submit" value="{{ isset($id) ? 'Guardar cambios' : 'Crear tarea' }}">
     </form>

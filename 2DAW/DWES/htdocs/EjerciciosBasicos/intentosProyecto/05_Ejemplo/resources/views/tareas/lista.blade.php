@@ -5,12 +5,12 @@
 @section('cuerpo')
   <div class="actions-container">
     <div class="left-actions">
-      @if(session('rol') === 'admin')
-        <a href="{{ url('admin/tareas/crear') }}" class="btn">Crear nueva tarea</a>
+      @if((isset($_SESSION['rol']) && $_SESSION['rol'] === 'admin'))
+          <a href="{{ url('/admin/tareas/crear') }}" class="btn">Crear nueva tarea</a>
       @endif
     </div>
     <div class="right-actions">
-      <form action="{{ url('admin/tareas') }}" method="GET" class="inline filter-form">
+      <form action="{{ url($baseUrl ?? '/admin/tareas') }}" method="GET" class="inline filter-form">
         <input type="text" name="q" placeholder="Buscar por descripción o operario" value="{{ $_GET['q'] ?? '' }}"
           style="width: 250px;" class="btn">
         <select name="estado" class="btn">
@@ -35,7 +35,7 @@
 
   <table>
     <thead>
-      <tr>
+                <tr>
         <th>ID</th>
         <th>Persona</th>
         <th>Descripción</th>
@@ -53,12 +53,16 @@
           <td>{{ $t['fechaRealizacion'] }}</td>
           <td>{{ $t['estadoTarea'] }}</td>
           <td>
-            {{--todo NO SE PERMITE USAR EL URL --}}
-            {{-- <a href="{!! url('tareas/'.$t['id'].'/editar') !!}">Editar</a> --}}
-            <a href="{{ url('admin/tareas/editar?id=' . $t['id']) }}">✏️</a>
-            <a href="{{ url('admin/tareas/detalle?id=' . $t['id']) }}" class="inline">👁️</a>
-            @if(session('rol') === 'admin')
-              <a href="{{ url('admin/tareas/confirmarEliminar?id=' . $t['id']) }}" class="inline">✖️</a>
+            {{-- Determinar ruta base según rol --}}
+            @php
+                $rutaBase = (isset($_SESSION['rol']) && $_SESSION['rol'] === 'operario') ? 'operario/tareas' : ($baseUrl ?? 'admin/tareas');
+            @endphp
+            
+            {{-- <p>DEBUG: baseUrl en enlace = {{ $baseUrl ?? 'No definido en enlace' }}</p> --}}
+            <a href="{{ url($rutaBase . '/editar?id=' . $t['id']) }}">✏️</a>
+            <a href="{{ url($rutaBase . '/detalle?id=' . $t['id']) }}" class="inline">👁️</a>
+            @if((isset($_SESSION['rol']) && $_SESSION['rol'] === 'admin'))
+              <a href="{{ url($rutaBase . '/confirmarEliminar?id=' . $t['id']) }}" class="inline">✖️</a>
             @endif
           </td>
         </tr>
@@ -79,20 +83,20 @@
         $queryString = http_build_query(array_merge($_GET, ['pagina' => 1]));
       @endphp
       @if($paginaActual > 1)
-        <a href="{{ url('admin/tareas?' . http_build_query(array_merge($_GET, ['pagina' => 1]))) }}"
+        <a href="{{ url($baseUrl . '?' . http_build_query(array_merge($_GET, ['pagina' => 1]))) }}"
           class="btn">&laquo;&laquo; Primera</a>
-        <a href="{{ url('admin/tareas?' . http_build_query(array_merge($_GET, ['pagina' => $paginaActual - 1]))) }}"
+        <a href="{{ url(($baseUrl ?? '/admin/tareas') . '?' . http_build_query(array_merge($_GET, ['pagina' => $paginaActual - 1]))) }}"
           class="btn">&laquo; Anterior</a>
       @endif
       <span>Página {{ $paginaActual }} de {{ $totalPaginas }}</span>
       @if($paginaActual < $totalPaginas)
-        <a href="{{ url('admin/tareas?' . http_build_query(array_merge($_GET, ['pagina' => $paginaActual + 1]))) }}"
+        <a href="{{ url(($baseUrl ?? '/admin/tareas') . '?' . http_build_query(array_merge($_GET, ['pagina' => $paginaActual + 1]))) }}"
           {{-- &raquo es para poner el >></a> --}}
           class="btn">Siguiente &raquo;</a>
-        <a href="{{ url('admin/tareas?' . http_build_query(array_merge($_GET, ['pagina' => $totalPaginas]))) }}"
+        <a href="{{ url(($baseUrl ?? '/admin/tareas') . '?' . http_build_query(array_merge($_GET, ['pagina' => $totalPaginas]))) }}"
           class="btn">Última &raquo;&raquo;</a>
       @endif
-      <form action="{{ url('admin/tareas') }}" method="GET" class="inline">
+      <form action="{{ url($baseUrl ?? '/admin/tareas') }}" method="GET" class="inline">
         @foreach($_GET as $key => $value)
           @if($key !== 'pagina')
             <input type="hidden" name="{{ $key }}" value="{{ $value }}">

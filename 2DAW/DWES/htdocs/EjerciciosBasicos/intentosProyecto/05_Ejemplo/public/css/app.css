@@ -163,3 +163,8 @@ textarea {
   margin-right: 10px;
   min-width: 80px;
 }
+
+.radio-group-item {
+  display: inline-block;
+  margin-right: 10px;
+}

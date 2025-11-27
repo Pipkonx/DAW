@@ -7,7 +7,7 @@ use App\Models\Usuarios;
 /**
  * Gestión de usuarios (solo Admin): listar, crear, editar, eliminar.
  */
-class ControladorUsuarios extends Controller
+class C_Usuarios extends C_Controller
 {
     /**
      * Verifica rol Admin, devuelve vista de login si no.

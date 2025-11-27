@@ -102,6 +102,7 @@ class Funciones
         }
 
         // Extraer solo los dígitos y comprobar que tengan al menos 7 y no más de 15 dígitos
+        // con preg_replace hacemos que se eliminen todos los caracterese que no sean nuemeros
         $soloDigitos = preg_replace('/[^0-9]/', '', $telefono);
         $long = strlen($soloDigitos);
         if ($long < 7) {

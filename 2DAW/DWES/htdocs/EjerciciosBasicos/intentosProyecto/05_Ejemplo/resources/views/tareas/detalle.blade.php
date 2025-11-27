@@ -20,7 +20,10 @@
     <tr><th>Anotaciones posteriores</th><td>{{ $anotacionesPosteriores }}</td></tr>
   </table>
   <div class="nav">
-    <a href="{{ url('admin/tareas') }}" class="btn">Volver</a>
-    <a href="{{ url('admin/tareas/editar?id=' . $id) }}" class="btn">Editar</a>
+    @php
+        $rutaBase = (isset($_SESSION['rol']) && $_SESSION['rol'] === 'operario') ? 'operario/tareas' : 'admin/tareas';
+    @endphp
+    <a href="{{ url($rutaBase) }}" class="btn">Volver</a>
+    <a href="{{ url($rutaBase . '/editar?id=' . $id) }}" class="btn">Editar</a>
   </div>
 @endsection

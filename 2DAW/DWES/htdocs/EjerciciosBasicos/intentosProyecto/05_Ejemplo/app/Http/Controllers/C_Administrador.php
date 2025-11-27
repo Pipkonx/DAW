@@ -5,9 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Funciones; // Para la validación
 use App\Models\Tareas;    // Asumiendo que tienes un modelo Tarea
 
-class AdministradorController extends Controller
+class C_Administrador extends C_Controller
 {
-    const TAREASXPAGINA = 10; // Constante para paginación, si aplica
 
     /**
      * Muestra una lista de todas las tareas (para el administrador).
@@ -16,21 +15,28 @@ class AdministradorController extends Controller
      */
     public function listar()
     {
+        if (session_status() == PHP_SESSION_NONE) { session_start(); }
+        if (($_SESSION['rol'] ?? '') !== 'admin') {
+            return view('autenticacion/login', ['errorGeneral' => 'Acceso restringido a administradores']);
+        }
         $modelo = new Tareas();
         $error = '';
-        $paginaActual = isset($_GET['pagina']) ? (int)$_GET['pagina'] : 1;
-        if ($paginaActual < 1) $paginaActual = 1;
-        $totalElementos = 0;
-        $totalPaginas = 1;
+        $tareas = [];
+
+        // Obtener datos de paginación
+        $paginationData = $this->getPaginationData($modelo);
+        $paginaActual = $paginationData['paginaActual'];
+        $totalElementos = $paginationData['totalElementos'];
+        $totalPaginas = $paginationData['totalPaginas'];
+
         try {
-            $tareas = $modelo->listar(self::TAREASXPAGINA, $paginaActual);
-            $totalElementos = $modelo->contar();
-            $totalPaginas = (int) max(1, ceil($totalElementos / self::TAREASXPAGINA));
+            $tareas = $modelo->listar(self::TAREAS_POR_PAGINA, $paginaActual);
         } catch (\Throwable $e) {
-            $tareas = [];
             $error = 'No se pudo obtener el listado de tareas.';
+            $tareas = []; // Asegurarse de que las tareas estén vacías en caso de error
         }
-        $datos = ['tareas' => $tareas, 'paginaActual' => $paginaActual, 'totalPaginas' => $totalPaginas];
+
+        $datos = ['tareas' => $tareas, 'paginaActual' => $paginaActual, 'totalPaginas' => $totalPaginas, 'baseUrl' => 'admin/tareas'];
         if ($error) $datos['errorGeneral'] = $error;
         return view('tareas.lista', $datos); // Asumiendo una vista 'admin.tareas.lista'
     }
@@ -42,6 +48,10 @@ class AdministradorController extends Controller
      */
     public function crear()
     {
+        if (session_status() == PHP_SESSION_NONE) { session_start(); }
+        if (($_SESSION['rol'] ?? '') !== 'admin') {
+            return view('autenticacion/login', ['errorGeneral' => 'Acceso restringido a administradores']);
+        }
         // Datos iniciales para el formulario vacío
         $datos = [
             'nifCif' => '',
@@ -58,24 +68,28 @@ class AdministradorController extends Controller
             'fechaRealizacion' => '',
             'anotacionesAnteriores' => '',
             'anotacionesPosteriores' => '',
-            'formActionUrl' => url('admin/tareas/crear'), // Ruta para el POST de creación
+            'formActionUrl' => dirname($_SERVER['SCRIPT_NAME']) . '/admin/tareas/crear', // Ruta para el POST de creación
         ];
         return view('tareas.alta_edicion', $datos); // Asumiendo una vista 'admin.tareas.alta_edicion'
     }
 
     /**
      * Almacena una nueva tarea en la base de datos.
-     *
-     * @return \Illuminate\Http\Response
+     * 
+    * @return \Illuminate\Http\Response
      */
     public function guardar()
     {
+        if (session_status() == PHP_SESSION_NONE) { session_start(); }
+        if (($_SESSION['rol'] ?? '') !== 'admin') {
+            return view('autenticacion/login', ['errorGeneral' => 'Acceso restringido a administradores']);
+        }
         // Validar datos
         $this->filtrar();
         if (!empty(Funciones::$errores)) {
             // Si hay errores, volver al formulario con los datos y errores
             $datos = $_POST;
-            $datos['formActionUrl'] = url('admin/tareas/crear');
+            $datos['formActionUrl'] = dirname($_SERVER['SCRIPT_NAME']) . '/admin/tareas/crear';
             return view('tareas.alta_edicion', $datos);
         }
 
@@ -85,18 +99,18 @@ class AdministradorController extends Controller
             $mensaje = 'Tarea creada correctamente';
 
             // Recargar la lista de tareas para la vista
-            $paginaActual = isset($_GET['pagina']) ? (int)$_GET['pagina'] : 1;
-            if ($paginaActual < 1) $paginaActual = 1;
-            $totalElementos = $modelo->contar();
-            $totalPaginas = (int) max(1, ceil($totalElementos / self::TAREASXPAGINA));
-            $tareas = $modelo->listar(self::TAREASXPAGINA, $paginaActual);
+            $paginationData = $this->getPaginationData($modelo);
+            $paginaActual = $paginationData['paginaActual'];
+            $totalElementos = $paginationData['totalElementos'];
+            $totalPaginas = $paginationData['totalPaginas'];
+            $tareas = $modelo->listar(self::TAREAS_POR_PAGINA, $paginaActual);
 
             $datos = ['mensaje' => $mensaje, 'tareas' => $tareas, 'paginaActual' => $paginaActual, 'totalPaginas' => $totalPaginas];
             return view('tareas.lista', $datos);
         } catch (\Throwable $e) {
             $datos = $_POST;
             $datos['errorGeneral'] = 'No se pudo guardar la tarea. Revise la conexión y la tabla.';
-            $datos['formActionUrl'] = url('admin/tareas/crear');
+            $datos['formActionUrl'] = dirname($_SERVER['SCRIPT_NAME']) . '/admin/tareas/crear';
             return view('tareas.alta_edicion', $datos);
         }
     }
@@ -108,6 +122,10 @@ class AdministradorController extends Controller
      */
     public function mostrar()
     {
+        if (session_status() == PHP_SESSION_NONE) { session_start(); }
+        if (($_SESSION['rol'] ?? '') !== 'admin') {
+            return view('autenticacion/login', ['errorGeneral' => 'Acceso restringido a administradores']);
+        }
         $id = $_GET['id'] ?? null;
         $modelo = new Tareas();
         $tarea = null;
@@ -131,6 +149,10 @@ class AdministradorController extends Controller
      */
     public function editar()
     {
+        if (session_status() == PHP_SESSION_NONE) { session_start(); }
+        if (($_SESSION['rol'] ?? '') !== 'admin') {
+            return view('autenticacion/login', ['errorGeneral' => 'Acceso restringido a administradores']);
+        }
         $id = $_GET['id'] ?? null;
         $modelo = new Tareas();
         $tarea = null;
@@ -147,7 +169,7 @@ class AdministradorController extends Controller
         // Preparar datos para la vista de edición
         $datos = $tarea; // Los datos de la tarea encontrada
         $datos['id'] = (int)$id;
-        $datos['formActionUrl'] = url('admin/tareas/editar?id=' . $id); // Ruta para el POST de edición
+        $datos['formActionUrl'] = dirname($_SERVER['SCRIPT_NAME']) . '/admin/tareas/editar?id=' . $id; // Ruta para el POST de edición
 
         return view('tareas.alta_edicion', $datos);
     }
@@ -159,6 +181,10 @@ class AdministradorController extends Controller
      */
     public function actualizar()
     {
+        if (session_status() == PHP_SESSION_NONE) { session_start(); }
+        if (($_SESSION['rol'] ?? '') !== 'admin') {
+            return view('autenticacion/login', ['errorGeneral' => 'Acceso restringido a administradores']);
+        }
         $id = $_GET['id'] ?? null; // El ID viene por GET en la URL para la edición
         if (!isset($_POST['id'])) { // Asegurarse de que el ID también esté en POST para el modelo
             $_POST['id'] = $id;
@@ -168,7 +194,7 @@ class AdministradorController extends Controller
         if (!empty(Funciones::$errores)) {
             $datos = $_POST;
             $datos['id'] = (int)$id;
-            $datos['formActionUrl'] = url('admin/tareas/editar?id=' . $id);
+            $datos['formActionUrl'] = dirname($_SERVER['SCRIPT_NAME']) . '/admin/tareas/editar?id=' . $id;
             return view('tareas.alta_edicion', $datos);
         }
 
@@ -178,11 +204,11 @@ class AdministradorController extends Controller
             $mensaje = 'Tarea actualizada correctamente';
 
             // Recargar la lista de tareas para la vista
-            $paginaActual = isset($_GET['pagina']) ? (int)$_GET['pagina'] : 1;
-            if ($paginaActual < 1) $paginaActual = 1;
-            $totalElementos = $modelo->contar();
-            $totalPaginas = (int) max(1, ceil($totalElementos / self::TAREASXPAGINA));
-            $tareas = $modelo->listar(self::TAREASXPAGINA, $paginaActual);
+            $paginationData = $this->getPaginationData($modelo);
+            $paginaActual = $paginationData['paginaActual'];
+            $totalElementos = $paginationData['totalElementos'];
+            $totalPaginas = $paginationData['totalPaginas'];
+            $tareas = $modelo->listar(self::TAREAS_POR_PAGINA, $paginaActual);
 
             $datos = ['mensaje' => $mensaje, 'tareas' => $tareas, 'paginaActual' => $paginaActual, 'totalPaginas' => $totalPaginas];
             return view('tareas.lista', $datos);
@@ -190,7 +216,7 @@ class AdministradorController extends Controller
             $datos = $_POST;
             $datos['id'] = (int)$id;
             $datos['errorGeneral'] = 'No se pudo actualizar la tarea. Revise la conexión y la tabla.';
-            $datos['formActionUrl'] = url('admin/tareas/editar?id=' . $id);
+            $datos['formActionUrl'] = dirname($_SERVER['SCRIPT_NAME']) . '/admin/tareas/editar?id=' . $id;
             return view('tareas.alta_edicion', $datos);
         }
     }
@@ -202,8 +228,9 @@ class AdministradorController extends Controller
      */
     public function eliminar()
     {
+        if (session_status() == PHP_SESSION_NONE) { session_start(); }
         $id = $_POST['id'] ?? null; // El ID para eliminar viene por POST
-        if (session('rol') !== 'admin') {
+        if (($_SESSION['rol'] ?? '') !== 'admin') {
             return view('autenticacion/login', ['errorGeneral' => 'Acceso restringido a administradores']);
         }
 
@@ -213,11 +240,11 @@ class AdministradorController extends Controller
             $mensaje = 'Tarea eliminada correctamente';
 
             // Recargar la lista de tareas para la vista
-            $paginaActual = isset($_GET['pagina']) ? (int)$_GET['pagina'] : 1;
-            if ($paginaActual < 1) $paginaActual = 1;
-            $totalElementos = $modelo->contar();
-            $totalPaginas = (int) max(1, ceil($totalElementos / self::TAREASXPAGINA));
-            $tareas = $modelo->listar(self::TAREASXPAGINA, $paginaActual);
+            $paginationData = $this->getPaginationData($modelo);
+            $paginaActual = $paginationData['paginaActual'];
+            $totalElementos = $paginationData['totalElementos'];
+            $totalPaginas = $paginationData['totalPaginas'];
+            $tareas = $modelo->listar(self::TAREAS_POR_PAGINA, $paginaActual);
 
             $datos = ['mensaje' => $mensaje, 'tareas' => $tareas, 'paginaActual' => $paginaActual, 'totalPaginas' => $totalPaginas];
             return view('tareas.lista', $datos);
@@ -235,7 +262,8 @@ class AdministradorController extends Controller
     public function confirmarEliminacion()
     {
         $id = $_GET['id'] ?? null;
-        if (session('rol') !== 'admin') {
+        if (session_status() == PHP_SESSION_NONE) { session_start(); }
+        if (($_SESSION['rol'] ?? '') !== 'admin') {
             return view('autenticacion/login', ['errorGeneral' => 'Acceso restringido a administradores']);
         }
         $modelo = new Tareas();
