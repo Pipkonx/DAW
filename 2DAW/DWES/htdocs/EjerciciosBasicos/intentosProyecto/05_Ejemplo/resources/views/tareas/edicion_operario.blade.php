@@ -18,12 +18,18 @@
       <option value="R" {{ (($_POST['estadoTarea'] ?? ($estadoTarea ?? '')) === 'R') ? 'selected' : '' }}>Realizada</option>
       <option value="C" {{ (($_POST['estadoTarea'] ?? ($estadoTarea ?? '')) === 'C') ? 'selected' : '' }}>Cancelada</option>
     </select><br>
-    {!! \App\Models\Funciones::verErrores('estadoTarea') !!}<br>
+    @if($msg = \App\Models\Funciones::getError('estadoTarea'))
+      <div class="error">{{ $msg }}</div>
+    @endif
+    <br>
 
     <label>Anotaciones posteriores:</label><br>
     <textarea
       name="anotacionesPosteriores">{{ htmlspecialchars($_POST['anotacionesPosteriores'] ?? ($anotacionesPosteriores ?? '')) }}</textarea><br>
-    {!! \App\Models\Funciones::verErrores('anotacionesPosteriores') !!}<br><br>
+    @if($msg = \App\Models\Funciones::getError('anotacionesPosteriores'))
+      <div class="error">{{ $msg }}</div>
+    @endif
+    <br><br>
 
     <label>Fichero resumen:</label>
     <input type="file" name="fichero_resumen"><br><br>

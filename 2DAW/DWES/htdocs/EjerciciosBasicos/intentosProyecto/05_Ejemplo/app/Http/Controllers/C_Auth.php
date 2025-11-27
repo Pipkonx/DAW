@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Usuarios;
-use App\Models\Tareas;
+use App\Models\M_Usuarios;
+use App\Models\M_Tareas;
 
 /**
  * Controlador de autenticación simple con contraseña plana,
@@ -19,11 +19,6 @@ class C_Auth extends C_Controller
     public function login()
     {
         if ($_POST) {
-            // Asegurar esquema de usuarios (tabla y admin por defecto)
-            try {
-                (new Usuarios())->asegurarEsquema();
-            } catch (\Throwable $e) {
-            }
             $nombre = $_POST['usuario'];
             $contrasena = $_POST['clave'];
             $guardar = isset($_POST['guardar_clave']);
@@ -35,14 +30,8 @@ class C_Auth extends C_Controller
                 return view('autenticacion/login', $datos);
             }
 
-            $usuarios = new Usuarios();
-            $user = null;
-            try {
-                $user = $usuarios->buscarPorNombre($nombre);
-            } catch (\Throwable $e) {
-                $datos['errorGeneral'] = 'No se pudo acceder a usuarios';
-                return view('autenticacion/login', array_merge($datos, ['isLoginPage' => true]));
-            }
+            $usuarios = new M_Usuarios();
+            $user = $usuarios->buscar($nombre);
 
             if (!$user || (string)$user['clave'] !== $contrasena) {
                 $datos['errorGeneral'] = 'Nombre o contraseña incorrectos';
@@ -59,11 +48,7 @@ class C_Auth extends C_Controller
             $_SESSION['rol'] = $rol;
 
             // Preferencias y cookie de clave
-            try {
-                $usuarios->actualizarSesionYPreferencias((int)$user['id'], $sesionId, $guardar);
-            } catch (\Throwable $e) {
-                // sin bloqueo
-            }
+            $usuarios->actualizar((int)$user['id'], $sesionId, $guardar);
 
             // COOKIES
             if ($guardar) {
@@ -74,23 +59,14 @@ class C_Auth extends C_Controller
                 setcookie('clave_plana', '', time() - 3600, '/');
             }
 
-            // PAGINAION
-            // Cargar y devolver listado de tareas directamente
-            $modelo = new Tareas();
-            $tareas = [];
-
-            // Get pagination data
-            $paginationData = $this->getPaginationData($modelo);
-            $paginaActual = $paginationData['paginaActual'];
-            $totalElementos = $paginationData['totalElementos'];
-            $totalPaginas = $paginationData['totalPaginas'];
-
-            try {
-                $tareas = $modelo->listar(self::TAREAS_POR_PAGINA, $paginaActual);
-            } catch (\Throwable $e) {
-                $tareas = [];
+            // Redirección según rol
+            $baseUrl = dirname($_SERVER['SCRIPT_NAME']);
+            if ($rol === 'admin') {
+                header("Location: $baseUrl/admin/tareas");
+            } else {
+                header("Location: $baseUrl/operario/tareas");
             }
-            return view('tareas/lista', ['tareas' => $tareas, 'mensaje' => 'Sesión iniciada correctamente', 'paginaActual' => $paginaActual, 'totalPaginas' => $totalPaginas]);
+            exit;
         }
 
         // GET: precargar valores desde cookies
@@ -110,10 +86,7 @@ class C_Auth extends C_Controller
         if (session_status() == PHP_SESSION_NONE) { session_start(); }
         $id = (int) ($_SESSION['usuario_id'] ?? 0);
         if ($id) {
-            try {
-                (new Usuarios())->actualizarSesionYPreferencias($id, null, isset($_COOKIE['guardar_clave']) && $_COOKIE['guardar_clave'] === '1');
-            } catch (\Throwable $e) {
-            }
+            (new M_Usuarios())->actualizar($id, null, isset($_COOKIE['guardar_clave']) && $_COOKIE['guardar_clave'] === '1');
         }
         session_unset();
         session_destroy();

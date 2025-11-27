@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Funciones; // Para la validación
-use App\Models\Tareas;    // Asumiendo que tienes un modelo Tarea
+use App\Models\M_Funciones; // Para la validación
+use App\Models\M_Tareas;    // Asumiendo que tienes un modelo Tarea
 
 class C_Administrador extends C_Controller
 {
@@ -19,7 +19,7 @@ class C_Administrador extends C_Controller
         if (($_SESSION['rol'] ?? '') !== 'admin') {
             return view('autenticacion/login', ['errorGeneral' => 'Acceso restringido a administradores']);
         }
-        $modelo = new Tareas();
+        $modelo = new M_Tareas();
         $error = '';
         $tareas = [];
 
@@ -29,12 +29,7 @@ class C_Administrador extends C_Controller
         $totalElementos = $paginationData['totalElementos'];
         $totalPaginas = $paginationData['totalPaginas'];
 
-        try {
-            $tareas = $modelo->listar(self::TAREAS_POR_PAGINA, $paginaActual);
-        } catch (\Throwable $e) {
-            $error = 'No se pudo obtener el listado de tareas.';
-            $tareas = []; // Asegurarse de que las tareas estén vacías en caso de error
-        }
+        $tareas = $modelo->listar(self::TAREAS_POR_PAGINA, $paginaActual);
 
         $datos = ['tareas' => $tareas, 'paginaActual' => $paginaActual, 'totalPaginas' => $totalPaginas, 'baseUrl' => 'admin/tareas'];
         if ($error) $datos['errorGeneral'] = $error;
@@ -75,7 +70,7 @@ class C_Administrador extends C_Controller
 
     /**
      * Almacena una nueva tarea en la base de datos.
-     * 
+     *
     * @return \Illuminate\Http\Response
      */
     public function guardar()
@@ -86,33 +81,26 @@ class C_Administrador extends C_Controller
         }
         // Validar datos
         $this->filtrar();
-        if (!empty(Funciones::$errores)) {
+        if (!empty(M_Funciones::$errores)) {
             // Si hay errores, volver al formulario con los datos y errores
             $datos = $_POST;
             $datos['formActionUrl'] = dirname($_SERVER['SCRIPT_NAME']) . '/admin/tareas/crear';
             return view('tareas.alta_edicion', $datos);
         }
 
-        $modelo = new Tareas();
-        try {
-            $modelo->crear($_POST); // Usar el método crear del modelo Tareas
-            $mensaje = 'Tarea creada correctamente';
+        $modelo = new M_Tareas();
+        $modelo->crear($_POST); // Usar el método crear del modelo Tareas
+        $mensaje = 'Tarea creada correctamente';
 
-            // Recargar la lista de tareas para la vista
-            $paginationData = $this->getPaginationData($modelo);
-            $paginaActual = $paginationData['paginaActual'];
-            $totalElementos = $paginationData['totalElementos'];
-            $totalPaginas = $paginationData['totalPaginas'];
-            $tareas = $modelo->listar(self::TAREAS_POR_PAGINA, $paginaActual);
+        // Recargar la lista de tareas para la vista
+        $paginationData = $this->getPaginationData($modelo);
+        $paginaActual = $paginationData['paginaActual'];
+        $totalElementos = $paginationData['totalElementos'];
+        $totalPaginas = $paginationData['totalPaginas'];
+        $tareas = $modelo->listar(self::TAREAS_POR_PAGINA, $paginaActual);
 
-            $datos = ['mensaje' => $mensaje, 'tareas' => $tareas, 'paginaActual' => $paginaActual, 'totalPaginas' => $totalPaginas];
-            return view('tareas.lista', $datos);
-        } catch (\Throwable $e) {
-            $datos = $_POST;
-            $datos['errorGeneral'] = 'No se pudo guardar la tarea. Revise la conexión y la tabla.';
-            $datos['formActionUrl'] = dirname($_SERVER['SCRIPT_NAME']) . '/admin/tareas/crear';
-            return view('tareas.alta_edicion', $datos);
-        }
+        $datos = ['mensaje' => $mensaje, 'tareas' => $tareas, 'paginaActual' => $paginaActual, 'totalPaginas' => $totalPaginas];
+        return view('tareas.lista', $datos);
     }
 
     /**
@@ -127,12 +115,9 @@ class C_Administrador extends C_Controller
             return view('autenticacion/login', ['errorGeneral' => 'Acceso restringido a administradores']);
         }
         $id = $_GET['id'] ?? null;
-        $modelo = new Tareas();
+        $modelo = new M_Tareas();
         $tarea = null;
-        try {
-            $tarea = $modelo->buscar((int)$id);
-        } catch (\Throwable $e) {
-        }
+        $tarea = $modelo->buscar((int)$id);
 
         if (!$tarea) {
             // Si no existe la tarea, redirigir o mostrar error
@@ -154,12 +139,9 @@ class C_Administrador extends C_Controller
             return view('autenticacion/login', ['errorGeneral' => 'Acceso restringido a administradores']);
         }
         $id = $_GET['id'] ?? null;
-        $modelo = new Tareas();
+        $modelo = new M_Tareas();
         $tarea = null;
-        try {
-            $tarea = $modelo->buscar((int)$id);
-        } catch (\Throwable $e) {
-        }
+        $tarea = $modelo->buscar((int)$id);
 
         if (!$tarea) {
             $datos = ['errorGeneral' => 'No se pudo cargar la tarea para edición.'];
@@ -191,34 +173,26 @@ class C_Administrador extends C_Controller
         }
 
         $this->filtrar();
-        if (!empty(Funciones::$errores)) {
+        if (!empty(M_Funciones::$errores)) {
             $datos = $_POST;
             $datos['id'] = (int)$id;
             $datos['formActionUrl'] = dirname($_SERVER['SCRIPT_NAME']) . '/admin/tareas/editar?id=' . $id;
             return view('tareas.alta_edicion', $datos);
         }
 
-        $modelo = new Tareas();
-        try {
-            $modelo->actualizar((int)$id, $_POST); // Usar el método actualizar del modelo Tareas
-            $mensaje = 'Tarea actualizada correctamente';
+        $modelo = new M_Tareas();
+        $modelo->actualizar((int)$id, $_POST); // Usar el método actualizar del modelo Tareas
+        $mensaje = 'Tarea actualizada correctamente';
 
-            // Recargar la lista de tareas para la vista
-            $paginationData = $this->getPaginationData($modelo);
-            $paginaActual = $paginationData['paginaActual'];
-            $totalElementos = $paginationData['totalElementos'];
-            $totalPaginas = $paginationData['totalPaginas'];
-            $tareas = $modelo->listar(self::TAREAS_POR_PAGINA, $paginaActual);
+        // Recargar la lista de tareas para la vista
+        $paginationData = $this->getPaginationData($modelo);
+        $paginaActual = $paginationData['paginaActual'];
+        $totalElementos = $paginationData['totalElementos'];
+        $totalPaginas = $paginationData['totalPaginas'];
+        $tareas = $modelo->listar(self::TAREAS_POR_PAGINA, $paginaActual);
 
-            $datos = ['mensaje' => $mensaje, 'tareas' => $tareas, 'paginaActual' => $paginaActual, 'totalPaginas' => $totalPaginas];
-            return view('tareas.lista', $datos);
-        } catch (\Throwable $e) {
-            $datos = $_POST;
-            $datos['id'] = (int)$id;
-            $datos['errorGeneral'] = 'No se pudo actualizar la tarea. Revise la conexión y la tabla.';
-            $datos['formActionUrl'] = dirname($_SERVER['SCRIPT_NAME']) . '/admin/tareas/editar?id=' . $id;
-            return view('tareas.alta_edicion', $datos);
-        }
+        $datos = ['mensaje' => $mensaje, 'tareas' => $tareas, 'paginaActual' => $paginaActual, 'totalPaginas' => $totalPaginas];
+        return view('tareas.lista', $datos);
     }
 
     /**
@@ -234,24 +208,19 @@ class C_Administrador extends C_Controller
             return view('autenticacion/login', ['errorGeneral' => 'Acceso restringido a administradores']);
         }
 
-        $modelo = new Tareas();
-        try {
-            $modelo->eliminar((int)$id);
-            $mensaje = 'Tarea eliminada correctamente';
+        $modelo = new M_Tareas(); // Corregido de 'Tareas()' a 'M_Tareas()'
+        $modelo->eliminar((int)$id);
+        $mensaje = 'Tarea eliminada correctamente';
 
-            // Recargar la lista de tareas para la vista
-            $paginationData = $this->getPaginationData($modelo);
-            $paginaActual = $paginationData['paginaActual'];
-            $totalElementos = $paginationData['totalElementos'];
-            $totalPaginas = $paginationData['totalPaginas'];
-            $tareas = $modelo->listar(self::TAREAS_POR_PAGINA, $paginaActual);
+        // Recargar la lista de tareas para la vista
+        $paginationData = $this->getPaginationData($modelo);
+        $paginaActual = $paginationData['paginaActual'];
+        $totalElementos = $paginationData['totalElementos'];
+        $totalPaginas = $paginationData['totalPaginas'];
+        $tareas = $modelo->listar(self::TAREAS_POR_PAGINA, $paginaActual);
 
-            $datos = ['mensaje' => $mensaje, 'tareas' => $tareas, 'paginaActual' => $paginaActual, 'totalPaginas' => $totalPaginas];
-            return view('tareas.lista', $datos);
-        } catch (\Throwable $e) {
-            $datos = ['errorGeneral' => 'No se pudo eliminar la tarea.'];
-            return view('admin.tareas.lista', $datos);
-        }
+        $datos = ['mensaje' => $mensaje, 'tareas' => $tareas, 'paginaActual' => $paginaActual, 'totalPaginas' => $totalPaginas];
+        return view('tareas.lista', $datos);
     }
 
     /**
@@ -266,12 +235,9 @@ class C_Administrador extends C_Controller
         if (($_SESSION['rol'] ?? '') !== 'admin') {
             return view('autenticacion/login', ['errorGeneral' => 'Acceso restringido a administradores']);
         }
-        $modelo = new Tareas();
+        $modelo = new M_Tareas(); // Corregido de 'Tareas()' a 'M_Tareas()'
         $tarea = null;
-        try {
-            $tarea = $modelo->buscar((int)$id);
-        } catch (\Throwable $e) {
-        }
+        $tarea = $modelo->buscar((int)$id);
         if (!$tarea) {
             $datos = ['errorGeneral' => 'No se pudo cargar la tarea para eliminación.'];
             return view('tareas.lista', $datos);
@@ -288,6 +254,6 @@ class C_Administrador extends C_Controller
      */
     private function filtrar()
     {
-        Funciones::$errores = Tareas::validarDatos($_POST);
+        M_Funciones::$errores = M_Tareas::validarDatos($_POST); // Corregido de 'Tareas::validarDatos' a 'M_Tareas::validarDatos'
     }
 }

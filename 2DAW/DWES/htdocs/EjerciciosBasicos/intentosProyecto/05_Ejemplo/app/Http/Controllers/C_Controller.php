@@ -17,7 +17,7 @@ abstract class C_Controller
      * @param mixed $countParam Parameter for the count method (e.g., operarioEncargado).
      * @return array Contains 'paginaActual', 'totalElementos', 'totalPaginas'.
      */
-    protected function getPaginationData(\App\Models\Tareas $modelo, ?string $countMethod = null, $countParam = null): array
+    protected function getPaginationData(\App\Models\M_Tareas $modelo, ?string $countMethod = null, $countParam = null): array
     {
         $paginaActual = isset($_GET['pagina']) ? (int)$_GET['pagina'] : 1;
         if ($paginaActual < 1) {
@@ -25,14 +25,11 @@ abstract class C_Controller
         }
 
         $totalElementos = 0;
-        try {
-            if ($countMethod && method_exists($modelo, $countMethod)) {
-                $totalElementos = $modelo->{$countMethod}($countParam);
-            } else {
-                $totalElementos = $modelo->contar();
-            }
-        } catch (\Throwable $e) {
-            // Log the error if necessary, but proceed with 0 elements
+        //method_exists es para verificar si el método existe en el modelo
+        if ($countMethod && method_exists($modelo, $countMethod)) {
+            $totalElementos = $modelo->{$countMethod}($countParam);
+        } else {
+            $totalElementos = $modelo->contar();
         }
 
         $totalPaginas = (int) max(1, ceil($totalElementos / self::TAREAS_POR_PAGINA));

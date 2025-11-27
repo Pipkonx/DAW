@@ -3,41 +3,35 @@
         @csrf
         <label>NIF/CIF:</label><br>
         <input type="text" name="nifCif" value="{{ htmlspecialchars($_POST['nifCif'] ?? ($nifCif ?? '')) }}"><br>
-        {{--? No quiere que pongamos los {!! !!} --}}
-        {{--? Tampoco podemos usar @error --}}
-        {!! \App\Models\Funciones::verErrores('nif_cif') !!}
-        {{-- @error('nif_cif')
-        <div class="error">{{ $message }}</div>
-        @enderror --}}
+        @if($msg = \App\Models\M_Funciones::getError('nif_cif'))
+            <div class="error">{{ $msg }}</div>
+        @endif
 
         <br>
 
         <label>Persona de contacto:</label><br>
         <input type="text" name="personaNombre"
             value="{{ htmlspecialchars($_POST['personaNombre'] ?? ($personaNombre ?? '')) }}"><br>
-        {!! \App\Models\Funciones::verErrores('nombre_persona') !!}
-        {{-- @error('nombre_persona')
-        <div class="error">{{ $message }}</div>
-        @enderror --}}
+        @if($msg = \App\Models\M_Funciones::getError('nombre_persona'))
+            <div class="error">{{ $msg }}</div>
+        @endif
 
 
         <br>
         <label>Teléfono:</label><br>
         <input type="text" name="telefono" value="{{ htmlspecialchars($_POST['telefono'] ?? ($telefono ?? '')) }}"><br>
-        {!! \App\Models\Funciones::verErrores('telefono') !!}
-        {{-- @error('telefono')
-        <div class="error">{{ $message }}</div>
-        @enderror --}}
+        @if($msg = \App\Models\M_Funciones::getError('telefono'))
+            <div class="error">{{ $msg }}</div>
+        @endif
 
 
         <br>
 
         <label>Correo electrónico:</label><br>
         <input type="text" name="correo" value="{{ htmlspecialchars($_POST['correo'] ?? ($correo ?? '')) }}"><br>
-        {!! \App\Models\Funciones::verErrores('correo') !!}
-        {{-- @error('correo')
-        <div class="error">{{ $message }}</div>
-        @enderror --}}
+        @if($msg = \App\Models\M_Funciones::getError('correo'))
+            <div class="error">{{ $msg }}</div>
+        @endif
 
 
         <br>
@@ -45,10 +39,9 @@
         <label>Descripción de la tarea:</label><br>
         <textarea
             name="descripcionTarea">{{ htmlspecialchars($_POST['descripcionTarea'] ?? ($descripcionTarea ?? '')) }}</textarea><br>
-        {!! \App\Models\Funciones::verErrores('descripcion_tarea') !!}
-        {{-- @error('descripcion_tarea')
-        <div class="error">{{ $message }}</div>
-        @enderror --}}
+        @if($msg = \App\Models\M_Funciones::getError('descripcion_tarea'))
+            <div class="error">{{ $msg }}</div>
+        @endif
 
 
         <br>
@@ -68,7 +61,14 @@
         <label>Provincia:</label><br>
         <select name="provincia">
             <option value="">Seleccione provincia</option>
-            <?php \App\Models\Funciones::mostrarProvincias($_POST['provincia'] ?? ($provincia ?? '')) ?>
+            @php
+                $provSeleccionada = $_POST['provincia'] ?? ($provincia ?? '');
+            @endphp
+            @foreach(\App\Models\M_Funciones::$provincias as $codigo => $nombre)
+                <option value="{{ $codigo }}" {{ $codigo == $provSeleccionada ? 'selected' : '' }}>
+                    {{ $nombre }}
+                </option>
+            @endforeach
         </select><br>
 
         <br>
@@ -101,7 +101,9 @@
         <label>Fecha de realización:</label><br>
         <input type="date" name="fechaRealizacion"
             value="{{ htmlspecialchars($_POST['fechaRealizacion'] ?? ($fechaRealizacion ?? '')) }}"><br>
-        {!! \App\Models\Funciones::verErrores('fecha_realizacion') !!}
+        @if($msg = \App\Models\M_Funciones::getError('fecha_realizacion'))
+            <div class="error">{{ $msg }}</div>
+        @endif
 
 
         <br>

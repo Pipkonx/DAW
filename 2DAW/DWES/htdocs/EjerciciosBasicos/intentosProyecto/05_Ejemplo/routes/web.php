@@ -28,10 +28,3 @@ Route::post('/operario/perfil/actualizar', [C_Operario::class, 'actualizarPerfil
 // Autenticación simple con contraseña plana, sesión y cookie para recordar la clave.
 Route::any('/login', [C_Auth::class, 'login']);
 Route::any('/logout', [C_Auth::class, 'logout']);
-
-// Gestión de usuarios (Admin)
-Route::any('/usuarios', [C_Usuarios::class, 'listar']);
-Route::any('/usuarios/crear', [C_Usuarios::class, 'crear']);
-
-Route::any('/usuarios/editar', [C_Usuarios::class, 'editar']);
-Route::post('/usuarios/eliminar', [C_Usuarios::class, 'eliminar']);

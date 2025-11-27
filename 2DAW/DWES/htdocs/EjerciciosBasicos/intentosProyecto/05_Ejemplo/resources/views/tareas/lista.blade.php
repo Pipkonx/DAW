@@ -85,6 +85,7 @@
       @if($paginaActual > 1)
         <a href="{{ url($baseUrl . '?' . http_build_query(array_merge($_GET, ['pagina' => 1]))) }}"
           class="btn">&laquo;&laquo; Primera</a>
+          {{-- http_build_query es para pasar los parametros de la url en la paginacion --}}
         <a href="{{ url(($baseUrl ?? '/admin/tareas') . '?' . http_build_query(array_merge($_GET, ['pagina' => $paginaActual - 1]))) }}"
           class="btn">&laquo; Anterior</a>
       @endif
