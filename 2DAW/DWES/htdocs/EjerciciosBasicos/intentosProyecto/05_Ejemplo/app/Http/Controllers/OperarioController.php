@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Auth; // Para obtener el usuario autenticado (si 
 
 class OperarioController extends Controller
 {
-    const TAREASXPAGINA = 5; // Constante para paginación, si aplica
+    const TAREASXPAGINA = 10; // Constante para paginación, si aplica
 
     /**
      * Muestra una lista de tareas asignadas al operario autenticado.

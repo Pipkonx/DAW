@@ -7,7 +7,7 @@ use App\Models\Tareas;    // Asumiendo que tienes un modelo Tarea
 
 class AdministradorController extends Controller
 {
-    const TAREASXPAGINA = 5; // Constante para paginación, si aplica
+    const TAREASXPAGINA = 10; // Constante para paginación, si aplica
 
     /**
      * Muestra una lista de todas las tareas (para el administrador).
