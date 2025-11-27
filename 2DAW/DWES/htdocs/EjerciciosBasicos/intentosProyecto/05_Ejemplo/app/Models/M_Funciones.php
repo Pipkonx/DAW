@@ -10,8 +10,12 @@ class M_Funciones
     /**
      * Valida un NIF o CIF español.
      *
-     * @param string $dni Cadena con NIF/CIF.
-     * @return true|string true si es válido; mensaje de error en caso contrario.
+     * Este método verifica si una cadena dada es un NIF (Número de Identificación Fiscal)
+     * o un CIF (Código de Identificación Fiscal) válido en España, incluyendo la validación
+     * de la letra de control para NIFs y el dígito de control para CIFs.
+     *
+     * @param string $dni Cadena con el NIF/CIF a validar.
+     * @return true|string Retorna `true` si el NIF/CIF es válido; de lo contrario, retorna un mensaje de error descriptivo.
      */
     public static function validarNif($dni)
     {
@@ -56,10 +60,13 @@ class M_Funciones
     }
 
     /**
-     * Valida un teléfono permitiendo símbolos comunes (+, (), espacios, guiones, puntos).
+     * Valida un número de teléfono, permitiendo símbolos comunes.
      *
-     * @param string $telefono Número de teléfono.
-     * @return true|string true si es válido; mensaje de error si no lo es.
+     * Verifica que el número de teléfono contenga solo dígitos, espacios, guiones, puntos y el signo '+'.
+     * Además, comprueba que la longitud del número (solo dígitos) esté entre 7 y 15 caracteres.
+     *
+     * @param string $telefono El número de teléfono a validar.
+     * @return true|string Retorna `true` si el teléfono es válido; de lo contrario, retorna un mensaje de error descriptivo.
      */
     public static function telefonoValido($telefono)
     {
@@ -93,10 +100,14 @@ class M_Funciones
     public static $errores = [];
 
     /**
-     * Devuelve el error asociado a un campo si existe.
+     * Devuelve el mensaje de error asociado a un campo específico.
      *
-     * @param string $campo Clave del campo.
-     * @return string|null Mensaje de error o null.
+     * Busca en el array estático `$errores` si existe un mensaje de error
+     * para el campo dado y lo retorna. Si no hay error para ese campo,
+     * devuelve `null`.
+     *
+     * @param string $campo La clave del campo para el que se busca el error.
+     * @return string|null El mensaje de error si existe, o `null` en caso contrario.
      */
     public static function getError($campo)
     {

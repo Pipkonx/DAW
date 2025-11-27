@@ -12,7 +12,14 @@ use App\Models\M_Tareas;
 class C_Auth extends C_Controller
 {
     /**
-     * Muestra el formulario de login y procesa el inicio de sesión.
+     * Muestra el formulario de login y procesa el inicio de sesión del usuario.
+     *
+     * Si se recibe una petición POST, valida las credenciales del usuario.
+     * En caso de éxito, inicia la sesión, establece cookies para recordar la clave
+     * y redirige al usuario según su rol (administrador u operario).
+     * Si es una petición GET, precarga los valores del formulario desde las cookies.
+     *
+     * @return \Illuminate\View\View|void Retorna la vista del formulario de login o redirige.
      */
     public function login()
     {
@@ -69,7 +76,12 @@ class C_Auth extends C_Controller
     }
 
     /**
-     * Cierra la sesión y limpia cookies si es necesario.
+     * Cierra la sesión del usuario actual y limpia las cookies de autenticación.
+     *
+     * Invalida la sesión PHP, destruye los datos de sesión y elimina las cookies
+     * relacionadas con la autenticación para asegurar un cierre de sesión completo.
+     *
+     * @return \Illuminate\View\View Retorna la vista de login con un mensaje de sesión cerrada.
      */
     public function logout()
     {

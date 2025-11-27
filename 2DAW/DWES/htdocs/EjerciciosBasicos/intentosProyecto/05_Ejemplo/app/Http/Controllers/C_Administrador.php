@@ -9,9 +9,13 @@ class C_Administrador extends C_Controller
 {
 
     /**
-     * Muestra una lista de todas las tareas (para el administrador).
+     * Muestra una lista paginada de todas las tareas disponibles para el administrador.
      *
-     * @return \Illuminate\Http\Response
+     * Este método verifica el rol del usuario para asegurar que solo los administradores
+     * puedan acceder. Recupera las tareas de la base de datos, aplica paginación
+     * y las presenta en una vista.
+     *
+     * @return \Illuminate\Http\Response Una respuesta HTTP que carga la vista con la lista de tareas.
      */
     public function listar()
     {
@@ -39,7 +43,11 @@ class C_Administrador extends C_Controller
     /**
      * Muestra el formulario para crear una nueva tarea.
      *
-     * @return \Illuminate\Http\Response
+     * Este método prepara un array de datos iniciales para un formulario de creación
+     * de tareas, incluyendo campos vacíos y la URL de acción del formulario.
+     * Requiere que el usuario tenga rol de administrador.
+     *
+     * @return \Illuminate\Http\Response Una respuesta HTTP que carga la vista del formulario de alta/edición de tareas.
      */
     public function crear()
     {
@@ -69,9 +77,14 @@ class C_Administrador extends C_Controller
     }
 
     /**
-     * Almacena una nueva tarea en la base de datos.
+     * Almacena una nueva tarea en la base de datos tras validar los datos recibidos.
      *
-    * @return \Illuminate\Http\Response
+     * Este método filtra y valida los datos del formulario. Si hay errores, vuelve a
+     * mostrar el formulario con los errores. Si los datos son válidos, crea la tarea
+     * en la base de datos y redirige a la lista de tareas con un mensaje de éxito.
+     * Requiere que el usuario tenga rol de administrador.
+     *
+     * @return \Illuminate\Http\Response Una respuesta HTTP que redirige a la lista de tareas o vuelve al formulario de creación.
      */
     public function guardar()
     {
@@ -106,7 +119,11 @@ class C_Administrador extends C_Controller
     /**
      * Muestra los detalles de una tarea específica.
      *
-     * @return \Illuminate\Http\Response
+     * Este método recupera una tarea de la base de datos utilizando su ID
+     * y la presenta en una vista de detalle. Si la tarea no se encuentra,
+     * se muestra un mensaje de error. Requiere que el usuario tenga rol de administrador.
+     *
+     * @return \Illuminate\Http\Response Una respuesta HTTP que carga la vista de detalle de la tarea o una lista con un mensaje de error.
      */
     public function mostrar()
     {
@@ -130,7 +147,11 @@ class C_Administrador extends C_Controller
     /**
      * Muestra el formulario para editar una tarea existente.
      *
-     * @return \Illuminate\Http\Response
+     * Este método recupera los datos de una tarea específica por su ID y los precarga
+     * en un formulario de edición. Si la tarea no se encuentra, se redirige con un
+     * mensaje de error. Requiere que el usuario tenga rol de administrador.
+     *
+     * @return \Illuminate\Http\Response Una respuesta HTTP que carga la vista del formulario de alta/edición de tareas.
      */
     public function editar()
     {
@@ -157,9 +178,13 @@ class C_Administrador extends C_Controller
     }
 
     /**
-     * Actualiza una tarea existente en la base de datos.
+     * Actualiza una tarea existente en la base de datos con los datos recibidos del formulario.
      *
-     * @return \Illuminate\Http\Response
+     * Este método valida los datos del formulario y, si son válidos, actualiza la tarea
+     * correspondiente en la base de datos. Si hay errores de validación, vuelve a mostrar
+     * el formulario de edición con los errores. Requiere que el usuario tenga rol de administrador.
+     *
+     * @return \Illuminate\Http\Response Una respuesta HTTP que redirige a la lista de tareas o vuelve al formulario de edición.
      */
     public function actualizar()
     {
@@ -196,9 +221,14 @@ class C_Administrador extends C_Controller
     }
 
     /**
-     * Elimina una tarea de la base de datos.
+     * Elimina una tarea específica de la base de datos.
      *
-     * @return \Illuminate\Http\Response
+     * Este método recibe el ID de la tarea a eliminar a través de una solicitud POST.
+     * Verifica el rol del usuario para asegurar que solo los administradores puedan
+     * realizar esta acción. Tras la eliminación, recarga la lista de tareas con un
+     * mensaje de éxito. Si el usuario no es administrador, se le redirige al login.
+     *
+     * @return \Illuminate\Http\Response Una respuesta HTTP que redirige a la lista de tareas con un mensaje de éxito.
      */
     public function eliminar()
     {
@@ -224,9 +254,13 @@ class C_Administrador extends C_Controller
     }
 
     /**
-     * Muestra una vista de confirmación antes de eliminar la tarea.
+     * Muestra una vista de confirmación antes de eliminar una tarea.
      *
-     * @return \Illuminate\Http\Response
+     * Este método recupera los detalles de una tarea específica por su ID y los presenta
+     * en una vista de confirmación de eliminación. Si la tarea no se encuentra,
+     * se redirige con un mensaje de error. Requiere que el usuario tenga rol de administrador.
+     *
+     * @return \Illuminate\Http\Response Una respuesta HTTP que carga la vista de confirmación de eliminación o una lista con un mensaje de error.
      */
     public function confirmarEliminacion()
     {
@@ -248,7 +282,10 @@ class C_Administrador extends C_Controller
 
     /**
      * Valida y normaliza los datos recibidos del formulario de tarea.
-     * Población de mensajes de error en `Funciones::$errores` (estático).
+     *
+     * Este método utiliza el modelo `M_Tareas` para validar los datos de una tarea
+     * recibidos a través de una solicitud POST. Los errores de validación se almacenan
+     * en el array estático `M_Funciones::$errores`.
      *
      * @return void
      */

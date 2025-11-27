@@ -15,8 +15,12 @@ class M_Tareas
     /**
      * Valida los datos de una tarea.
      *
-     * @param array $datos Datos de la tarea a validar.
-     * @return array Array de errores, vacío si no hay errores.
+     * Realiza una serie de validaciones sobre los datos proporcionados para una tarea,
+     * incluyendo campos obligatorios, formato de NIF/CIF, correo electrónico, teléfono,
+     * código postal y fecha de realización. Utiliza M_Funciones para algunas validaciones.
+     *
+     * @param array $datos Array asociativo con los datos de la tarea a validar.
+     * @return array Un array asociativo con mensajes de error si existen, o un array vacío si todos los datos son válidos.
      */
     public static function validarDatos(array $datos): array
     {
@@ -81,9 +85,12 @@ class M_Tareas
     }
 
     /**
-     * Obtiene la conexión PDO desde el singleton de base de datos.
+     * Obtiene la instancia de conexión PDO a la base de datos.
      *
-     * @return PDO Conexión a la base de datos.
+     * Este método es un envoltorio para `DB::getInstance()`, asegurando que todas
+     * las operaciones del modelo `M_Tareas` utilicen la misma conexión singleton.
+     *
+     * @return PDO La instancia de conexión PDO a la base de datos.
      */
     private function db(): PDO
     {
@@ -91,7 +98,12 @@ class M_Tareas
     }
 
     /**
-     * Prepara el WHERE reutilizable para listar() y contar()
+     * Prepara las condiciones de filtrado para las consultas SQL de listado y conteo de tareas.
+     *
+     * Construye una cláusula WHERE basada en los parámetros 'q' (búsqueda general)
+     * y 'estado' (estado de la tarea) obtenidos de la cadena de consulta (GET).
+     *
+     * @return string La cláusula WHERE SQL, o una cadena vacía si no hay filtros.
      */
     private function filtrosLista(): string
     {
@@ -111,9 +123,14 @@ class M_Tareas
     }
 
     /**
-     * Lista tareas con paginación básica leyendo `pagina` de la query string.
+     * Lista tareas con paginación.
      *
-     * @return array Lista de tareas como arrays asociativos.
+     * Recupera un conjunto de tareas de la base de datos, aplicando filtros
+     * definidos por `filtrosLista()` y limitando los resultados para la paginación.
+     *
+     * @param int $elementosPorPagina Número de tareas a mostrar por página.
+     * @param int $paginaActual El número de la página actual.
+     * @return array Un array de arrays asociativos, donde cada array representa una tarea.
      */
     public function listar(int $elementosPorPagina, int $paginaActual): array
     {
@@ -128,9 +145,12 @@ class M_Tareas
     }
 
     /**
-     * Cuenta el total de registros en la tabla `tareas`.
+     * Cuenta el número total de registros de tareas, aplicando los filtros definidos.
      *
-     * @return int Número total de tareas.
+     * Utiliza la función `filtrosLista()` para aplicar condiciones de búsqueda
+     * y devuelve el número total de tareas que cumplen con esos criterios.
+     *
+     * @return int El número total de tareas filtradas.
      */
     public function contar(): int
     {
@@ -139,10 +159,14 @@ class M_Tareas
     }
 
     /**
-     * Busca una tarea por su identificador.
+     * Busca una tarea específica por su identificador único.
      *
-     * @param int $id Identificador de la tarea.
-     * @return array|null Datos de la tarea o null si no existe.
+     * Prepara y ejecuta una consulta SQL para obtener todos los detalles de una tarea
+     * basándose en el ID proporcionado.
+     *
+     * @param int $id El identificador de la tarea a buscar.
+     * @return array|null Un array asociativo con los datos de la tarea si se encuentra,
+     *                    o `null` si no existe ninguna tarea con el ID dado.
      */
     public function buscar(int $id): ?array
     {
@@ -154,10 +178,13 @@ class M_Tareas
     }
 
     /**
-     * Crea una tarea nueva.
+     * Inserta una nueva tarea en la base de datos.
      *
-     * @param array $datos Campos de la tarea.
-     * @return int ID autogenerado de la nueva tarea.
+     * Sanea los datos de entrada y ejecuta una consulta SQL INSERT para añadir
+     * una nueva tarea a la tabla `tareas`.
+     *
+     * @param array $datos Un array asociativo con los datos de la nueva tarea.
+     * @return int El ID autoincrementado de la tarea recién creada.
      */
     public function crear(array $datos): int
     {
@@ -174,11 +201,14 @@ class M_Tareas
     }
 
     /**
-     * Actualiza una tarea existente.
+     * Actualiza una tarea existente en la base de datos.
      *
-     * @param int $id Identificador de la tarea a actualizar.
-     * @param array $datos Campos a actualizar.
-     * @return bool true si la actualización fue correcta.
+     * Sanea los datos de entrada y ejecuta una consulta SQL UPDATE para modificar
+     * una tarea específica identificada por su ID.
+     *
+     * @param int $id El identificador de la tarea a actualizar.
+     * @param array $datos Un array asociativo con los nuevos datos de la tarea.
+     * @return bool `true` si la actualización fue exitosa, `false` en caso contrario.
      */
     public function actualizar(int $id, array $datos): bool
     {
@@ -194,10 +224,12 @@ class M_Tareas
     }
 
     /**
-     * Elimina una tarea por su identificador.
+     * Elimina una tarea de la base de datos por su identificador.
      *
-     * @param int $id Identificador de la tarea a eliminar.
-     * @return bool true si se eliminó correctamente.
+     * Prepara y ejecuta una consulta SQL DELETE para remover una tarea específica.
+     *
+     * @param int $id El identificador de la tarea a eliminar.
+     * @return bool `true` si la eliminación fue exitosa, `false` en caso contrario.
      */
     public function eliminar(int $id): bool
     {
@@ -206,10 +238,15 @@ class M_Tareas
     }
 
     /**
-     * Normaliza y trimea los campos esperados de una tarea.
+     * Sanea y normaliza los datos de una tarea, eliminando espacios en blanco y asegurando
+     * que solo se incluyan los campos esperados.
      *
-     * @param array $datos Datos recibidos (por ejemplo, del formulario).
-     * @return array Datos saneados con las claves esperadas.
+     * Este método es crucial para preparar los datos antes de insertarlos o actualizarlos
+     * en la base de datos, previniendo inyecciones SQL básicas y errores de formato.
+     *
+     * @param array $datos Un array asociativo con los datos de la tarea, típicamente
+     *                     recibidos de un formulario.
+     * @return array Un array asociativo con los datos saneados y listos para su uso.
      */
     private function limpiar(array $datos): array
     {
@@ -225,10 +262,15 @@ class M_Tareas
     }
 
     /**
-     * Actualiza campos permitidos para operario.
+     * Actualiza campos específicos de una tarea que son modificables por un operario.
      *
-     * @param int $id ID de la tarea.
-     * @param array $datos Datos: estadoTarea, anotacionesPosteriores.
+     * Este método permite a un operario actualizar el estado de una tarea y añadir
+     * anotaciones posteriores, garantizando que solo estos campos sean alterados.
+     *
+     * @param int $id El identificador único de la tarea a actualizar.
+     * @param array $datos Un array asociativo que contiene los nuevos valores para
+     *                     'estadoTarea' y 'anotacionesPosteriores'.
+     * @return bool `true` si la actualización se realizó con éxito, `false` en caso contrario.
      */
     public function actualizarOperario(int $id, array $datos): bool
     {

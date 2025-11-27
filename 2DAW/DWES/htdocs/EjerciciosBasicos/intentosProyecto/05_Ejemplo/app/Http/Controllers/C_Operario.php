@@ -8,7 +8,12 @@ use App\Models\M_Tareas;
 class C_Operario extends C_Controller
 {
     /**
-     * Lista tareas asignadas al operario.
+     * Muestra una lista paginada de tareas asignadas al operario.
+     *
+     * Obtiene las tareas del modelo M_Tareas, calcula la paginación
+     * y renderiza la vista 'tareas.lista' con los datos.
+     *
+     * @return \Illuminate\View\View Retorna la vista con la lista de tareas.
      */
     public function listar()
     {
@@ -31,7 +36,12 @@ class C_Operario extends C_Controller
     }
 
     /**
-     * Muestra detalles de una tarea específica.
+     * Muestra los detalles de una tarea específica.
+     *
+     * Busca una tarea por su ID y, si la encuentra, renderiza la vista 'tareas.detalle'.
+     * Si la tarea no existe, redirige al operario a la lista de tareas.
+     *
+     * @return \Illuminate\View\View|void Retorna la vista con los detalles de la tarea o redirige.
      */
     public function mostrar()
     {
@@ -48,7 +58,13 @@ class C_Operario extends C_Controller
     }
 
     /**
-     * Muestra el formulario de edición de tarea.
+     * Muestra el formulario para editar una tarea existente.
+     *
+     * Busca una tarea por su ID y, si la encuentra, prepara los datos
+     * para el formulario de edición y renderiza la vista 'tareas.alta_edicion'.
+     * Si la tarea no existe, redirige al operario a la lista de tareas.
+     *
+     * @return \Illuminate\View\View|void Retorna la vista del formulario de edición o redirige.
      */
     public function editar()
     {
@@ -67,7 +83,13 @@ class C_Operario extends C_Controller
     }
 
     /**
-     * Actualiza la tarea y gestiona la subida de archivos.
+     * Actualiza una tarea existente y gestiona la subida de archivos asociados.
+     *
+     * Valida los datos recibidos, actualiza la tarea en la base de datos
+     * y guarda los ficheros de resumen y fotos en el sistema de archivos.
+     * Redirige a la lista de tareas tras la actualización.
+     *
+     * @return void Redirige a la lista de tareas o muestra el formulario con errores.
      */
     public function actualizar()
     {
@@ -108,8 +130,15 @@ class C_Operario extends C_Controller
     }
 
     /**
-     * Obtiene el nombre del operario desde la sesión.
+     * Obtiene el nombre del operario encargado desde la sesión.
+     *
+     * Si la sesión no está iniciada, la inicia. Retorna el nombre del operario
+     * almacenado en la sesión o un valor por defecto si no está definido.
+     *
+     * @return string El nombre del operario encargado.
      */
+    
+    
     private function getOperarioEncargado(): string
     {
         if (session_status() == PHP_SESSION_NONE) session_start();
