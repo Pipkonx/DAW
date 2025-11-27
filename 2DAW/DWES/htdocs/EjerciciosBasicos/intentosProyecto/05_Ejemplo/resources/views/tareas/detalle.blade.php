@@ -20,7 +20,7 @@
     <tr><th>Anotaciones posteriores</th><td>{{ $anotacionesPosteriores }}</td></tr>
   </table>
   <div class="nav">
-    <a href="/EjerciciosBasicos/intentosProyecto/05_Ejemplo/public/tareas" class="btn">Volver</a>
-    <a href="/EjerciciosBasicos/intentosProyecto/05_Ejemplo/public/tareas/editar?id={{ $id }}" class="btn">Editar</a>
+    <a href="{{ url('admin/tareas') }}" class="btn">Volver</a>
+    <a href="{{ url('admin/tareas/editar?id=' . $id) }}" class="btn">Editar</a>
   </div>
 @endsection

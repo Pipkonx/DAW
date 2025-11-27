@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
+use App\Models\Funciones;
 use PDO;
 use App\DB\DB;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Gestiona operaciones CRUD sobre la tabla `tareas` usando PDO.
@@ -11,6 +13,63 @@ use App\DB\DB;
  */
 class Tareas
 {
+    /**
+     * Valida los datos de una tarea.
+     *
+     * @param array $datos Datos de la tarea a validar.
+     * @return array Array de errores, vacío si no hay errores.
+     */
+    public static function validarDatos(array $datos): array
+    {
+        $errores = [];
+
+        $nifCif = $datos['nifCif'] ?? '';
+        $personaNombre = $datos['personaNombre'] ?? '';
+        $descripcionTarea = $datos['descripcionTarea'] ?? '';
+        $correo = $datos['correo'] ?? '';
+        $telefono = $datos['telefono'] ?? '';
+        $codigoPostal = $datos['codigoPostal'] ?? '';
+        $provincia = $datos['provincia'] ?? '';
+        $fechaRealizacion = $datos['fechaRealizacion'] ?? '';
+
+        if ($nifCif === "") {
+            $errores['nif_cif'] = "Debe introducir el NIF/CIF de la persona encargada de la tarea";
+        } else {
+            $resultado = Funciones::validarNif($nifCif);
+            if ($resultado !== true) $errores['nif_cif'] = $resultado;
+        }
+
+        if ($personaNombre === "") $errores['nombre_persona'] = "Debe introducir el nombre de la persona encargada de la tarea";
+        if ($descripcionTarea === "") $errores['descripcion_tarea'] = "Debe introducir la descripción de la tarea";
+
+        if ($correo === "") {
+            $errores['correo'] = "Debe introducir el correo de la persona encargada de la tarea";
+        } else if (!filter_var($correo, FILTER_VALIDATE_EMAIL)) {
+            $errores['correo'] = "El correo introducido no es válido";
+        }
+
+        if ($telefono == "") {
+            $errores['telefono'] = "Debe introducir el teléfono de la persona encargada de la tarea";
+        } else {
+            $resultado = Funciones::telefonoValido($telefono);
+            if ($resultado !== true) $errores['telefono'] = $resultado;
+        }
+
+        if ($codigoPostal != "" && !preg_match("/^[0-9]{5}$/", $codigoPostal)) {
+            $errores['codigo_postal'] = "El código postal introducido no es válido, debe tener 5 números";
+        }
+
+        if ($provincia === "") $errores['provincia'] = "Debe introducir la provincia";
+
+        $fechaActual = date('Y-m-d');
+        if ($fechaRealizacion == "") {
+            $errores['fecha_realizacion'] = "Debe introducir la fecha de realización de la tarea";
+        } else if ($fechaRealizacion <= $fechaActual) {
+            $errores['fecha_realizacion'] = "La fecha de realización debe ser posterior a la fecha actual";
+        }
+        return $errores;
+    }
+
     /**
      * Obtiene la conexión PDO desde el singleton de base de datos.
      *
@@ -52,6 +111,54 @@ class Tareas
         return $this->db()->query($sql)->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public function listarPorOperario(int $elementoPorPagina, int $paginaactual): array
+    {
+        $inicio = ($paginaactual - 1) * $elementoPorPagina;
+
+        // Filtros: q (texto), estado, operario
+        $q = isset($_GET['q']) ? trim($_GET['q']) : '';
+        $estado = isset($_GET['estado']) ? trim($_GET['estado']) : '';
+
+        $sql = 'SELECT id, nifCif, personaNombre, telefono, correo, descripcionTarea, direccionTarea, poblacion, codigoPostal, provincia, estadoTarea, operarioEncargado, fechaRealizacion, anotacionesAnteriores, anotacionesPosteriores FROM tareas';
+
+        // Construir WHERE a mano
+        if ($q !== '' && $estado !== '') {
+            $sql .= " WHERE (personaNombre LIKE '%$q%' OR descripcionTarea LIKE '%$q%' OR poblacion LIKE '%$q%' OR operarioEncargado LIKE '%$q%') AND estadoTarea = '$estado'";
+        } elseif ($q !== '') {
+            $sql .= " WHERE (personaNombre LIKE '%$q%' OR descripcionTarea LIKE '%$q%' OR poblacion LIKE '%$q%' OR operarioEncargado LIKE '%$q%')";
+        } elseif ($estado !== '') {
+            $sql .= " WHERE estadoTarea = '$estado'";
+        }
+
+        $sql .= " ORDER BY id LIMIT $inicio, $elementoPorPagina";
+        return $this->db()->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function contarPorOperario(string $operarioEncargado): int
+    {
+        $q = isset($_GET['q']) ? trim((string)$_GET['q']) : '';
+        $estado = isset($_GET['estado']) ? trim((string)$_GET['estado']) : '';
+
+        $sql = 'SELECT COUNT(*) FROM tareas WHERE operarioEncargado = :operarioEncargado';
+        $params = [':operarioEncargado' => $operarioEncargado];
+
+        if ($q !== '' && $estado !== '') {
+            $sql .= " AND (personaNombre LIKE '%$q%' OR descripcionTarea LIKE '%$q%' OR poblacion LIKE '%$q%')";
+            $sql .= " AND estadoTarea = :estado";
+            $params[':estado'] = $estado;
+        } elseif ($q !== '') {
+            $sql .= " AND (personaNombre LIKE '%$q%' OR descripcionTarea LIKE '%$q%' OR poblacion LIKE '%$q%')";
+        } elseif ($estado !== '') {
+            $sql .= " AND estadoTarea = :estado";
+            $params[':estado'] = $estado;
+        }
+
+        $st = $this->db()->prepare($sql);
+        $st->execute($params);
+        return (int) $st->fetchColumn();
+    }
+
+
     /**
      * Cuenta el total de registros en la tabla `tareas`.
      *
@@ -83,7 +190,7 @@ class Tareas
      * @param int $id Identificador de la tarea.
      * @return array|null Datos de la tarea o null si no existe.
      */
-    
+
     // la ?array es para indicar si puede devolver null
     public function buscar(int $id): ?array
     {
@@ -104,24 +211,29 @@ class Tareas
     {
         $d = $this->limpiar($datos);
         $sql = 'INSERT INTO tareas (nifCif, personaNombre, telefono, correo, descripcionTarea, direccionTarea, poblacion, codigoPostal, provincia, estadoTarea, operarioEncargado, fechaRealizacion, anotacionesAnteriores, anotacionesPosteriores) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)';
-        $st = $this->db()->prepare($sql);
-        $st->execute([
-            $d['nifCif'],
-            $d['personaNombre'],
-            $d['telefono'],
-            $d['correo'],
-            $d['descripcionTarea'],
-            $d['direccionTarea'],
-            $d['poblacion'],
-            $d['codigoPostal'],
-            $d['provincia'],
-            $d['estadoTarea'],
-            $d['operarioEncargado'],
-            $d['fechaRealizacion'],
-            $d['anotacionesAnteriores'],
-            $d['anotacionesPosteriores']
-        ]);
-        return (int)$this->db()->lastInsertId();
+        try {
+            $st = $this->db()->prepare($sql);
+            $st->execute([
+                $d['nifCif'],
+                $d['personaNombre'],
+                $d['telefono'],
+                $d['correo'],
+                $d['descripcionTarea'],
+                $d['direccionTarea'],
+                $d['poblacion'],
+                $d['codigoPostal'],
+                $d['provincia'],
+                $d['estadoTarea'],
+                $d['operarioEncargado'],
+                $d['fechaRealizacion'],
+                $d['anotacionesAnteriores'],
+                $d['anotacionesPosteriores']
+            ]);
+            return (int)$this->db()->lastInsertId();
+        } catch (\PDOException $e) {
+            Log::error('Error al crear tarea: ' . $e->getMessage());
+            throw $e; // Re-lanzar la excepción para que el controlador la maneje
+        }
     }
 
     /**

@@ -12,14 +12,18 @@
     @csrf
     <label>Estado:</label><br>
     <select name="estadoTarea">
-      <option value="B" {{ ($estadoTarea ?? '') === 'B' ? 'selected' : '' }}>Esperando ser aprobada</option>
-      <option value="P" {{ ($estadoTarea ?? '') === 'P' ? 'selected' : '' }}>Pendiente</option>
-      <option value="R" {{ ($estadoTarea ?? '') === 'R' ? 'selected' : '' }}>Realizada</option>
-      <option value="C" {{ ($estadoTarea ?? '') === 'C' ? 'selected' : '' }}>Cancelada</option>
-    </select><br><br>
+      <option value="B" {{ (($_POST['estadoTarea'] ?? ($estadoTarea ?? '')) === 'B') ? 'selected' : '' }}>Esperando ser
+        aprobada</option>
+      <option value="P" {{ (($_POST['estadoTarea'] ?? ($estadoTarea ?? '')) === 'P') ? 'selected' : '' }}>Pendiente</option>
+      <option value="R" {{ (($_POST['estadoTarea'] ?? ($estadoTarea ?? '')) === 'R') ? 'selected' : '' }}>Realizada</option>
+      <option value="C" {{ (($_POST['estadoTarea'] ?? ($estadoTarea ?? '')) === 'C') ? 'selected' : '' }}>Cancelada</option>
+    </select><br>
+    {!! \App\Models\Funciones::verErrores('estadoTarea') !!}<br>
 
     <label>Anotaciones posteriores:</label><br>
-    <textarea name="anotacionesPosteriores">{{ $anotacionesPosteriores ?? '' }}</textarea><br><br>
+    <textarea
+      name="anotacionesPosteriores">{{ htmlspecialchars($_POST['anotacionesPosteriores'] ?? ($anotacionesPosteriores ?? '')) }}</textarea><br>
+    {!! \App\Models\Funciones::verErrores('anotacionesPosteriores') !!}<br><br>
 
     <label>Fichero resumen:</label>
     <input type="file" name="fichero_resumen"><br><br>

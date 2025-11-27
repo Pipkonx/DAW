@@ -74,7 +74,7 @@ class ControladorAuth extends Controller
             // Cargar y devolver listado de tareas directamente
             $modelo = new Tareas();
             $tareas = [];
-            $porPagina = ControladorTareas::TAREASXPAGINA;
+            $porPagina = 5;
             $paginaActual = isset($_GET['pagina']) ? (int)$_GET['pagina'] : 1;
             try {
                 $tareas = $modelo->listar($porPagina, $paginaActual);

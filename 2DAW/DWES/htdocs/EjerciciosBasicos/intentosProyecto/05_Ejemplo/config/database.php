@@ -34,7 +34,7 @@ return [
         'sqlite' => [
             'driver' => 'sqlite',
             'url' => env('DB_URL'),
-            'database' => env('DB_DATABASE', database_path('database.sqlite')),
+            'database' => 'c:\\Users\\Rafael\\Desktop\\DAW\\2DAW\\DWES\\htdocs\\EjerciciosBasicos\\intentosProyecto\\05_Ejemplo\\database\\database.sqlite',
             'prefix' => '',
             'foreign_key_constraints' => env('DB_FOREIGN_KEYS', true),
             'busy_timeout' => null,
