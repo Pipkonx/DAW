@@ -5,7 +5,6 @@ namespace App\Models;
 use App\Models\M_Funciones;
 use PDO;
 use App\DB\DB;
-use Illuminate\Support\Facades\Log;
 
 /**
  * Gestiona operaciones CRUD sobre la tabla `tareas` usando PDO.
@@ -23,15 +22,26 @@ class M_Tareas
     {
         $errores = [];
 
-        $nifCif = $datos['nifCif'] ?? '';
-        $personaNombre = $datos['personaNombre'] ?? '';
+        $nifCif           = $datos['nifCif'] ?? '';
+        $personaNombre    = $datos['personaNombre'] ?? '';
         $descripcionTarea = $datos['descripcionTarea'] ?? '';
-        $correo = $datos['correo'] ?? '';
-        $telefono = $datos['telefono'] ?? '';
-        $codigoPostal = $datos['codigoPostal'] ?? '';
-        $provincia = $datos['provincia'] ?? '';
+        $correo           = $datos['correo'] ?? '';
+        $telefono         = $datos['telefono'] ?? '';
+        $codigoPostal     = $datos['codigoPostal'] ?? '';
+        $provincia        = $datos['provincia'] ?? '';
         $fechaRealizacion = $datos['fechaRealizacion'] ?? '';
 
+        // Helper interno para campos obligatorios
+        $requerido = function($valor, $campo, $mensaje) use (&$errores) {
+            if ($valor === "") $errores[$campo] = $mensaje;
+        };
+
+        // Validaciones obligatorias
+        $requerido($personaNombre, 'nombre_persona', "Debe introducir el nombre de la persona encargada de la tarea");
+        $requerido($descripcionTarea, 'descripcion_tarea', "Debe introducir la descripción de la tarea");
+        $requerido($provincia, 'provincia', "Debe introducir la provincia");
+
+        // NIF/CIF
         if ($nifCif === "") {
             $errores['nif_cif'] = "Debe introducir el NIF/CIF de la persona encargada de la tarea";
         } else {
@@ -39,34 +49,34 @@ class M_Tareas
             if ($resultado !== true) $errores['nif_cif'] = $resultado;
         }
 
-        if ($personaNombre === "") $errores['nombre_persona'] = "Debe introducir el nombre de la persona encargada de la tarea";
-        if ($descripcionTarea === "") $errores['descripcion_tarea'] = "Debe introducir la descripción de la tarea";
-
+        // Correo
         if ($correo === "") {
             $errores['correo'] = "Debe introducir el correo de la persona encargada de la tarea";
         } else if (!filter_var($correo, FILTER_VALIDATE_EMAIL)) {
             $errores['correo'] = "El correo introducido no es válido";
         }
 
-        if ($telefono == "") {
+        // Teléfono
+        if ($telefono === "") {
             $errores['telefono'] = "Debe introducir el teléfono de la persona encargada de la tarea";
         } else {
             $resultado = M_Funciones::telefonoValido($telefono);
             if ($resultado !== true) $errores['telefono'] = $resultado;
         }
 
-        if ($codigoPostal != "" && !preg_match("/^[0-9]{5}$/", $codigoPostal)) {
+        // Código postal
+        if ($codigoPostal !== "" && !preg_match("/^[0-9]{5}$/", $codigoPostal)) {
             $errores['codigo_postal'] = "El código postal introducido no es válido, debe tener 5 números";
         }
 
-        if ($provincia === "") $errores['provincia'] = "Debe introducir la provincia";
-
+        // Fecha
         $fechaActual = date('Y-m-d');
-        if ($fechaRealizacion == "") {
+        if ($fechaRealizacion === "") {
             $errores['fecha_realizacion'] = "Debe introducir la fecha de realización de la tarea";
         } else if ($fechaRealizacion <= $fechaActual) {
             $errores['fecha_realizacion'] = "La fecha de realización debe ser posterior a la fecha actual";
         }
+
         return $errores;
     }
 
@@ -80,9 +90,26 @@ class M_Tareas
         return DB::getInstance();
     }
 
+    /**
+     * Prepara el WHERE reutilizable para listar() y contar()
+     */
+    private function filtrosLista(): string
+    {
+        $q = isset($_GET['q']) ? trim($_GET['q']) : '';
+        $estado = isset($_GET['estado']) ? trim($_GET['estado']) : '';
 
-       //todo PAGINACION
-        // https://es.stackoverflow.com/questions/605864/agregar-paginaci%C3%B3n-php
+        $conditions = [];
+
+        if ($q !== '') {
+            $conditions[] = "(personaNombre LIKE '%$q%' OR descripcionTarea LIKE '%$q%' OR poblacion LIKE '%$q%' OR operarioEncargado LIKE '%$q%')";
+        }
+        if ($estado !== '') {
+            $conditions[] = "estadoTarea = '$estado'";
+        }
+
+        return empty($conditions) ? '' : " WHERE " . implode(' AND ', $conditions);
+    }
+
     /**
      * Lista tareas con paginación básica leyendo `pagina` de la query string.
      *
@@ -91,24 +118,12 @@ class M_Tareas
     public function listar(int $elementosPorPagina, int $paginaActual): array
     {
         $inicio = ($paginaActual - 1) * $elementosPorPagina;
-        $q = isset($_GET['q']) ? trim($_GET['q']) : '';
-        $estado = isset($_GET['estado']) ? trim($_GET['estado']) : '';
 
-        $sql = 'SELECT id, nifCif, personaNombre, telefono, correo, descripcionTarea, direccionTarea, poblacion, codigoPostal, provincia, estadoTarea, operarioEncargado, fechaRealizacion, anotacionesAnteriores, anotacionesPosteriores FROM tareas';
+        $sql = 'SELECT id, nifCif, personaNombre, telefono, correo, descripcionTarea, direccionTarea, poblacion, codigoPostal, provincia, estadoTarea, operarioEncargado, fechaRealizacion, anotacionesAnteriores, anotacionesPosteriores 
+                FROM tareas'
+                . $this->filtrosLista()
+                . " ORDER BY id LIMIT $inicio, $elementosPorPagina";
 
-        $conditions = [];
-        if ($q !== '') {
-            $conditions[] = "(personaNombre LIKE '%$q%' OR descripcionTarea LIKE '%$q%' OR poblacion LIKE '%$q%' OR operarioEncargado LIKE '%$q%')";
-        }
-        if ($estado !== '') {
-            $conditions[] = "estadoTarea = '$estado'";
-        }
-
-        if (!empty($conditions)) {
-            $sql .= " WHERE " . implode(' AND ', $conditions);
-        }
-
-        $sql .= " ORDER BY id LIMIT $inicio, $elementosPorPagina";
         return $this->db()->query($sql)->fetchAll(PDO::FETCH_ASSOC);
     }
 
@@ -119,24 +134,8 @@ class M_Tareas
      */
     public function contar(): int
     {
-        $q = isset($_GET['q']) ? trim((string)$_GET['q']) : '';
-        $estado = isset($_GET['estado']) ? trim((string)$_GET['estado']) : '';
-
-        $sql = 'SELECT COUNT(*) FROM tareas';
-
-        $conditions = [];
-        if ($q !== '') {
-            $conditions[] = "(personaNombre LIKE '%$q%' OR descripcionTarea LIKE '%$q%' OR poblacion LIKE '%$q%' OR operarioEncargado LIKE '%$q%')";
-        }
-        if ($estado !== '') {
-            $conditions[] = "estadoTarea = '$estado'";
-        }
-
-        if (!empty($conditions)) {
-            $sql .= " WHERE " . implode(' AND ', $conditions);
-        }
-
-        return (int) $this->db()->query($sql)->fetchColumn();
+        $sql = 'SELECT COUNT(*) FROM tareas' . $this->filtrosLista();
+        return (int)$this->db()->query($sql)->fetchColumn();
     }
 
     /**
@@ -145,8 +144,6 @@ class M_Tareas
      * @param int $id Identificador de la tarea.
      * @return array|null Datos de la tarea o null si no existe.
      */
-
-    // la ?array es para indicar si puede devolver null
     public function buscar(int $id): ?array
     {
         $sql = 'SELECT id, nifCif, personaNombre, telefono, correo, descripcionTarea, direccionTarea, poblacion, codigoPostal, provincia, estadoTarea, operarioEncargado, fechaRealizacion, anotacionesAnteriores, anotacionesPosteriores FROM tareas WHERE id = ?';
@@ -159,30 +156,20 @@ class M_Tareas
     /**
      * Crea una tarea nueva.
      *
-     * @param array $datos Campos de la tarea (nifCif, personaNombre, telefono, correo, descripcionTarea, direccionTarea, poblacion, codigoPostal, provincia, estadoTarea, operarioEncargado, fechaRealizacion, anotacionesAnteriores, anotacionesPosteriores).
+     * @param array $datos Campos de la tarea.
      * @return int ID autogenerado de la nueva tarea.
      */
     public function crear(array $datos): int
     {
         $d = $this->limpiar($datos);
-        $sql = 'INSERT INTO tareas (nifCif, personaNombre, telefono, correo, descripcionTarea, direccionTarea, poblacion, codigoPostal, provincia, estadoTarea, operarioEncargado, fechaRealizacion, anotacionesAnteriores, anotacionesPosteriores) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)';
+        $sql = 'INSERT INTO tareas (nifCif, personaNombre, telefono, correo, descripcionTarea, direccionTarea, poblacion, codigoPostal, provincia, estadoTarea, operarioEncargado, fechaRealizacion, anotacionesAnteriores, anotacionesPosteriores)
+                VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)';
+
         $st = $this->db()->prepare($sql);
         $st->execute([
-            $d['nifCif'],
-            $d['personaNombre'],
-            $d['telefono'],
-            $d['correo'],
-            $d['descripcionTarea'],
-            $d['direccionTarea'],
-            $d['poblacion'],
-            $d['codigoPostal'],
-            $d['provincia'],
-            $d['estadoTarea'],
-            $d['operarioEncargado'],
-            $d['fechaRealizacion'],
-            $d['anotacionesAnteriores'],
-            $d['anotacionesPosteriores']
+            $d['nifCif'],$d['personaNombre'],$d['telefono'],$d['correo'],$d['descripcionTarea'],$d['direccionTarea'],$d['poblacion'],$d['codigoPostal'],$d['provincia'],$d['estadoTarea'],$d['operarioEncargado'],$d['fechaRealizacion'],$d['anotacionesAnteriores'],$d['anotacionesPosteriores']
         ]);
+
         return (int)$this->db()->lastInsertId();
     }
 
@@ -196,24 +183,13 @@ class M_Tareas
     public function actualizar(int $id, array $datos): bool
     {
         $d = $this->limpiar($datos);
+
         $sql = 'UPDATE tareas SET nifCif=?, personaNombre=?, telefono=?, correo=?, descripcionTarea=?, direccionTarea=?, poblacion=?, codigoPostal=?, provincia=?, estadoTarea=?, operarioEncargado=?, fechaRealizacion=?, anotacionesAnteriores=?, anotacionesPosteriores=? WHERE id=?';
+
         $st = $this->db()->prepare($sql);
+
         return $st->execute([
-            $d['nifCif'],
-            $d['personaNombre'],
-            $d['telefono'],
-            $d['correo'],
-            $d['descripcionTarea'],
-            $d['direccionTarea'],
-            $d['poblacion'],
-            $d['codigoPostal'],
-            $d['provincia'],
-            $d['estadoTarea'],
-            $d['operarioEncargado'],
-            $d['fechaRealizacion'],
-            $d['anotacionesAnteriores'],
-            $d['anotacionesPosteriores'],
-            $id
+            $d['nifCif'],$d['personaNombre'],$d['telefono'],$d['correo'],$d['descripcionTarea'],$d['direccionTarea'],$d['poblacion'],$d['codigoPostal'],$d['provincia'],$d['estadoTarea'],$d['operarioEncargado'],$d['fechaRealizacion'],$d['anotacionesAnteriores'],$d['anotacionesPosteriores'],$id
         ]);
     }
 
@@ -238,21 +214,9 @@ class M_Tareas
     private function limpiar(array $datos): array
     {
         $keys = [
-            'nifCif',
-            'personaNombre',
-            'telefono',
-            'correo',
-            'descripcionTarea',
-            'direccionTarea',
-            'poblacion',
-            'codigoPostal',
-            'provincia',
-            'estadoTarea',
-            'operarioEncargado',
-            'fechaRealizacion',
-            'anotacionesAnteriores',
-            'anotacionesPosteriores'
+            'nifCif','personaNombre','telefono','correo','descripcionTarea','direccionTarea','poblacion','codigoPostal','provincia','estadoTarea','operarioEncargado','fechaRealizacion','anotacionesAnteriores','anotacionesPosteriores'
         ];
+
         $out = [];
         foreach ($keys as $k) {
             $out[$k] = isset($datos[$k]) ? trim((string)$datos[$k]) : '';
@@ -268,10 +232,12 @@ class M_Tareas
      */
     public function actualizarOperario(int $id, array $datos): bool
     {
-        $estado = trim((string)($datos['estadoTarea'] ?? ''));
+        $estado   = trim((string)($datos['estadoTarea'] ?? ''));
         $anotPost = trim((string)($datos['anotacionesPosteriores'] ?? ''));
+
         $sql = 'UPDATE tareas SET estadoTarea = ?, anotacionesPosteriores = ? WHERE id = ?';
         $st = $this->db()->prepare($sql);
+
         return $st->execute([$estado, $anotPost, $id]);
     }
 }
