@@ -24,9 +24,6 @@ Route::get('/operario/tareas/editar', [C_Operario::class, 'editar']);
 Route::post('/operario/tareas/editar', [C_Operario::class, 'actualizar'])->name('operario.tareas.actualizar');
 Route::post('/operario/tareas/eliminar-fichero', [C_Operario::class, 'eliminarFichero'])->name('operario.tareas.eliminarFichero');
 
-Route::get('/operario/perfil/editar', [C_Operario::class, 'editarPerfilOperario']);
-Route::post('/operario/perfil/actualizar', [C_Operario::class, 'actualizarPerfilOperario'])->name('operario.perfil.actualizar');
-
 // Autenticación simple con contraseña plana, sesión y cookie para recordar la clave.
 Route::any('/login', [C_Auth::class, 'login']);
 Route::any('/logout', [C_Auth::class, 'logout']);

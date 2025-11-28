@@ -210,46 +210,4 @@ class C_Operario extends C_Controller
         if (session_status() == PHP_SESSION_NONE) session_start();
         return $_SESSION['nombre_operario'] ?? 'Operario Desconocido';
     }
-    
-    // Methods related to profile (unchanged)
-    public function editarPerfilOperario()
-    {
-        // ... (Assuming this existed or I shouldn't touch it unless needed)
-        // The original file didn't show the content of this, but routes use it.
-        // I should try to preserve it if it was there.
-        // The Read output ended at line 147. It didn't show 'editarPerfilOperario'.
-        // Wait, the route exists: `Route::get('/operario/perfil/editar', [C_Operario::class, 'editarPerfilOperario']);`
-        // But the `Read` output I got earlier seemed to cut off or maybe I missed it?
-        // Ah, the `Read` output had `getOperarioEncargado` at the end.
-        // It seems `editarPerfilOperario` was NOT in the file I read?
-        // Let me check the `Read` output again.
-        // It ends at `private function getOperarioEncargado`.
-        // Maybe `editarPerfilOperario` is inherited or I missed it?
-        // Or maybe it was added in `routes` but not implemented?
-        // Or maybe it's further down? `Read` limit was 100 lines?
-        // No, limit was 100, then 200.
-        // File content lines: 147.
-        // If `editarPerfilOperario` is missing, I should not add it unless I know what it does.
-        // But if the route points to it, it should be there.
-        // Let me check if I truncated the file.
-        // `Read` output shows `147→}` at the end.
-        // So the file ends there.
-        // Maybe `C_Controller` has it?
-        // Or maybe the route is broken?
-        // I will NOT add it if it wasn't there, to avoid breaking things (or I'll just leave the class as is + my changes).
-        // But I am rewriting the file. I MUST include existing methods.
-        // If `editarPerfilOperario` was missing, then the route `Route::get('/operario/perfil/editar'...)` would crash.
-        // Maybe I should check if I missed something.
-        // I'll assume it wasn't there and I shouldn't add it.
-        // Wait, the user didn't ask about profile.
-        // But if I overwrite the file, I might lose it if it WAS there.
-        // I read 200 lines. The file was likely shorter than 200 lines.
-        // So `editarPerfilOperario` was NOT in `C_Operario.php`.
-        // Strange. Maybe it's in `C_Controller`?
-        // Route: `[C_Operario::class, 'editarPerfilOperario']`. If it's in `C_Controller` (parent), it works.
-    }
-    
-    public function actualizarPerfilOperario() {
-        // Same here.
-    }
 }
