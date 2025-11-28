@@ -1,6 +1,11 @@
 <div class="form-container">
     <form action="{{ $formActionUrl }}" method="POST" enctype="multipart/form-data">
         @csrf
+        @php
+            $isAdmin = (($_SESSION['rol'] ?? '') === 'admin');
+            $isEdit = isset($id);
+            $disableOperatorFields = $isAdmin && $isEdit;
+        @endphp
         <label>NIF/CIF:</label><br>
         <input type="text" name="nifCif" value="{{ htmlspecialchars($_POST['nifCif'] ?? ($nifCif ?? '')) }}"><br>
         @if($msg = \App\Models\M_Funciones::getError('nif_cif'))
@@ -74,13 +79,16 @@
         <br>
 
         <label>Estado:</label>
-        <span class="radio-group-item"><input type="radio" id="estadoB" name="estadoTarea" value="B" {{ (($_POST['estadoTarea'] ?? ($estadoTarea ?? '')) == "B") ? "checked" : "" }}> <label
+        @if($disableOperatorFields)
+             <input type="hidden" name="estadoTarea" value="{{ $_POST['estadoTarea'] ?? ($estadoTarea ?? '') }}">
+        @endif
+        <span class="radio-group-item"><input type="radio" id="estadoB" name="estadoTarea" value="B" {{ (($_POST['estadoTarea'] ?? ($estadoTarea ?? '')) == "B") ? "checked" : "" }} {{ $disableOperatorFields ? 'disabled' : '' }}> <label
                 for="estadoB">Esperando ser aprobada</label></span>
-        <span class="radio-group-item"><input type="radio" id="estadoP" name="estadoTarea" value="P" {{ (($_POST['estadoTarea'] ?? ($estadoTarea ?? '')) == "P") ? "checked" : "" }}> <label
+        <span class="radio-group-item"><input type="radio" id="estadoP" name="estadoTarea" value="P" {{ (($_POST['estadoTarea'] ?? ($estadoTarea ?? '')) == "P") ? "checked" : "" }} {{ $disableOperatorFields ? 'disabled' : '' }}> <label
                 for="estadoP">Pendiente</label></span>
-        <span class="radio-group-item"><input type="radio" id="estadoR" name="estadoTarea" value="R" {{ (($_POST['estadoTarea'] ?? ($estadoTarea ?? '')) == "R") ? "checked" : "" }}> <label
+        <span class="radio-group-item"><input type="radio" id="estadoR" name="estadoTarea" value="R" {{ (($_POST['estadoTarea'] ?? ($estadoTarea ?? '')) == "R") ? "checked" : "" }} {{ $disableOperatorFields ? 'disabled' : '' }}> <label
                 for="estadoR">Realizada</label></span>
-        <span class="radio-group-item"><input type="radio" id="estadoC" name="estadoTarea" value="C" {{ (($_POST['estadoTarea'] ?? ($estadoTarea ?? '')) == "C") ? "checked" : "" }}> <label
+        <span class="radio-group-item"><input type="radio" id="estadoC" name="estadoTarea" value="C" {{ (($_POST['estadoTarea'] ?? ($estadoTarea ?? '')) == "C") ? "checked" : "" }} {{ $disableOperatorFields ? 'disabled' : '' }}> <label
                 for="estadoC">Cancelada</label></span>
 
         <label>Operario encargado:</label><br>
@@ -100,7 +108,10 @@
 
         <label>Fecha de realización:</label><br>
         <input type="date" name="fechaRealizacion"
-            value="{{ htmlspecialchars($_POST['fechaRealizacion'] ?? ($fechaRealizacion ?? '')) }}"><br>
+            value="{{ htmlspecialchars($_POST['fechaRealizacion'] ?? ($fechaRealizacion ?? '')) }}" {{ $disableOperatorFields ? 'disabled' : '' }}><br>
+        @if($disableOperatorFields)
+             <input type="hidden" name="fechaRealizacion" value="{{ $_POST['fechaRealizacion'] ?? ($fechaRealizacion ?? '') }}">
+        @endif
         @if($msg = \App\Models\M_Funciones::getError('fecha_realizacion'))
             <div class="error">{{ $msg }}</div>
         @endif
@@ -110,12 +121,31 @@
 
         <label for="anotacionesAnteriores">Anotaciones anteriores:</label><br>
         <textarea id="anotacionesAnteriores"
-            name="anotacionesAnteriores">{{ htmlspecialchars($_POST['anotacionesAnteriores'] ?? ($anotacionesAnteriores ?? '')) }}</textarea><br><br>
+            name="anotacionesAnteriores" readonly>{{ htmlspecialchars($_POST['anotacionesAnteriores'] ?? ($anotacionesAnteriores ?? '')) }}</textarea><br><br>
+
+        <label for="anotacionesPosteriores">Anotaciones posteriores:</label><br>
+        <textarea id="anotacionesPosteriores"
+            name="anotacionesPosteriores" {{ $disableOperatorFields ? 'readonly' : '' }}>{{ htmlspecialchars($_POST['anotacionesPosteriores'] ?? ($anotacionesPosteriores ?? '')) }}</textarea><br><br>
 
         <label for="fichero_resumen">Fichero resumen:</label>
-        <input type="file" id="fichero_resumen" name="fichero_resumen"><br><br>
+        @if(!empty($ficherosResumen))
+            <div class="file-item">
+                <a href="{{ dirname($_SERVER['SCRIPT_NAME']) }}/evidencias/{{ $id }}/{{ $ficherosResumen[0] }}" target="_blank">{{ $ficherosResumen[0] }}</a>
+                <button type="submit" form="form-delete-resumen-admin" class="btn-danger" style="font-size: 0.8em; padding: 2px 5px;">Eliminar</button>
+            </div>
+        @else
+            <input type="file" id="fichero_resumen" name="fichero_resumen"><br><br>
+        @endif
 
         <label for="fotos">Fotos del trabajo:</label>
+        @if(!empty($fotos))
+            @foreach($fotos as $foto)
+                <div class="file-item">
+                    <a href="{{ dirname($_SERVER['SCRIPT_NAME']) }}/evidencias/{{ $id }}/{{ $foto }}" target="_blank">{{ $foto }}</a>
+                    <button type="submit" form="form-delete-foto-admin-{{ md5($foto) }}" class="btn-danger" style="font-size: 0.8em; padding: 2px 5px;">Eliminar</button>
+                </div>
+            @endforeach
+        @endif
         <input type="file" id="fotos" name="fotos[]" multiple><br><br>
 
         @if(isset($id))<input type="hidden" name="id" value="{{ $id }}">@endif
@@ -125,3 +155,20 @@
         <a class="btn btn-cancel" href="{{ url($rutaBase) }}">Cancelar</a>
         <input type="submit" value="{{ isset($id) ? 'Guardar cambios' : 'Crear tarea' }}">
     </form>
+    
+    @if(isset($id) && !empty($ficherosResumen))
+         <form id="form-delete-resumen-admin" action="{{ route('admin.tareas.eliminarFichero') }}" method="POST" style="display:none;">
+             @csrf
+             <input type="hidden" name="id" value="{{ $id }}">
+             <input type="hidden" name="filename" value="{{ $ficherosResumen[0] }}">
+         </form>
+    @endif
+    @if(isset($id) && !empty($fotos))
+        @foreach($fotos as $foto)
+            <form id="form-delete-foto-admin-{{ md5($foto) }}" action="{{ route('admin.tareas.eliminarFichero') }}" method="POST" style="display:none;">
+                @csrf
+                <input type="hidden" name="id" value="{{ $id }}">
+                <input type="hidden" name="filename" value="{{ $foto }}">
+            </form>
+        @endforeach
+    @endif

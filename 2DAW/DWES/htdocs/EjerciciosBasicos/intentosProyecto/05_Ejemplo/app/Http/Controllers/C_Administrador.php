@@ -66,7 +66,7 @@ class C_Administrador extends C_Controller
             'poblacion' => '',
             'codigoPostal' => '',
             'provincia' => '',
-            'estadoTarea' => '',
+            'estadoTarea' => 'R', // Default to Realizada (Completed)
             'operarioEncargado' => '',
             'fechaRealizacion' => '',
             'anotacionesAnteriores' => '',
@@ -174,6 +174,14 @@ class C_Administrador extends C_Controller
         $datos['id'] = (int)$id;
         $datos['formActionUrl'] = dirname($_SERVER['SCRIPT_NAME']) . '/admin/tareas/editar?id=' . $id; // Ruta para el POST de edición
 
+        // Escanear ficheros
+        $base = __DIR__ . '/../../../public/evidencias/' . $id;
+        $ficherosResumen = glob($base . '/resumen_*');
+        $fotos = glob($base . '/foto_*');
+        
+        $datos['ficherosResumen'] = array_map('basename', $ficherosResumen ?: []);
+        $datos['fotos'] = array_map('basename', $fotos ?: []);
+
         return view('tareas.alta_edicion', $datos);
     }
 
@@ -197,16 +205,54 @@ class C_Administrador extends C_Controller
             $_POST['id'] = $id;
         }
 
+        // Manejo de historial de notas: Si se añade una nota posterior, pasa a anterior
+        // y la posterior queda vacía.
+        if (!empty($_POST['anotacionesPosteriores'])) {
+             $_POST['anotacionesAnteriores'] = $_POST['anotacionesPosteriores'];
+             $_POST['anotacionesPosteriores'] = '';
+        }
+
         $this->filtrar();
         if (!empty(M_Funciones::$errores)) {
             $datos = $_POST;
             $datos['id'] = (int)$id;
             $datos['formActionUrl'] = dirname($_SERVER['SCRIPT_NAME']) . '/admin/tareas/editar?id=' . $id;
+            
+            // Re-escanear ficheros para la vista en caso de error
+            $base = __DIR__ . '/../../../public/evidencias/' . $id;
+            $ficherosResumen = glob($base . '/resumen_*');
+            $fotos = glob($base . '/foto_*');
+            $datos['ficherosResumen'] = array_map('basename', $ficherosResumen ?: []);
+            $datos['fotos'] = array_map('basename', $fotos ?: []);
+
             return view('tareas.alta_edicion', $datos);
         }
 
         $modelo = new M_Tareas();
         $modelo->actualizar((int)$id, $_POST); // Usar el método actualizar del modelo Tareas
+
+        // Guardar evidencias
+        $base = __DIR__ . '/../../../public/evidencias/' . $id;
+        if (!is_dir($base)) @mkdir($base, 0777, true);
+
+        // Gestionar Resumen (Solo 1 permitido)
+        $existingResumen = glob($base . '/resumen_*');
+        if (!empty($_FILES['fichero_resumen']['tmp_name'])) {
+            // Si existe uno, borrarlo para asegurar límite de 1 fichero
+            if ($existingResumen) {
+                foreach ($existingResumen as $f) unlink($f);
+            }
+            @move_uploaded_file($_FILES['fichero_resumen']['tmp_name'], $base . '/resumen_' . time() . '_' . basename($_FILES['fichero_resumen']['name']));
+        }
+
+        if (!empty($_FILES['fotos']['tmp_name'])) {
+            foreach ((array)$_FILES['fotos']['tmp_name'] as $i => $tmp) {
+                if (is_uploaded_file($tmp)) {
+                    @move_uploaded_file($tmp, $base . '/foto_' . time() . '_' . basename($_FILES['fotos']['name'][$i]));
+                }
+            }
+        }
+
         $mensaje = 'Tarea actualizada correctamente';
 
         // Recargar la lista de tareas para la vista
@@ -251,6 +297,29 @@ class C_Administrador extends C_Controller
 
         $datos = ['mensaje' => $mensaje, 'tareas' => $tareas, 'paginaActual' => $paginaActual, 'totalPaginas' => $totalPaginas];
         return view('tareas.lista', $datos);
+    }
+    
+    /**
+     * Elimina un fichero asociado a una tarea.
+     */
+    public function eliminarFichero() {
+        if (session_status() == PHP_SESSION_NONE) session_start();
+        if (($_SESSION['rol'] ?? '') !== 'admin') {
+            return view('autenticacion/login', ['errorGeneral' => 'Acceso restringido a administradores']);
+        }
+        
+        $id = (int)($_POST['id'] ?? 0);
+        $filename = $_POST['filename'] ?? '';
+        
+        if ($id && $filename) {
+            $base = __DIR__ . '/../../../public/evidencias/' . $id;
+            $filepath = $base . '/' . basename($filename); 
+            if (file_exists($filepath)) {
+                unlink($filepath);
+            }
+        }
+        // Redirigir de vuelta a la edición
+        header('Location: ' . dirname($_SERVER['SCRIPT_NAME']) . '/admin/tareas/editar?id=' . $id); exit;
     }
 
     /**

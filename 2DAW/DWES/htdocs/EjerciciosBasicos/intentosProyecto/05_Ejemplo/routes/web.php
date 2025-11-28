@@ -17,10 +17,12 @@ Route::post('/admin/tareas/editar', [C_Administrador::class, 'actualizar'])->nam
 Route::get('/admin/tareas/detalle', [C_Administrador::class, 'mostrar']);
 Route::get('/admin/tareas/confirmarEliminar', [C_Administrador::class, 'confirmarEliminacion']);
 Route::post('/admin/tareas/eliminar', [C_Administrador::class, 'eliminar']);
+Route::post('/admin/tareas/eliminar-fichero', [C_Administrador::class, 'eliminarFichero'])->name('admin.tareas.eliminarFichero');
 Route::any('/operario/tareas', [C_Operario::class, 'listar']);
 Route::get('/operario/tareas/detalle', [C_Operario::class, 'mostrar']);
 Route::get('/operario/tareas/editar', [C_Operario::class, 'editar']);
 Route::post('/operario/tareas/editar', [C_Operario::class, 'actualizar'])->name('operario.tareas.actualizar');
+Route::post('/operario/tareas/eliminar-fichero', [C_Operario::class, 'eliminarFichero'])->name('operario.tareas.eliminarFichero');
 
 Route::get('/operario/perfil/editar', [C_Operario::class, 'editarPerfilOperario']);
 Route::post('/operario/perfil/actualizar', [C_Operario::class, 'actualizarPerfilOperario'])->name('operario.perfil.actualizar');
