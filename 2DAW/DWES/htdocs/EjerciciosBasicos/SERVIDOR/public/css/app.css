@@ -1,0 +1,255 @@
+/* General Body Styles */
+body {
+    font-family: sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+    color: #333;
+}
+
+/* Container for main content */
+.container {
+    max-width: 960px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Navigation Bar */
+.nav {
+    background-color: #333;
+    color: #fff;
+    padding: 10px 20px;
+    display: flex;
+    justify-content: flex-start;
+    gap: 20px;
+}
+
+.nav a {
+    color: #fff;
+    text-decoration: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+}
+
+.nav a:hover {
+    background-color: #555;
+}
+
+/* Buttons */
+.btn {
+    display: inline-block;
+    padding: 8px 15px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    text-decoration: none;
+    font-size: 14px;
+    margin-right: 5px;
+}
+
+.btn:hover {
+    background-color: #0056b3;
+}
+
+/* Small Buttons */
+.btn-sm {
+    padding: 5px 10px;
+    font-size: 12px;
+}
+
+/* Danger Button */
+.btn.danger {
+    background-color: #dc3545;
+}
+
+.btn.danger:hover {
+    background-color: #c82333;
+}
+
+/* Cancel Button */
+.btn-cancel {
+    background-color: #6c757d; /* A neutral grey for cancel buttons */
+}
+
+.btn-cancel:hover {
+    background-color: #5a6268;
+}
+
+/* Forms */
+form.inline {
+    display: inline-block;
+    margin-bottom: 0;
+}
+
+.filter-form input[type="text"],
+.filter-form select,
+.filter-form button {
+    margin-right: 5px;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+/* Specific input widths */
+input[name="q"] {
+    width: 250px; /* Migrated from inline style */
+}
+
+input[name="pagina"] {
+    width: 70px; /* Migrated from inline style */
+}
+
+/* Table Styles */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+table th,
+table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+table th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+
+/* Messages and Alerts */
+.alert {
+    padding: 10px;
+    border-radius: 4px;
+    margin-bottom: 15px;
+    border: 1px solid transparent;
+}
+
+.alert.success {
+    color: #155724;
+    background-color: #d4edda;
+    border-color: #c3e6cb;
+}
+
+.alert.error {
+    color: #721c24;
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+}
+
+/* Actions Container */
+.actions-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.left-actions, .right-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Pagination */
+.pagination, .pagination-nav {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.pagination a, .pagination-nav a {
+    display: inline-block;
+    padding: 8px 12px;
+    margin: 0 4px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    text-decoration: none;
+    color: #007bff;
+}
+
+.pagination a:hover, .pagination-nav a:hover {
+    background-color: #f2f2f2;
+}
+
+.pagination a.active, .pagination-nav a.active {
+    background-color: #007bff;
+    color: white;
+    border-color: #007bff;
+}
+
+/* Login Page Specific Styles */
+body.login-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #e9ecef;
+}
+
+body.login-page .container {
+    max-width: 400px;
+    padding: 40px;
+    text-align: center;
+}
+
+/* Form Row */
+.fila-formulario {
+    margin-bottom: 15px;
+}
+
+.fila-formulario label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.fila-formulario input[type="text"],
+.fila-formulario input[type="password"] {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box; /* Ensures padding doesn't increase width */
+}
+
+/* Form Actions */
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+}
+
+.form-actions .btn {
+    margin-left: 10px;
+}
+
+/* Footer */
+footer {
+    text-align: center;
+    padding: 20px;
+    margin-top: 30px;
+    background-color: #eee;
+    color: #666;
+    border-top: 1px solid #ddd;
+}
+
+/* Logout Form */
+.logout-form {
+    display: inline-block;
+    margin-left: auto; /* Pushes the logout button to the right */
+}
+
+.logout-form button {
+    background-color: #dc3545;
+}
+
+.logout-form button:hover {
+    background-color: #c82333;
+}

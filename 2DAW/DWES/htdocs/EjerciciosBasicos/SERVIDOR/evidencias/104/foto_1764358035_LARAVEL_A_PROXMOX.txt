@@ -1,0 +1,1982 @@
+ssh rafa@10.243.162.62
+rafa@10.243.162.62's password: 
+Welcome to Ubuntu 24.04.3 LTS (GNU/Linux 6.14.0-33-generic x86_64)
+
+ * Documentation:  https://help.ubuntu.com
+ * Management:     https://landscape.canonical.com
+ * Support:        https://ubuntu.com/pro
+
+El mantenimiento de seguridad expandido para Applications está desactivado
+
+Se pueden aplicar 0 actualizaciones de forma inmediata.
+
+13 actualizaciones de seguridad adicionales se pueden aplicar con ESM Apps.
+Aprenda más sobre cómo activar el servicio ESM Apps at https://ubuntu.com/esm
+
+*** Es necesario reiniciar el sistema ***
+Last login: Fri Nov 28 15:06:55 2025 from 10.243.40.190
+rafa@rafa:~$ ssh usuario@10.4.1.56
+usuario@10.4.1.56's password: 
+Welcome to Ubuntu 25.10 (GNU/Linux 6.17.0-7-generic x86_64)
+
+ * Documentation:  https://docs.ubuntu.com
+ * Management:     https://landscape.canonical.com
+ * Support:        https://ubuntu.com/pro
+
+Se pueden aplicar 40 actualizaciones de forma inmediata.
+Para ver estas actualizaciones adicionales, ejecute: apt list --upgradable
+
+Last login: Fri Nov 28 15:28:08 2025 from 10.4.0.84
+usuario@usuario:~$ ls
+Descargas  Documentos  Escritorio  Imágenes  Música  Plantillas  Público  Vídeos  snap
+usuario@usuario:~$ cd -
+-bash: cd: OLDPWD no está establecido
+usuario@usuario:~$ cd /
+usuario@usuario:/$ sudo apt update && sudo apt upgrade -y
+[sudo: authenticate] Password: 
+Obj:1 http://es.archive.ubuntu.com/ubuntu questing InRelease
+Obj:2 http://es.archive.ubuntu.com/ubuntu questing-updates InRelease
+Obj:3 http://es.archive.ubuntu.com/ubuntu questing-backports InRelease
+Obj:4 http://security.ubuntu.com/ubuntu questing-security InRelease
+Se pueden actualizar 40 paquetes. Ejecute «apt list --upgradable» para verlos.
+Los paquetes indicados a continuación se instalaron de forma automática y ya no son necesarios.
+  linux-headers-6.17.0-5          linux-modules-6.17.0-5-generic  linux-tools-6.17.0-5-generic
+  linux-headers-6.17.0-5-generic  linux-tools-6.17.0-5
+Utilice «sudo apt autoremove» para eliminarlos.
+
+Upgrading:
+  apparmor                   libdrm-common           mutter-common-bin
+  bpftool                    libdrm-intel1           network-manager
+  dpkg                       libdrm2                 network-manager-config-connectivity-ubuntu
+  gir1.2-mutter-17           libjxl-gdk-pixbuf       packagekit
+  gir1.2-nm-1.0              libjxl0.11              packagekit-tools
+  gir1.2-packagekitglib-1.0  libmutter-17-0          papers
+  gnome-remote-desktop       libnm0                  papers-common
+  gnome-user-docs            libpackagekit-glib2-18  snapd
+  gnome-user-docs-es         libppsdocument-4.0-5    ubuntu-docs
+  gstreamer1.0-packagekit    libppsview-4.0-4        ubuntu-drivers-common
+  initramfs-tools-bin        linux-libc-dev          ubuntu-pro-client
+  initramfs-tools-core       linux-perf              ubuntu-pro-client-l10n
+  libapparmor1               linux-tools-common
+  libdrm-amdgpu1             mutter-common
+
+Summary:
+  Upgrading: 40, Installing: 0, Removing: 0, Not Upgrading: 0
+  Download size: 61,0 MB
+  Freed space: 575 kB
+
+Des:1 http://es.archive.ubuntu.com/ubuntu questing-updates/main amd64 dpkg amd64 1.22.21ubuntu3.1 [1.297 kB]
+Des:2 http://es.archive.ubuntu.com/ubuntu questing-updates/main amd64 libapparmor1 amd64 5.0.0~alpha1-0ubuntu8.1 [57,5 kB]
+Des:3 http://es.archive.ubuntu.com/ubuntu questing-updates/main amd64 ubuntu-pro-client-l10n amd64 37.1ubuntu0~25.10 [19,8 kB]
+Des:4 http://es.archive.ubuntu.com/ubuntu questing-updates/main amd64 ubuntu-pro-client amd64 37.1ubuntu0~25.10 [259 kB]
+Des:5 http://es.archive.ubuntu.com/ubuntu questing-updates/main amd64 apparmor amd64 5.0.0~alpha1-0ubuntu8.1 [711 kB]
+Des:6 http://es.archive.ubuntu.com/ubuntu questing-updates/main amd64 libdrm-common all 2.4.125-1ubuntu0.1 [9.082 B]
+Des:7 http://es.archive.ubuntu.com/ubuntu questing-updates/main amd64 libdrm2 amd64 2.4.125-1ubuntu0.1 [41,5 kB]
+Des:8 http://es.archive.ubuntu.com/ubuntu questing-updates/main amd64 bpftool amd64 7.7.0+6.17.0-7.7 [1.209 kB]
+Des:9 http://es.archive.ubuntu.com/ubuntu questing-updates/main amd64 mutter-common all 49.0-2ubuntu5.2 [61,1 kB]
+Des:10 http://es.archive.ubuntu.com/ubuntu questing-updates/main amd64 gir1.2-mutter-17 amd64 49.0-2ubuntu5.2 [130 kB]
+Des:11 http://es.archive.ubuntu.com/ubuntu questing-updates/main amd64 libmutter-17-0 amd64 49.0-2ubuntu5.2 [1.455 kB]
+Des:12 http://es.archive.ubuntu.com/ubuntu questing-updates/main amd64 mutter-common-bin amd64 49.0-2ubuntu5.2 [76,7 kB]
+Des:13 http://es.archive.ubuntu.com/ubuntu questing-updates/main amd64 network-manager amd64 1.52.0-1ubuntu3.1 [2.426 kB]
+Des:14 http://es.archive.ubuntu.com/ubuntu questing-updates/main amd64 libnm0 amd64 1.52.0-1ubuntu3.1 [496 kB]
+Des:15 http://es.archive.ubuntu.com/ubuntu questing-updates/main amd64 gir1.2-nm-1.0 amd64 1.52.0-1ubuntu3.1 [89,0 kB]
+Des:16 http://es.archive.ubuntu.com/ubuntu questing-updates/main amd64 libpackagekit-glib2-18 amd64 1.3.1-1ubuntu1 [120 kB]
+Des:17 http://es.archive.ubuntu.com/ubuntu questing-updates/main amd64 gir1.2-packagekitglib-1.0 amd64 1.3.1-1ubuntu1 [25,5 kB]
+Des:18 http://es.archive.ubuntu.com/ubuntu questing-updates/main amd64 gnome-remote-desktop amd64 49.0-0ubuntu1.1 [292 kB]
+Des:19 http://es.archive.ubuntu.com/ubuntu questing-updates/main amd64 gnome-user-docs-es all 49.1-1ubuntu0.1 [391 kB]
+Des:20 http://es.archive.ubuntu.com/ubuntu questing-updates/main amd64 ubuntu-docs all 25.10.0.1 [220 kB]
+Des:21 http://es.archive.ubuntu.com/ubuntu questing-updates/main amd64 gnome-user-docs all 49.1-1ubuntu0.1 [1.842 kB]
+Des:22 http://es.archive.ubuntu.com/ubuntu questing-updates/main amd64 packagekit-tools amd64 1.3.1-1ubuntu1 [28,6 kB]
+Des:23 http://es.archive.ubuntu.com/ubuntu questing-updates/main amd64 gstreamer1.0-packagekit amd64 1.3.1-1ubuntu1 [9.322 B]
+Des:24 http://es.archive.ubuntu.com/ubuntu questing-updates/main amd64 packagekit amd64 1.3.1-1ubuntu1 [467 kB]
+Des:25 http://es.archive.ubuntu.com/ubuntu questing-updates/main amd64 initramfs-tools-bin amd64 0.150ubuntu3.1 [33,1 kB]
+Des:26 http://es.archive.ubuntu.com/ubuntu questing-updates/main amd64 initramfs-tools-core all 0.150ubuntu3.1 [50,7 kB]
+Des:27 http://es.archive.ubuntu.com/ubuntu questing-updates/main amd64 libdrm-amdgpu1 amd64 2.4.125-1ubuntu0.1 [21,9 kB]
+Des:28 http://es.archive.ubuntu.com/ubuntu questing-updates/main amd64 libdrm-intel1 amd64 2.4.125-1ubuntu0.1 [66,2 kB]
+Des:29 http://es.archive.ubuntu.com/ubuntu questing-updates/main amd64 libjxl0.11 amd64 0.11.1-6ubuntu1 [1.122 kB]
+Des:30 http://es.archive.ubuntu.com/ubuntu questing-updates/main amd64 libjxl-gdk-pixbuf amd64 0.11.1-6ubuntu1 [10,0 kB]
+Des:31 http://es.archive.ubuntu.com/ubuntu questing-updates/main amd64 papers amd64 48.0-1ubuntu1.25.10.1 [2.247 kB]
+Des:32 http://es.archive.ubuntu.com/ubuntu questing-updates/main amd64 libppsview-4.0-4 amd64 48.0-1ubuntu1.25.10.1 [150 kB]
+Des:33 http://es.archive.ubuntu.com/ubuntu questing-updates/main amd64 papers-common all 48.0-1ubuntu1.25.10.1 [115 kB]
+Des:34 http://es.archive.ubuntu.com/ubuntu questing-updates/main amd64 libppsdocument-4.0-5 amd64 48.0-1ubuntu1.25.10.1 [158 kB]
+Des:35 http://es.archive.ubuntu.com/ubuntu questing-updates/main amd64 linux-libc-dev amd64 6.17.0-7.7 [1.814 kB]
+Des:36 http://es.archive.ubuntu.com/ubuntu questing-updates/main amd64 linux-perf amd64 6.17.0-7.7 [4.417 kB]
+Des:37 http://es.archive.ubuntu.com/ubuntu questing-updates/main amd64 linux-tools-common all 6.17.0-7.7 [344 kB]
+Des:38 http://es.archive.ubuntu.com/ubuntu questing-updates/main amd64 network-manager-config-connectivity-ubuntu all 1.52.0-1ubuntu3.1 [2.246 B]
+Des:39 http://es.archive.ubuntu.com/ubuntu questing-updates/main amd64 snapd amd64 2.72+ubuntu25.10.2 [38,6 MB]
+Des:40 http://es.archive.ubuntu.com/ubuntu questing-updates/main amd64 ubuntu-drivers-common amd64 1:0.10.3.1 [63,1 kB]
+Descargados 61,0 MB en 5s (13,1 MB/s)             
+Extrayendo plantillas para los paquetes: 100%
+Preconfigurando paquetes ...
+(Leyendo la base de datos ... 185339 ficheros o directorios instalados actualmente.)
+Preparando para desempaquetar .../dpkg_1.22.21ubuntu3.1_amd64.deb ...
+Desempaquetando dpkg (1.22.21ubuntu3.1) sobre (1.22.21ubuntu3) ...
+Configurando dpkg (1.22.21ubuntu3.1) ...
+(Leyendo la base de datos ... 185339 ficheros o directorios instalados actualmente.)
+Preparando para desempaquetar .../00-libapparmor1_5.0.0~alpha1-0ubuntu8.1_amd64.deb ...
+Desempaquetando libapparmor1:amd64 (5.0.0~alpha1-0ubuntu8.1) sobre (5.0.0~alpha1-0ubuntu8) ...
+Preparando para desempaquetar .../01-ubuntu-pro-client-l10n_37.1ubuntu0~25.10_amd64.deb ...
+Desempaquetando ubuntu-pro-client-l10n (37.1ubuntu0~25.10) sobre (37ubuntu0) ...
+Preparando para desempaquetar .../02-ubuntu-pro-client_37.1ubuntu0~25.10_amd64.deb ...
+Desempaquetando ubuntu-pro-client (37.1ubuntu0~25.10) sobre (37ubuntu0) ...
+Preparando para desempaquetar .../03-apparmor_5.0.0~alpha1-0ubuntu8.1_amd64.deb ...
+Desempaquetando apparmor (5.0.0~alpha1-0ubuntu8.1) sobre (5.0.0~alpha1-0ubuntu8) ...
+Preparando para desempaquetar .../04-libdrm-common_2.4.125-1ubuntu0.1_all.deb ...
+Desempaquetando libdrm-common (2.4.125-1ubuntu0.1) sobre (2.4.125-1) ...
+Preparando para desempaquetar .../05-libdrm2_2.4.125-1ubuntu0.1_amd64.deb ...
+Desempaquetando libdrm2:amd64 (2.4.125-1ubuntu0.1) sobre (2.4.125-1) ...
+Preparando para desempaquetar .../06-bpftool_7.7.0+6.17.0-7.7_amd64.deb ...
+Desempaquetando bpftool (7.7.0+6.17.0-7.7) sobre (7.7.0+6.17.0-6.6) ...
+Preparando para desempaquetar .../07-mutter-common_49.0-2ubuntu5.2_all.deb ...
+Desempaquetando mutter-common (49.0-2ubuntu5.2) sobre (49.0-2ubuntu5) ...
+Preparando para desempaquetar .../08-gir1.2-mutter-17_49.0-2ubuntu5.2_amd64.deb ...
+Desempaquetando gir1.2-mutter-17:amd64 (49.0-2ubuntu5.2) sobre (49.0-2ubuntu5) ...
+Preparando para desempaquetar .../09-libmutter-17-0_49.0-2ubuntu5.2_amd64.deb ...
+Desempaquetando libmutter-17-0:amd64 (49.0-2ubuntu5.2) sobre (49.0-2ubuntu5) ...
+Preparando para desempaquetar .../10-mutter-common-bin_49.0-2ubuntu5.2_amd64.deb ...
+Desempaquetando mutter-common-bin (49.0-2ubuntu5.2) sobre (49.0-2ubuntu5) ...
+Preparando para desempaquetar .../11-network-manager_1.52.0-1ubuntu3.1_amd64.deb ...
+Desempaquetando network-manager (1.52.0-1ubuntu3.1) sobre (1.52.0-1ubuntu3) ...
+Preparando para desempaquetar .../12-libnm0_1.52.0-1ubuntu3.1_amd64.deb ...
+Desempaquetando libnm0:amd64 (1.52.0-1ubuntu3.1) sobre (1.52.0-1ubuntu3) ...
+Preparando para desempaquetar .../13-gir1.2-nm-1.0_1.52.0-1ubuntu3.1_amd64.deb ...
+Desempaquetando gir1.2-nm-1.0:amd64 (1.52.0-1ubuntu3.1) sobre (1.52.0-1ubuntu3) ...
+Preparando para desempaquetar .../14-libpackagekit-glib2-18_1.3.1-1ubuntu1_amd64.deb ...
+Desempaquetando libpackagekit-glib2-18:amd64 (1.3.1-1ubuntu1) sobre (1.3.1-1) ...
+Preparando para desempaquetar .../15-gir1.2-packagekitglib-1.0_1.3.1-1ubuntu1_amd64.deb ...
+Desempaquetando gir1.2-packagekitglib-1.0 (1.3.1-1ubuntu1) sobre (1.3.1-1) ...
+Preparando para desempaquetar .../16-gnome-remote-desktop_49.0-0ubuntu1.1_amd64.deb ...
+Desempaquetando gnome-remote-desktop (49.0-0ubuntu1.1) sobre (49.0-0ubuntu1) ...
+Preparando para desempaquetar .../17-gnome-user-docs-es_49.1-1ubuntu0.1_all.deb ...
+Desempaquetando gnome-user-docs-es (49.1-1ubuntu0.1) sobre (48.2-1ubuntu1) ...
+Preparando para desempaquetar .../18-ubuntu-docs_25.10.0.1_all.deb ...
+Desempaquetando ubuntu-docs (25.10.0.1) sobre (25.04.1) ...
+Preparando para desempaquetar .../19-gnome-user-docs_49.1-1ubuntu0.1_all.deb ...
+Desempaquetando gnome-user-docs (49.1-1ubuntu0.1) sobre (48.2-1ubuntu1) ...
+Preparando para desempaquetar .../20-packagekit-tools_1.3.1-1ubuntu1_amd64.deb ...
+Desempaquetando packagekit-tools (1.3.1-1ubuntu1) sobre (1.3.1-1) ...
+Preparando para desempaquetar .../21-gstreamer1.0-packagekit_1.3.1-1ubuntu1_amd64.deb ...
+Desempaquetando gstreamer1.0-packagekit (1.3.1-1ubuntu1) sobre (1.3.1-1) ...
+Preparando para desempaquetar .../22-packagekit_1.3.1-1ubuntu1_amd64.deb ...
+Desempaquetando packagekit (1.3.1-1ubuntu1) sobre (1.3.1-1) ...
+Preparando para desempaquetar .../23-initramfs-tools-bin_0.150ubuntu3.1_amd64.deb ...
+Desempaquetando initramfs-tools-bin (0.150ubuntu3.1) sobre (0.150ubuntu3) ...
+Preparando para desempaquetar .../24-initramfs-tools-core_0.150ubuntu3.1_all.deb ...
+Desempaquetando initramfs-tools-core (0.150ubuntu3.1) sobre (0.150ubuntu3) ...
+Preparando para desempaquetar .../25-libdrm-amdgpu1_2.4.125-1ubuntu0.1_amd64.deb ...
+Desempaquetando libdrm-amdgpu1:amd64 (2.4.125-1ubuntu0.1) sobre (2.4.125-1) ...
+Preparando para desempaquetar .../26-libdrm-intel1_2.4.125-1ubuntu0.1_amd64.deb ...
+Desempaquetando libdrm-intel1:amd64 (2.4.125-1ubuntu0.1) sobre (2.4.125-1) ...
+Preparando para desempaquetar .../27-libjxl0.11_0.11.1-6ubuntu1_amd64.deb ...
+Desempaquetando libjxl0.11:amd64 (0.11.1-6ubuntu1) sobre (0.11.1-4) ...
+Preparando para desempaquetar .../28-libjxl-gdk-pixbuf_0.11.1-6ubuntu1_amd64.deb ...
+Desempaquetando libjxl-gdk-pixbuf:amd64 (0.11.1-6ubuntu1) sobre (0.11.1-4) ...
+Preparando para desempaquetar .../29-papers_48.0-1ubuntu1.25.10.1_amd64.deb ...
+Desempaquetando papers (48.0-1ubuntu1.25.10.1) sobre (48.0-1ubuntu1) ...
+Preparando para desempaquetar .../30-libppsview-4.0-4_48.0-1ubuntu1.25.10.1_amd64.deb ...
+Desempaquetando libppsview-4.0-4:amd64 (48.0-1ubuntu1.25.10.1) sobre (48.0-1ubuntu1) ...
+Preparando para desempaquetar .../31-papers-common_48.0-1ubuntu1.25.10.1_all.deb ...
+Desempaquetando papers-common (48.0-1ubuntu1.25.10.1) sobre (48.0-1ubuntu1) ...
+Preparando para desempaquetar .../32-libppsdocument-4.0-5_48.0-1ubuntu1.25.10.1_amd64.deb ...
+Desempaquetando libppsdocument-4.0-5:amd64 (48.0-1ubuntu1.25.10.1) sobre (48.0-1ubuntu1) ...
+Preparando para desempaquetar .../33-linux-libc-dev_6.17.0-7.7_amd64.deb ...
+Desempaquetando linux-libc-dev:amd64 (6.17.0-7.7) sobre (6.17.0-6.6) ...
+Preparando para desempaquetar .../34-linux-perf_6.17.0-7.7_amd64.deb ...
+Desempaquetando linux-perf (6.17.0-7.7) sobre (6.17.0-6.6) ...
+Preparando para desempaquetar .../35-linux-tools-common_6.17.0-7.7_all.deb ...
+Desempaquetando linux-tools-common (6.17.0-7.7) sobre (6.17.0-6.6) ...
+Preparando para desempaquetar .../36-network-manager-config-connectivity-ubuntu_1.52.0-1ubuntu3.1_all.deb ...
+Desempaquetando network-manager-config-connectivity-ubuntu (1.52.0-1ubuntu3.1) sobre (1.52.0-1ubuntu3) ...
+Preparando para desempaquetar .../37-snapd_2.72+ubuntu25.10.2_amd64.deb ...
+Desempaquetando snapd (2.72+ubuntu25.10.2) sobre (2.71.1+ubuntu25.10.1) ...
+Preparando para desempaquetar .../38-ubuntu-drivers-common_1%3a0.10.3.1_amd64.deb ...
+Desempaquetando ubuntu-drivers-common (1:0.10.3.1) sobre (1:0.10.3) ...
+Configurando libapparmor1:amd64 (5.0.0~alpha1-0ubuntu8.1) ...
+Configurando ubuntu-docs (25.10.0.1) ...
+Configurando bpftool (7.7.0+6.17.0-7.7) ...
+Configurando gnome-user-docs (49.1-1ubuntu0.1) ...
+Configurando linux-libc-dev:amd64 (6.17.0-7.7) ...
+Configurando libpackagekit-glib2-18:amd64 (1.3.1-1ubuntu1) ...
+Configurando apparmor (5.0.0~alpha1-0ubuntu8.1) ...
+Instalando una nueva versión del fichero de configuración /etc/apparmor.d/fusermount3 ...
+Reloading AppArmor profiles 
+Warning: found usr.sbin.sssd in /etc/apparmor.d/force-complain, forcing complain mode
+Warning from /etc/apparmor.d (/etc/apparmor.d/usr.sbin.sssd line 69): Caching disabled for: 'usr.sbin.sssd' due to force complain
+Configurando gir1.2-packagekitglib-1.0 (1.3.1-1ubuntu1) ...
+Configurando gnome-user-docs-es (49.1-1ubuntu0.1) ...
+Configurando mutter-common (49.0-2ubuntu5.2) ...
+Configurando linux-perf (6.17.0-7.7) ...
+Configurando libppsdocument-4.0-5:amd64 (48.0-1ubuntu1.25.10.1) ...
+Configurando mutter-common-bin (49.0-2ubuntu5.2) ...
+Configurando libnm0:amd64 (1.52.0-1ubuntu3.1) ...
+Configurando libppsview-4.0-4:amd64 (48.0-1ubuntu1.25.10.1) ...
+Configurando packagekit (1.3.1-1ubuntu1) ...
+Configurando papers-common (48.0-1ubuntu1.25.10.1) ...
+Configurando gir1.2-nm-1.0:amd64 (1.52.0-1ubuntu3.1) ...
+Configurando libdrm-common (2.4.125-1ubuntu0.1) ...
+Configurando linux-tools-common (6.17.0-7.7) ...
+Configurando libjxl0.11:amd64 (0.11.1-6ubuntu1) ...
+Configurando ubuntu-pro-client (37.1ubuntu0~25.10) ...
+Configurando initramfs-tools-bin (0.150ubuntu3.1) ...
+Configurando ubuntu-pro-client-l10n (37.1ubuntu0~25.10) ...
+Configurando snapd (2.72+ubuntu25.10.2) ...
+snapd.failure.service is a disabled or a static unit not running, not starting it.
+snapd.gpio-chardev-setup.target is a disabled or a static unit not running, not starting it.
+snapd.snap-repair.service is a disabled or a static unit not running, not starting it.
+Configurando packagekit-tools (1.3.1-1ubuntu1) ...
+Configurando libjxl-gdk-pixbuf:amd64 (0.11.1-6ubuntu1) ...
+Configurando papers (48.0-1ubuntu1.25.10.1) ...
+Configurando network-manager (1.52.0-1ubuntu3.1) ...
+Configurando gstreamer1.0-packagekit (1.3.1-1ubuntu1) ...
+Configurando libdrm2:amd64 (2.4.125-1ubuntu0.1) ...
+Configurando initramfs-tools-core (0.150ubuntu3.1) ...
+Configurando libdrm-amdgpu1:amd64 (2.4.125-1ubuntu0.1) ...
+Configurando ubuntu-drivers-common (1:0.10.3.1) ...
+Configurando libdrm-intel1:amd64 (2.4.125-1ubuntu0.1) ...
+Configurando network-manager-config-connectivity-ubuntu (1.52.0-1ubuntu3.1) ...
+Procesando disparadores para procps (2:4.0.4-8ubuntu3) ...
+Procesando disparadores para libgdk-pixbuf-2.0-0:amd64 (2.42.12+dfsg-5) ...
+Procesando disparadores para desktop-file-utils (0.28-1) ...
+Procesando disparadores para hicolor-icon-theme (0.18-2) ...
+Procesando disparadores para gnome-menus (3.36.0-3ubuntu2) ...
+Procesando disparadores para libc-bin (2.42-0ubuntu3) ...
+Procesando disparadores para systemd (257.9-0ubuntu2) ...
+Procesando disparadores para man-db (2.13.1-1) ...
+Procesando disparadores para libglib2.0-0t64:amd64 (2.86.0-2) ...
+Procesando disparadores para dbus (1.16.2-2ubuntu2) ...
+Configurando libmutter-17-0:amd64 (49.0-2ubuntu5.2) ...
+Configurando gnome-remote-desktop (49.0-0ubuntu1.1) ...
+gnome-remote-desktop-configuration.service is a disabled or a static unit not running, not starting it.
+gnome-remote-desktop.service is a disabled or a static unit not running, not starting it.
+Configurando gir1.2-mutter-17:amd64 (49.0-2ubuntu5.2) ...
+Procesando disparadores para libc-bin (2.42-0ubuntu3) ...
+usuario@usuario:/$ sudo apt install -y apache2
+Los paquetes indicados a continuación se instalaron de forma automática y ya no son necesarios.
+  linux-headers-6.17.0-5          linux-modules-6.17.0-5-generic  linux-tools-6.17.0-5-generic
+  linux-headers-6.17.0-5-generic  linux-tools-6.17.0-5
+Utilice «sudo apt autoremove» para eliminarlos.
+
+Installing:
+  apache2
+
+Installing dependencies:
+  apache2-bin   apache2-utils  libaprutil1-dbd-sqlite3  libaprutil1t64
+  apache2-data  libapr1t64     libaprutil1-ldap
+
+Paquetes sugeridos:
+  apache2-doc  apache2-suexec-pristine  | apache2-suexec-custom
+
+Summary:
+  Upgrading: 0, Installing: 8, Removing: 0, Not Upgrading: 0
+  Download size: 1.998 kB
+  Space needed: 7.797 kB / 68,6 GB available
+
+Des:1 http://es.archive.ubuntu.com/ubuntu questing/main amd64 libapr1t64 amd64 1.7.5-1 [116 kB]
+Des:2 http://es.archive.ubuntu.com/ubuntu questing/main amd64 libaprutil1t64 amd64 1.6.3-3ubuntu2 [98,5 kB]
+Des:3 http://es.archive.ubuntu.com/ubuntu questing/main amd64 libaprutil1-dbd-sqlite3 amd64 1.6.3-3ubuntu2 [11,7 kB]
+Des:4 http://es.archive.ubuntu.com/ubuntu questing/main amd64 libaprutil1-ldap amd64 1.6.3-3ubuntu2 [9.214 B]
+Des:5 http://es.archive.ubuntu.com/ubuntu questing/main amd64 apache2-bin amd64 2.4.64-1ubuntu3 [1.408 kB]
+Des:6 http://es.archive.ubuntu.com/ubuntu questing/main amd64 apache2-data all 2.4.64-1ubuntu3 [163 kB]
+Des:7 http://es.archive.ubuntu.com/ubuntu questing/main amd64 apache2-utils amd64 2.4.64-1ubuntu3 [101 kB]
+Des:8 http://es.archive.ubuntu.com/ubuntu questing/main amd64 apache2 amd64 2.4.64-1ubuntu3 [90,3 kB]
+Descargados 1.998 kB en 1s (1.350 kB/s)
+Seleccionando el paquete libapr1t64:amd64 previamente no seleccionado.
+(Leyendo la base de datos ... 185340 ficheros o directorios instalados actualmente.)
+Preparando para desempaquetar .../0-libapr1t64_1.7.5-1_amd64.deb ...
+Desempaquetando libapr1t64:amd64 (1.7.5-1) ...
+Seleccionando el paquete libaprutil1t64:amd64 previamente no seleccionado.
+Preparando para desempaquetar .../1-libaprutil1t64_1.6.3-3ubuntu2_amd64.deb ...
+Desempaquetando libaprutil1t64:amd64 (1.6.3-3ubuntu2) ...
+Seleccionando el paquete libaprutil1-dbd-sqlite3:amd64 previamente no seleccionado.
+Preparando para desempaquetar .../2-libaprutil1-dbd-sqlite3_1.6.3-3ubuntu2_amd64.deb ...
+Desempaquetando libaprutil1-dbd-sqlite3:amd64 (1.6.3-3ubuntu2) ...
+Seleccionando el paquete libaprutil1-ldap:amd64 previamente no seleccionado.
+Preparando para desempaquetar .../3-libaprutil1-ldap_1.6.3-3ubuntu2_amd64.deb ...
+Desempaquetando libaprutil1-ldap:amd64 (1.6.3-3ubuntu2) ...
+Seleccionando el paquete apache2-bin previamente no seleccionado.
+Preparando para desempaquetar .../4-apache2-bin_2.4.64-1ubuntu3_amd64.deb ...
+Desempaquetando apache2-bin (2.4.64-1ubuntu3) ...
+Seleccionando el paquete apache2-data previamente no seleccionado.
+Preparando para desempaquetar .../5-apache2-data_2.4.64-1ubuntu3_all.deb ...
+Desempaquetando apache2-data (2.4.64-1ubuntu3) ...
+Seleccionando el paquete apache2-utils previamente no seleccionado.
+Preparando para desempaquetar .../6-apache2-utils_2.4.64-1ubuntu3_amd64.deb ...
+Desempaquetando apache2-utils (2.4.64-1ubuntu3) ...
+Seleccionando el paquete apache2 previamente no seleccionado.
+Preparando para desempaquetar .../7-apache2_2.4.64-1ubuntu3_amd64.deb ...
+Desempaquetando apache2 (2.4.64-1ubuntu3) ...
+Configurando libapr1t64:amd64 (1.7.5-1) ...
+Configurando apache2-data (2.4.64-1ubuntu3) ...
+Configurando libaprutil1t64:amd64 (1.6.3-3ubuntu2) ...
+Configurando libaprutil1-ldap:amd64 (1.6.3-3ubuntu2) ...
+Configurando libaprutil1-dbd-sqlite3:amd64 (1.6.3-3ubuntu2) ...
+Configurando apache2-utils (2.4.64-1ubuntu3) ...
+Configurando apache2-bin (2.4.64-1ubuntu3) ...
+Configurando apache2 (2.4.64-1ubuntu3) ...
+Enabling module mpm_event.
+Enabling module authz_core.
+Enabling module authz_host.
+Enabling module authn_core.
+Enabling module auth_basic.
+Enabling module access_compat.
+Enabling module authn_file.
+Enabling module authz_user.
+Enabling module alias.
+Enabling module dir.
+Enabling module autoindex.
+Enabling module env.
+Enabling module mime.
+Enabling module negotiation.
+Enabling module setenvif.
+Enabling module filter.
+Enabling module deflate.
+Enabling module status.
+Enabling module reqtimeout.
+Enabling conf charset.
+Enabling conf localized-error-pages.
+Enabling conf other-vhosts-access-log.
+Enabling conf security.
+Enabling conf serve-cgi-bin.
+Enabling site 000-default.
+Created symlink '/etc/systemd/system/multi-user.target.wants/apache2.service' → '/usr/lib/systemd/system/apache2.service'.
+Created symlink '/etc/systemd/system/multi-user.target.wants/apache-htcacheclean.service' → '/usr/lib/systemd/system/apache-htcacheclean.service'.
+Procesando disparadores para ufw (0.36.2-9) ...
+Procesando disparadores para man-db (2.13.1-1) ...
+Procesando disparadores para libc-bin (2.42-0ubuntu3) ...
+usuario@usuario:/$ sudo apt install -y php8.2 php8.2-cli php8.2-fpm php8.2-mysql php8.2-xml php8.2-mbstring php8.2-curl php8.2-zip php8.2-gd php8.2-intl php8.2-bcmath
+Error: No se ha podido localizar el paquete php8.2
+Error: No se pudo encontrar ningún paquete usando «*» con «php8.2»
+Error: No se ha podido localizar el paquete php8.2-cli
+Error: No se pudo encontrar ningún paquete usando «*» con «php8.2-cli»
+Error: No se ha podido localizar el paquete php8.2-fpm
+Error: No se pudo encontrar ningún paquete usando «*» con «php8.2-fpm»
+Error: No se ha podido localizar el paquete php8.2-mysql
+Error: No se pudo encontrar ningún paquete usando «*» con «php8.2-mysql»
+Error: No se ha podido localizar el paquete php8.2-xml
+Error: No se pudo encontrar ningún paquete usando «*» con «php8.2-xml»
+Error: No se ha podido localizar el paquete php8.2-mbstring
+Error: No se pudo encontrar ningún paquete usando «*» con «php8.2-mbstring»
+Error: No se ha podido localizar el paquete php8.2-curl
+Error: No se pudo encontrar ningún paquete usando «*» con «php8.2-curl»
+Error: No se ha podido localizar el paquete php8.2-zip
+Error: No se pudo encontrar ningún paquete usando «*» con «php8.2-zip»
+Error: No se ha podido localizar el paquete php8.2-gd
+Error: No se pudo encontrar ningún paquete usando «*» con «php8.2-gd»
+Error: No se ha podido localizar el paquete php8.2-intl
+Error: No se pudo encontrar ningún paquete usando «*» con «php8.2-intl»
+Error: No se ha podido localizar el paquete php8.2-bcmath
+Error: No se pudo encontrar ningún paquete usando «*» con «php8.2-bcmath»
+usuario@usuario:/$ curl -sS https://getcomposer.org/installer | php
+No se ha encontrado la orden «curl», pero se puede instalar con:
+sudo snap install curl  # version 8.17.0, or
+sudo apt  install curl  # version 8.14.1-2ubuntu1
+Consulte «snap info curl» para ver más versiones.
+No se ha encontrado la orden «php», pero se puede instalar con:
+sudo apt install php-cli     # version 2:8.4+96ubuntu1, or
+sudo apt install php8.4-cli  # version 8.4.11-1ubuntu1
+usuario@usuario:/$ sudo mv composer.phar /usr/local/bin/composer
+mv: no se puede efectuar `stat' sobre 'composer.phar': No existe el archivo o el directorio
+usuario@usuario:/$ sudo chmod +x /usr/local/bin/composer
+chmod: no se puede acceder a '/usr/local/bin/composer': No existe el archivo o el directorio
+usuario@usuario:/$ sudo a2enmod rewrite
+Enabling module rewrite.
+To activate the new configuration, you need to run:
+  systemctl restart apache2
+usuario@usuario:/$ sudo systemctl restart apache2
+usuario@usuario:/$ sydo systmctl status apache2
+Orden «sydo» no encontrada. Quizá quiso decir:
+  la orden «sudo» del paquete deb «sudo (1.9.17p2-1ubuntu1)»
+  la orden «sudo» del paquete deb «sudo-rs (0.2.8-1ubuntu5.2)»
+  la orden «syco» del paquete deb «emboss (6.6.0+dfsg-15ubuntu2)»
+Pruebe con: sudo apt install <nombre del paquete deb>
+usuario@usuario:/$ suudo systmctl status apache2
+Orden «suudo» no encontrada. Quizá quiso decir:
+  la orden «sudo» del paquete deb «sudo (1.9.17p2-1ubuntu1)»
+  la orden «sudo» del paquete deb «sudo-rs (0.2.8-1ubuntu5.2)»
+Pruebe con: sudo apt install <nombre del paquete deb>
+usuario@usuario:/$ sudo systmctl status apache2
+sudo-rs: 'systmctl': command not found
+usuario@usuario:/$ sudo systemctl status apache2
+● apache2.service - The Apache HTTP Server
+     Loaded: loaded (/usr/lib/systemd/system/apache2.service; enabled; preset: enabled)
+     Active: active (running) since Fri 2025-11-28 15:43:00 CET; 22s ago
+ Invocation: 9f0926664beb459ca8dbfbd849d1c1a2
+       Docs: https://httpd.apache.org/docs/2.4/
+    Process: 14452 ExecStart=/usr/sbin/apachectl start (code=exited, status=0/SUCCESS)
+   Main PID: 14455 (apache2)
+      Tasks: 55 (limit: 18063)
+     Memory: 5.9M (peak: 6.3M)
+        CPU: 82ms
+     CGroup: /system.slice/apache2.service
+             ├─14455 /usr/sbin/apache2 -k start
+             ├─14457 /usr/sbin/apache2 -k start
+             └─14458 /usr/sbin/apache2 -k start
+
+nov 28 15:43:00 usuario systemd[1]: Starting apache2.service - The Apache HTTP Server...
+nov 28 15:43:00 usuario apachectl[14454]: AH00558: apache2: Could not reliably determine the server's fully qu>
+nov 28 15:43:00 usuario systemd[1]: Started apache2.service - The Apache HTTP Server.
+lines 1-18/18 (END)...skipping...
+● apache2.service - The Apache HTTP Server
+     Loaded: loaded (/usr/lib/systemd/system/apache2.service; enabled; preset: enabled)
+     Active: active (running) since Fri 2025-11-28 15:43:00 CET; 22s ago
+ Invocation: 9f0926664beb459ca8dbfbd849d1c1a2
+       Docs: https://httpd.apache.org/docs/2.4/
+    Process: 14452 ExecStart=/usr/sbin/apachectl start (code=exited, status=0/SUCCESS)
+   Main PID: 14455 (apache2)
+      Tasks: 55 (limit: 18063)
+     Memory: 5.9M (peak: 6.3M)
+        CPU: 82ms
+     CGroup: /system.slice/apache2.service
+             ├─14455 /usr/sbin/apache2 -k start
+             ├─14457 /usr/sbin/apache2 -k start
+             └─14458 /usr/sbin/apache2 -k start
+
+nov 28 15:43:00 usuario systemd[1]: Starting apache2.service - The Apache HTTP Server...
+nov 28 15:43:00 usuario apachectl[14454]: AH00558: apache2: Could not reliably determine the server's fully qualified domain name, using 127.0.1.1. Set the>
+nov 28 15:43:00 usuario systemd[1]: Started apache2.service - The Apache HTTP Server.
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+
+usuario@usuario:/$ sudo apt install -y mysql-server
+Los paquetes indicados a continuación se instalaron de forma automática y ya no son necesarios.
+  linux-headers-6.17.0-5  linux-headers-6.17.0-5-generic  linux-modules-6.17.0-5-generic  linux-tools-6.17.0-5  linux-tools-6.17.0-5-generic
+Utilice «sudo apt autoremove» para eliminarlos.
+
+Installing:
+  mysql-server
+
+Installing dependencies:
+  libaio1t64        libfcgi-bin   libgoogle-perftools4t64  libprotobuf-lite32t64    mecab-ipadic-utf8  mysql-client-core
+  libcgi-fast-perl  libfcgi-perl  libhtml-template-perl    libtcmalloc-minimal4t64  mecab-utils        mysql-common
+  libcgi-pm-perl    libfcgi0t64   libmecab2                mecab-ipadic             mysql-client       mysql-server-core
+
+Paquetes sugeridos:
+  libipc-sharedcache-perl  mailx  tinyca
+
+Summary:
+  Upgrading: 0, Installing: 19, Removing: 0, Not Upgrading: 0
+  Download size: 31,1 MB
+  Space needed: 237 MB / 68,6 GB available
+
+Des:1 http://es.archive.ubuntu.com/ubuntu questing/main amd64 mysql-common all 5.8+1.1.1ubuntu1 [6.922 B]
+Des:2 http://es.archive.ubuntu.com/ubuntu questing/main amd64 libtcmalloc-minimal4t64 amd64 2.16-1 [99,8 kB]
+Des:3 http://es.archive.ubuntu.com/ubuntu questing/main amd64 libgoogle-perftools4t64 amd64 2.16-1 [226 kB]
+Des:4 http://es.archive.ubuntu.com/ubuntu questing-updates/main amd64 mysql-client-core amd64 8.4.7-0ubuntu0.25.10.2 [2.203 kB]
+Des:5 http://es.archive.ubuntu.com/ubuntu questing-updates/main amd64 mysql-client amd64 8.4.7-0ubuntu0.25.10.2 [9.130 B]
+Des:6 http://es.archive.ubuntu.com/ubuntu questing/main amd64 libaio1t64 amd64 0.3.113-8 [7.322 B]
+Des:7 http://es.archive.ubuntu.com/ubuntu questing/main amd64 libmecab2 amd64 0.996-15.1build2 [217 kB]
+Des:8 http://es.archive.ubuntu.com/ubuntu questing/main amd64 libprotobuf-lite32t64 amd64 3.21.12-11ubuntu3 [250 kB]
+Des:9 http://es.archive.ubuntu.com/ubuntu questing-updates/main amd64 mysql-server-core amd64 8.4.7-0ubuntu0.25.10.2 [19,5 MB]
+Des:10 http://es.archive.ubuntu.com/ubuntu questing-updates/main amd64 mysql-server amd64 8.4.7-0ubuntu0.25.10.2 [1.597 kB]
+Des:11 http://es.archive.ubuntu.com/ubuntu questing/main amd64 libcgi-pm-perl all 4.68-1 [185 kB]
+Des:12 http://es.archive.ubuntu.com/ubuntu questing/main amd64 libfcgi0t64 amd64 2.4.5-0.1build1 [29,5 kB]
+Des:13 http://es.archive.ubuntu.com/ubuntu questing/main amd64 libfcgi-perl amd64 0.82+ds-3build3 [21,7 kB]
+Des:14 http://es.archive.ubuntu.com/ubuntu questing/main amd64 libcgi-fast-perl all 1:2.17-1 [10,3 kB]
+Des:15 http://es.archive.ubuntu.com/ubuntu questing/main amd64 libfcgi-bin amd64 2.4.5-0.1build1 [12,5 kB]
+Des:16 http://es.archive.ubuntu.com/ubuntu questing/main amd64 libhtml-template-perl all 2.97-2build1 [58,3 kB]
+Des:17 http://es.archive.ubuntu.com/ubuntu questing/main amd64 mecab-utils amd64 0.996-15.1build2 [4.902 B]
+Des:18 http://es.archive.ubuntu.com/ubuntu questing/main amd64 mecab-ipadic all 2.7.0-20070801+main-3 [6.718 kB]
+Des:19 http://es.archive.ubuntu.com/ubuntu questing/main amd64 mecab-ipadic-utf8 all 2.7.0-20070801+main-3 [4.384 B]
+Descargados 31,1 MB en 1s (27,4 MB/s)
+Preconfigurando paquetes ...
+Seleccionando el paquete mysql-common previamente no seleccionado.
+(Leyendo la base de datos ... 186047 ficheros o directorios instalados actualmente.)
+Preparando para desempaquetar .../0-mysql-common_5.8+1.1.1ubuntu1_all.deb ...
+Desempaquetando mysql-common (5.8+1.1.1ubuntu1) ...
+Seleccionando el paquete libtcmalloc-minimal4t64:amd64 previamente no seleccionado.
+Preparando para desempaquetar .../1-libtcmalloc-minimal4t64_2.16-1_amd64.deb ...
+Desempaquetando libtcmalloc-minimal4t64:amd64 (2.16-1) ...
+Seleccionando el paquete libgoogle-perftools4t64:amd64 previamente no seleccionado.
+Preparando para desempaquetar .../2-libgoogle-perftools4t64_2.16-1_amd64.deb ...
+Desempaquetando libgoogle-perftools4t64:amd64 (2.16-1) ...
+Seleccionando el paquete mysql-client-core previamente no seleccionado.
+Preparando para desempaquetar .../3-mysql-client-core_8.4.7-0ubuntu0.25.10.2_amd64.deb ...
+Desempaquetando mysql-client-core (8.4.7-0ubuntu0.25.10.2) ...
+Seleccionando el paquete mysql-client previamente no seleccionado.
+Preparando para desempaquetar .../4-mysql-client_8.4.7-0ubuntu0.25.10.2_amd64.deb ...
+Desempaquetando mysql-client (8.4.7-0ubuntu0.25.10.2) ...
+Seleccionando el paquete libaio1t64:amd64 previamente no seleccionado.
+Preparando para desempaquetar .../5-libaio1t64_0.3.113-8_amd64.deb ...
+Desempaquetando libaio1t64:amd64 (0.3.113-8) ...
+Seleccionando el paquete libmecab2:amd64 previamente no seleccionado.
+Preparando para desempaquetar .../6-libmecab2_0.996-15.1build2_amd64.deb ...
+Desempaquetando libmecab2:amd64 (0.996-15.1build2) ...
+Seleccionando el paquete libprotobuf-lite32t64:amd64 previamente no seleccionado.
+Preparando para desempaquetar .../7-libprotobuf-lite32t64_3.21.12-11ubuntu3_amd64.deb ...
+Desempaquetando libprotobuf-lite32t64:amd64 (3.21.12-11ubuntu3) ...
+Seleccionando el paquete mysql-server-core previamente no seleccionado.
+Preparando para desempaquetar .../8-mysql-server-core_8.4.7-0ubuntu0.25.10.2_amd64.deb ...
+Desempaquetando mysql-server-core (8.4.7-0ubuntu0.25.10.2) ...
+Configurando mysql-common (5.8+1.1.1ubuntu1) ...
+update-alternatives: utilizando /etc/mysql/my.cnf.fallback para proveer /etc/mysql/my.cnf (my.cnf) en modo automático
+Seleccionando el paquete mysql-server previamente no seleccionado.
+(Leyendo la base de datos ... 186271 ficheros o directorios instalados actualmente.)
+Preparando para desempaquetar .../0-mysql-server_8.4.7-0ubuntu0.25.10.2_amd64.deb ...
+Desempaquetando mysql-server (8.4.7-0ubuntu0.25.10.2) ...
+Seleccionando el paquete libcgi-pm-perl previamente no seleccionado.
+Preparando para desempaquetar .../1-libcgi-pm-perl_4.68-1_all.deb ...
+Desempaquetando libcgi-pm-perl (4.68-1) ...
+Seleccionando el paquete libfcgi0t64:amd64 previamente no seleccionado.
+Preparando para desempaquetar .../2-libfcgi0t64_2.4.5-0.1build1_amd64.deb ...
+Desempaquetando libfcgi0t64:amd64 (2.4.5-0.1build1) ...
+Seleccionando el paquete libfcgi-perl previamente no seleccionado.
+Preparando para desempaquetar .../3-libfcgi-perl_0.82+ds-3build3_amd64.deb ...
+Desempaquetando libfcgi-perl (0.82+ds-3build3) ...
+Seleccionando el paquete libcgi-fast-perl previamente no seleccionado.
+Preparando para desempaquetar .../4-libcgi-fast-perl_1%3a2.17-1_all.deb ...
+Desempaquetando libcgi-fast-perl (1:2.17-1) ...
+Seleccionando el paquete libfcgi-bin previamente no seleccionado.
+Preparando para desempaquetar .../5-libfcgi-bin_2.4.5-0.1build1_amd64.deb ...
+Desempaquetando libfcgi-bin (2.4.5-0.1build1) ...
+Seleccionando el paquete libhtml-template-perl previamente no seleccionado.
+Preparando para desempaquetar .../6-libhtml-template-perl_2.97-2build1_all.deb ...
+Desempaquetando libhtml-template-perl (2.97-2build1) ...
+Seleccionando el paquete mecab-utils previamente no seleccionado.
+Preparando para desempaquetar .../7-mecab-utils_0.996-15.1build2_amd64.deb ...
+Desempaquetando mecab-utils (0.996-15.1build2) ...
+Seleccionando el paquete mecab-ipadic previamente no seleccionado.
+Preparando para desempaquetar .../8-mecab-ipadic_2.7.0-20070801+main-3_all.deb ...
+Desempaquetando mecab-ipadic (2.7.0-20070801+main-3) ...
+Seleccionando el paquete mecab-ipadic-utf8 previamente no seleccionado.
+Preparando para desempaquetar .../9-mecab-ipadic-utf8_2.7.0-20070801+main-3_all.deb ...
+Desempaquetando mecab-ipadic-utf8 (2.7.0-20070801+main-3) ...
+Configurando libprotobuf-lite32t64:amd64 (3.21.12-11ubuntu3) ...
+Configurando libmecab2:amd64 (0.996-15.1build2) ...
+Configurando libfcgi0t64:amd64 (2.4.5-0.1build1) ...
+Configurando libcgi-pm-perl (4.68-1) ...
+Configurando libfcgi-bin (2.4.5-0.1build1) ...
+Configurando libhtml-template-perl (2.97-2build1) ...
+Configurando mecab-utils (0.996-15.1build2) ...
+Configurando libtcmalloc-minimal4t64:amd64 (2.16-1) ...
+Configurando libaio1t64:amd64 (0.3.113-8) ...
+Configurando libfcgi-perl (0.82+ds-3build3) ...
+Configurando mecab-ipadic (2.7.0-20070801+main-3) ...
+Compiling IPA dictionary for Mecab.  This takes long time...
+reading /usr/share/mecab/dic/ipadic/unk.def ... 40
+emitting double-array: 100% |###########################################| 
+/usr/share/mecab/dic/ipadic/model.def is not found. skipped.
+reading /usr/share/mecab/dic/ipadic/Adnominal.csv ... 135
+reading /usr/share/mecab/dic/ipadic/Prefix.csv ... 221
+reading /usr/share/mecab/dic/ipadic/Noun.place.csv ... 72999
+reading /usr/share/mecab/dic/ipadic/Suffix.csv ... 1393
+reading /usr/share/mecab/dic/ipadic/Noun.csv ... 60477
+reading /usr/share/mecab/dic/ipadic/Auxil.csv ... 199
+reading /usr/share/mecab/dic/ipadic/Noun.adverbal.csv ... 795
+reading /usr/share/mecab/dic/ipadic/Adj.csv ... 27210
+reading /usr/share/mecab/dic/ipadic/Filler.csv ... 19
+reading /usr/share/mecab/dic/ipadic/Postp-col.csv ... 91
+reading /usr/share/mecab/dic/ipadic/Verb.csv ... 130750
+reading /usr/share/mecab/dic/ipadic/Noun.proper.csv ... 27328
+reading /usr/share/mecab/dic/ipadic/Noun.number.csv ... 42
+reading /usr/share/mecab/dic/ipadic/Noun.others.csv ... 151
+reading /usr/share/mecab/dic/ipadic/Noun.name.csv ... 34202
+reading /usr/share/mecab/dic/ipadic/Symbol.csv ... 208
+reading /usr/share/mecab/dic/ipadic/Postp.csv ... 146
+reading /usr/share/mecab/dic/ipadic/Noun.adjv.csv ... 3328
+reading /usr/share/mecab/dic/ipadic/Others.csv ... 2
+reading /usr/share/mecab/dic/ipadic/Noun.org.csv ... 16668
+reading /usr/share/mecab/dic/ipadic/Noun.verbal.csv ... 12146
+reading /usr/share/mecab/dic/ipadic/Noun.demonst.csv ... 120
+reading /usr/share/mecab/dic/ipadic/Conjunction.csv ... 171
+reading /usr/share/mecab/dic/ipadic/Noun.nai.csv ... 42
+reading /usr/share/mecab/dic/ipadic/Interjection.csv ... 252
+reading /usr/share/mecab/dic/ipadic/Adverb.csv ... 3032
+emitting double-array: 100% |###########################################| 
+reading /usr/share/mecab/dic/ipadic/matrix.def ... 1316x1316
+emitting matrix      : 100% |###########################################| 
+
+done!
+update-alternatives: utilizando /var/lib/mecab/dic/ipadic para proveer /var/lib/mecab/dic/debian (mecab-dictionary) en modo automático
+Configurando libgoogle-perftools4t64:amd64 (2.16-1) ...
+Configurando libcgi-fast-perl (1:2.17-1) ...
+Configurando mysql-server-core (8.4.7-0ubuntu0.25.10.2) ...
+Configurando mecab-ipadic-utf8 (2.7.0-20070801+main-3) ...
+Compiling IPA dictionary for Mecab.  This takes long time...
+reading /usr/share/mecab/dic/ipadic/unk.def ... 40
+emitting double-array: 100% |###########################################| 
+/usr/share/mecab/dic/ipadic/model.def is not found. skipped.
+reading /usr/share/mecab/dic/ipadic/Adnominal.csv ... 135
+reading /usr/share/mecab/dic/ipadic/Prefix.csv ... 221
+reading /usr/share/mecab/dic/ipadic/Noun.place.csv ... 72999
+reading /usr/share/mecab/dic/ipadic/Suffix.csv ... 1393
+reading /usr/share/mecab/dic/ipadic/Noun.csv ... 60477
+reading /usr/share/mecab/dic/ipadic/Auxil.csv ... 199
+reading /usr/share/mecab/dic/ipadic/Noun.adverbal.csv ... 795
+reading /usr/share/mecab/dic/ipadic/Adj.csv ... 27210
+reading /usr/share/mecab/dic/ipadic/Filler.csv ... 19
+reading /usr/share/mecab/dic/ipadic/Postp-col.csv ... 91
+reading /usr/share/mecab/dic/ipadic/Verb.csv ... 130750
+reading /usr/share/mecab/dic/ipadic/Noun.proper.csv ... 27328
+reading /usr/share/mecab/dic/ipadic/Noun.number.csv ... 42
+reading /usr/share/mecab/dic/ipadic/Noun.others.csv ... 151
+reading /usr/share/mecab/dic/ipadic/Noun.name.csv ... 34202
+reading /usr/share/mecab/dic/ipadic/Symbol.csv ... 208
+reading /usr/share/mecab/dic/ipadic/Postp.csv ... 146
+reading /usr/share/mecab/dic/ipadic/Noun.adjv.csv ... 3328
+reading /usr/share/mecab/dic/ipadic/Others.csv ... 2
+reading /usr/share/mecab/dic/ipadic/Noun.org.csv ... 16668
+reading /usr/share/mecab/dic/ipadic/Noun.verbal.csv ... 12146
+reading /usr/share/mecab/dic/ipadic/Noun.demonst.csv ... 120
+reading /usr/share/mecab/dic/ipadic/Conjunction.csv ... 171
+reading /usr/share/mecab/dic/ipadic/Noun.nai.csv ... 42
+reading /usr/share/mecab/dic/ipadic/Interjection.csv ... 252
+reading /usr/share/mecab/dic/ipadic/Adverb.csv ... 3032
+emitting double-array: 100% |###########################################| 
+reading /usr/share/mecab/dic/ipadic/matrix.def ... 1316x1316
+emitting matrix      : 100% |###########################################| 
+
+done!
+update-alternatives: utilizando /var/lib/mecab/dic/ipadic-utf8 para proveer /var/lib/mecab/dic/debian (mecab-dictionary) en modo automático
+Configurando mysql-client-core (8.4.7-0ubuntu0.25.10.2) ...
+Configurando mysql-client (8.4.7-0ubuntu0.25.10.2) ...
+Configurando mysql-server (8.4.7-0ubuntu0.25.10.2) ...
+update-alternatives: utilizando /etc/mysql/mysql.cnf para proveer /etc/mysql/my.cnf (my.cnf) en modo automático
+Renaming removed key_buffer and myisam-recover options (if present)
+Created symlink '/etc/systemd/system/multi-user.target.wants/mysql.service' → '/usr/lib/systemd/system/mysql.service'.
+Procesando disparadores para man-db (2.13.1-1) ...
+Procesando disparadores para libc-bin (2.42-0ubuntu3) ...
+usuario@usuario:/$ sudo mysql_secure_installation
+
+Securing the MySQL server deployment.
+
+Connecting to MySQL using a blank password.
+
+VALIDATE PASSWORD COMPONENT can be used to test passwords
+and improve security. It checks the strength of password
+and allows the users to set only those passwords which are
+secure enough. Would you like to setup VALIDATE PASSWORD component?
+
+Press y|Y for Yes, any other key for No: no
+
+Skipping password set for root as authentication with auth_socket is used by default.
+If you would like to use password authentication instead, this can be done with the "ALTER_USER" command.
+See https://dev.mysql.com/doc/refman/8.0/en/alter-user.html#alter-user-password-management for more information.
+
+By default, a MySQL installation has an anonymous user,
+allowing anyone to log into MySQL without having to have
+a user account created for them. This is intended only for
+testing, and to make the installation go a bit smoother.
+You should remove them before moving into a production
+environment.
+
+Remove anonymous users? (Press y|Y for Yes, any other key for No) : no
+
+ ... skipping.
+
+
+Normally, root should only be allowed to connect from
+'localhost'. This ensures that someone cannot guess at
+the root password from the network.
+
+Disallow root login remotely? (Press y|Y for Yes, any other key for No) : no
+
+ ... skipping.
+By default, MySQL comes with a database named 'test' that
+anyone can access. This is also intended only for testing,
+and should be removed before moving into a production
+environment.
+
+
+Remove test database and access to it? (Press y|Y for Yes, any other key for No) : 
+
+ ... skipping.
+Reloading the privilege tables will ensure that all changes
+made so far will take effect immediately.
+
+Reload privilege tables now? (Press y|Y for Yes, any other key for No) : 
+
+ ... skipping.
+All done! 
+usuario@usuario:/$ sudo mysql -u root -p
+Enter password: 
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 10
+Server version: 8.4.7-0ubuntu0.25.10.2 (Ubuntu)
+
+Copyright (c) 2000, 2025, Oracle and/or its affiliates.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+mysql> CREATE DATABASE laravel CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+Query OK, 1 row affected (0,01 sec)
+
+mysql> CREATE USER 'root'@'localhost' IDENTIFIED BY 'root';
+ERROR 1396 (HY000): Operation CREATE USER failed for 'root'@'localhost'
+mysql> CREATE USER 'root'@'localhost' IDENTIFIED BY '';
+ERROR 1396 (HY000): Operation CREATE USER failed for 'root'@'localhost'
+mysql> GRANT ALL PRIVILEGES ON laravel.* TO 'root'@'localhost';
+Query OK, 0 rows affected (0,01 sec)
+
+mysql> rsync -avz --exclude='vendor' --exclude='node_modules' /ruta/local/proyecto/ <usuario_vm>@<ip_vm>:/home/<usuario_vm>/
+    -> rsync -avz --exclude='vendor' --exclude='node_modules' /ruta/local/proyecto/ <usuario_vm>@<ip_vm>:/home/<usuario_vm>/
+    -> ^C
+mysql> ^C
+mysql> ^C
+mysql> ^C
+mysql> ^C
+mysql> ^C
+mysql> ^C
+mysql> ^C
+mysql> logout
+    -> Aborted
+usuario@usuario:/$ cd //var/www/html/05_Ejemplo/
+-bash: cd: //var/www/html/05_Ejemplo/: No existe el archivo o el directorio
+usuario@usuario:/$ cd /var/www/html/05_Ejemplo/
+-bash: cd: /var/www/html/05_Ejemplo/: No existe el archivo o el directorio
+usuario@usuario:/$ logout
+Connection to 10.4.1.56 closed.
+rafa@rafa:~$ cd /var/www/html/05_Ejemplo/
+rafa@rafa:/var/www/html/05_Ejemplo$ 
+-bash: cd: /var/www/html/05_Ejemplo/: No existe el archivo o el directorio^C
+rafa@rafa:/var/www/html/05_Ejemplo$ rsync -avz --exclude='vendor' --exclude='node_modules' /var/www/html/ usuario@10.4.1.56:/home/usuario/
+usuario@10.4.1.56's password: 
+sending incremental file list
+./
+index.html
+index.nginx-debian.html
+05_Ejemplo/
+05_Ejemplo/.editorconfig
+05_Ejemplo/.env
+05_Ejemplo/.env.example
+05_Ejemplo/.gitattributes
+05_Ejemplo/README.md
+05_Ejemplo/artisan
+05_Ejemplo/composer.json
+05_Ejemplo/composer.lock
+05_Ejemplo/index.html
+05_Ejemplo/index.php
+05_Ejemplo/laravel.sql
+05_Ejemplo/package-lock.json
+05_Ejemplo/package.json
+05_Ejemplo/phpunit.xml
+05_Ejemplo/vite.config.js
+05_Ejemplo/00_DOXYGEN/
+05_Ejemplo/00_DOXYGEN/Doxyfile
+05_Ejemplo/00_DOXYGEN/html/
+05_Ejemplo/00_DOXYGEN/html/_app_service_provider_8php.html
+05_Ejemplo/00_DOXYGEN/html/_app_service_provider_8php.js
+05_Ejemplo/00_DOXYGEN/html/_app_service_provider_8php_source.html
+05_Ejemplo/00_DOXYGEN/html/_c___administrador_8php.html
+05_Ejemplo/00_DOXYGEN/html/_c___administrador_8php.js
+05_Ejemplo/00_DOXYGEN/html/_c___administrador_8php_source.html
+05_Ejemplo/00_DOXYGEN/html/_c___auth_8php.html
+05_Ejemplo/00_DOXYGEN/html/_c___auth_8php.js
+05_Ejemplo/00_DOXYGEN/html/_c___auth_8php_source.html
+05_Ejemplo/00_DOXYGEN/html/_c___controller_8php.html
+05_Ejemplo/00_DOXYGEN/html/_c___controller_8php.js
+05_Ejemplo/00_DOXYGEN/html/_c___controller_8php_source.html
+05_Ejemplo/00_DOXYGEN/html/_c___inicio_8php.html
+05_Ejemplo/00_DOXYGEN/html/_c___inicio_8php.js
+05_Ejemplo/00_DOXYGEN/html/_c___inicio_8php_source.html
+05_Ejemplo/00_DOXYGEN/html/_c___operario_8php.html
+05_Ejemplo/00_DOXYGEN/html/_c___operario_8php.js
+05_Ejemplo/00_DOXYGEN/html/_c___operario_8php_source.html
+05_Ejemplo/00_DOXYGEN/html/_d_b_8php.html
+05_Ejemplo/00_DOXYGEN/html/_d_b_8php.js
+05_Ejemplo/00_DOXYGEN/html/_d_b_8php_source.html
+05_Ejemplo/00_DOXYGEN/html/_funciones_8php.html
+05_Ejemplo/00_DOXYGEN/html/_funciones_8php.js
+05_Ejemplo/00_DOXYGEN/html/_funciones_8php_source.html
+05_Ejemplo/00_DOXYGEN/html/_tareas_8php.html
+05_Ejemplo/00_DOXYGEN/html/_tareas_8php.js
+05_Ejemplo/00_DOXYGEN/html/_tareas_8php_source.html
+05_Ejemplo/00_DOXYGEN/html/_usuarios_8php.html
+05_Ejemplo/00_DOXYGEN/html/_usuarios_8php.js
+05_Ejemplo/00_DOXYGEN/html/_usuarios_8php_source.html
+05_Ejemplo/00_DOXYGEN/html/alta__edicion_8blade_8php.html
+05_Ejemplo/00_DOXYGEN/html/alta__edicion_8blade_8php_source.html
+05_Ejemplo/00_DOXYGEN/html/annotated.html
+05_Ejemplo/00_DOXYGEN/html/annotated_dup.js
+05_Ejemplo/00_DOXYGEN/html/class_app_1_1_d_b_1_1_d_b.html
+05_Ejemplo/00_DOXYGEN/html/class_app_1_1_http_1_1_controllers_1_1_c___administrador.html
+05_Ejemplo/00_DOXYGEN/html/class_app_1_1_http_1_1_controllers_1_1_c___administrador.js
+05_Ejemplo/00_DOXYGEN/html/class_app_1_1_http_1_1_controllers_1_1_c___administrador.png
+05_Ejemplo/00_DOXYGEN/html/class_app_1_1_http_1_1_controllers_1_1_c___auth.html
+05_Ejemplo/00_DOXYGEN/html/class_app_1_1_http_1_1_controllers_1_1_c___auth.js
+05_Ejemplo/00_DOXYGEN/html/class_app_1_1_http_1_1_controllers_1_1_c___auth.png
+05_Ejemplo/00_DOXYGEN/html/class_app_1_1_http_1_1_controllers_1_1_c___controller.html
+05_Ejemplo/00_DOXYGEN/html/class_app_1_1_http_1_1_controllers_1_1_c___controller.js
+05_Ejemplo/00_DOXYGEN/html/class_app_1_1_http_1_1_controllers_1_1_c___controller.png
+05_Ejemplo/00_DOXYGEN/html/class_app_1_1_http_1_1_controllers_1_1_c___inicio.html
+05_Ejemplo/00_DOXYGEN/html/class_app_1_1_http_1_1_controllers_1_1_c___inicio.js
+05_Ejemplo/00_DOXYGEN/html/class_app_1_1_http_1_1_controllers_1_1_c___inicio.png
+05_Ejemplo/00_DOXYGEN/html/class_app_1_1_http_1_1_controllers_1_1_c___operario.html
+05_Ejemplo/00_DOXYGEN/html/class_app_1_1_http_1_1_controllers_1_1_c___operario.js
+05_Ejemplo/00_DOXYGEN/html/class_app_1_1_http_1_1_controllers_1_1_c___operario.png
+05_Ejemplo/00_DOXYGEN/html/class_app_1_1_models_1_1_funciones.html
+05_Ejemplo/00_DOXYGEN/html/class_app_1_1_models_1_1_tareas.html
+05_Ejemplo/00_DOXYGEN/html/class_app_1_1_models_1_1_tareas.js
+05_Ejemplo/00_DOXYGEN/html/class_app_1_1_models_1_1_usuarios.html
+05_Ejemplo/00_DOXYGEN/html/class_app_1_1_models_1_1_usuarios.js
+05_Ejemplo/00_DOXYGEN/html/class_app_1_1_providers_1_1_app_service_provider.html
+05_Ejemplo/00_DOXYGEN/html/class_app_1_1_providers_1_1_app_service_provider.js
+05_Ejemplo/00_DOXYGEN/html/class_app_1_1_providers_1_1_app_service_provider.png
+05_Ejemplo/00_DOXYGEN/html/classes.html
+05_Ejemplo/00_DOXYGEN/html/clipboard.js
+05_Ejemplo/00_DOXYGEN/html/config_8php.html
+05_Ejemplo/00_DOXYGEN/html/config_8php.js
+05_Ejemplo/00_DOXYGEN/html/config_8php_source.html
+05_Ejemplo/00_DOXYGEN/html/confirmar__eliminacion_8blade_8php.html
+05_Ejemplo/00_DOXYGEN/html/confirmar__eliminacion_8blade_8php_source.html
+05_Ejemplo/00_DOXYGEN/html/console_8php.html
+05_Ejemplo/00_DOXYGEN/html/console_8php_source.html
+05_Ejemplo/00_DOXYGEN/html/cookie.js
+05_Ejemplo/00_DOXYGEN/html/detalle_8blade_8php.html
+05_Ejemplo/00_DOXYGEN/html/detalle_8blade_8php_source.html
+05_Ejemplo/00_DOXYGEN/html/dir_0a51432ac95e2d8076f0dd6fb484fe91.html
+05_Ejemplo/00_DOXYGEN/html/dir_0a51432ac95e2d8076f0dd6fb484fe91.js
+05_Ejemplo/00_DOXYGEN/html/dir_1100b942832f63ca691d07d855628432.html
+05_Ejemplo/00_DOXYGEN/html/dir_1100b942832f63ca691d07d855628432.js
+05_Ejemplo/00_DOXYGEN/html/dir_134ea5959594d87885a3fb60e6ab5d91.html
+05_Ejemplo/00_DOXYGEN/html/dir_134ea5959594d87885a3fb60e6ab5d91.js
+05_Ejemplo/00_DOXYGEN/html/dir_32115ab7ae4be470a749a07ae19697b7.html
+05_Ejemplo/00_DOXYGEN/html/dir_32115ab7ae4be470a749a07ae19697b7.js
+05_Ejemplo/00_DOXYGEN/html/dir_386126d44866c115ee61d34de1326691.html
+05_Ejemplo/00_DOXYGEN/html/dir_386126d44866c115ee61d34de1326691.js
+05_Ejemplo/00_DOXYGEN/html/dir_4c075cc324feac010b47b56620e4853f.html
+05_Ejemplo/00_DOXYGEN/html/dir_4c075cc324feac010b47b56620e4853f.js
+05_Ejemplo/00_DOXYGEN/html/dir_64c9819208c582ffbaea46191fef2dda.html
+05_Ejemplo/00_DOXYGEN/html/dir_64c9819208c582ffbaea46191fef2dda.js
+05_Ejemplo/00_DOXYGEN/html/dir_68342a2fac31579ebc8d592b2d964cae.html
+05_Ejemplo/00_DOXYGEN/html/dir_68342a2fac31579ebc8d592b2d964cae.js
+05_Ejemplo/00_DOXYGEN/html/dir_6d21578b8bcba40689bfb8fd03bf39c9.html
+05_Ejemplo/00_DOXYGEN/html/dir_6d21578b8bcba40689bfb8fd03bf39c9.js
+05_Ejemplo/00_DOXYGEN/html/dir_7360cb8c241bbc005aba3baf00c6d42c.html
+05_Ejemplo/00_DOXYGEN/html/dir_7360cb8c241bbc005aba3baf00c6d42c.js
+05_Ejemplo/00_DOXYGEN/html/dir_776c3ce7495def2ed4310332aab2195b.html
+05_Ejemplo/00_DOXYGEN/html/dir_776c3ce7495def2ed4310332aab2195b.js
+05_Ejemplo/00_DOXYGEN/html/dir_842b07b27e60d61a55ec21cb07fd5ff5.html
+05_Ejemplo/00_DOXYGEN/html/dir_842b07b27e60d61a55ec21cb07fd5ff5.js
+05_Ejemplo/00_DOXYGEN/html/dir_8c086f3213df3168c59ba67f38782fab.html
+05_Ejemplo/00_DOXYGEN/html/dir_8c086f3213df3168c59ba67f38782fab.js
+05_Ejemplo/00_DOXYGEN/html/dir_a1d13698d963c1ef1f546121a46bf096.html
+05_Ejemplo/00_DOXYGEN/html/dir_a1d13698d963c1ef1f546121a46bf096.js
+05_Ejemplo/00_DOXYGEN/html/dir_a5e105b1d5e56b11e4659303694a36f3.html
+05_Ejemplo/00_DOXYGEN/html/dir_a5e105b1d5e56b11e4659303694a36f3.js
+05_Ejemplo/00_DOXYGEN/html/dir_b99674050254736bca2213981ba01aa2.html
+05_Ejemplo/00_DOXYGEN/html/dir_b99674050254736bca2213981ba01aa2.js
+05_Ejemplo/00_DOXYGEN/html/dir_c3c933a22cd06dcdbedc2c0b3ba9b9b6.html
+05_Ejemplo/00_DOXYGEN/html/dir_c3c933a22cd06dcdbedc2c0b3ba9b9b6.js
+05_Ejemplo/00_DOXYGEN/html/dir_e0087976ee574b4d66c68a5e39760dd6.html
+05_Ejemplo/00_DOXYGEN/html/dir_e0087976ee574b4d66c68a5e39760dd6.js
+05_Ejemplo/00_DOXYGEN/html/dir_f814336e52a98f8666cfbe64f51cd991.html
+05_Ejemplo/00_DOXYGEN/html/dir_f814336e52a98f8666cfbe64f51cd991.js
+05_Ejemplo/00_DOXYGEN/html/dir_fc48d152594f468300b284d0931a1459.html
+05_Ejemplo/00_DOXYGEN/html/dir_fc48d152594f468300b284d0931a1459.js
+05_Ejemplo/00_DOXYGEN/html/doxygen.css
+05_Ejemplo/00_DOXYGEN/html/doxygen.svg
+05_Ejemplo/00_DOXYGEN/html/doxygen_crawl.html
+05_Ejemplo/00_DOXYGEN/html/dynsections.js
+05_Ejemplo/00_DOXYGEN/html/edicion__operario_8blade_8php.html
+05_Ejemplo/00_DOXYGEN/html/edicion__operario_8blade_8php_source.html
+05_Ejemplo/00_DOXYGEN/html/files.html
+05_Ejemplo/00_DOXYGEN/html/files_dup.js
+05_Ejemplo/00_DOXYGEN/html/form_8blade_8php.html
+05_Ejemplo/00_DOXYGEN/html/form_8blade_8php_source.html
+05_Ejemplo/00_DOXYGEN/html/functions.html
+05_Ejemplo/00_DOXYGEN/html/functions_func.html
+05_Ejemplo/00_DOXYGEN/html/functions_vars.html
+05_Ejemplo/00_DOXYGEN/html/globals.html
+05_Ejemplo/00_DOXYGEN/html/globals_vars.html
+05_Ejemplo/00_DOXYGEN/html/hierarchy.html
+05_Ejemplo/00_DOXYGEN/html/hierarchy.js
+05_Ejemplo/00_DOXYGEN/html/index.html
+05_Ejemplo/00_DOXYGEN/html/index_8blade_8php.html
+05_Ejemplo/00_DOXYGEN/html/index_8blade_8php_source.html
+05_Ejemplo/00_DOXYGEN/html/jquery.js
+05_Ejemplo/00_DOXYGEN/html/lista_8blade_8php.html
+05_Ejemplo/00_DOXYGEN/html/lista_8blade_8php_source.html
+05_Ejemplo/00_DOXYGEN/html/login_8blade_8php.html
+05_Ejemplo/00_DOXYGEN/html/login_8blade_8php_source.html
+05_Ejemplo/00_DOXYGEN/html/menu.js
+05_Ejemplo/00_DOXYGEN/html/menudata.js
+05_Ejemplo/00_DOXYGEN/html/namespace_app_1_1_d_b.html
+05_Ejemplo/00_DOXYGEN/html/namespace_app_1_1_d_b.js
+05_Ejemplo/00_DOXYGEN/html/namespace_app_1_1_http_1_1_controllers.html
+05_Ejemplo/00_DOXYGEN/html/namespace_app_1_1_http_1_1_controllers.js
+05_Ejemplo/00_DOXYGEN/html/namespace_app_1_1_models.html
+05_Ejemplo/00_DOXYGEN/html/namespace_app_1_1_models.js
+05_Ejemplo/00_DOXYGEN/html/namespace_app_1_1_providers.html
+05_Ejemplo/00_DOXYGEN/html/namespace_app_1_1_providers.js
+05_Ejemplo/00_DOXYGEN/html/namespaces.html
+05_Ejemplo/00_DOXYGEN/html/namespaces_dup.js
+05_Ejemplo/00_DOXYGEN/html/navtree.css
+05_Ejemplo/00_DOXYGEN/html/navtree.js
+05_Ejemplo/00_DOXYGEN/html/navtreedata.js
+05_Ejemplo/00_DOXYGEN/html/navtreeindex0.js
+05_Ejemplo/00_DOXYGEN/html/plantilla01_8blade_8php.html
+05_Ejemplo/00_DOXYGEN/html/plantilla01_8blade_8php_source.html
+05_Ejemplo/00_DOXYGEN/html/tabs.css
+05_Ejemplo/00_DOXYGEN/html/web_8php.html
+05_Ejemplo/00_DOXYGEN/html/web_8php_source.html
+05_Ejemplo/00_DOXYGEN/html/search/
+05_Ejemplo/00_DOXYGEN/html/search/all_0.js
+05_Ejemplo/00_DOXYGEN/html/search/all_1.js
+05_Ejemplo/00_DOXYGEN/html/search/all_10.js
+05_Ejemplo/00_DOXYGEN/html/search/all_2.js
+05_Ejemplo/00_DOXYGEN/html/search/all_3.js
+05_Ejemplo/00_DOXYGEN/html/search/all_4.js
+05_Ejemplo/00_DOXYGEN/html/search/all_5.js
+05_Ejemplo/00_DOXYGEN/html/search/all_6.js
+05_Ejemplo/00_DOXYGEN/html/search/all_7.js
+05_Ejemplo/00_DOXYGEN/html/search/all_8.js
+05_Ejemplo/00_DOXYGEN/html/search/all_9.js
+05_Ejemplo/00_DOXYGEN/html/search/all_a.js
+05_Ejemplo/00_DOXYGEN/html/search/all_b.js
+05_Ejemplo/00_DOXYGEN/html/search/all_c.js
+05_Ejemplo/00_DOXYGEN/html/search/all_d.js
+05_Ejemplo/00_DOXYGEN/html/search/all_e.js
+05_Ejemplo/00_DOXYGEN/html/search/all_f.js
+05_Ejemplo/00_DOXYGEN/html/search/classes_0.js
+05_Ejemplo/00_DOXYGEN/html/search/classes_1.js
+05_Ejemplo/00_DOXYGEN/html/search/classes_2.js
+05_Ejemplo/00_DOXYGEN/html/search/classes_3.js
+05_Ejemplo/00_DOXYGEN/html/search/classes_4.js
+05_Ejemplo/00_DOXYGEN/html/search/classes_5.js
+05_Ejemplo/00_DOXYGEN/html/search/files_0.js
+05_Ejemplo/00_DOXYGEN/html/search/files_1.js
+05_Ejemplo/00_DOXYGEN/html/search/files_2.js
+05_Ejemplo/00_DOXYGEN/html/search/files_3.js
+05_Ejemplo/00_DOXYGEN/html/search/files_4.js
+05_Ejemplo/00_DOXYGEN/html/search/files_5.js
+05_Ejemplo/00_DOXYGEN/html/search/files_6.js
+05_Ejemplo/00_DOXYGEN/html/search/files_7.js
+05_Ejemplo/00_DOXYGEN/html/search/files_8.js
+05_Ejemplo/00_DOXYGEN/html/search/files_9.js
+05_Ejemplo/00_DOXYGEN/html/search/files_a.js
+05_Ejemplo/00_DOXYGEN/html/search/functions_0.js
+05_Ejemplo/00_DOXYGEN/html/search/functions_1.js
+05_Ejemplo/00_DOXYGEN/html/search/functions_2.js
+05_Ejemplo/00_DOXYGEN/html/search/functions_3.js
+05_Ejemplo/00_DOXYGEN/html/search/functions_4.js
+05_Ejemplo/00_DOXYGEN/html/search/functions_5.js
+05_Ejemplo/00_DOXYGEN/html/search/functions_6.js
+05_Ejemplo/00_DOXYGEN/html/search/functions_7.js
+05_Ejemplo/00_DOXYGEN/html/search/functions_8.js
+05_Ejemplo/00_DOXYGEN/html/search/functions_9.js
+05_Ejemplo/00_DOXYGEN/html/search/functions_a.js
+05_Ejemplo/00_DOXYGEN/html/search/namespaces_0.js
+05_Ejemplo/00_DOXYGEN/html/search/search.css
+05_Ejemplo/00_DOXYGEN/html/search/search.js
+05_Ejemplo/00_DOXYGEN/html/search/searchdata.js
+05_Ejemplo/00_DOXYGEN/html/search/variables_0.js
+05_Ejemplo/00_DOXYGEN/html/search/variables_1.js
+05_Ejemplo/00_DOXYGEN/html/search/variables_2.js
+05_Ejemplo/app/
+05_Ejemplo/app/Config/
+05_Ejemplo/app/Config/config.php
+05_Ejemplo/app/DB/
+05_Ejemplo/app/DB/DB.php
+05_Ejemplo/app/Http/
+05_Ejemplo/app/Http/Controllers/
+05_Ejemplo/app/Http/Controllers/C_Administrador.php
+05_Ejemplo/app/Http/Controllers/C_Auth.php
+05_Ejemplo/app/Http/Controllers/C_Controller.php
+05_Ejemplo/app/Http/Controllers/C_Inicio.php
+05_Ejemplo/app/Http/Controllers/C_Operario.php
+05_Ejemplo/app/Models/
+05_Ejemplo/app/Models/M_Funciones.php
+05_Ejemplo/app/Models/M_Tareas.php
+05_Ejemplo/app/Models/M_Usuarios.php
+05_Ejemplo/app/Providers/
+05_Ejemplo/app/Providers/AppServiceProvider.php
+05_Ejemplo/bootstrap/
+05_Ejemplo/bootstrap/app.php
+05_Ejemplo/bootstrap/providers.php
+05_Ejemplo/bootstrap/cache/
+05_Ejemplo/bootstrap/cache/.gitignore
+05_Ejemplo/bootstrap/cache/config.php
+05_Ejemplo/bootstrap/cache/packages.php
+05_Ejemplo/bootstrap/cache/services.php
+05_Ejemplo/config/
+05_Ejemplo/config/app.php
+05_Ejemplo/config/auth.php
+05_Ejemplo/config/cache.php
+05_Ejemplo/config/database.php
+05_Ejemplo/config/filesystems.php
+05_Ejemplo/config/logging.php
+05_Ejemplo/config/mail.php
+05_Ejemplo/config/queue.php
+05_Ejemplo/config/services.php
+05_Ejemplo/config/session.php
+05_Ejemplo/database/
+05_Ejemplo/database/database.sqlite
+05_Ejemplo/database/factories/
+05_Ejemplo/database/factories/UserFactory.php
+05_Ejemplo/database/migrations/
+05_Ejemplo/database/seeders/
+05_Ejemplo/database/seeders/DatabaseSeeder.php
+05_Ejemplo/public/
+05_Ejemplo/public/.htaccess
+05_Ejemplo/public/favicon.ico
+05_Ejemplo/public/index.php
+05_Ejemplo/public/robots.txt
+05_Ejemplo/public/css/
+05_Ejemplo/public/css/app.css
+05_Ejemplo/public/evidencias/
+05_Ejemplo/resources/
+05_Ejemplo/resources/BD.sql
+05_Ejemplo/resources/css/
+05_Ejemplo/resources/css/app.css
+05_Ejemplo/resources/views/
+05_Ejemplo/resources/views/index.blade.php
+05_Ejemplo/resources/views/autenticacion/
+05_Ejemplo/resources/views/autenticacion/login.blade.php
+05_Ejemplo/resources/views/layouts/
+05_Ejemplo/resources/views/layouts/plantilla01.blade.php
+05_Ejemplo/resources/views/tareas/
+05_Ejemplo/resources/views/tareas/alta_edicion.blade.php
+05_Ejemplo/resources/views/tareas/confirmar_eliminacion.blade.php
+05_Ejemplo/resources/views/tareas/detalle.blade.php
+05_Ejemplo/resources/views/tareas/edicion_operario.blade.php
+05_Ejemplo/resources/views/tareas/form.blade.php
+05_Ejemplo/resources/views/tareas/lista.blade.php
+05_Ejemplo/routes/
+05_Ejemplo/routes/console.php
+05_Ejemplo/routes/web.php
+05_Ejemplo/storage/
+05_Ejemplo/storage/app/
+05_Ejemplo/storage/app/.gitignore
+05_Ejemplo/storage/app/private/
+05_Ejemplo/storage/app/private/.gitignore
+05_Ejemplo/storage/app/public/
+05_Ejemplo/storage/app/public/.gitignore
+05_Ejemplo/storage/framework/
+05_Ejemplo/storage/framework/.gitignore
+05_Ejemplo/storage/framework/cache/
+05_Ejemplo/storage/framework/cache/.gitignore
+05_Ejemplo/storage/framework/cache/data/
+05_Ejemplo/storage/framework/cache/data/.gitignore
+05_Ejemplo/storage/framework/sessions/
+05_Ejemplo/storage/framework/sessions/.gitignore
+05_Ejemplo/storage/framework/sessions/A8eqkaM2KHaWrcie7EyUWlRb5QHTlGrtMFIOGuSk
+05_Ejemplo/storage/framework/sessions/BCI6xkkSVbwNhmSgeDBmsAmkeJ6tkRPcadXtlYoB
+05_Ejemplo/storage/framework/sessions/DchwEYuFr6yz6VwCbEGdfe3S132HfQczFF3wgXAn
+05_Ejemplo/storage/framework/sessions/SmGJhqFXO4yOpGkSfVcDaR7K6ZJhgoVJdGjOa6WT
+05_Ejemplo/storage/framework/sessions/dae8zYgPCrXn4ZOfakCCMlpT0SRyb9vh9RGfqyQb
+05_Ejemplo/storage/framework/testing/
+05_Ejemplo/storage/framework/testing/.gitignore
+05_Ejemplo/storage/framework/views/
+05_Ejemplo/storage/framework/views/.gitignore
+05_Ejemplo/storage/framework/views/0271d7ee2c6cde28195f05447f05284c.php
+05_Ejemplo/storage/framework/views/03663c7960bc6a688263db6f73e7d8e3.php
+05_Ejemplo/storage/framework/views/0815aa2365c5c5a405e65564734375e2.php
+05_Ejemplo/storage/framework/views/097036bcbd1f19caba1504e7e5e17ea9.php
+05_Ejemplo/storage/framework/views/0bf8cd512a4f82d556e7994bed60a360.php
+05_Ejemplo/storage/framework/views/13c777463700fdfcaf8e074ce69c8703.php
+05_Ejemplo/storage/framework/views/149ec55f86076864dc85aa00f5c0724e.php
+05_Ejemplo/storage/framework/views/162e4ead0e36c122cf53ccd34e621b64.php
+05_Ejemplo/storage/framework/views/1926f1cc1a7f9e1e6969270ad8f6ea2d.php
+05_Ejemplo/storage/framework/views/1f3ba7664ca819a25d34146344c004c9.php
+05_Ejemplo/storage/framework/views/222d19c02f08d12bba002a3e90e6ae09.php
+05_Ejemplo/storage/framework/views/24d69ca7a70dd4ef467e45964ae7e7dd.php
+05_Ejemplo/storage/framework/views/2a0aa82ed8d1775242e15b15a6ff43c0.php
+05_Ejemplo/storage/framework/views/306847311172b0b1d3222f83035c1db8.php
+05_Ejemplo/storage/framework/views/30fc7f6eb0787669952edff4b229d7d7.php
+05_Ejemplo/storage/framework/views/3493bbcd8f7c988dcc40df50e14141b0.php
+05_Ejemplo/storage/framework/views/350b61afe3ab4f95de95741d80e0c936.php
+05_Ejemplo/storage/framework/views/38445648cacf3a61136b778d0c20eab4.php
+05_Ejemplo/storage/framework/views/397a13001b39b5365829324f8929856d.php
+05_Ejemplo/storage/framework/views/3f1a4a115f9f15d35732a7a2e5248734.php
+05_Ejemplo/storage/framework/views/43b96809745fae645c4cd87d8a1d3493.php
+05_Ejemplo/storage/framework/views/51a68f3db865c88862953156f34ab976.php
+05_Ejemplo/storage/framework/views/5451802bbe7027dd6afc91cb853196b9.php
+05_Ejemplo/storage/framework/views/54c998116df381a080f73e5c6f298759.php
+05_Ejemplo/storage/framework/views/5978f632e5fe09a34a5278da74572593.php
+05_Ejemplo/storage/framework/views/599299ab8b757bf7658693dd16d12354.php
+05_Ejemplo/storage/framework/views/6027d9f52b204707f5f4b67e60eeae8a.php
+05_Ejemplo/storage/framework/views/61ede43d255ccfef2e7a24892d5b1348.php
+05_Ejemplo/storage/framework/views/63cbfbf7d2fd747c4c116f3aa109783d.php
+05_Ejemplo/storage/framework/views/6669f54f6a8ed6b575dbc50681ef1c14.php
+05_Ejemplo/storage/framework/views/692eda5eb734a2926db27a106e4a13da.php
+05_Ejemplo/storage/framework/views/69bf5599869dd1ba2a5d4eabd3acde81.php
+05_Ejemplo/storage/framework/views/6a6a5a24d9fc206fb5d6b7c9b0aa32fa.php
+05_Ejemplo/storage/framework/views/6bedee76ea38c027c05d08e018cd210a.php
+05_Ejemplo/storage/framework/views/750db0f53eae5f58aabcf3030d184e99.php
+05_Ejemplo/storage/framework/views/768b780a03c86aa04fa3ac33bbf07044.php
+05_Ejemplo/storage/framework/views/76f4a8d524454f349ac00fb6fb387e7e.php
+05_Ejemplo/storage/framework/views/7a59bedf54009c73d2b86b81e119d6a6.php
+05_Ejemplo/storage/framework/views/7b3ce56a72f83ac12623d45fa9fe7120.php
+05_Ejemplo/storage/framework/views/7f7a870fdc4f02b9750e2841ca4c4259.php
+05_Ejemplo/storage/framework/views/851312fdd22c17ff99e1f83751fce4dd.php
+05_Ejemplo/storage/framework/views/8a3204aa38695b48b1771efe6cfa2bdd.php
+05_Ejemplo/storage/framework/views/8dc48dbf66e6ad583068c94a423b11a4.php
+05_Ejemplo/storage/framework/views/8ee8fa18565ba57072c139e7f88a90ff.php
+05_Ejemplo/storage/framework/views/8f58032e27c9b11d078d10210eae7280.php
+05_Ejemplo/storage/framework/views/8fa0f6e79665b202e94cdeec903d081c.php
+05_Ejemplo/storage/framework/views/93137fcd6bbf8c8d33f086838e847a69.php
+05_Ejemplo/storage/framework/views/93179b11528f31d511d8880ba6a7396f.php
+05_Ejemplo/storage/framework/views/93a1a996bb96bc00fbd856f6d97e58ab.php
+05_Ejemplo/storage/framework/views/9444ab7a8a897f9f9737398843690431.php
+05_Ejemplo/storage/framework/views/94d3969b0a15d4d2a191a0c42151b1fc.php
+05_Ejemplo/storage/framework/views/95bd296b1679d2d0aa2939a033468b47.php
+05_Ejemplo/storage/framework/views/9704e9f663d02b93c8ce3357adeb17d8.php
+05_Ejemplo/storage/framework/views/98cbf5daa88782ee926bda8735f0fa9a.php
+05_Ejemplo/storage/framework/views/992e8968427da7211b41b7f1d629d329.php
+05_Ejemplo/storage/framework/views/9a2404f2db22503b72547045742f4df1.php
+05_Ejemplo/storage/framework/views/9b0872d1695fb9617f7c9aa72a54ab85.php
+05_Ejemplo/storage/framework/views/9f20929606e1ae521b2887df36170e6e.php
+05_Ejemplo/storage/framework/views/a12866f184b368bbb6004f9ad757fcd3.php
+05_Ejemplo/storage/framework/views/a149b5248e39ecc4bc6a8985e861d3a7.php
+05_Ejemplo/storage/framework/views/a1977a0d35d18075f4de42619a7c7615.php
+05_Ejemplo/storage/framework/views/a586382ca3720e1f5cd943d7010d4a9c.php
+05_Ejemplo/storage/framework/views/a7069479d053d02860b9046d86850d5b.php
+05_Ejemplo/storage/framework/views/a7c0542e4698e67ed797b95fcc8ce90e.php
+05_Ejemplo/storage/framework/views/ada57807955adc61a28161090564f846.php
+05_Ejemplo/storage/framework/views/b30a53f402ef9817c32cf9b1291ee8fe.php
+05_Ejemplo/storage/framework/views/b94c897fe55e06e5b0ffac849846ae1a.php
+05_Ejemplo/storage/framework/views/badee86467dec2aced726bb7ed85743b.php
+05_Ejemplo/storage/framework/views/bba959525501f9074377a045611432c0.php
+05_Ejemplo/storage/framework/views/bf046d6309b60e3d81f0b0685dd52c67.php
+05_Ejemplo/storage/framework/views/c57faec6d1f75b95baf8baa84616b422.php
+05_Ejemplo/storage/framework/views/c7291f7d03f3a134285f0a3e6666098f.php
+05_Ejemplo/storage/framework/views/cb5a97660488c780d3440149d5dd8044.php
+05_Ejemplo/storage/framework/views/cc7eb363b5ece42ac5a331b4793b031d.php
+05_Ejemplo/storage/framework/views/cd97461a0184bfe52fe3e23ed6edbe6f.php
+05_Ejemplo/storage/framework/views/cdd64d2cef0efcdf48775e2d263a43d1.php
+05_Ejemplo/storage/framework/views/ce74d68b83df192304bb4b6a9ee98b96.php
+05_Ejemplo/storage/framework/views/d1cb8869e5c2459d1612f51c80b28c68.php
+05_Ejemplo/storage/framework/views/d39fea42ab436221d124dbb948cd8d93.php
+05_Ejemplo/storage/framework/views/d84142958ea94bc8e8c3ceb0acd41891.php
+05_Ejemplo/storage/framework/views/d91f373f83ffba803d8df72bfd50cc35.php
+05_Ejemplo/storage/framework/views/da5b43418d857e8d63b94064200a47eb.php
+05_Ejemplo/storage/framework/views/dbcaae07c8a0f308119ca8176e4b4826.php
+05_Ejemplo/storage/framework/views/e05d9c7a26a8a4ee0dd4566c5a710f24.php
+05_Ejemplo/storage/framework/views/e1af749664473e9674aa188a297c4383.php
+05_Ejemplo/storage/framework/views/e3621f5d7eb27149257cc710e5d8f93d.php
+05_Ejemplo/storage/framework/views/e4c6170965dbd99d41424e4eae79308c.php
+05_Ejemplo/storage/framework/views/ed0a62d3ce6553991706646075c183ae.php
+05_Ejemplo/storage/framework/views/f123043427576702073dbe6b1cb98c58.php
+05_Ejemplo/storage/framework/views/f1f09f10d61ec334affc46080a08e3ef.php
+05_Ejemplo/storage/framework/views/fa61e9ca2b975273851797cc1f6b92c8.php
+05_Ejemplo/storage/logs/
+05_Ejemplo/storage/logs/laravel.log
+05_Ejemplo/tests/
+05_Ejemplo/tests/Pest.php
+05_Ejemplo/tests/TestCase.php
+05_Ejemplo/tests/Feature/
+05_Ejemplo/tests/Feature/ExampleTest.php
+05_Ejemplo/tests/Unit/
+05_Ejemplo/tests/Unit/ExampleTest.php
+
+sent 390.875 bytes  received 7.515 bytes  88.531,11 bytes/sec
+total size is 5.657.530  speedup is 14,20
+rafa@rafa:/var/www/html/05_Ejemplo$ ssh usuario@10.4.1.56
+usuario@10.4.1.56's password: 
+Permission denied, please try again.
+usuario@10.4.1.56's password: 
+Welcome to Ubuntu 25.10 (GNU/Linux 6.17.0-7-generic x86_64)
+
+ * Documentation:  https://docs.ubuntu.com
+ * Management:     https://landscape.canonical.com
+ * Support:        https://ubuntu.com/pro
+
+Se pueden aplicar 0 actualizaciones de forma inmediata.
+
+Last login: Fri Nov 28 15:30:42 2025 from 10.4.0.84
+usuario@usuario:~$ sudo mv /home/usuario/
+05_Ejemplo/              .cache/                  Escritorio/              .local/                  Público/                 
+.bash_history            .config/                 Imágenes/                Música/                  snap/                    
+.bash_logout             Descargas/               index.html               Plantillas/              .ssh/                    
+.bashrc                  Documentos/              index.nginx-debian.html  .profile                 Vídeos/                  
+usuario@usuario:~$ sudo mv /home/usuario/05_Ejemplo/ /var/www/html/
+[sudo: authenticate] Password: 
+usuario@usuario:~$ cd /var/www
+usuario@usuario:/var/www$ sudo chown -R www-data:www-data /var/www/html/
+05_Ejemplo/ index.html  
+usuario@usuario:/var/www$ sudo chown -R www-data:www-data /var/www/html/05_Ejemplo/
+usuario@usuario:/var/www$ sudo find /var/www/html/05_Ejemplo -type f -exec chmod 644 {} \;
+usuario@usuario:/var/www$ sudo find /var/www/html/05_Ejemplo -type d -exec chmod 755 {} \;
+usuario@usuario:/var/www$ sudo chown -R www-data:www-data /var/www/html/05_Ejemplo/storage /var/www/html/05_Ejemplo/bootstrap/cache
+usuario@usuario:/var/www$ cd html/05_Ejemplo/
+usuario@usuario:/var/www/html/05_Ejemplo$ composer install --no-dev --optimize-autoloader
+No se ha encontrado la orden «composer», pero se puede instalar con:
+sudo apt install composer
+usuario@usuario:/var/www/html/05_Ejemplo$ sudo apt install composer
+Los paquetes indicados a continuación se instalaron de forma automática y ya no son necesarios.
+  linux-headers-6.17.0-5  linux-headers-6.17.0-5-generic  linux-modules-6.17.0-5-generic  linux-tools-6.17.0-5  linux-tools-6.17.0-5-generic
+Utilice «sudo apt autoremove» para eliminarlos.
+
+Installing:
+  composer
+
+Installing dependencies:
+  git            php-composer-ca-bundle            php-intl                           php-symfony-filesystem         php8.4-intl
+  git-man        php-composer-class-map-generator  php-json-schema                    php-symfony-finder             php8.4-mbstring
+  jsonlint       php-composer-metadata-minifier    php-mbstring                       php-symfony-process            php8.4-opcache
+  libargon2-1    php-composer-pcre                 php-psr-container                  php-symfony-service-contracts  php8.4-readline
+  liberror-perl  php-composer-semver               php-psr-log                        php-symfony-string             php8.4-zip
+  libsodium23    php-composer-spdx-licenses        php-react-promise                  php-zip
+  libzip5        php-composer-xdebug-handler       php-seld-signal-handler            php8.4-cli
+  php-cli        php-curl                          php-symfony-console                php8.4-common
+  php-common     php-enum                          php-symfony-deprecation-contracts  php8.4-curl
+
+Paquetes sugeridos:
+  fossil  mercurial  subversion  git-doc  git-email  git-gui  gitk  gitweb  git-cvs  git-svn  php-pear
+
+Summary:
+  Upgrading: 0, Installing: 42, Removing: 0, Not Upgrading: 0
+  Download size: 11,1 MB
+  Space needed: 55,7 MB / 68,0 GB available
+
+Continue? [S/n] 
+Des:1 http://es.archive.ubuntu.com/ubuntu questing/main amd64 php-common all 2:96ubuntu1 [14,2 kB]
+Des:2 http://es.archive.ubuntu.com/ubuntu questing/main amd64 php8.4-common amd64 8.4.11-1ubuntu1 [803 kB]
+Des:3 http://es.archive.ubuntu.com/ubuntu questing/main amd64 php8.4-opcache amd64 8.4.11-1ubuntu1 [513 kB]
+Des:4 http://es.archive.ubuntu.com/ubuntu questing/main amd64 php8.4-readline amd64 8.4.11-1ubuntu1 [14,5 kB]
+Des:5 http://es.archive.ubuntu.com/ubuntu questing/main amd64 libargon2-1 amd64 0~20190702+dfsg-4build1 [20,8 kB]
+Des:6 http://es.archive.ubuntu.com/ubuntu questing/main amd64 libsodium23 amd64 1.0.18-1build3 [161 kB]
+Des:7 http://es.archive.ubuntu.com/ubuntu questing/main amd64 php8.4-cli amd64 8.4.11-1ubuntu1 [2.115 kB]
+Des:8 http://es.archive.ubuntu.com/ubuntu questing/main amd64 php-cli all 2:8.4+96ubuntu1 [4.946 B]
+Des:9 http://es.archive.ubuntu.com/ubuntu questing/universe amd64 php-composer-ca-bundle all 1.5.6-1 [8.134 B]
+Des:10 http://es.archive.ubuntu.com/ubuntu questing/universe amd64 php-symfony-finder all 6.4.24+dfsg-1 [33,2 kB]
+Des:11 http://es.archive.ubuntu.com/ubuntu questing/universe amd64 php-composer-pcre all 3.3.2-3 [14,2 kB]
+Des:12 http://es.archive.ubuntu.com/ubuntu questing/universe amd64 php-composer-class-map-generator all 1.6.1-1 [12,1 kB]
+Des:13 http://es.archive.ubuntu.com/ubuntu questing/universe amd64 php-composer-metadata-minifier all 1.0.0-2 [3.594 B]
+Des:14 http://es.archive.ubuntu.com/ubuntu questing/universe amd64 php-composer-semver all 3.4.3-2 [19,6 kB]
+Des:15 http://es.archive.ubuntu.com/ubuntu questing/universe amd64 php-composer-spdx-licenses all 1.5.8-3 [15,5 kB]
+Des:16 http://es.archive.ubuntu.com/ubuntu questing/universe amd64 php-psr-log all 3.0.2-2 [6.682 B]
+Des:17 http://es.archive.ubuntu.com/ubuntu questing/universe amd64 php-composer-xdebug-handler all 3.0.5-4 [17,3 kB]
+Des:18 http://es.archive.ubuntu.com/ubuntu questing/universe amd64 php-enum all 4.7.1-1 [17,8 kB]
+Des:19 http://es.archive.ubuntu.com/ubuntu questing/universe amd64 php-json-schema all 6.4.1-1 [38,6 kB]
+Des:20 http://es.archive.ubuntu.com/ubuntu questing/universe amd64 jsonlint all 1.11.0-2 [14,1 kB]
+Des:21 http://es.archive.ubuntu.com/ubuntu questing/universe amd64 php-symfony-deprecation-contracts all 3.5.2-5 [6.146 B]
+Des:22 http://es.archive.ubuntu.com/ubuntu questing/main amd64 php8.4-mbstring amd64 8.4.11-1ubuntu1 [533 kB]
+Des:23 http://es.archive.ubuntu.com/ubuntu questing/universe amd64 php-mbstring all 2:8.4+96ubuntu1 [1.852 B]
+Des:24 http://es.archive.ubuntu.com/ubuntu questing/universe amd64 php-psr-container all 2.0.2-1 [3.878 B]
+Des:25 http://es.archive.ubuntu.com/ubuntu questing/universe amd64 php-symfony-service-contracts all 3.5.2-5 [7.650 B]
+Des:26 http://es.archive.ubuntu.com/ubuntu questing/universe amd64 php8.4-intl amd64 8.4.11-1ubuntu1 [177 kB]
+Des:27 http://es.archive.ubuntu.com/ubuntu questing/universe amd64 php-intl all 2:8.4+96ubuntu1 [1.846 B]
+Des:28 http://es.archive.ubuntu.com/ubuntu questing/universe amd64 php-symfony-string all 6.4.24+dfsg-1 [45,5 kB]
+Des:29 http://es.archive.ubuntu.com/ubuntu questing/universe amd64 php-symfony-console all 6.4.24+dfsg-1 [97,5 kB]
+Des:30 http://es.archive.ubuntu.com/ubuntu questing/universe amd64 php-symfony-filesystem all 6.4.24+dfsg-1 [32,0 kB]
+Des:31 http://es.archive.ubuntu.com/ubuntu questing/universe amd64 php-symfony-process all 6.4.24+dfsg-1 [38,9 kB]
+Des:32 http://es.archive.ubuntu.com/ubuntu questing/universe amd64 php-react-promise all 3.2.0-3 [18,7 kB]
+Des:33 http://es.archive.ubuntu.com/ubuntu questing/universe amd64 php-seld-signal-handler all 2.0.2-4 [10,2 kB]
+Des:34 http://es.archive.ubuntu.com/ubuntu questing/universe amd64 composer all 2.8.8-1 [493 kB]
+Des:35 http://es.archive.ubuntu.com/ubuntu questing/main amd64 liberror-perl all 0.17030-1 [23,5 kB]
+Des:36 http://es.archive.ubuntu.com/ubuntu questing/main amd64 git-man all 1:2.51.0-1ubuntu1 [1.179 kB]
+Des:37 http://es.archive.ubuntu.com/ubuntu questing/main amd64 git amd64 1:2.51.0-1ubuntu1 [4.414 kB]
+Des:38 http://es.archive.ubuntu.com/ubuntu questing/universe amd64 libzip5 amd64 1.11.3-2 [70,3 kB]
+Des:39 http://es.archive.ubuntu.com/ubuntu questing/main amd64 php8.4-curl amd64 8.4.11-1ubuntu1 [46,0 kB]
+Des:40 http://es.archive.ubuntu.com/ubuntu questing/main amd64 php-curl all 2:8.4+96ubuntu1 [1.838 B]
+Des:41 http://es.archive.ubuntu.com/ubuntu questing/universe amd64 php8.4-zip amd64 8.4.11-1ubuntu1 [32,7 kB]
+Des:42 http://es.archive.ubuntu.com/ubuntu questing/universe amd64 php-zip all 2:8.4+96ubuntu1 [1.842 B]
+Descargados 11,1 MB en 2s (4.689 kB/s)  
+Extrayendo plantillas para los paquetes: 100%
+Seleccionando el paquete php-common previamente no seleccionado.
+(Leyendo la base de datos ... 186434 ficheros o directorios instalados actualmente.)
+Preparando para desempaquetar .../00-php-common_2%3a96ubuntu1_all.deb ...
+Desempaquetando php-common (2:96ubuntu1) ...
+Seleccionando el paquete php8.4-common previamente no seleccionado.
+Preparando para desempaquetar .../01-php8.4-common_8.4.11-1ubuntu1_amd64.deb ...
+Desempaquetando php8.4-common (8.4.11-1ubuntu1) ...
+Seleccionando el paquete php8.4-opcache previamente no seleccionado.
+Preparando para desempaquetar .../02-php8.4-opcache_8.4.11-1ubuntu1_amd64.deb ...
+Desempaquetando php8.4-opcache (8.4.11-1ubuntu1) ...
+Seleccionando el paquete php8.4-readline previamente no seleccionado.
+Preparando para desempaquetar .../03-php8.4-readline_8.4.11-1ubuntu1_amd64.deb ...
+Desempaquetando php8.4-readline (8.4.11-1ubuntu1) ...
+Seleccionando el paquete libargon2-1:amd64 previamente no seleccionado.
+Preparando para desempaquetar .../04-libargon2-1_0~20190702+dfsg-4build1_amd64.deb ...
+Desempaquetando libargon2-1:amd64 (0~20190702+dfsg-4build1) ...
+Seleccionando el paquete libsodium23:amd64 previamente no seleccionado.
+Preparando para desempaquetar .../05-libsodium23_1.0.18-1build3_amd64.deb ...
+Desempaquetando libsodium23:amd64 (1.0.18-1build3) ...
+Seleccionando el paquete php8.4-cli previamente no seleccionado.
+Preparando para desempaquetar .../06-php8.4-cli_8.4.11-1ubuntu1_amd64.deb ...
+Desempaquetando php8.4-cli (8.4.11-1ubuntu1) ...
+Seleccionando el paquete php-cli previamente no seleccionado.
+Preparando para desempaquetar .../07-php-cli_2%3a8.4+96ubuntu1_all.deb ...
+Desempaquetando php-cli (2:8.4+96ubuntu1) ...
+Seleccionando el paquete php-composer-ca-bundle previamente no seleccionado.
+Preparando para desempaquetar .../08-php-composer-ca-bundle_1.5.6-1_all.deb ...
+Desempaquetando php-composer-ca-bundle (1.5.6-1) ...
+Seleccionando el paquete php-symfony-finder previamente no seleccionado.
+Preparando para desempaquetar .../09-php-symfony-finder_6.4.24+dfsg-1_all.deb ...
+Desempaquetando php-symfony-finder (6.4.24+dfsg-1) ...
+Seleccionando el paquete php-composer-pcre previamente no seleccionado.
+Preparando para desempaquetar .../10-php-composer-pcre_3.3.2-3_all.deb ...
+Desempaquetando php-composer-pcre (3.3.2-3) ...
+Seleccionando el paquete php-composer-class-map-generator previamente no seleccionado.
+Preparando para desempaquetar .../11-php-composer-class-map-generator_1.6.1-1_all.deb ...
+Desempaquetando php-composer-class-map-generator (1.6.1-1) ...
+Seleccionando el paquete php-composer-metadata-minifier previamente no seleccionado.
+Preparando para desempaquetar .../12-php-composer-metadata-minifier_1.0.0-2_all.deb ...
+Desempaquetando php-composer-metadata-minifier (1.0.0-2) ...
+Seleccionando el paquete php-composer-semver previamente no seleccionado.
+Preparando para desempaquetar .../13-php-composer-semver_3.4.3-2_all.deb ...
+Desempaquetando php-composer-semver (3.4.3-2) ...
+Seleccionando el paquete php-composer-spdx-licenses previamente no seleccionado.
+Preparando para desempaquetar .../14-php-composer-spdx-licenses_1.5.8-3_all.deb ...
+Desempaquetando php-composer-spdx-licenses (1.5.8-3) ...
+Seleccionando el paquete php-psr-log previamente no seleccionado.
+Preparando para desempaquetar .../15-php-psr-log_3.0.2-2_all.deb ...
+Desempaquetando php-psr-log (3.0.2-2) ...
+Seleccionando el paquete php-composer-xdebug-handler previamente no seleccionado.
+Preparando para desempaquetar .../16-php-composer-xdebug-handler_3.0.5-4_all.deb ...
+Desempaquetando php-composer-xdebug-handler (3.0.5-4) ...
+Seleccionando el paquete php-enum previamente no seleccionado.
+Preparando para desempaquetar .../17-php-enum_4.7.1-1_all.deb ...
+Desempaquetando php-enum (4.7.1-1) ...
+Seleccionando el paquete php-json-schema previamente no seleccionado.
+Preparando para desempaquetar .../18-php-json-schema_6.4.1-1_all.deb ...
+Desempaquetando php-json-schema (6.4.1-1) ...
+Seleccionando el paquete jsonlint previamente no seleccionado.
+Preparando para desempaquetar .../19-jsonlint_1.11.0-2_all.deb ...
+Desempaquetando jsonlint (1.11.0-2) ...
+Seleccionando el paquete php-symfony-deprecation-contracts previamente no seleccionado.
+Preparando para desempaquetar .../20-php-symfony-deprecation-contracts_3.5.2-5_all.deb ...
+Desempaquetando php-symfony-deprecation-contracts (3.5.2-5) ...
+Seleccionando el paquete php8.4-mbstring previamente no seleccionado.
+Preparando para desempaquetar .../21-php8.4-mbstring_8.4.11-1ubuntu1_amd64.deb ...
+Desempaquetando php8.4-mbstring (8.4.11-1ubuntu1) ...
+Seleccionando el paquete php-mbstring previamente no seleccionado.
+Preparando para desempaquetar .../22-php-mbstring_2%3a8.4+96ubuntu1_all.deb ...
+Desempaquetando php-mbstring (2:8.4+96ubuntu1) ...
+Seleccionando el paquete php-psr-container previamente no seleccionado.
+Preparando para desempaquetar .../23-php-psr-container_2.0.2-1_all.deb ...
+Desempaquetando php-psr-container (2.0.2-1) ...
+Seleccionando el paquete php-symfony-service-contracts previamente no seleccionado.
+Preparando para desempaquetar .../24-php-symfony-service-contracts_3.5.2-5_all.deb ...
+Desempaquetando php-symfony-service-contracts (3.5.2-5) ...
+Seleccionando el paquete php8.4-intl previamente no seleccionado.
+Preparando para desempaquetar .../25-php8.4-intl_8.4.11-1ubuntu1_amd64.deb ...
+Desempaquetando php8.4-intl (8.4.11-1ubuntu1) ...
+Seleccionando el paquete php-intl previamente no seleccionado.
+Preparando para desempaquetar .../26-php-intl_2%3a8.4+96ubuntu1_all.deb ...
+Desempaquetando php-intl (2:8.4+96ubuntu1) ...
+Seleccionando el paquete php-symfony-string previamente no seleccionado.
+Preparando para desempaquetar .../27-php-symfony-string_6.4.24+dfsg-1_all.deb ...
+Desempaquetando php-symfony-string (6.4.24+dfsg-1) ...
+Seleccionando el paquete php-symfony-console previamente no seleccionado.
+Preparando para desempaquetar .../28-php-symfony-console_6.4.24+dfsg-1_all.deb ...
+Desempaquetando php-symfony-console (6.4.24+dfsg-1) ...
+Seleccionando el paquete php-symfony-filesystem previamente no seleccionado.
+Preparando para desempaquetar .../29-php-symfony-filesystem_6.4.24+dfsg-1_all.deb ...
+Desempaquetando php-symfony-filesystem (6.4.24+dfsg-1) ...
+Seleccionando el paquete php-symfony-process previamente no seleccionado.
+Preparando para desempaquetar .../30-php-symfony-process_6.4.24+dfsg-1_all.deb ...
+Desempaquetando php-symfony-process (6.4.24+dfsg-1) ...
+Seleccionando el paquete php-react-promise previamente no seleccionado.
+Preparando para desempaquetar .../31-php-react-promise_3.2.0-3_all.deb ...
+Desempaquetando php-react-promise (3.2.0-3) ...
+Seleccionando el paquete php-seld-signal-handler previamente no seleccionado.
+Preparando para desempaquetar .../32-php-seld-signal-handler_2.0.2-4_all.deb ...
+Desempaquetando php-seld-signal-handler (2.0.2-4) ...
+Seleccionando el paquete composer previamente no seleccionado.
+Preparando para desempaquetar .../33-composer_2.8.8-1_all.deb ...
+Desempaquetando composer (2.8.8-1) ...
+Seleccionando el paquete liberror-perl previamente no seleccionado.
+Preparando para desempaquetar .../34-liberror-perl_0.17030-1_all.deb ...
+Desempaquetando liberror-perl (0.17030-1) ...
+Seleccionando el paquete git-man previamente no seleccionado.
+Preparando para desempaquetar .../35-git-man_1%3a2.51.0-1ubuntu1_all.deb ...
+Desempaquetando git-man (1:2.51.0-1ubuntu1) ...
+Seleccionando el paquete git previamente no seleccionado.
+Preparando para desempaquetar .../36-git_1%3a2.51.0-1ubuntu1_amd64.deb ...
+Desempaquetando git (1:2.51.0-1ubuntu1) ...
+Seleccionando el paquete libzip5:amd64 previamente no seleccionado.
+Preparando para desempaquetar .../37-libzip5_1.11.3-2_amd64.deb ...
+Desempaquetando libzip5:amd64 (1.11.3-2) ...
+Seleccionando el paquete php8.4-curl previamente no seleccionado.
+Preparando para desempaquetar .../38-php8.4-curl_8.4.11-1ubuntu1_amd64.deb ...
+Desempaquetando php8.4-curl (8.4.11-1ubuntu1) ...
+Seleccionando el paquete php-curl previamente no seleccionado.
+Preparando para desempaquetar .../39-php-curl_2%3a8.4+96ubuntu1_all.deb ...
+Desempaquetando php-curl (2:8.4+96ubuntu1) ...
+Seleccionando el paquete php8.4-zip previamente no seleccionado.
+Preparando para desempaquetar .../40-php8.4-zip_8.4.11-1ubuntu1_amd64.deb ...
+Desempaquetando php8.4-zip (8.4.11-1ubuntu1) ...
+Seleccionando el paquete php-zip previamente no seleccionado.
+Preparando para desempaquetar .../41-php-zip_2%3a8.4+96ubuntu1_all.deb ...
+Desempaquetando php-zip (2:8.4+96ubuntu1) ...
+Configurando php-common (2:96ubuntu1) ...
+Created symlink '/etc/systemd/system/timers.target.wants/phpsessionclean.timer' → '/usr/lib/systemd/system/phpsessionclean.timer'.
+Configurando libsodium23:amd64 (1.0.18-1build3) ...
+Configurando libzip5:amd64 (1.11.3-2) ...
+Configurando libargon2-1:amd64 (0~20190702+dfsg-4build1) ...
+Configurando php-psr-container (2.0.2-1) ...
+Configurando php-composer-pcre (3.3.2-3) ...
+Configurando php8.4-common (8.4.11-1ubuntu1) ...
+Creating config file /etc/php/8.4/mods-available/calendar.ini with new version
+Creating config file /etc/php/8.4/mods-available/ctype.ini with new version
+Creating config file /etc/php/8.4/mods-available/exif.ini with new version
+Creating config file /etc/php/8.4/mods-available/fileinfo.ini with new version
+Creating config file /etc/php/8.4/mods-available/ffi.ini with new version
+Creating config file /etc/php/8.4/mods-available/ftp.ini with new version
+Creating config file /etc/php/8.4/mods-available/gettext.ini with new version
+Creating config file /etc/php/8.4/mods-available/iconv.ini with new version
+Creating config file /etc/php/8.4/mods-available/pdo.ini with new version
+Creating config file /etc/php/8.4/mods-available/phar.ini with new version
+Creating config file /etc/php/8.4/mods-available/posix.ini with new version
+Creating config file /etc/php/8.4/mods-available/shmop.ini with new version
+Creating config file /etc/php/8.4/mods-available/sockets.ini with new version
+Creating config file /etc/php/8.4/mods-available/sysvmsg.ini with new version
+Creating config file /etc/php/8.4/mods-available/sysvsem.ini with new version
+Creating config file /etc/php/8.4/mods-available/sysvshm.ini with new version
+Creating config file /etc/php/8.4/mods-available/tokenizer.ini with new version
+Configurando php8.4-curl (8.4.11-1ubuntu1) ...
+Creating config file /etc/php/8.4/mods-available/curl.ini with new version
+Configurando php-seld-signal-handler (2.0.2-4) ...
+Configurando liberror-perl (0.17030-1) ...
+Configurando php-composer-ca-bundle (1.5.6-1) ...
+Configurando php-symfony-process (6.4.24+dfsg-1) ...
+Configurando php8.4-zip (8.4.11-1ubuntu1) ...
+Creating config file /etc/php/8.4/mods-available/zip.ini with new version
+Configurando php-react-promise (3.2.0-3) ...
+Configurando php-psr-log (3.0.2-2) ...
+Configurando php-zip (2:8.4+96ubuntu1) ...
+Configurando php-composer-metadata-minifier (1.0.0-2) ...
+Configurando php-composer-semver (3.4.3-2) ...
+Configurando git-man (1:2.51.0-1ubuntu1) ...
+Configurando php-composer-spdx-licenses (1.5.8-3) ...
+Configurando php8.4-opcache (8.4.11-1ubuntu1) ...
+Creating config file /etc/php/8.4/mods-available/opcache.ini with new version
+Configurando php-symfony-deprecation-contracts (3.5.2-5) ...
+Configurando php8.4-intl (8.4.11-1ubuntu1) ...
+Creating config file /etc/php/8.4/mods-available/intl.ini with new version
+Configurando php-symfony-finder (6.4.24+dfsg-1) ...
+Configurando php-enum (4.7.1-1) ...
+Configurando php-curl (2:8.4+96ubuntu1) ...
+Configurando php-composer-xdebug-handler (3.0.5-4) ...
+Configurando php8.4-readline (8.4.11-1ubuntu1) ...
+Creating config file /etc/php/8.4/mods-available/readline.ini with new version
+Configurando php8.4-mbstring (8.4.11-1ubuntu1) ...
+Creating config file /etc/php/8.4/mods-available/mbstring.ini with new version
+Configurando php-symfony-service-contracts (3.5.2-5) ...
+Configurando php-mbstring (2:8.4+96ubuntu1) ...
+Configurando php-composer-class-map-generator (1.6.1-1) ...
+Configurando php-intl (2:8.4+96ubuntu1) ...
+Configurando php-symfony-filesystem (6.4.24+dfsg-1) ...
+Configurando git (1:2.51.0-1ubuntu1) ...
+Configurando php-symfony-string (6.4.24+dfsg-1) ...
+Configurando php8.4-cli (8.4.11-1ubuntu1) ...
+update-alternatives: utilizando /usr/bin/php8.4 para proveer /usr/bin/php (php) en modo automático
+update-alternatives: utilizando /usr/bin/phar8.4 para proveer /usr/bin/phar (phar) en modo automático
+update-alternatives: utilizando /usr/bin/phar.phar8.4 para proveer /usr/bin/phar.phar (phar.phar) en modo automático
+Creating config file /etc/php/8.4/cli/php.ini with new version
+Configurando php-symfony-console (6.4.24+dfsg-1) ...
+Configurando jsonlint (1.11.0-2) ...
+Configurando php-cli (2:8.4+96ubuntu1) ...
+update-alternatives: utilizando /usr/bin/php.default para proveer /usr/bin/php (php) en modo automático
+update-alternatives: utilizando /usr/bin/phar.default para proveer /usr/bin/phar (phar) en modo automático
+update-alternatives: utilizando /usr/bin/phar.phar.default para proveer /usr/bin/phar.phar (phar.phar) en modo automático
+Configurando php-json-schema (6.4.1-1) ...
+Configurando composer (2.8.8-1) ...
+Procesando disparadores para man-db (2.13.1-1) ...
+Procesando disparadores para libc-bin (2.42-0ubuntu3) ...
+Procesando disparadores para php8.4-cli (8.4.11-1ubuntu1) ...
+usuario@usuario:/var/www/html/05_Ejemplo$ composer install --no-dev --optimize-autoloader
+Installing dependencies from lock file
+Verifying lock file contents can be installed on current platform.
+Your lock file does not contain a compatible set of packages. Please run composer update.
+
+  Problem 1
+    - tijsverkoyen/css-to-inline-styles is locked to version v2.3.0 and an update of this package was not requested.
+    - tijsverkoyen/css-to-inline-styles v2.3.0 requires ext-dom * -> it is missing from your system. Install or enable PHP's dom extension.
+  Problem 2
+    - laravel/framework is locked to version v12.39.0 and an update of this package was not requested.
+    - laravel/framework v12.39.0 requires tijsverkoyen/css-to-inline-styles ^2.2.5 -> satisfiable by tijsverkoyen/css-to-inline-styles[v2.3.0].
+    - tijsverkoyen/css-to-inline-styles v2.3.0 requires ext-dom * -> it is missing from your system. Install or enable PHP's dom extension.
+
+To enable extensions, verify that they are enabled in your .ini files:
+    - /etc/php/8.4/cli/php.ini
+    - /etc/php/8.4/cli/conf.d/10-opcache.ini
+    - /etc/php/8.4/cli/conf.d/10-pdo.ini
+    - /etc/php/8.4/cli/conf.d/20-calendar.ini
+    - /etc/php/8.4/cli/conf.d/20-ctype.ini
+    - /etc/php/8.4/cli/conf.d/20-curl.ini
+    - /etc/php/8.4/cli/conf.d/20-exif.ini
+    - /etc/php/8.4/cli/conf.d/20-ffi.ini
+    - /etc/php/8.4/cli/conf.d/20-fileinfo.ini
+    - /etc/php/8.4/cli/conf.d/20-ftp.ini
+    - /etc/php/8.4/cli/conf.d/20-gettext.ini
+    - /etc/php/8.4/cli/conf.d/20-iconv.ini
+    - /etc/php/8.4/cli/conf.d/20-intl.ini
+    - /etc/php/8.4/cli/conf.d/20-mbstring.ini
+    - /etc/php/8.4/cli/conf.d/20-phar.ini
+    - /etc/php/8.4/cli/conf.d/20-posix.ini
+    - /etc/php/8.4/cli/conf.d/20-readline.ini
+    - /etc/php/8.4/cli/conf.d/20-shmop.ini
+    - /etc/php/8.4/cli/conf.d/20-sockets.ini
+    - /etc/php/8.4/cli/conf.d/20-sysvmsg.ini
+    - /etc/php/8.4/cli/conf.d/20-sysvsem.ini
+    - /etc/php/8.4/cli/conf.d/20-sysvshm.ini
+    - /etc/php/8.4/cli/conf.d/20-tokenizer.ini
+    - /etc/php/8.4/cli/conf.d/20-zip.ini
+You can also run `php --ini` in a terminal to see which files are used by PHP in CLI mode.
+Alternatively, you can run Composer with `--ignore-platform-req=ext-dom` to temporarily ignore these required extensions.
+usuario@usuario:/var/www/html/05_Ejemplo$ sudo apt install -y php8.4-xml
+[sudo: authenticate] Password: 
+Los paquetes indicados a continuación se instalaron de forma automática y ya no son necesarios.
+  linux-headers-6.17.0-5  linux-headers-6.17.0-5-generic  linux-modules-6.17.0-5-generic  linux-tools-6.17.0-5  linux-tools-6.17.0-5-generic
+Utilice «sudo apt autoremove» para eliminarlos.
+
+Installing:
+  php8.4-xml
+
+Summary:
+  Upgrading: 0, Installing: 1, Removing: 0, Not Upgrading: 0
+  Download size: 907 kB
+  Space needed: 3.959 kB / 68,0 GB available
+
+Des:1 http://es.archive.ubuntu.com/ubuntu questing/main amd64 php8.4-xml amd64 8.4.11-1ubuntu1 [907 kB]
+Descargados 907 kB en 1s (1.747 kB/s)
+Seleccionando el paquete php8.4-xml previamente no seleccionado.
+(Leyendo la base de datos ... 188669 ficheros o directorios instalados actualmente.)
+Preparando para desempaquetar .../php8.4-xml_8.4.11-1ubuntu1_amd64.deb ...
+Desempaquetando php8.4-xml (8.4.11-1ubuntu1) ...
+Configurando php8.4-xml (8.4.11-1ubuntu1) ...
+Creating config file /etc/php/8.4/mods-available/dom.ini with new version
+Creating config file /etc/php/8.4/mods-available/simplexml.ini with new version
+Creating config file /etc/php/8.4/mods-available/xml.ini with new version
+Creating config file /etc/php/8.4/mods-available/xmlreader.ini with new version
+Creating config file /etc/php/8.4/mods-available/xmlwriter.ini with new version
+Creating config file /etc/php/8.4/mods-available/xsl.ini with new version
+Procesando disparadores para php8.4-cli (8.4.11-1ubuntu1) ...
+usuario@usuario:/var/www/html/05_Ejemplo$ sudo apt install -y php8.4-mbstring php8.4-curl php8.4-zip php8.4-gd php8.4-intl php8.4-bcmath
+php8.4-mbstring ya está en su versión más reciente (8.4.11-1ubuntu1).
+fijado php8.4-mbstring como instalado manualmente.
+php8.4-curl ya está en su versión más reciente (8.4.11-1ubuntu1).
+fijado php8.4-curl como instalado manualmente.
+php8.4-zip ya está en su versión más reciente (8.4.11-1ubuntu1).
+fijado php8.4-zip como instalado manualmente.
+php8.4-intl ya está en su versión más reciente (8.4.11-1ubuntu1).
+fijado php8.4-intl como instalado manualmente.
+Los paquetes indicados a continuación se instalaron de forma automática y ya no son necesarios.
+  linux-headers-6.17.0-5  linux-headers-6.17.0-5-generic  linux-modules-6.17.0-5-generic  linux-tools-6.17.0-5  linux-tools-6.17.0-5-generic
+Utilice «sudo apt autoremove» para eliminarlos.
+
+Installing:
+  php8.4-bcmath  php8.4-gd
+
+Summary:
+  Upgrading: 0, Installing: 2, Removing: 0, Not Upgrading: 0
+  Download size: 73,3 kB
+  Space needed: 295 kB / 68,0 GB available
+
+Des:1 http://es.archive.ubuntu.com/ubuntu questing/universe amd64 php8.4-bcmath amd64 8.4.11-1ubuntu1 [30,5 kB]
+Des:2 http://es.archive.ubuntu.com/ubuntu questing/main amd64 php8.4-gd amd64 8.4.11-1ubuntu1 [42,8 kB]
+Descargados 73,3 kB en 0s (299 kB/s)
+Seleccionando el paquete php8.4-bcmath previamente no seleccionado.
+(Leyendo la base de datos ... 188688 ficheros o directorios instalados actualmente.)
+Preparando para desempaquetar .../php8.4-bcmath_8.4.11-1ubuntu1_amd64.deb ...
+Desempaquetando php8.4-bcmath (8.4.11-1ubuntu1) ...
+Seleccionando el paquete php8.4-gd previamente no seleccionado.
+Preparando para desempaquetar .../php8.4-gd_8.4.11-1ubuntu1_amd64.deb ...
+Desempaquetando php8.4-gd (8.4.11-1ubuntu1) ...
+Configurando php8.4-gd (8.4.11-1ubuntu1) ...
+Creating config file /etc/php/8.4/mods-available/gd.ini with new version
+Configurando php8.4-bcmath (8.4.11-1ubuntu1) ...
+Creating config file /etc/php/8.4/mods-available/bcmath.ini with new version
+Procesando disparadores para php8.4-cli (8.4.11-1ubuntu1) ...
+usuario@usuario:/var/www/html/05_Ejemplo$ sudo systemctl restart apache2
+php -m | grep dom
+dom
+random
+usuario@usuario:/var/www/html/05_Ejemplo$ composer install --no-dev --optimize-autoloader
+Installing dependencies from lock file
+Verifying lock file contents can be installed on current platform.
+Package operations: 76 installs, 0 updates, 0 removals
+
+In Filesystem.php line 261:
+                                                                            
+  /var/www/html/05_Ejemplo/vendor does not exist and could not be created:  
+                                                                            
+
+install [--prefer-source] [--prefer-dist] [--prefer-install PREFER-INSTALL] [--dry-run] [--download-only] [--dev] [--no-suggest] [--no-dev] [--no-autoloader] [--no-progress] [--no-install] [--audit] [--audit-format AUDIT-FORMAT] [-v|vv|vvv|--verbose] [-o|--optimize-autoloader] [-a|--classmap-authoritative] [--apcu-autoloader] [--apcu-autoloader-prefix APCU-AUTOLOADER-PREFIX] [--ignore-platform-req IGNORE-PLATFORM-REQ] [--ignore-platform-reqs] [--] [<packages>...]
+
+usuario@usuario:/var/www/html/05_Ejemplo$ ls -ld /var/www/html/05_Ejemplo
+drwxr-xr-x 12 www-data www-data 4096 Nov 28 10:14 /var/www/html/05_Ejemplo
+usuario@usuario:/var/www/html/05_Ejemplo$ ls -l /var/www/html/05_Ejemplo
+total 532
+drwxr-xr-x 3 www-data www-data   4096 Nov 28 09:02 00_DOXYGEN
+-rw-r--r-- 1 www-data www-data   3911 Nov 28 09:02 README.md
+drwxr-xr-x 7 www-data www-data   4096 Nov 28 09:03 app
+-rw-r--r-- 1 www-data www-data    425 Nov 28 09:02 artisan
+drwxr-xr-x 3 www-data www-data   4096 Nov 28 09:02 bootstrap
+-rw-r--r-- 1 www-data www-data   2921 Nov 28 09:02 composer.json
+-rw-r--r-- 1 www-data www-data 352111 Nov 28 09:02 composer.lock
+drwxr-xr-x 2 www-data www-data   4096 Nov 28 09:02 config
+drwxr-xr-x 5 www-data www-data   4096 Nov 28 09:02 database
+-rw-r--r-- 1 www-data www-data    373 Nov 28 09:02 index.html
+-rw-r--r-- 1 www-data www-data     85 Nov 28 09:02 index.php
+-rw-r--r-- 1 www-data www-data  27411 Nov 28 09:02 laravel.sql
+-rw-r--r-- 1 www-data www-data  87680 Nov 28 09:02 package-lock.json
+-rw-r--r-- 1 www-data www-data    415 Nov 28 09:02 package.json
+-rw-r--r-- 1 www-data www-data   1284 Nov 28 09:02 phpunit.xml
+drwxr-xr-x 4 www-data www-data   4096 Nov 28 09:02 public
+drwxr-xr-x 4 www-data www-data   4096 Nov 28 09:02 resources
+drwxr-xr-x 2 www-data www-data   4096 Nov 28 09:02 routes
+drwxr-xr-x 5 www-data www-data   4096 Nov 28 09:02 storage
+drwxr-xr-x 4 www-data www-data   4096 Nov 28 09:02 tests
+-rw-r--r-- 1 www-data www-data    331 Nov 28 09:02 vite.config.js
+usuario@usuario:/var/www/html/05_Ejemplo$ sudo chown -R usuario:usuario /var/www/html/05_Ejemplo
+[sudo: authenticate] Password: 
+usuario@usuario:/var/www/html/05_Ejemplo$ sudo chmod -R 755 /var/www/html/05_Ejemplo
+usuario@usuario:/var/www/html/05_Ejemplo$ composer install --no-dev --optimize-autoloader
+Installing dependencies from lock file
+Verifying lock file contents can be installed on current platform.
+Package operations: 76 installs, 0 updates, 0 removals
+  - Downloading doctrine/inflector (2.1.0)
+  - Downloading doctrine/lexer (3.0.1)
+  - Downloading dragonmantank/cron-expression (v3.6.0)
+  - Downloading symfony/polyfill-php83 (v1.33.0)
+  - Downloading symfony/polyfill-mbstring (v1.33.0)
+  - Downloading symfony/deprecation-contracts (v3.6.0)
+  - Downloading symfony/http-foundation (v7.3.7)
+  - Downloading fruitcake/php-cors (v1.3.0)
+  - Downloading psr/http-message (2.0)
+  - Downloading psr/http-client (1.0.3)
+  - Downloading ralouphie/getallheaders (3.0.3)
+  - Downloading psr/http-factory (1.1.0)
+  - Downloading guzzlehttp/psr7 (2.8.0)
+  - Downloading guzzlehttp/promises (2.3.0)
+  - Downloading guzzlehttp/guzzle (7.10.0)
+  - Downloading symfony/polyfill-php80 (v1.33.0)
+  - Downloading guzzlehttp/uri-template (v1.0.5)
+  - Downloading symfony/polyfill-intl-normalizer (v1.33.0)
+  - Downloading symfony/polyfill-intl-grapheme (v1.33.0)
+  - Downloading symfony/polyfill-ctype (v1.33.0)
+  - Downloading symfony/string (v7.3.4)
+  - Downloading psr/container (2.0.2)
+  - Downloading symfony/service-contracts (v3.6.1)
+  - Downloading symfony/console (v7.3.6)
+  - Downloading laravel/prompts (v0.3.7)
+  - Downloading laravel/serializable-closure (v2.0.6)
+  - Downloading symfony/var-dumper (v7.3.5)
+  - Downloading nikic/php-parser (v5.6.2)
+  - Downloading psy/psysh (v0.12.14)
+  - Downloading voku/portable-ascii (2.0.3)
+  - Downloading phpoption/phpoption (1.9.4)
+  - Downloading graham-campbell/result-type (v1.1.3)
+  - Downloading vlucas/phpdotenv (v5.6.2)
+  - Downloading symfony/css-selector (v7.3.6)
+  - Downloading tijsverkoyen/css-to-inline-styles (v2.3.0)
+  - Downloading symfony/polyfill-uuid (v1.33.0)
+  - Downloading symfony/uid (v7.3.1)
+  - Downloading symfony/routing (v7.3.6)
+  - Downloading symfony/process (v7.3.4)
+  - Downloading symfony/polyfill-php85 (v1.33.0)
+  - Downloading symfony/polyfill-php84 (v1.33.0)
+  - Downloading symfony/polyfill-intl-idn (v1.33.0)
+  - Downloading symfony/mime (v7.3.4)
+  - Downloading psr/event-dispatcher (1.0.0)
+  - Downloading symfony/event-dispatcher-contracts (v3.6.0)
+  - Downloading symfony/event-dispatcher (v7.3.3)
+  - Downloading psr/log (3.0.2)
+  - Downloading egulias/email-validator (4.0.4)
+  - Downloading symfony/mailer (v7.3.5)
+  - Downloading symfony/error-handler (v7.3.6)
+  - Downloading symfony/http-kernel (v7.3.7)
+  - Downloading symfony/finder (v7.3.5)
+  - Downloading ramsey/collection (2.1.1)
+  - Downloading brick/math (0.14.0)
+  - Downloading ramsey/uuid (4.9.1)
+  - Downloading psr/simple-cache (3.0.0)
+  - Downloading nunomaduro/termwind (v2.3.3)
+  - Downloading symfony/translation-contracts (v3.6.1)
+  - Downloading symfony/translation (v7.3.4)
+  - Downloading psr/clock (1.0.0)
+  - Downloading symfony/clock (v7.3.0)
+  - Downloading carbonphp/carbon-doctrine-types (3.2.0)
+  - Downloading nesbot/carbon (3.10.3)
+  - Downloading monolog/monolog (3.9.0)
+  - Downloading league/uri-interfaces (7.6.0)
+  - Downloading league/uri (7.6.0)
+  - Downloading league/mime-type-detection (1.16.0)
+  - Downloading league/flysystem-local (3.30.2)
+  - Downloading league/flysystem (3.30.2)
+  - Downloading nette/utils (v4.0.9)
+  - Downloading nette/schema (v1.3.3)
+  - Downloading dflydev/dot-access-data (v3.0.3)
+  - Downloading league/config (v1.2.0)
+  - Downloading league/commonmark (2.7.1)
+  - Downloading laravel/framework (v12.39.0)
+  - Downloading laravel/tinker (v2.10.1)
+  - Installing doctrine/inflector (2.1.0): Extracting archive
+  - Installing doctrine/lexer (3.0.1): Extracting archive
+  - Installing dragonmantank/cron-expression (v3.6.0): Extracting archive
+  - Installing symfony/polyfill-php83 (v1.33.0): Extracting archive
+  - Installing symfony/polyfill-mbstring (v1.33.0): Extracting archive
+  - Installing symfony/deprecation-contracts (v3.6.0): Extracting archive
+  - Installing symfony/http-foundation (v7.3.7): Extracting archive
+  - Installing fruitcake/php-cors (v1.3.0): Extracting archive
+  - Installing psr/http-message (2.0): Extracting archive
+  - Installing psr/http-client (1.0.3): Extracting archive
+  - Installing ralouphie/getallheaders (3.0.3): Extracting archive
+  - Installing psr/http-factory (1.1.0): Extracting archive
+  - Installing guzzlehttp/psr7 (2.8.0): Extracting archive
+  - Installing guzzlehttp/promises (2.3.0): Extracting archive
+  - Installing guzzlehttp/guzzle (7.10.0): Extracting archive
+  - Installing symfony/polyfill-php80 (v1.33.0): Extracting archive
+  - Installing guzzlehttp/uri-template (v1.0.5): Extracting archive
+  - Installing symfony/polyfill-intl-normalizer (v1.33.0): Extracting archive
+  - Installing symfony/polyfill-intl-grapheme (v1.33.0): Extracting archive
+  - Installing symfony/polyfill-ctype (v1.33.0): Extracting archive
+  - Installing symfony/string (v7.3.4): Extracting archive
+  - Installing psr/container (2.0.2): Extracting archive
+  - Installing symfony/service-contracts (v3.6.1): Extracting archive
+  - Installing symfony/console (v7.3.6): Extracting archive
+  - Installing laravel/prompts (v0.3.7): Extracting archive
+  - Installing laravel/serializable-closure (v2.0.6): Extracting archive
+  - Installing symfony/var-dumper (v7.3.5): Extracting archive
+  - Installing nikic/php-parser (v5.6.2): Extracting archive
+  - Installing psy/psysh (v0.12.14): Extracting archive
+  - Installing voku/portable-ascii (2.0.3): Extracting archive
+  - Installing phpoption/phpoption (1.9.4): Extracting archive
+  - Installing graham-campbell/result-type (v1.1.3): Extracting archive
+  - Installing vlucas/phpdotenv (v5.6.2): Extracting archive
+  - Installing symfony/css-selector (v7.3.6): Extracting archive
+  - Installing tijsverkoyen/css-to-inline-styles (v2.3.0): Extracting archive
+  - Installing symfony/polyfill-uuid (v1.33.0): Extracting archive
+  - Installing symfony/uid (v7.3.1): Extracting archive
+  - Installing symfony/routing (v7.3.6): Extracting archive
+  - Installing symfony/process (v7.3.4): Extracting archive
+  - Installing symfony/polyfill-php85 (v1.33.0): Extracting archive
+  - Installing symfony/polyfill-php84 (v1.33.0): Extracting archive
+  - Installing symfony/polyfill-intl-idn (v1.33.0): Extracting archive
+  - Installing symfony/mime (v7.3.4): Extracting archive
+  - Installing psr/event-dispatcher (1.0.0): Extracting archive
+  - Installing symfony/event-dispatcher-contracts (v3.6.0): Extracting archive
+  - Installing symfony/event-dispatcher (v7.3.3): Extracting archive
+  - Installing psr/log (3.0.2): Extracting archive
+  - Installing egulias/email-validator (4.0.4): Extracting archive
+  - Installing symfony/mailer (v7.3.5): Extracting archive
+  - Installing symfony/error-handler (v7.3.6): Extracting archive
+  - Installing symfony/http-kernel (v7.3.7): Extracting archive
+  - Installing symfony/finder (v7.3.5): Extracting archive
+  - Installing ramsey/collection (2.1.1): Extracting archive
+  - Installing brick/math (0.14.0): Extracting archive
+  - Installing ramsey/uuid (4.9.1): Extracting archive
+  - Installing psr/simple-cache (3.0.0): Extracting archive
+  - Installing nunomaduro/termwind (v2.3.3): Extracting archive
+  - Installing symfony/translation-contracts (v3.6.1): Extracting archive
+  - Installing symfony/translation (v7.3.4): Extracting archive
+  - Installing psr/clock (1.0.0): Extracting archive
+  - Installing symfony/clock (v7.3.0): Extracting archive
+  - Installing carbonphp/carbon-doctrine-types (3.2.0): Extracting archive
+  - Installing nesbot/carbon (3.10.3): Extracting archive
+  - Installing monolog/monolog (3.9.0): Extracting archive
+  - Installing league/uri-interfaces (7.6.0): Extracting archive
+  - Installing league/uri (7.6.0): Extracting archive
+  - Installing league/mime-type-detection (1.16.0): Extracting archive
+  - Installing league/flysystem-local (3.30.2): Extracting archive
+  - Installing league/flysystem (3.30.2): Extracting archive
+  - Installing nette/utils (v4.0.9): Extracting archive
+  - Installing nette/schema (v1.3.3): Extracting archive
+  - Installing dflydev/dot-access-data (v3.0.3): Extracting archive
+  - Installing league/config (v1.2.0): Extracting archive
+  - Installing league/commonmark (2.7.1): Extracting archive
+  - Installing laravel/framework (v12.39.0): Extracting archive
+  - Installing laravel/tinker (v2.10.1): Extracting archive
+Generating optimized autoload files
+> Illuminate\Foundation\ComposerScripts::postAutoloadDump
+> @php artisan package:discover --ansi
+
+   INFO  Discovering packages.  
+
+  laravel/tinker .............................................................................................................................. DONE
+  nesbot/carbon ............................................................................................................................... DONE
+  nunomaduro/termwind ......................................................................................................................... DONE
+
+53 packages you are using are looking for funding.
+Use the `composer fund` command to find out more!
+usuario@usuario:/var/www/html/05_Ejemplo$ cp .env.example .env
+usuario@usuario:/var/www/html/05_Ejemplo$ nano .env
+usuario@usuario:/var/www/html/05_Ejemplo$ ip a
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::1/128 scope host noprefixroute 
+       valid_lft forever preferred_lft forever
+2: ens18: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default qlen 1000
+    link/ether bc:24:11:da:4f:c0 brd ff:ff:ff:ff:ff:ff
+    altname enp0s18
+    altname enxbc2411da4fc0
+    inet 10.4.1.56/16 brd 10.4.255.255 scope global dynamic noprefixroute ens18
+       valid_lft 5869sec preferred_lft 5869sec
+    inet6 fe80::be24:11ff:feda:4fc0/64 scope link noprefixroute 
+       valid_lft forever preferred_lft forever
+usuario@usuario:/var/www/html/05_Ejemplo$ nano .env
+usuario@usuario:/var/www/html/05_Ejemplo$ php artisan key:generate
+
+   INFO  Application key set successfully.  
+
+usuario@usuario:/var/www/html/05_Ejemplo$ mysql -u root -p Laravel < \05_Ejemplo\resources\BD.sql
+-bash: 05_EjemploresourcesBD.sql: No existe el archivo o el directorio
+usuario@usuario:/var/www/html/05_Ejemplo$ cd resources/
+usuario@usuario:/var/www/html/05_Ejemplo/resources$ ls
+BD.sql  css  views
+usuario@usuario:/var/www/html/05_Ejemplo/resources$ mysql -u root -p Laravel < BD.sql
+Enter password: 
+ERROR 1698 (28000): Access denied for user 'root'@'localhost'
+usuario@usuario:/var/www/html/05_Ejemplo/resources$ mysql -u root -p Laravel < BD.sql
+Enter password: 
+ERROR 1698 (28000): Access denied for user 'root'@'localhost'
+usuario@usuario:/var/www/html/05_Ejemplo/resources$ sudo mysql -u root < BD.sql
+[sudo: authenticate] Password: 
+sudo: Authentication failed, try again.
+[sudo: authenticate] Password: 
+sudo: Authentication failed, try again.
+[sudo: authenticate] Password: 
+sudo-rs: Maximum 3 incorrect authentication attempts
+usuario@usuario:/var/www/html/05_Ejemplo/resources$ sudo mysql
+[sudo: authenticate] Password: 
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 13
+Server version: 8.4.7-0ubuntu0.25.10.2 (Ubuntu)
+
+Copyright (c) 2000, 2025, Oracle and/or its affiliates.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+mysql> SELECT user,authentication_string,plugin,host FROM mysql.user;
++------------------+------------------------------------------------------------------------+-----------------------+-----------+
+| user             | authentication_string                                                  | plugin                | host      |
++------------------+------------------------------------------------------------------------+-----------------------+-----------+
+| debian-sys-maint | root                                                                   | auth_socket           | localhost |
+| mysql.infoschema | $A$005$THISISACOMBINATIONOFINVALIDSALTANDPASSWORDTHATMUSTNEVERBRBEUSED | caching_sha2_password | localhost |
+| mysql.session    | $A$005$THISISACOMBINATIONOFINVALIDSALTANDPASSWORDTHATMUSTNEVERBRBEUSED | caching_sha2_password | localhost |
+| mysql.sys        | $A$005$THISISACOMBINATIONOFINVALIDSALTANDPASSWORDTHATMUSTNEVERBRBEUSED | caching_sha2_password | localhost |
+| root             |                                                                        | auth_socket           | localhost |
++------------------+------------------------------------------------------------------------+-----------------------+-----------+
+5 rows in set (0,01 sec)
+
+mysql> use laravel
+Database changed
+mysql> CREATE USER 'a'@'localhost' IDENTIFIED BY 'a';
+Query OK, 0 rows affected (0,02 sec)
+
+mysql> GRANT ALL PRIVILEGES ON laravel.* TO 'a'@'localhost';
+Query OK, 0 rows affected (0,00 sec)
+
+mysql> FLUSH PRIVILEGES;
+Query OK, 0 rows affected (0,01 sec)
+
+mysql> EXIT;
+Bye
+usuario@usuario:/var/www/html/05_Ejemplo/resources$ cd /var/www/html/05_Ejemplo/.env
+-bash: cd: /var/www/html/05_Ejemplo/.env: No es un directorio
+usuario@usuario:/var/www/html/05_Ejemplo/resources$ nano /var/www/html/05_Ejemplo/.env
+usuario@usuario:/var/www/html/05_Ejemplo/resources$ mysql -u a -p laravel < BD.sql
+Enter password: 
+usuario@usuario:/var/www/html/05_Ejemplo/resources$ mysql -u a -p -e "USE laravel; SHOW TABLES;"
+Enter password: 
++-------------------+
+| Tables_in_laravel |
++-------------------+
+| tareas            |
+| usuarios          |
++-------------------+
+usuario@usuario:/var/www/html/05_Ejemplo/resources$ nano /etc/apache2/sites-available/tu_proyecto.conf
+usuario@usuario:/var/www/html/05_Ejemplo/resources$ sudo nano /etc/apache2/sites-available/tu_proyecto.conf
+usuario@usuario:/var/www/html/05_Ejemplo/resources$ sudo a2ensite tu_proyecto.conf
+Enabling site tu_proyecto.
+To activate the new configuration, you need to run:
+  systemctl reload apache2
+usuario@usuario:/var/www/html/05_Ejemplo/resources$ sudo systemctl reload apache2
+usuario@usuario:/var/www/html/05_Ejemplo/resources$ php artisan config:cache
+Could not open input file: artisan
+usuario@usuario:/var/www/html/05_Ejemplo/resources$ php artisan route:cache
+Could not open input file: artisan
+usuario@usuario:/var/www/html/05_Ejemplo/resources$ cd ..
+usuario@usuario:/var/www/html/05_Ejemplo$ php artisan config:cache
+
+   INFO  Configuration cached successfully.  
+
+usuario@usuario:/var/www/html/05_Ejemplo$ php artisan route:cache
+
+   INFO  Routes cached successfully.  
+
+usuario@usuario:/var/www/html/05_Ejemplo$ php artisan view:cache
+
+
+   INFO  Blade templates cached successfully.  
+
+usuario@usuario:/var/www/html/05_Ejemplo$ php artisan optimize
+
+   INFO  Caching framework bootstrap, configuration, and metadata.  
+
+  config .............................................................................................................................. 18.25ms DONE
+  events ............................................................................................................................... 1.32ms DONE
+  routes .............................................................................................................................. 17.40ms DONE
+  views ............................................................................................................................... 31.19ms DONE
+
+usuario@usuario:/var/www/html/05_Ejemplo$ 
