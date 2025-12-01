@@ -353,7 +353,16 @@ class C_Administrador extends C_Controller
     }
     
     /**
-     * Elimina un fichero asociado a una tarea.
+     * Elimina un fichero asociado a una tarea específica.
+     *
+     * Este método recibe el ID de la tarea y el nombre del fichero a eliminar
+     * a través de una solicitud POST. Verifica el rol del usuario para asegurar
+     * que solo los administradores puedan realizar esta acción. Si el fichero
+     * existe, lo elimina del sistema de archivos.
+     *
+     * @param int $id El ID de la tarea a la que pertenece el fichero.
+     * @param string $filename El nombre del fichero a eliminar.
+     * @return \Illuminate\Http\RedirectResponse Redirige de vuelta al formulario de edición de la tarea.
      */
     public function eliminarFichero() {
         if (session_status() == PHP_SESSION_NONE) session_start();

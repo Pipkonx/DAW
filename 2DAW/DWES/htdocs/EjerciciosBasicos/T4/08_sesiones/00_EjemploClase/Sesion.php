@@ -30,6 +30,11 @@ class Sesion
         return  !empty($_SESSION['dentro']);
     }
 
+    /**
+     * Cierra la sesión del usuario.
+     *
+     * @return void
+     */
     public function salir() : void
     {
         $_SESSION['dentro'] = false;

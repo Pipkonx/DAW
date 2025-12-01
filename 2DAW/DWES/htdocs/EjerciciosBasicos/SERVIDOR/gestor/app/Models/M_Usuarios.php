@@ -157,7 +157,16 @@ class M_Usuarios
 
 
 
-        public static function isOperario($rol)
+    /**
+     * Verifica si un rol dado corresponde a un operario.
+     *
+     * Este método consulta la base de datos para determinar si existe un usuario
+     * con el rol especificado como 'operario'.
+     *
+     * @param string $rol El rol a verificar.
+     * @return array|null Un array asociativo con los datos del operario si se encuentra, o null si no.
+     */
+    public static function isOperario($rol)
     {
         $sql = "SELECT * FROM usuarios  WHERE rol = operario";
         $st = DB::getInstance()->prepare($sql);
