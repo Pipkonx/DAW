@@ -23,28 +23,27 @@ if ($nombreUsuario === '') {
                             JOIN PALABRAS w ON w.id_palabra = p.id_palabra_jugada
                             WHERE p.id_jugador = ?
                             ORDER BY p.fecha_partida DESC');
-        $consultaPartidas->execute([intval($datosUsuario['id_jugador'])]);
+        $consultaPartidas->execute([$datosUsuario['id_jugador']]);
         $listaPartidas = $consultaPartidas->fetchAll();
     }
 }
-?>
-<!DOCTYPE html>
-<html lang="es">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mis Partidas</title>
-</head>
+$tituloPagina = "Mis Partidas";
+require_once __DIR__ . '/../comun/V_header.php';
+?>
 
 <body>
     <h1>Mis Partidas</h1>
+    <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+        <a href="V_configurar.php?login=<?= urlencode($nombreUsuario) ?>">Volver a Configurar Juego</a>
+        <a href="../../contorlador/C_juego.php?action=logout">Cerrar Sesión</a>
+    </div>
     <div class="meta">
-        Usuario: <?= htmlspecialchars($nombreUsuario) ?>
+        Usuario: <?= $nombreUsuario ?>
     </div>
 
     <?php if ($mensajeError): ?>
-        <p class="empty"><?= htmlspecialchars($mensajeError) ?></p>
+        <p class="empty"><?= $mensajeError ?></p>
     <?php else: ?>
         <?php if (empty($listaPartidas)): ?>
             <p class="empty">Aún no tienes partidas registradas.</p>
@@ -63,12 +62,12 @@ if ($nombreUsuario === '') {
                 <tbody>
                     <?php foreach ($listaPartidas as $partida): ?>
                         <tr>
-                            <td><?= htmlspecialchars($partida['fecha_partida']) ?></td>
-                            <td><?= htmlspecialchars($partida['texto_palabra']) ?></td>
-                            <td><?= intval($partida['letras_acertadas']) ?></td>
-                            <td><?= intval($partida['letras_falladas']) ?></td>
-                            <td><?= intval($partida['palabra_acertada']) ? 'Sí' : 'No' ?></td>
-                            <td><?= intval($partida['puntuacion_obtenida']) ?></td>
+                            <td><?= $partida['fecha_partida'] ?></td>
+                            <td><?= $partida['texto_palabra'] ?></td>
+                            <td><?= $partida['letras_acertadas'] ?></td>
+                            <td><?= $partida['letras_falladas'] ?></td>
+                            <td><?= $partida['palabra_acertada'] ? 'Sí' : 'No' ?></td>
+                            <td><?= $partida['puntuacion_obtenida'] ?></td>
                         </tr>
                     <?php endforeach; ?>
                 </tbody>
@@ -76,9 +75,6 @@ if ($nombreUsuario === '') {
         <?php endif; ?>
     <?php endif; ?>
 
-    <div class="actions">
-        <a href="configurar.php?login=<?= urlencode($nombreUsuario) ?>">Volver a Configurar Juego</a>
-    </div>
 </body>
 
 </html>

@@ -1,21 +1,21 @@
 <!DOCTYPE html>
 <html lang="es">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Partida</title>
-    <?php
-    require_once '../../contorlador/juegoController.php';
+<?php
+    $tituloPagina = "Partida";
+    require_once __DIR__ . '/../comun/V_header.php';
     $nombreUsuario = $_GET['login'] ?? 'Invitado';
     $idPalabraSecreta = $_GET['id_palabra'] ?? '';
     $palabraSecreta = $_GET['palabra'] ?? '';
-    $maximoFallos = isset($_GET['maxfallos']) ? intval($_GET['maxfallos']) : 6;
-    ?>
-</head>
+    $maximoFallos = isset($_GET['maxfallos']) ? $_GET['maxfallos'] : 6;
+?>
 
 <body>
     <h1>Partida de Ahorcado</h1>
+    <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+        <a href="V_configurar.php?login=<?= urlencode($nombreUsuario) ?>">Volver a Configurar Juego</a>
+        <a href="../../contorlador/C_juego.php?action=logout">Cerrar Sesión</a>
+    </div>
     <p>Usuario: <?= $nombreUsuario ?></p>
 
     <div>
@@ -24,11 +24,10 @@
         <div id="teclado"></div>
         <p id="mensaje"></p>
         <button id="start">Empezar</button>
-        <button id="end">Terminar</button>
 
     </div>
 
-    <form id="finalForm" action="../../contorlador/juegoController.php" method="post" style="display:none">
+    <form id="finalForm" action="../../contorlador/C_juego.php" method="post" style="display:none">
         <input type="hidden" name="action" value="finalizar">
         <input type="hidden" name="login" value="<?= $nombreUsuario ?>">
         <input type="hidden" name="id_palabra" value="<?= $idPalabraSecreta ?>">
@@ -43,6 +42,5 @@
         data-login="<?= $nombreUsuario ?>"
         data-id-palabra="<?= $idPalabraSecreta ?>"></div>
     <script src="../../public/main.js"></script>
-</body>
-
+    </body>
 </html>

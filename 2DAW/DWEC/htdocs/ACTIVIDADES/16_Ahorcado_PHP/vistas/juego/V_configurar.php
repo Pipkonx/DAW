@@ -1,19 +1,20 @@
 <!DOCTYPE html>
 <html lang="es">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Configurar Juego</title>
-    <?php
-    $nombreUsuario = isset($_GET['login']) ? htmlspecialchars($_GET['login']) : '';
-    $mensajeError = isset($_GET['error']) ? htmlspecialchars($_GET['error']) : '';
-    $mensajeExito = isset($_GET['ok']) ? htmlspecialchars($_GET['ok']) : '';
-    ?>
-</head>
+<?php
+    $tituloPagina = "Configurar Juego";
+    require_once __DIR__ . '/../comun/V_header.php';
+    $nombreUsuario = isset($_GET['login']) ? $_GET['login'] : '';
+    $mensajeError = isset($_GET['error']) ? $_GET['error'] : '';
+    $mensajeExito = isset($_GET['ok']) ? $_GET['ok'] : '';
+?>
 
 <body>
     <h1>Configurar Juego</h1>
+    <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+        <a href="V_misPartidas.php?login=<?= urlencode($nombreUsuario) ?>">Ver mis partidas</a>
+        <a href="../../contorlador/C_juego.php?action=logout">Cerrar Sesión</a>
+    </div>
     <?php if ($mensajeError): ?>
         <p><?= $mensajeError ?></p>
     <?php endif; ?>
@@ -23,7 +24,7 @@
 
     <p>Usuario: <?= $nombreUsuario ? $nombreUsuario : 'Invitado' ?></p>
 
-    <form action="../../contorlador/juegoController.php" method="post">
+    <form action="../../contorlador/C_juego.php" method="post">
         <input type="hidden" name="action" value="start">
         <input type="hidden" name="login" value="<?= $nombreUsuario ?>">
 
@@ -47,9 +48,6 @@
     </form>
 
     <script src="../public/main.js"></script>
-    <p>
-        <a href="misPartidasView.php?login=<?= urlencode($nombreUsuario) ?>">Ver mis partidas</a>
-    </p>
 </body>
 
 </html>

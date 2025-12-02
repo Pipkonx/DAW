@@ -1,15 +1,8 @@
-<!DOCTYPE html>
-<html lang="es">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registro</title>
-    <?php
-    $mensajeError = isset($_GET['error']) ? htmlspecialchars($_GET['error']) : '';
+<?php
+    $tituloPagina = "Registro";
+    require_once __DIR__ . '/../comun/V_header.php';
+    $mensajeError = isset($_GET['error']) ? $_GET['error'] : '';
     ?>
-</head>
-
 <body>
     <h1>Registrarse</h1>
 
@@ -17,8 +10,8 @@
         <p><?= $mensajeError ?></p>
     <?php endif; ?>
 
-    <form action="../../contorlador/authController.php" method="post">
-        <input type="hidden" name="action" value="register">
+    <form action="../../contorlador/C_juego.php" method="post">
+        <input type="hidden" name="action" value="register_json">
 
         <label for="login">Usuario</label>
         <input type="text" id="login" name="login" required>
@@ -32,7 +25,10 @@
         <button type="submit">Crear cuenta</button>
     </form>
 
-    <p>Ya estás registrado? <a href="loginView.php">Iniciar sesión</a></p>
+    <p>Ya estás registrado? <a href="V_login.php">Iniciar sesión</a></p>
+    <p>
+        <a href="../../contorlador/C_juego.php?action=logout">Cerrar Sesión</a>
+    </p>
 </body>
 
 </html>

@@ -19,7 +19,6 @@
     <div id="mensaje"></div>
     <div class="actions">
       <button id="start">Nueva partida</button>
-      <button id="end">Terminar partida</button>
     </div>
   </main>
 </body>

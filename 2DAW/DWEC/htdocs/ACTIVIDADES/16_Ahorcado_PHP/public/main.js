@@ -1,250 +1,177 @@
-// Lógica común del juego y de configuración centralizada aquí
-const palabrasDisponibles = [
-  "javascript", "html", "css", "programar", "codigo", "ahorcado", "frontend", "backend", "variable", "funcion", "array",
-];
+let palabraSecretaActual = "";
+let letrasAdivinadasUsuario = new Set();
+let cantidadFallos = 0;
+let maximoIntentosFallidos = 6;
+let juegoEnCurso = false;
 
-let palabraSecreta = "";
-let letrasAdivinadas = new Set();
-let numeroFallos = 0;
-let maximoFallos = 6;
-let juegoFinalizado = false;
 
-/**
- * Inicia una nueva partida del juego del ahorcado.
- * Reinicia el estado del juego, selecciona una nueva palabra secreta si no hay una configurada,
- * y actualiza la interfaz de usuario.
- */
 function iniciarJuego() {
-  // Si hay configuración desde el servidor, respetarla; si no, elegir aleatoria
-  if (!palabraSecreta || palabraSecreta.length === 0) {
-    palabraSecreta = palabrasDisponibles[Math.floor(Math.random() * palabrasDisponibles.length)];
-  }
-  letrasAdivinadas = new Set();
-  numeroFallos = 0;
-  juegoFinalizado = false;
-  const elMax = document.getElementById("maxfallos");
-  if (elMax) elMax.textContent = String(maximoFallos);
-  actualizarPalabra();
-  actualizarFallos();
-  establecerMensaje("");
-  renderizarAlfabeto();
+  letrasAdivinadasUsuario = new Set();
+  cantidadFallos = 0;
+  juegoEnCurso = false;
+  const elementoMaximoFallos = document.getElementById("maxfallos");
+  if (elementoMaximoFallos) elementoMaximoFallos.textContent = String(maximoIntentosFallidos);
+  actualizarPalabraMostrada();
+  actualizarContadorFallos();
+  establecerMensajeJuego("");
+  renderizarTecladoAlfabetico();
 }
 
-/**
- * Termina la partida actual del juego.
- * Establece el estado del juego como juegoFinalizado, revela la palabra secreta,
- * muestra un mensaje de fin de partida y deshabilita el teclado.
- */
 function terminarJuego() {
-  juegoFinalizado = true;
-  revelarPalabra();
-  establecerMensaje("Partida terminada.");
-  deshabilitarAlfabeto();
+  juegoEnCurso = true;
+  revelarPalabraCompleta();
+  establecerMensajeJuego("Partida terminada.");
+  deshabilitarTecladoAlfabetico();
 }
 
-/**
- * Actualiza la representación visual de la palabra secreta en la interfaz de usuario.
- * Muestra las letras letrasAdivinadas.
- * También verifica si el jugador ha ganado después de cada actualización.
- */
-function actualizarPalabra() {
-  let display = "";
-  for (let i = 0; i < palabraSecreta.length; i++) {
-    //has es para verificar si la letra esta
-    if (letrasAdivinadas.has(palabraSecreta[i])) {
-      display += palabraSecreta[i];
+function actualizarPalabraMostrada() {
+  let palabraMostrada = "";
+  for (let i = 0; i < palabraSecretaActual.length; i++) {
+    // Si la letra actual de la palabra secreta ha sido adivinada
+    if (letrasAdivinadasUsuario.has(palabraSecretaActual[i])) {
+      palabraMostrada += palabraSecretaActual[i];
     } else {
-      display += "_";
+      palabraMostrada += "_"; // Si no, mostrar un guion bajo
     }
-    if (i < palabraSecreta.length - 1) display += " ";
+    if (i < palabraSecretaActual.length - 1) palabraMostrada += " ";
   }
-  document.getElementById("palabras").textContent = display;
+  document.getElementById("palabras").textContent = palabraMostrada;
   verificarVictoria();
 }
 
-/**
- * Revela completamente la palabra secreta en la interfaz de usuario.
- * Se utiliza típicamente al final de la partida para mostrar la solución.
- */
-function revelarPalabra() {
-  let mostrar = "";
-  for (let i = 0; i < palabraSecreta.length; i++) {
-    mostrar += palabraSecreta[i];
-    if (i < palabraSecreta.length - 1) mostrar += " ";
+function revelarPalabraCompleta() {
+  let palabraVisible = "";
+  for (let i = 0; i < palabraSecretaActual.length; i++) {
+    palabraVisible += palabraSecretaActual[i];
+    if (i < palabraSecretaActual.length - 1) palabraVisible += " ";
   }
-  const el = document.getElementById("palabras");
-  if (el) el.textContent = mostrar;
+  const elementoPalabra = document.getElementById("palabras");
+  if (elementoPalabra) elementoPalabra.textContent = palabraVisible;
 }
 
-/**
- * Actualiza el contador de fallos en la interfaz de usuario.
- */
-function actualizarFallos() {
-  const el = document.getElementById("fallos");
-  if (el) el.textContent = String(numeroFallos);
+function actualizarContadorFallos() {
+  const elementoFallos = document.getElementById("fallos");
+  if (elementoFallos) elementoFallos.textContent = String(cantidadFallos);
 }
 
-/**
- * Establece un mensaje en la interfaz de usuario para informar al jugador.
- * @param {string} msg - El mensaje a mostrar.
- */
-function establecerMensaje(msg) {
-  document.getElementById("mensaje").textContent = msg;
+function establecerMensajeJuego(mensaje) {
+  document.getElementById("mensaje").textContent = mensaje;
 }
 
-/**
- * Renderiza el teclado de letras en la interfaz de usuario.
- * Crea botones para cada letra del alfabeto y les asigna un evento de clic.
- */
-function renderizarAlfabeto() {
-  const cont = document.getElementById("teclado");
-  cont.innerHTML = "";
-  const letras = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "Ñ", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"];
-  for (let i = 0; i < letras.length; i++) {
-    const btn = document.createElement("button");
-    btn.textContent = letras[i];
-    btn.className = "letra";
-    //todo DUDA SABER DONDE PONER EL DISABLED
-    // btn.disabled = juegoFinalizado;
-    btn.addEventListener("click", (event) => elegir(letras[i].toLowerCase(), event.target));
-    cont.appendChild(btn);
+function renderizarTecladoAlfabetico() {
+  const contenedorTeclado = document.getElementById("teclado");
+  contenedorTeclado.innerHTML = "";
+  const letrasAlfabeto = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "Ñ", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"];
+  for (let i = 0; i < letrasAlfabeto.length; i++) {
+    const botonLetra = document.createElement("button");
+    botonLetra.textContent = letrasAlfabeto[i];
+    botonLetra.className = "letra";
+    botonLetra.addEventListener("click", (evento) => seleccionarLetra(letrasAlfabeto[i].toLowerCase(), evento.target));
+    contenedorTeclado.appendChild(botonLetra);
   }
 }
 
-/**
- * Deshabilita todos los botones del teclado.
- * Se utiliza cuando la partida ha terminado para evitar más interacciones.
- */
-function deshabilitarAlfabeto() {
-  const botones = document.querySelectorAll(".letra");
-  for (let i = 0; i < botones.length; i++) {
-    botones[i].disabled = true;
+function deshabilitarTecladoAlfabetico() {
+  const botonesLetra = document.querySelectorAll(".letra");
+  for (let i = 0; i < botonesLetra.length; i++) {
+    botonesLetra[i].disabled = true;
   }
 }
 
-/**
- * Procesa la elección de una letra por parte del jugador.
- * Verifica si la letra ha sido adivinada o si la partida ha terminado.
- * Actualiza el estado del juego (fallos, letrasAdivinadas) y la interfaz de usuario.
- * @param {string} letra - La letra elegida por el jugador.
- */
-function elegir(letra, buttonElement) {
-  if (juegoFinalizado || letrasAdivinadas.has(letra)) return;
-  letrasAdivinadas.add(letra);
-  if (buttonElement) {
+function seleccionarLetra(letra, elementoBoton) {
+  if (juegoEnCurso || letrasAdivinadasUsuario.has(letra)) return;
+  letrasAdivinadasUsuario.add(letra);
+  if (elementoBoton) {
     // deshabilitar las letras que vamos clickeando para evitar que se intenten volver a clickear
-    buttonElement.disabled = true;
+    elementoBoton.disabled = true;
   }
-  if (palabraSecreta.indexOf(letra) !== -1) {
-    actualizarPalabra();
-    establecerMensaje("Bien");
+  if (palabraSecretaActual.indexOf(letra) !== -1) {
+    actualizarPalabraMostrada();
+    establecerMensajeJuego("Bien");
   } else {
-    numeroFallos++;
-    actualizarFallos();
-    establecerMensaje("Letra incorrecta");
-    if (numeroFallos >= maximoFallos) {
-      juegoFinalizado = true;
-      establecerMensaje("Has perdido, la palabra era: " + palabraSecreta);
-      revelarPalabra();
-      deshabilitarAlfabeto();
+    cantidadFallos++;
+    actualizarContadorFallos();
+    establecerMensajeJuego("Letra incorrecta");
+    if (cantidadFallos >= maximoIntentosFallidos) {
+      juegoEnCurso = true;
+      establecerMensajeJuego("Has perdido, la palabra era: " + palabraSecretaActual);
+      revelarPalabraCompleta();
+      deshabilitarTecladoAlfabetico();
     }
   }
 }
 
-/**
- * Verifica si el jugador ha ganado la partida.
- * Si todas las letras de la palabra secreta han sido letrasAdivinadas, el juego termina con victoria.
- */
 function verificarVictoria() {
-  let ganado = true;
-  for (let i = 0; i < palabraSecreta.length; i++) {
-    if (!letrasAdivinadas.has(palabraSecreta[i])) {
-      ganado = false;
+  let haGanado = true;
+  for (let i = 0; i < palabraSecretaActual.length; i++) {
+    if (!letrasAdivinadasUsuario.has(palabraSecretaActual[i])) {
+      haGanado = false;
       break;
     }
   }
-  if (ganado) {
-    juegoFinalizado = true;
-    establecerMensaje("¡Ganaste!");
-    deshabilitarAlfabeto();
+  if (haGanado) {
+    juegoEnCurso = true;
+    establecerMensajeJuego("¡Ganaste!");
+    deshabilitarTecladoAlfabetico();
     enviarResultados(true);
   }
 }
 
-
-
-
-
-
-
-
-function terminarJuego() {
-  juegoFinalizado = true;
-  revelarPalabra();
-  establecerMensaje("Partida terminada.");
-  deshabilitarAlfabeto();
+function finalizarJuego() {
+  juegoEnCurso = true;
+  revelarPalabraCompleta();
+  establecerMensajeJuego("Partida terminada.");
+  deshabilitarTecladoAlfabetico();
   enviarResultados(false);
 }
 
-/**
- * Envía los resultados de la partida a un formulario oculto.
- * Calcula las letras acertadas, fallos y puntos obtenidos.
- * @param {boolean} acertada - Indica si la partida fue ganada (true) o perdida (false).
- */
 function enviarResultados(acertada) {
-  const form = document.getElementById("finalForm");
-  if (!form) return; // En algunas vistas no hay envío de resultados
-  const acertadas = Array.from(letrasAdivinadas).filter((l) => palabraSecreta.includes(l)).length; // aproximado
-  const fAcertadas = document.getElementById("f_acertadas");
-  const fFalladas = document.getElementById("f_falladas");
-  const fAcertada = document.getElementById("f_acertada");
-  const fPuntos = document.getElementById("f_puntos");
-  if (fAcertadas) fAcertadas.value = String(acertadas);
-  if (fFalladas) fFalladas.value = String(numeroFallos);
-  if (fAcertada) fAcertada.value = acertada ? "1" : "0";
-  const puntos = Math.max(0, palabraSecreta.length * 10 - numeroFallos * 5);
-  if (fPuntos) fPuntos.value = String(puntos);
-  form.submit();
-}
+    const formularioFinal = document.getElementById("finalForm");
+    if (!formularioFinal) return; // En algunas vistas no hay envío de resultados
 
-/**
- * Lee la configuración del juego desde los atributos `data-` de un elemento HTML.
- * Permite configurar la palabra secreta y el número máximo de fallos.
- */
-function leerConfig() {
-  const cfg = document.getElementById("game-config");
-  if (!cfg) return;
-  const dataset = cfg.dataset || {};
-  if (dataset.secreta) {
-    palabraSecreta = String(dataset.secreta).toLowerCase();
+    // Contar las letras acertadas que están en la palabra secreta
+    const cantidadLetrasAcertadas = Array.from(letrasAdivinadas).filter((letra) => palabraSecreta.includes(letra)).length;
+
+    const campoAcertadas = document.getElementById("f_acertadas");
+    const campoFalladas = document.getElementById("f_falladas");
+    const campoPalabraAcertada = document.getElementById("f_acertada");
+    const campoPuntos = document.getElementById("f_puntos");
+
+    if (campoAcertadas) campoAcertadas.value = String(cantidadLetrasAcertadas);
+    if (campoFalladas) campoFalladas.value = String(numeroFallos);
+    if (campoPalabraAcertada) campoPalabraAcertada.value = acertada ? "1" : "0";
+
+    const puntosCalculados = Math.max(0, palabraSecreta.length * 10 - numeroFallos * 5);
+    if (campoPuntos) campoPuntos.value = String(puntosCalculados);
+
+    formularioFinal.submit();
   }
-  if (dataset.maxfallos) {
-    const n = parseInt(dataset.maxfallos, 10);
-    if (!Number.isNaN(n)) maximoFallos = n;
+
+function leerConfiguracion() {
+  const configuracionJuego = document.getElementById("game-config");
+  // Si no se encuentra el elemento de configuración, salimos de la función
+  if (!configuracionJuego) return;
+  const datosConfiguracion = configuracionJuego.dataset || {};
+  if (datosConfiguracion.secreta) {
+    palabraSecretaActual = String(datosConfiguracion.secreta).toLowerCase();
+  }
+  if (datosConfiguracion.maxfallos) {
+    const numeroMaximoFallos = parseInt(datosConfiguracion.maxfallos, 10);
+    if (!isNaN(numeroMaximoFallos)) maximoIntentosFallidos = numeroMaximoFallos;
   }
 }
 
-/**
- * Inicializa la página del juego.
- * Configura los manejadores de eventos para los botones de iniciar y terminar partida.
- */
-function initGamePage() {
-  const startBtn = document.getElementById("start");
-  const endBtn = document.getElementById("end");
-  const palabrasEl = document.getElementById("palabras");
-  if (!startBtn || !endBtn || !palabrasEl) return; // No es una página de juego
+function inicializarPaginaJuego() {
+    const botonInicio = document.getElementById("start");
+    const elementoPalabras = document.getElementById("palabras");
+    if (!botonInicio || !elementoPalabras) return; // No es una página de juego
 
-  leerConfig();
+    leerConfiguracion();
 
-  startBtn.addEventListener("click", iniciarJuego);
-  endBtn.addEventListener("click", terminarJuego);
-}
+    botonInicio.addEventListener("click", iniciarJuego);
+  }
 
-/**
- * Inicializa la página de configuración.
- * Carga dinámicamente las categorías desde el servidor y las muestra en un selector.
- */
-function initConfigPage() {
+function inicializarPaginaConfiguracion() {
   const sel = document.getElementById("categoria");
   if (!sel) return; // No es la página de configurar
   fetch("../../contorlador/juego.php?action=categorias")
@@ -270,13 +197,5 @@ function initConfigPage() {
     });
 }
 
-// Inicialización cuando el DOM esté listo
-if (document.readyState !== "loading") {
-  initConfigPage();
-  initGamePage();
-} else {
-  document.addEventListener("DOMContentLoaded", () => {
-    initConfigPage();
-    initGamePage();
-  });
-}
+inicializarPaginaConfiguracion();
+inicializarPaginaJuego();
