@@ -17,7 +17,7 @@ abstract class C_Controller
      * @param mixed $countParam Parameter for the count method (e.g., operarioEncargado).
      * @return array Contains 'paginaActual', 'totalElementos', 'totalPaginas'.
      */
-    protected function getPaginationData(\App\Models\M_Tareas $modelo, int $perPage, ?string $countMethod = null, $countParam = null): array
+    protected function getPaginationData($modelo, int $perPage, ?string $countMethod = null, $countParam = null): array
     {
         $paginaActual = isset($_GET['pagina']) ? (int)$_GET['pagina'] : 1;
         if ($paginaActual < 1) {

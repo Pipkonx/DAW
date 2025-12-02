@@ -122,7 +122,7 @@
 
         <label for="anotacionesPosteriores">Anotaciones posteriores:</label><br>
         <textarea id="anotacionesPosteriores"
-            name="anotacionesPosteriores" {{ $disableOperatorFields ? 'readonly' : '' }}>{{ htmlspecialchars($_POST['anotacionesPosteriores'] ?? ($anotacionesPosteriores ?? '')) }}</textarea><br><br>
+            name="anotacionesPosteriores">{{ htmlspecialchars($_POST['anotacionesPosteriores'] ?? ($anotacionesPosteriores ?? '')) }}</textarea><br><br>
 
         <label for="fichero_resumen">Fichero resumen:</label>
         @if(!empty($ficherosResumen))
