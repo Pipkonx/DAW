@@ -16,8 +16,6 @@ Carpeta propuesta para documentación del repositorio:
 - `docs/` para apuntes y descripciones
 - `images/` para capturas de pantalla referenciadas en este README
 
-> Recuerda guardar todas las capturas en `./images/` y subirlas al repositorio. En cada paso se indica la captura sugerida.
-
 ---
 
 ## 0) Preparación inicial
@@ -581,7 +579,7 @@ Logs apache2
 
 ## 10) Entrega en GitHub
 
-- Crea un repositorio en GitHub con esta estructura mínima:
+- Estructura de este repositorio:
   - `README.md` (este documento)
   - `images/` (todas las capturas mencionadas)
   - `docs/` (opcional, para notas adicionales)
@@ -606,15 +604,6 @@ feat(python): app wsgi mínima y autenticación básica
 feat(awstats): configuración sitio centro.intranet
 feat(nginx): server 8080 con php y phpmyadmin
 ```
-
----
-
-## 11) Exposición/presentación (al finalizar)
-
-- Demostración en vivo de cada dominio y funcionalidad
-- Breve explicación de decisiones de configuración
-- Enseñar estadísticas de AWStats y panel de WordPress
-- Mostrar phpMyAdmin y conexión con MySQL
 
 ---
 
