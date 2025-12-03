@@ -29,10 +29,6 @@ if ($_POST) {
     if (isset($_POST['action'])) {
         $accion = $_POST['action'];
         switch ($accion) {
-
-
-
-
             case 'login_json':
                 header('Content-Type: application/json');
                 $nombreUsuario = trim($_POST['login'] ?? '');
@@ -42,7 +38,7 @@ if ($_POST) {
                     echo json_encode(['error' => 'Usuario o contraseña vacíos.']);
                     exit;
                 }
-                
+
                 // Call the authentication function from M_auth.php
                 $result = manejarInicioSesion($pdo, $nombreUsuario, $contrasena);
                 if ($result['success']) {
@@ -124,5 +120,3 @@ if ($_POST) {
     http_response_code(400);
     echo 'Acción no soportada';
 }
-
-?>

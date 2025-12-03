@@ -15,6 +15,7 @@ function iniciarJuego() {
   actualizarContadorFallos();
   establecerMensajeJuego("");
   renderizarTecladoAlfabetico();
+  document.getElementById("start").classList.add("hidden"); // Ocultar el botón de inicio
 }
 
 function terminarJuego() {
@@ -22,6 +23,7 @@ function terminarJuego() {
   revelarPalabraCompleta();
   establecerMensajeJuego("Partida terminada.");
   deshabilitarTecladoAlfabetico();
+  document.getElementById("start").classList.remove("hidden"); // Mostrar el botón de inicio
 }
 
 function actualizarPalabraMostrada() {
@@ -167,35 +169,11 @@ function inicializarPaginaJuego() {
     if (!botonInicio || !elementoPalabras) return; // No es una página de juego
 
     leerConfiguracion();
-
-    botonInicio.addEventListener("click", iniciarJuego);
-  }
-
-function inicializarPaginaConfiguracion() {
-  const sel = document.getElementById("categoria");
-  if (!sel) return; // No es la página de configurar
-  fetch("../../contorlador/juego.php?action=categorias")
-    .then((r) => r.json())
-    .then((data) => {
-      console.log("Categories data:", data);
-      sel.innerHTML = "";
-      if (!Array.isArray(data) || data.length === 0) {
-        sel.innerHTML = '<option value="">Sin categorías</option>';
-        sel.disabled = true;
-        return;
-      }
-      data.forEach((c) => {
-        const opt = document.createElement("option");
-        opt.value = c.id_categoria;
-        opt.textContent = c.nombre_categoria;
-        sel.appendChild(opt);
-      });
-    })
-    .catch(() => {
-      sel.innerHTML = '<option value="">Error cargando categorías</option>';
-      sel.disabled = true;
-    });
+    iniciarJuego(); // Iniciar el juego automáticamente al cargar la página
+    botonInicio.classList.add("hidden"); // Asegurarse de que el botón esté oculto al cargar la página
 }
 
-inicializarPaginaConfiguracion();
+
+
+
 inicializarPaginaJuego();

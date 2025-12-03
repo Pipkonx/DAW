@@ -1,19 +1,16 @@
-<!DOCTYPE html>
-<html lang="es">
-
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Ahorcado básico</title>
-  <link rel="stylesheet" href="style.css">
-</head>
+<?php
+$tituloPagina = "Ahorcado básico";
+require_once __DIR__ . '/../comun/V_header.php';
+?>
 
 <body>
   <main class="card">
     <h1>Ahorcado</h1>
-    <div id="palabra" aria-label="Palabra oculta"></div>
-    <div id="status">
-      <div>Fallos: <span id="numeroFallos">0</span> / <span id="maximoFallos">6</span></div>
+    <div class="centered-content">
+      <div id="palabra" aria-label="Palabra oculta"></div>
+      <div id="status">
+        <div>Fallos: <span id="numeroFallos">0</span> / <span id="maximoFallos">6</span></div>
+      </div>
     </div>
     <div id="teclado" aria-label="Teclado de letras"></div>
     <div id="mensaje"></div>

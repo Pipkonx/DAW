@@ -9,10 +9,10 @@
     <h1>Login</h1>
 
     <?php if ($mensajeError): ?>
-        <p><?= $mensajeError ?></p>
+        <div class="alert-error"><p><?= $mensajeError ?></p></div>
     <?php endif; ?>
     <?php if ($mensajeExito): ?>
-        <p><?= $mensajeExito ?><?= $nombreUsuario ? ' — Usuario: ' . $nombreUsuario : '' ?></p>
+        <div class="alert-success"><p><?= $mensajeExito ?><?= $nombreUsuario ? ' — Usuario: ' . $nombreUsuario : '' ?></p></div>
     <?php endif; ?>
 
     <form action="../../contorlador/C_juego.php" method="post">
@@ -23,7 +23,7 @@
         <label for="password">Contraseña</label>
         <input type="password" id="password" name="password" required>
 
-        <button type="submit">Entrar</button>
+        <button type="submit" class="btn-submit">Entrar</button>
     </form>
 
     <p>Necesitas cuenta? <a href="V_register.php">Registrarse</a></p>

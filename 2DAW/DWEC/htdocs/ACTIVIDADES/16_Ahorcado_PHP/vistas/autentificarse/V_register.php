@@ -22,7 +22,7 @@
         <label for="confirm">Confirmar contraseña</label>
         <input type="password" id="confirm" name="confirm" required>
 
-        <button type="submit">Crear cuenta</button>
+        <button type="submit" class="btn-submit">Crear cuenta</button>
     </form>
 
     <p>Ya estás registrado? <a href="V_login.php">Iniciar sesión</a></p>

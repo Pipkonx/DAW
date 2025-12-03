@@ -12,22 +12,24 @@
 
 <body>
     <h1>Partida de Ahorcado</h1>
-    <div style="display: flex; gap: 10px; margin-bottom: 10px;">
-        <a href="V_configurar.php?login=<?= urlencode($nombreUsuario) ?>">Volver a Configurar Juego</a>
+    <div class="flex-container">
+        <a href="V_configurar.php?login=<?= urlencode($nombreUsuario) ">Volver a Configurar Juego</a>
         <a href="../../contorlador/C_juego.php?action=logout">Cerrar Sesión</a>
     </div>
     <p>Usuario: <?= $nombreUsuario ?></p>
 
     <div>
-        <p>Fallos: <span id="fallos">0</span> / <span id="maxfallos"><?= $maximoFallos ?></span></p>
-        <p id="palabras">_ _ _ _ _</p>
+        <div class="game-info-container">
+            <p>Fallos: <span id="fallos">0</span> / <span id="maxfallos"><?= $maximoFallos ?></span></p>
+            <p id="palabras">_ _ _ _ _</p>
+            <p id="mensaje"></p>
+        </div>
         <div id="teclado"></div>
-        <p id="mensaje"></p>
         <button id="start">Empezar</button>
 
     </div>
 
-    <form id="finalForm" action="../../contorlador/C_juego.php" method="post" style="display:none">
+    <form id="finalForm" action="../../contorlador/C_juego.php" method="post" class="hidden-form">
         <input type="hidden" name="action" value="finalizar">
         <input type="hidden" name="login" value="<?= $nombreUsuario ?>">
         <input type="hidden" name="id_palabra" value="<?= $idPalabraSecreta ?>">

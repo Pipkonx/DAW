@@ -83,4 +83,76 @@ class M_juego {
             return ['success' => false, 'message' => 'Error al guardar la partida.'];
         }
     }
+
+    public function obtenerPalabras(): array {
+        $declaracion = $this->pdo->query('SELECT p.id_palabra, p.texto_palabra, c.nombre_categoria, c.id_categoria FROM PALABRAS p JOIN CATEGORIAS c ON p.id_categoria = c.id_categoria ORDER BY p.texto_palabra');
+        return $declaracion->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function añadirPalabra(string $textoPalabra, int $idCategoria): array {
+        if (empty($textoPalabra) || $idCategoria <= 0) {
+            return ['success' => false, 'message' => 'Datos de palabra inválidos.'];
+        }
+        $declaracion = $this->pdo->prepare('INSERT INTO PALABRAS (texto_palabra, id_categoria) VALUES (?, ?)');
+        if ($declaracion->execute([$textoPalabra, $idCategoria])) {
+            return ['success' => true, 'message' => 'Palabra añadida correctamente.'];
+        } else {
+            return ['success' => false, 'message' => 'Error al añadir palabra.'];
+        }
+    }
+
+    public function actualizarPalabra(int $idPalabra, string $textoPalabra, int $idCategoria): array {
+        if ($idPalabra <= 0 || empty($textoPalabra) || $idCategoria <= 0) {
+            return ['success' => false, 'message' => 'Datos de palabra inválidos.'];
+        }
+        $declaracion = $this->pdo->prepare('UPDATE PALABRAS SET texto_palabra = ?, id_categoria = ? WHERE id_palabra = ?');
+        if ($declaracion->execute([$textoPalabra, $idCategoria, $idPalabra])) {
+            return ['success' => true, 'message' => 'Palabra actualizada correctamente.'];
+        } else {
+            return ['success' => false, 'message' => 'Error al actualizar palabra.'];
+        }
+    }
+
+    public function eliminarPalabra(int $idPalabra): array {
+        if ($idPalabra <= 0) {
+            return ['success' => false, 'message' => 'ID de palabra inválido.'];
+        }
+        $declaracion = $this->pdo->prepare('DELETE FROM PALABRAS WHERE id_palabra = ?');
+        if ($declaracion->execute([$idPalabra])) {
+            return ['success' => true, 'message' => 'Palabra eliminada correctamente.'];
+        } else {
+            return ['success' => false, 'message' => 'Error al eliminar palabra.'];
+        }
+    }
+
+    public function añadirCategoria(string $nombreCategoria): array {
+        if (empty($nombreCategoria)) {
+            return ['success' => false, 'message' => 'El nombre de la categoría no puede estar vacío.'];
+        }
+        $declaracion = $this->pdo->prepare('INSERT INTO CATEGORIAS (nombre_categoria) VALUES (?)');
+        if ($declaracion->execute([$nombreCategoria])) {
+            return ['success' => true, 'message' => 'Categoría añadida correctamente.'];
+        } else {
+            return ['success' => false, 'message' => 'Error al añadir categoría.'];
+        }
+    }
+
+    public function eliminarCategoria(int $idCategoria): array {
+        if ($idCategoria <= 0) {
+            return ['success' => false, 'message' => 'ID de categoría inválido.'];
+        }
+        // Verificar si hay palabras asociadas a esta categoría
+        $stmtCheck = $this->pdo->prepare('SELECT COUNT(*) FROM PALABRAS WHERE id_categoria = ?');
+        $stmtCheck->execute([$idCategoria]);
+        if ($stmtCheck->fetchColumn() > 0) {
+            return ['success' => false, 'message' => 'No se puede eliminar la categoría porque tiene palabras asociadas.'];
+        }
+
+        $declaracion = $this->pdo->prepare('DELETE FROM CATEGORIAS WHERE id_categoria = ?');
+        if ($declaracion->execute([$idCategoria])) {
+            return ['success' => true, 'message' => 'Categoría eliminada correctamente.'];
+        } else {
+            return ['success' => false, 'message' => 'Error al eliminar categoría.'];
+        }
+    }
 }

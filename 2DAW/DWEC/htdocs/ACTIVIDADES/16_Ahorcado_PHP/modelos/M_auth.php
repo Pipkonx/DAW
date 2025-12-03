@@ -51,3 +51,28 @@ function manejarRegistro(PDO $conexion, string $nombreUsuario, string $contrasen
         return ['success' => false, 'message' => 'Error al registrar el usuario.'];
     }
 }
+
+function manejarRegistroAdmin(PDO $conexion, string $nombreUsuario, string $contrasena, string $confirmarContrasena, int $es_administrador): array
+{
+    if ($nombreUsuario === '' || $contrasena === '' || $confirmarContrasena === '') {
+        return ['success' => false, 'message' => 'Completa todos los campos.'];
+    }
+    if ($contrasena !== $confirmarContrasena) {
+        return ['success' => false, 'message' => 'Las contraseñas no coinciden.'];
+    }
+
+    $verificarExistencia = $conexion->prepare('SELECT COUNT(*) AS c FROM JUGADORES WHERE login = ?');
+    $verificarExistencia->execute([$nombreUsuario]);
+    $existeUsuario = (int)$verificarExistencia->fetchColumn() > 0;
+
+    if ($existeUsuario) {
+        return ['success' => false, 'message' => 'El usuario ya existe.'];
+    }
+
+    $insertarUsuario = $conexion->prepare('INSERT INTO JUGADORES (login, contrasena, es_administrador) VALUES (?, ?, ?)');
+    if ($insertarUsuario->execute([$nombreUsuario, $contrasena, $es_administrador])) {
+        return ['success' => true, 'message' => 'Usuario registrado exitosamente.'];
+    } else {
+        return ['success' => false, 'message' => 'Error al registrar el usuario.'];
+    }
+}

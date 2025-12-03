@@ -1,0 +1,403 @@
+:root {
+    --color-primario: #007bff;
+    --color-primario-hover: #0056b3;
+    --color-secundario: #6c757d;
+    --color-secundario-hover: #5a6268;
+    --color-exito: #28a745;
+    --color-exito-hover: #218838;
+    --color-fondo-exito: #d4edda;
+    --color-borde-exito: #c3e6cb;
+    --color-texto-exito: #155724;
+    --color-error: #dc3545;
+    --color-fondo-error: #f8d7da;
+    --color-borde-error: #f5c6cb;
+    --color-texto-error: #721c24;
+    --color-texto: #333;
+    --color-texto-claro: #555;
+    --color-fondo: #f4f4f4;
+    --color-superficie: #fff;
+    --color-superficie-claro: #f9f9f9;
+    --color-borde: #ccc;
+    --color-borde-tabla: #ddd;
+    --color-fila-tabla-par: #f2f2f2;
+    --color-fila-tabla-hover: #f1f1f1;
+    --color-fondo-deshabilitado: #cccccc;
+    --color-deshabilitado: #666;
+
+    /* Colores tema oscuro */
+    --oscuro-fondo: #333;
+    --oscuro-texto: #f8f8f8;
+    --oscuro-borde: #555;
+    --oscuro-fondo-cabecera: #444;
+    --oscuro-fila-impar: #3a3a3a;
+    --oscuro-fila-hover: #4a4a4a;
+    --oscuro-borde-celda: #444;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: var(--color-fondo);
+    color: var(--color-texto);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center; /* Centrar verticalmente el contenido */
+    min-height: 100vh;
+}
+
+main {
+    background-color: var(--color-superficie);
+    padding: 20px 40px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin: 20px;
+    width: 90%;
+    max-width: 800px;
+    text-align: center;
+}
+
+h1, h2 {
+    color: var(--color-texto);
+    margin-bottom: 20px;
+}
+
+.flex-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+/* Estilos base para botones */
+.base-button {
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    background-color: var(--color-primario);
+    padding: 10px 20px;
+    font-size: 1em;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+
+button[type="submit"]:hover {
+    background-color: var(--color-primario-hover);
+}
+
+.flex-container a:active, .btn-submit:active {
+    color: white;
+}
+
+.hidden-form {
+    display: none;
+}
+
+.error-message {
+    color: var(--color-texto-error);
+    background-color: var(--color-fondo-error);
+    border: 1px solid var(--color-borde-error);
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 15px;
+}
+
+.success-message {
+    color: var(--color-texto-exito);
+    background-color: var(--color-fondo-exito);
+    border: 1px solid var(--color-borde-exito);
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 15px;
+}
+
+.inline-form {
+    display: inline-block;
+    margin: 0 5px;
+}
+
+.inline-form button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2em; 
+    padding: 0;
+    color: inherit;
+}
+
+.inline-form button:hover {
+    opacity: 0.7;
+}
+
+table .inline-form button {
+    font-size: 1em;
+    margin: 0 2px;
+}
+
+.dark {
+    background-color: var(--oscuro-fondo);
+    color: var(--oscuro-texto);
+    border: 1px solid var(--oscuro-borde);
+}
+
+.dark thead th {
+    background-color: var(--oscuro-fondo-cabecera);
+    color: var(--dark-text);
+    border-bottom: 1px solid var(--dark-border);
+}
+
+.dark tbody tr {
+    background-color: var(--dark-bg);
+}
+
+.dark tbody tr:nth-child(odd) {
+    background-color: var(--oscuro-fila-impar);
+}
+
+.dark tbody tr:hover {
+    background-color: var(--oscuro-fila-hover);
+}
+
+.dark tbody td {
+    border-top: 1px solid var(--oscuro-borde-celda);
+}
+
+#teclado {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 30px;
+    margin-bottom: 30px;
+}
+
+.letra {
+    background-color: var(--color-exito);
+    color: white;
+    padding: 25px 35px; /* Aún más grandes */
+    margin: 5px; /* Espacio entre botones */
+    border: none;
+    border-radius: 12px; /* Bordes más redondeados */
+    cursor: pointer;
+    font-size: 2em; /* Tamaño de fuente más grande */
+    font-weight: bold;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+    min-width: 70px; /* Asegura un tamaño mínimo */
+    text-transform: uppercase;
+}
+
+.letra:hover {
+    background-color: var(--color-exito-hover);
+    transform: translateY(-3px); /* Efecto de elevación al pasar el ratón */
+}
+
+.letra:disabled {
+    background-color: var(--color-fondo-deshabilitado);
+    color: var(--color-deshabilitado);
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
+}
+
+/* Estilos para el área de la palabra oculta */
+#palabras {
+    font-size: 2.8em; /* Aumentar un poco el tamaño de la fuente */
+    letter-spacing: 12px; /* Aumentar el espaciado entre letras */
+    margin-bottom: 30px;
+    font-weight: bold;
+    color: var(--color-primario);
+    background-color: var(--color-superficie-claro); /* Fondo claro para la palabra */
+    padding: 20px 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    display: block; /* Para que el padding y el shadow se apliquen correctamente */
+    margin: 0 auto 30px auto; /* Centrar horizontalmente y mantener margin-bottom */
+}
+
+/* Estilos para el contenedor de información del juego (fallos y palabra) */
+.game-info-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+/* Estilos para el estado del juego (fallos) */
+#status {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.3em; /* Aumentar un poco el tamaño de la fuente */
+    margin-bottom: 20px;
+    color: var(--color-texto-claro);
+    background-color: var(--surface-color); /* Fondo para el estado */
+    padding: 15px 25px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    /* display: inline-block; */ /* Removed as flex is used */
+}
+
+#status div {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+#numeroFallos, #maximoFallos {
+    font-weight: bold;
+    color: var(--color-error);
+    font-size: 1.1em; /* Hacer los números un poco más grandes */
+}
+
+/* Estilos para mensajes del juego */
+#mensaje {
+    font-size: 1.5em;
+    font-weight: bold;
+    margin-top: 20px;
+    color: var(--color-exito);
+}
+
+/* Estilos para el botón de nueva partida */
+.actions button {
+    background-color: var(--color-secundario);
+    padding: 12px 25px;
+    font-size: 1.1em;
+    margin-top: 20px;
+}
+
+.actions button:hover {
+    background-color: var(--color-secundario-hover);
+}
+
+/* Estilos para formularios */
+form {
+    background-color: var(--light-surface-color);
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    margin-top: 30px;
+    margin-bottom: 30px;
+    text-align: left;
+}
+
+form label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: var(--color-texto-claro);
+}
+
+form select, form input {
+    width: calc(100% - 20px);
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid var(--color-borde);
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.alert-error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+    padding: 5px 10px; /* Reducido el padding vertical */
+    margin-bottom: 15px;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.alert-success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+    padding: 5px 10px; /* Reducido el padding vertical */
+    margin-bottom: 15px;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.btn-submit {
+    width: auto;
+    display: block;
+    margin: 0 auto;
+    padding: 12px;
+    font-size: 1.1em;
+    background-color: var(--color-primario);
+    border-radius: 10px;
+    border: none;
+    color: white;
+    cursor: pointer;
+}
+
+.btn-submit:hover {
+    background-color: var(--color-primario-hover);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+}
+
+table th, table td {
+    border: 1px solid var(--color-borde-tabla);
+    padding: 12px;
+    text-align: left;
+}
+
+table th {
+    background-color: var(--color-primario);
+    color: white;
+    font-weight: bold;
+}
+
+table tr:nth-child(even) {
+    background-color: var(--color-fila-tabla-par);
+}
+
+table tr:hover {
+    background-color: var(--color-fila-tabla-hover);
+}
+
+.empty {
+    text-align: center;
+    color: var(--color-secundario);
+    font-style: italic;
+    margin-top: 20px;
+}
+
+/* Estilos para el footer */
+footer {
+    margin-top: auto; /* Empuja el footer hacia abajo */
+    padding: 20px;
+    background-color: var(--color-texto);
+    color: white;
+    text-align: center;
+    width: 100%;
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.hidden {
+    display: none;
+}
+
+.centered-content {
+    text-align: center;
+    width: 100%;
+}
+
+
