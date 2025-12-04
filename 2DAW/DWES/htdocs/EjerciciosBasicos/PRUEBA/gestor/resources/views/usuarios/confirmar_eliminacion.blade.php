@@ -10,12 +10,11 @@
         <p>Esta acción no se puede deshacer.</p>
     </aside>
 
-    <form action="/EjerciciosBasicos/SERVIDOR/admin/usuarios/eliminar" method="POST">
-        @csrf
-        <input type="hidden" name="id" value="{{ $usuario['id'] }}">
-        <p>
-            <button type="submit">Eliminar</button>
-            <a href="/EjerciciosBasicos/SERVIDOR/admin/usuarios" class="button">Cancelar</a>
-        </p>
+    <form action="{{ url('/admin/usuarios/eliminar') }}" method="POST">
+            @csrf
+            <p>¿Estás seguro de que quieres eliminar al usuario {{ $usuario['nombre'] }}?</p>
+            <input type="hidden" name="id" value="{{ $usuario['id'] }}">
+            <button type="submit" class="button">Eliminar</button>
+            <a href="<?php echo dirname($_SERVER['SCRIPT_NAME']); ?>/admin/usuarios" class="button">Cancelar</a>
     </form>
 @endsection

@@ -79,24 +79,32 @@
   @if(isset($totalPaginas) && $totalPaginas > 1)
     <div class="pagination-nav">
       @php
-        $queryString = http_build_query(array_merge($_GET, ['pagina' => 1]));
+        function buildSimpleQueryString($pageNumber, $currentGetParams) {
+            $params = [];
+            foreach ($currentGetParams as $key => $value) {
+                if ($key !== 'pagina') {
+                    $params[] = $key . '=' . urlencode($value);
+                }
+            }
+            $params[] = 'pagina=' . $pageNumber;
+            return implode('&', $params);
+        }
+        $baseUrlForPagination = url($baseUrl ?? '/admin/tareas');
       @endphp
       @if($paginaActual > 1)
-        <a href="{{ url($baseUrl . '?' . http_build_query(array_merge($_GET, ['pagina' => 1]))) }}"
+        <a href="{{ $baseUrlForPagination . '?' . buildSimpleQueryString(1, $_GET) }}"
           class="btn">&laquo;&laquo; Primera</a>
-          {{-- http_build_query es para pasar los parametros de la url en la paginacion --}}
-        <a href="{{ url(($baseUrl ?? '/admin/tareas') . '?' . http_build_query(array_merge($_GET, ['pagina' => $paginaActual - 1]))) }}"
+        <a href="{{ $baseUrlForPagination . '?' . buildSimpleQueryString($paginaActual - 1, $_GET) }}"
           class="btn">&laquo; Anterior</a>
       @endif
       <span>Página {{ $paginaActual }} de {{ $totalPaginas }}</span>
       @if($paginaActual < $totalPaginas)
-        <a href="{{ url(($baseUrl ?? '/admin/tareas') . '?' . http_build_query(array_merge($_GET, ['pagina' => $paginaActual + 1]))) }}"
-          {{-- &raquo es para poner el >></a> --}}
+        <a href="{{ $baseUrlForPagination . '?' . buildSimpleQueryString($paginaActual + 1, $_GET) }}"
           class="btn">Siguiente &raquo;</a>
-        <a href="{{ url(($baseUrl ?? '/admin/tareas') . '?' . http_build_query(array_merge($_GET, ['pagina' => $totalPaginas]))) }}"
+        <a href="{{ $baseUrlForPagination . '?' . buildSimpleQueryString($totalPaginas, $_GET) }}"
           class="btn">Última &raquo;&raquo;</a>
       @endif
-      <form action="{{ url($baseUrl ?? '/admin/tareas') }}" method="GET" class="inline">
+      <form action="{{ $baseUrlForPagination }}" method="GET" class="inline">
         @foreach($_GET as $key => $value)
           @if($key !== 'pagina')
             <input type="hidden" name="{{ $key }}" value="{{ $value }}">

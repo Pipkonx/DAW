@@ -6,20 +6,19 @@ use App\Models\M_Usuarios;
 use App\Models\M_Tareas;
 
 /**
- * Controlador de autenticación simple con contraseña plana,
- * sesión y cookie para recordar la clave.
+ * Controlador para manejar la autenticación de usuarios.
+ * Incluye funciones para iniciar y cerrar sesión.
  */
 class C_Auth extends C_Controller
 {
     /**
-     * Muestra el formulario de login y procesa el inicio de sesión del usuario.
+     * Muestra el formulario de inicio de sesión y procesa los datos enviados.
      *
-     * Si se recibe una petición POST, valida las credenciales del usuario.
-     * En caso de éxito, inicia la sesión, establece cookies para recordar la clave
-     * y redirige al usuario según su rol (administrador u operario).
-     * Si es una petición GET, precarga los valores del formulario desde las cookies.
+     * Si se envían datos por POST, intenta autenticar al usuario.
+     * Si la autenticación es exitosa, inicia la sesión y redirige.
+     * Si no, muestra el formulario de login con un mensaje de error.
      *
-     * @return \Illuminate\View\View|void Retorna la vista del formulario de login o redirige.
+     * @return \Illuminate\View\View|void Retorna la vista del formulario de login o redirige a otra página.
      */
     public function login()
     {
@@ -53,7 +52,7 @@ class C_Auth extends C_Controller
             // Guardar sesión y cookies
             (new M_Usuarios())->actualizar((int)$user['id'], session_id(), $guardar);
             setcookie('guardar_clave', $guardar ? '1' : '0', time() + 2592000, '/'); // 30 días
-            setcookie('clave_plana', $guardar ? $contrasena : '', $guardar ? time() + 2592000 : time() - 3600, '/');
+            setcookie('usuario_recordado', $guardar ? $nombre : '', $guardar ? time() + 2592000 : time() - 3600, '/');
 
             // Redirección según rol
             $baseUrl = dirname($_SERVER['SCRIPT_NAME']);
@@ -63,8 +62,9 @@ class C_Auth extends C_Controller
         }
 
         // GET: precargar valores desde cookies
-        $nombre = $_COOKIE['usuario'] ?? '';
-        $contrasena = $_COOKIE['clave_plana'] ?? '';
+        $nombre = $_COOKIE['usuario_recordado'] ?? '';
+        $contrasena = '';
+
         $guardar = !empty($_COOKIE['guardar_clave']) && $_COOKIE['guardar_clave'] === '1';
 
         return view('autenticacion/login', [
@@ -76,31 +76,38 @@ class C_Auth extends C_Controller
     }
 
     /**
-     * Cierra la sesión del usuario actual y limpia las cookies de autenticación.
+     * Cierra la sesión del usuario actual.
      *
-     * Invalida la sesión PHP, destruye los datos de sesión y elimina las cookies
-     * relacionadas con la autenticación para asegurar un cierre de sesión completo.
-     *
-     * @return \Illuminate\View\View Retorna la vista de login con un mensaje de sesión cerrada.
+     * Invalida la sesión y redirige al usuario a la página de inicio de sesión.
      */
     public function logout()
     {
         if (session_status() == PHP_SESSION_NONE) session_start();
         $id = (int)($_SESSION['usuario_id'] ?? 0);
+        $nombre_usuario = $_SESSION['usuario_nombre'] ?? '';
+
+        // Verificar si el usuario había marcado "recordarme"
+        $guardar_clave = !empty($_COOKIE['guardar_clave']) && $_COOKIE['guardar_clave'] === '1';
 
         if ($id) {
-            (new M_Usuarios())->actualizar($id, null, !empty($_COOKIE['guardar_clave']) && $_COOKIE['guardar_clave'] === '1');
+            (new M_Usuarios())->actualizar($id, null, $guardar_clave);
         }
 
         session_unset();
         session_destroy();
 
-        // Solo borrar la cookie de la clave
-        setcookie('clave_plana', '', time() - 3600, '/');
+        // Si el usuario había marcado "recordarme", mantener la cookie de usuario_recordado
+        if ($guardar_clave) {
+            setcookie('usuario_recordado', $nombre_usuario, time() + 2592000, '/'); // 30 días
+        } else {
+            // Si no, borrarla
+            setcookie('usuario_recordado', '', time() - 3600, '/');
+        }
 
-        return view('autenticacion/login', [
-            'mensaje' => 'Sesión cerrada',
-            'isLoginPage' => true
-        ]);
+        // Redirigir al login
+        $_SESSION['mensaje'] = 'Sesión cerrada';
+        $baseUrl = dirname($_SERVER['SCRIPT_NAME']);
+        header("Location: $baseUrl/login");
+        exit;
     }
 }

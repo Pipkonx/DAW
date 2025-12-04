@@ -15,30 +15,23 @@
         </aside>
     @endif
 
-    <form action="/EjerciciosBasicos/SERVIDOR/admin/usuarios/crear" method="POST">
+    <form action="<?php echo dirname($_SERVER['SCRIPT_NAME']); ?>/admin/usuarios/guardar" method="POST">
         @csrf
-        <p>
-            <label for="nombre">Nombre</label>
-            <input type="text" id="nombre" name="nombre" value="{{ old('nombre', $usuario->nombre ?? '') }}" required>
-        </p>
-        <p>
-            <label for="contraseña">Contraseña</label>
-            <input type="password" id="contraseña" name="contraseña" required>
-        </p>
-        <p>
-            <label for="confirmar_contraseña">Confirmar Contraseña</label>
-            <input type="password" id="confirmar_contraseña" name="confirmar_contraseña" required>
-        </p>
-        <p>
-            <label for="rol">Rol</label>
-            <select id="rol" name="rol" required>
-                <option value="admin" {{ (old('rol', $usuario->rol ?? '') == 'admin') ? 'selected' : '' }}>Administrador</option>
-                <option value="operario" {{ (old('rol', $usuario->rol ?? '') == 'operario') ? 'selected' : '' }}>Operario</option>
-            </select>
-        </p>
-        <p>
-            <button type="submit">Guardar</button>
-            <a href="/EjerciciosBasicos/SERVIDOR/admin/usuarios" class="button">Cancelar</a>
-        </p>
+        <label for="nombre">Nombre:</label>
+        <input type="text" id="nombre" name="nombre" value="{{ old('nombre') }}" required>
+
+
+
+        <label for="password">Contraseña:</label>
+        <input type="password" id="password" name="password" required>
+
+        <label for="rol">Rol:</label>
+        <select id="rol" name="rol" required>
+            <option value="admin" {{ old('rol') == 'admin' ? 'selected' : '' }}>Administrador</option>
+            <option value="operario" {{ old('rol') == 'operario' ? 'selected' : '' }}>Operario</option>
+        </select>
+
+        <button type="submit">Crear Usuario</button>
+        <a href="<?php echo dirname($_SERVER['SCRIPT_NAME']); ?>/admin/usuarios" class="button">Cancelar</a>
     </form>
 @endsection

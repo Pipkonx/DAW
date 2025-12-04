@@ -16,7 +16,7 @@ class C_Administrador extends C_Controller
      * puedan acceder. Recupera las tareas de la base de datos, aplica paginación
      * y las presenta en una vista.
      *
-     * @return \Illuminate\Http\Response Una respuesta HTTP que carga la vista con la lista de tareas.
+     * @return void Una respuesta HTTP que carga la vista con la lista de tareas.
      */
     public function listar()
     {
@@ -28,13 +28,13 @@ class C_Administrador extends C_Controller
         $error = '';
         $tareas = [];
 
-        // Obtener datos de paginación
-        $paginationData = $this->getPaginationData($modelo, self::TAREAS_POR_PAGINA);
-        $paginaActual = $paginationData['paginaActual'];
-        $totalElementos = $paginationData['totalElementos'];
-        $totalPaginas = $paginationData['totalPaginas'];
+        // Datos de paginación
+        $paginaActual = (int)($_GET['pagina'] ?? 1);
+        $totalElementos = $modelo->contar();
+        $totalPaginas = ceil($totalElementos / self::TAREAS_POR_PAGINA);
 
-        $tareas = $modelo->listar(self::TAREAS_POR_PAGINA, $paginaActual);
+        $offset = ($paginaActual - 1) * self::TAREAS_POR_PAGINA;
+        $tareas = $modelo->listar(self::TAREAS_POR_PAGINA, $offset);
 
         $datos = ['tareas' => $tareas, 'paginaActual' => $paginaActual, 'totalPaginas' => $totalPaginas, 'baseUrl' => 'admin/tareas', 'session' => $_SESSION];
         if ($error) $datos['errorGeneral'] = $error;
@@ -48,7 +48,7 @@ class C_Administrador extends C_Controller
      * de tareas, incluyendo campos vacíos y la URL de acción del formulario.
      * Requiere que el usuario tenga rol de administrador.
      *
-     * @return \Illuminate\Http\Response Una respuesta HTTP que carga la vista del formulario de alta/edición de tareas.
+     * @return void Carga la vista del formulario de alta/edición de tareas.
      */
     public function crear()
     {
@@ -76,7 +76,7 @@ class C_Administrador extends C_Controller
             'fechaRealizacion' => '',
             'anotacionesAnteriores' => '',
             'anotacionesPosteriores' => '',
-            'formActionUrl' => url('/admin/tareas/crear'), // Ruta para el POST de creación
+            'formActionUrl' => dirname($_SERVER['SCRIPT_NAME']) . '/admin/tareas/crear', // Ruta para el POST de creación
             'operarios' => $operarios,
             'session' => $_SESSION,
         ];
@@ -91,7 +91,7 @@ class C_Administrador extends C_Controller
      * en la base de datos y redirige a la lista de tareas con un mensaje de éxito.
      * Requiere que el usuario tenga rol de administrador.
      *
-     * @return \Illuminate\Http\Response Una respuesta HTTP que redirige a la lista de tareas o vuelve al formulario de creación.
+     * @return void Redirige a la lista de tareas o vuelve al formulario de creación.
      */
     public function guardar()
     {
@@ -104,7 +104,7 @@ class C_Administrador extends C_Controller
         if (!empty(M_Funciones::$errores)) {
             // Si hay errores, volver al formulario con los datos y errores
             $datos = $_POST;
-            $datos['formActionUrl'] = url('/admin/tareas/crear');
+            $datos['formActionUrl'] = dirname($_SERVER['SCRIPT_NAME']) . '/admin/tareas/crear';
             
             $usuariosModel = new M_Usuarios();
             $datos['operarios'] = $usuariosModel->getOperarios();
@@ -115,17 +115,10 @@ class C_Administrador extends C_Controller
 
         $modelo = new M_Tareas();
         $modelo->crear($_POST); // Usar el método crear del modelo Tareas
-        $mensaje = 'Tarea creada correctamente';
-
-        // Recargar la lista de tareas para la vista
-        $paginationData = $this->getPaginationData($modelo, self::TAREAS_POR_PAGINA);
-        $paginaActual = $paginationData['paginaActual'];
-        $totalElementos = $paginationData['totalElementos'];
-        $totalPaginas = $paginationData['totalPaginas'];
-        $tareas = $modelo->listar(self::TAREAS_POR_PAGINA, $paginaActual);
-
-        $datos = ['mensaje' => $mensaje, 'tareas' => $tareas, 'paginaActual' => $paginaActual, 'totalPaginas' => $totalPaginas, 'session' => $_SESSION];
-        return view('tareas.lista', $datos);
+        $_SESSION['mensaje'] = 'Tarea creada correctamente';
+        $baseUrl = dirname($_SERVER['SCRIPT_NAME']);
+        header("Location: $baseUrl/admin/tareas");
+        exit;
     }
 
     /**
@@ -135,7 +128,7 @@ class C_Administrador extends C_Controller
      * y la presenta en una vista de detalle. Si la tarea no se encuentra,
      * se muestra un mensaje de error. Requiere que el usuario tenga rol de administrador.
      *
-     * @return \Illuminate\Http\Response Una respuesta HTTP que carga la vista de detalle de la tarea o una lista con un mensaje de error.
+     * @return void Carga la vista de detalle de la tarea o una lista con un mensaje de error.
      */
     public function mostrar()
     {
@@ -149,9 +142,10 @@ class C_Administrador extends C_Controller
         $tarea = $modelo->buscar((int)$id);
 
         if (!$tarea) {
-            // Si no existe la tarea, redirigir o mostrar error
-            $datos = ['errorGeneral' => 'La tarea no existe.', 'session' => $_SESSION];
-            return view('tareas.lista', $datos);
+            $_SESSION['errorGeneral'] = 'La tarea no existe.';
+            $baseUrl = dirname($_SERVER['SCRIPT_NAME']);
+            header("Location: $baseUrl/admin/tareas");
+            exit;
         }
         return view('tareas.detalle', array_merge($tarea, ['session' => $_SESSION])); // Asumiendo una vista 'admin.tareas.detalle'
     }
@@ -163,7 +157,7 @@ class C_Administrador extends C_Controller
      * en un formulario de edición. Si la tarea no se encuentra, se redirige con un
      * mensaje de error. Requiere que el usuario tenga rol de administrador.
      *
-     * @return \Illuminate\Http\Response Una respuesta HTTP que carga la vista del formulario de alta/edición de tareas.
+     * @return void Carga la vista del formulario de alta/edición de tareas.
      */
     public function editar()
     {
@@ -177,14 +171,16 @@ class C_Administrador extends C_Controller
         $tarea = $modelo->buscar((int)$id);
 
         if (!$tarea) {
-            $datos = ['errorGeneral' => 'No se pudo cargar la tarea para edición.', 'session' => $_SESSION];
-            return view('tareas.lista', $datos);
+            $_SESSION['errorGeneral'] = 'No se pudo cargar la tarea para edición.';
+            $baseUrl = dirname($_SERVER['SCRIPT_NAME']);
+            header("Location: $baseUrl/admin/tareas");
+            exit;
         }
 
         // Preparar datos para la vista de edición
         $datos = $tarea; // Los datos de la tarea encontrada
         $datos['id'] = (int)$id;
-        $datos['formActionUrl'] = url('/admin/tareas/editar?id=' . $id); // Ruta para el POST de edición
+        $datos['formActionUrl'] = dirname($_SERVER['SCRIPT_NAME']) . '/admin/tareas/editar?id=' . $id; // Ruta para el POST de edición
         
         $usuariosModel = new M_Usuarios();
         $datos['operarios'] = $usuariosModel->getOperarios();
@@ -222,7 +218,7 @@ class C_Administrador extends C_Controller
      * correspondiente en la base de datos. Si hay errores de validación, vuelve a mostrar
      * el formulario de edición con los errores. Requiere que el usuario tenga rol de administrador.
      *
-     * @return \Illuminate\Http\Response Una respuesta HTTP que redirige a la lista de tareas o vuelve al formulario de edición.
+     * @return void Redirige a la lista de tareas o vuelve al formulario de edición.
      */
     public function actualizar()
     {
@@ -235,18 +231,13 @@ class C_Administrador extends C_Controller
             $_POST['id'] = $id;
         }
 
-        // Manejo de historial de notas: Si se añade una nota posterior, pasa a anterior
-        // y la posterior queda vacía.
-        if (!empty($_POST['anotacionesPosteriores'])) {
-             $_POST['anotacionesAnteriores'] = $_POST['anotacionesPosteriores'];
-             $_POST['anotacionesPosteriores'] = '';
-        }
+
 
         $this->filtrar();
         if (!empty(M_Funciones::$errores)) {
             $datos = $_POST;
             $datos['id'] = (int)$id;
-            $datos['formActionUrl'] = url('/admin/tareas/editar?id=' . $id);
+            $datos['formActionUrl'] = dirname($_SERVER['SCRIPT_NAME']) . '/admin/tareas/editar?id=' . $id;
             
             $usuariosModel = new M_Usuarios();
             $datos['operarios'] = $usuariosModel->getOperarios();
@@ -306,17 +297,10 @@ class C_Administrador extends C_Controller
             }
         }
 
-        $mensaje = 'Tarea actualizada correctamente';
-
-        // Recargar la lista de tareas para la vista
-        $paginationData = $this->getPaginationData($modelo, self::TAREAS_POR_PAGINA);
-        $paginaActual = $paginationData['paginaActual'];
-        $totalElementos = $paginationData['totalElementos'];
-        $totalPaginas = $paginationData['totalPaginas'];
-        $tareas = $modelo->listar(self::TAREAS_POR_PAGINA, $paginaActual);
-
-        $datos = ['mensaje' => $mensaje, 'tareas' => $tareas, 'paginaActual' => $paginaActual, 'totalPaginas' => $totalPaginas, 'session' => $_SESSION];
-        return view('tareas.lista', $datos);
+        $_SESSION['mensaje'] = 'Tarea actualizada correctamente';
+        $baseUrl = dirname($_SERVER['SCRIPT_NAME']);
+        header("Location: $baseUrl/admin/tareas");
+        exit;
     }
 
     /**
@@ -327,7 +311,7 @@ class C_Administrador extends C_Controller
      * realizar esta acción. Tras la eliminación, recarga la lista de tareas con un
      * mensaje de éxito. Si el usuario no es administrador, se le redirige al login.
      *
-     * @return \Illuminate\Http\Response Una respuesta HTTP que redirige a la lista de tareas con un mensaje de éxito.
+     * @return void Redirige a la lista de tareas con un mensaje de éxito.
      */
     public function eliminar()
     {
@@ -339,17 +323,10 @@ class C_Administrador extends C_Controller
 
         $modelo = new M_Tareas(); // Corregido de 'Tareas()' a 'M_Tareas()'
         $modelo->eliminar((int)$id);
-        $mensaje = 'Tarea eliminada correctamente';
-
-        // Recargar la lista de tareas para la vista
-        $paginationData = $this->getPaginationData($modelo, self::TAREAS_POR_PAGINA);
-        $paginaActual = $paginationData['paginaActual'];
-        $totalElementos = $paginationData['totalElementos'];
-        $totalPaginas = $paginationData['totalPaginas'];
-        $tareas = $modelo->listar(self::TAREAS_POR_PAGINA, $paginaActual);
-
-        $datos = ['mensaje' => $mensaje, 'tareas' => $tareas, 'paginaActual' => $paginaActual, 'totalPaginas' => $totalPaginas, 'session' => $_SESSION];
-        return view('tareas.lista', $datos);
+        $_SESSION['mensaje'] = 'Tarea eliminada correctamente';
+        $baseUrl = dirname($_SERVER['SCRIPT_NAME']);
+        header("Location: $baseUrl/admin/tareas");
+        exit;
     }
     
     /**
@@ -360,9 +337,7 @@ class C_Administrador extends C_Controller
      * que solo los administradores puedan realizar esta acción. Si el fichero
      * existe, lo elimina del sistema de archivos.
      *
-     * @param int $id El ID de la tarea a la que pertenece el fichero.
-     * @param string $filename El nombre del fichero a eliminar.
-     * @return \Illuminate\Http\RedirectResponse Redirige de vuelta al formulario de edición de la tarea.
+     * @return void Redirige de vuelta al formulario de edición de la tarea.
      */
     public function eliminarFichero() {
         if (session_status() == PHP_SESSION_NONE) session_start();
@@ -381,7 +356,7 @@ class C_Administrador extends C_Controller
             }
         }
         // Redirigir de vuelta a la edición
-        header('Location: ' . url('/admin/tareas/editar?id=' . $id)); exit;
+        header('Location: ' . dirname($_SERVER['SCRIPT_NAME']) . '/admin/tareas/editar?id=' . $id); exit;
     }
 
     /**
@@ -391,7 +366,7 @@ class C_Administrador extends C_Controller
      * en una vista de confirmación de eliminación. Si la tarea no se encuentra,
      * se redirige con un mensaje de error. Requiere que el usuario tenga rol de administrador.
      *
-     * @return \Illuminate\Http\Response Una respuesta HTTP que carga la vista de confirmación de eliminación o una lista con un mensaje de error.
+     * @return void Carga la vista de confirmación de eliminación o una lista con un mensaje de error.
      */
     public function confirmarEliminacion()
     {
@@ -404,8 +379,10 @@ class C_Administrador extends C_Controller
         $tarea = null;
         $tarea = $modelo->buscar((int)$id);
         if (!$tarea) {
-            $datos = ['errorGeneral' => 'No se pudo cargar la tarea para eliminación.', 'session' => $_SESSION];
-            return view('tareas.lista', $datos);
+            $_SESSION['errorGeneral'] = 'No se pudo cargar la tarea para eliminación.';
+            $baseUrl = dirname($_SERVER['SCRIPT_NAME']);
+            header("Location: $baseUrl/admin/tareas");
+            exit;
         }
         $tarea['id'] = (int)$id;
         return view('tareas.confirmar_eliminacion', array_merge($tarea, ['session' => $_SESSION])); // Asumiendo una vista 'admin.tareas.confirmar_eliminacion'

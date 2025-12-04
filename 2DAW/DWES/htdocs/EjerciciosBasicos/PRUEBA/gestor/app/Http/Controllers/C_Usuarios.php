@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\M_Usuarios;
-use Illuminate\Http\Request;
+
 use App\Models\M_Funciones;
 
 class C_Usuarios extends C_Controller
@@ -17,7 +17,7 @@ class C_Usuarios extends C_Controller
      * Obtiene los datos de paginación y la lista de usuarios del modelo M_Usuarios.
      * Prepara los datos para la vista 'usuarios.listar'.
      *
-     * @return \\Illuminate\\View\\View|\Illuminate\\Http\\RedirectResponse Retorna la vista de la lista de usuarios o redirige al login si no es administrador.
+     * @return \Illuminate\View\View|void Retorna la vista de la lista de usuarios o redirige al login si no es administrador.
      */
     public function listar()
     {
@@ -32,10 +32,10 @@ class C_Usuarios extends C_Controller
         $error = '';
         $usuarios = [];
 
-        $paginationData = $this->getPaginationData($modelo, self::USUARIOS_POR_PAGINA);
-        $paginaActual = $paginationData['paginaActual'];
-        $totalElementos = $paginationData['totalElementos'];
-        $totalPaginas = $paginationData['totalPaginas'];
+        // Datos de paginación
+        $paginaActual = (int)($_GET['pagina'] ?? 1);
+        $totalElementos = $modelo->contar();
+        $totalPaginas = ceil($totalElementos / self::USUARIOS_POR_PAGINA);
 
         $offset = (int)($paginaActual - 1) * self::USUARIOS_POR_PAGINA;
         $usuarios = $modelo->listar(self::USUARIOS_POR_PAGINA, $offset);
@@ -75,7 +75,16 @@ class C_Usuarios extends C_Controller
      * @param \\Illuminate\\Http\\Request $request La solicitud HTTP que contiene los datos del formulario.
      * @return \\Illuminate\\View\\View|\Illuminate\\Http\\RedirectResponse Retorna la vista del formulario con errores o redirige a la lista de usuarios.
      */
-    public function guardar(Request $request)
+    /**
+     * Guarda un nuevo usuario en la base de datos.
+     *
+     * Valida los datos del formulario enviados por POST y, si son válidos, inserta el nuevo usuario
+     * a través del modelo M_Usuarios. Redirige a la lista de usuarios con un mensaje
+     * de éxito o muestra los errores en el formulario de creación.
+     *
+     * @return \Illuminate\View\View|void Retorna la vista del formulario con errores o redirige a la lista de usuarios.
+     */
+    public function guardar()
     {
         if (session_status() == PHP_SESSION_NONE) {
             session_start();
@@ -93,20 +102,22 @@ class C_Usuarios extends C_Controller
         $modelo = new M_Usuarios();
         $modelo->insertar($_POST);
 
-        return redirect('/admin/usuarios')->with('success', 'Usuario creado correctamente.');
+        $_SESSION['mensaje'] = 'Usuario creado correctamente.';
+        $baseUrl = dirname($_SERVER['SCRIPT_NAME']);
+        header("Location: $baseUrl/admin/usuarios");
+        exit;
     }
 
     /**
      * Muestra el formulario para editar un usuario existente.
      *
      * Verifica que el usuario autenticado tenga rol de administrador.
-     * Busca el usuario por su ID y, si lo encuentra, prepara la vista 'usuarios.editar'.
+     * Busca el usuario por su ID (obtenido de $_GET) y, si lo encuentra, prepara la vista 'usuarios.editar'.
      * Si el usuario no existe, redirige a la lista de usuarios con un mensaje de error.
      *
-     * @param \\Illuminate\\Http\\Request $request La solicitud HTTP que contiene el ID del usuario a editar.
-     * @return \\Illuminate\\View\\View|\Illuminate\\Http\\RedirectResponse Retorna la vista de edición o redirige a la lista de usuarios.
+     * @return \Illuminate\View\View|void Retorna la vista de edición o redirige a la lista de usuarios.
      */
-    public function editar(Request $request)
+    public function editar($id)
     {
         if (session_status() == PHP_SESSION_NONE) {
             session_start();
@@ -115,12 +126,22 @@ class C_Usuarios extends C_Controller
             return view('autenticacion/login', ['errorGeneral' => 'Acceso restringido a administradores']);
         }
 
-        $id = $request->input('id');
+        // $id = $_POST['id'] ?? null; // Comentado porque ahora el ID viene como parámetro de ruta
+        if (!$id) {
+            $_SESSION['errorGeneral'] = 'ID de usuario no proporcionado.';
+            $baseUrl = dirname($_SERVER['SCRIPT_NAME']);
+            header("Location: $baseUrl/admin/usuarios");
+            exit;
+        }
+
         $modelo = new M_Usuarios();
         $usuario = $modelo->buscar((int)$id);
 
         if (!$usuario) {
-            return redirect('/admin/usuarios')->with('error', 'Usuario no encontrado.');
+        $_SESSION['errorGeneral'] = 'Usuario no encontrado.';
+        $baseUrl = dirname($_SERVER['SCRIPT_NAME']);
+        header("Location: $baseUrl/admin/usuarios");
+        exit;
         }
 
         return view('usuarios.editar', ['usuario' => $usuario, 'modo' => 'edicion']);
@@ -129,14 +150,13 @@ class C_Usuarios extends C_Controller
     /**
      * Actualiza un usuario existente en la base de datos.
      *
-     * Valida los datos del formulario y, si son válidos, actualiza el usuario
+     * Valida los datos del formulario enviados por POST y, si son válidos, actualiza el usuario
      * a través del modelo M_Usuarios. Redirige a la lista de usuarios con un mensaje
      * de éxito o muestra los errores en el formulario de edición.
      *
-     * @param \\Illuminate\\Http\\Request $request La solicitud HTTP que contiene los datos actualizados del usuario.
-     * @return \\Illuminate\\View\\View|\Illuminate\\Http\\RedirectResponse Retorna la vista de edición con errores o redirige a la lista de usuarios.
+     * @return \Illuminate\View\View|void Retorna la vista de edición con errores o redirige a la lista de usuarios.
      */
-    public function actualizar(Request $request)
+    public function actualizar()
     {
         if (session_status() == PHP_SESSION_NONE) {
             session_start();
@@ -154,20 +174,22 @@ class C_Usuarios extends C_Controller
         $modelo = new M_Usuarios();
         $modelo->actualizarUsuario($_POST);
 
-        return redirect('/admin/usuarios')->with('success', 'Usuario actualizado correctamente.');
+        $_SESSION['mensaje'] = 'Usuario actualizado correctamente.';
+        $baseUrl = dirname($_SERVER['SCRIPT_NAME']);
+        header("Location: $baseUrl/admin/usuarios");
+        exit;
     }
 
     /**
      * Muestra una vista de confirmación antes de eliminar un usuario.
      *
      * Verifica que el usuario autenticado tenga rol de administrador.
-     * Busca el usuario por su ID y, si lo encuentra, prepara la vista de confirmación.
+     * Busca el usuario por su ID (obtenido de $_GET) y, si lo encuentra, prepara la vista de confirmación.
      * Si el usuario no existe, redirige a la lista de usuarios con un mensaje de error.
      *
-     * @param \\Illuminate\\Http\\Request $request La solicitud HTTP que contiene el ID del usuario a eliminar.
-     * @return \\Illuminate\\View\\View|\Illuminate\\Http\\RedirectResponse Retorna la vista de confirmación o redirige a la lista de usuarios.
+     * @return \Illuminate\View\View|void Retorna la vista de confirmación o redirige a la lista de usuarios.
      */
-    public function confirmarEliminacion(Request $request)
+    public function confirmarEliminacion($id)
     {
         if (session_status() == PHP_SESSION_NONE) {
             session_start();
@@ -176,12 +198,22 @@ class C_Usuarios extends C_Controller
             return view('autenticacion/login', ['errorGeneral' => 'Acceso restringido a administradores']);
         }
 
-        $id = $request->input('id');
+        // $id = $_POST['id'] ?? null; // Comentado porque ahora el ID viene como parámetro de ruta
+        if (!$id) {
+            $_SESSION['errorGeneral'] = 'ID de usuario no proporcionado.';
+            $baseUrl = dirname($_SERVER['SCRIPT_NAME']);
+            header("Location: $baseUrl/admin/usuarios");
+            exit;
+        }
+
         $modelo = new M_Usuarios();
         $usuario = $modelo->buscar((int)$id);
 
         if (!$usuario) {
-            return redirect('/admin/usuarios')->with('error', 'Usuario no encontrado.');
+            $_SESSION['errorGeneral'] = 'Usuario no encontrado.';
+            $baseUrl = dirname($_SERVER['SCRIPT_NAME']);
+            header("Location: $baseUrl/admin/usuarios");
+            exit;
         }
 
         return view('usuarios.confirmar_eliminacion', ['usuario' => $usuario]);
@@ -191,13 +223,12 @@ class C_Usuarios extends C_Controller
      * Elimina un usuario de la base de datos.
      *
      * Verifica que el usuario autenticado tenga rol de administrador.
-     * Elimina el usuario especificado por su ID a través del modelo M_Usuarios.
+     * Elimina el usuario especificado por su ID (obtenido de $_GET) a través del modelo M_Usuarios.
      * Redirige a la lista de usuarios con un mensaje de éxito.
      *
-     * @param \\Illuminate\\Http\\Request $request La solicitud HTTP que contiene el ID del usuario a eliminar.
-     * @return \\Illuminate\\Http\\RedirectResponse Redirige a la lista de usuarios con un mensaje de éxito.
+     * @return void Redirige a la lista de usuarios con un mensaje de éxito.
      */
-    public function eliminar(Request $request)
+    public function eliminar()
     {
         if (session_status() == PHP_SESSION_NONE) {
             session_start();
@@ -206,10 +237,20 @@ class C_Usuarios extends C_Controller
             return view('autenticacion/login', ['errorGeneral' => 'Acceso restringido a administradores']);
         }
 
-        $id = $request->input('id');
+        $id = $_POST['id'] ?? null;
+        if (!$id) {
+            $_SESSION['errorGeneral'] = 'ID de usuario no proporcionado para eliminar.';
+            $baseUrl = dirname($_SERVER['SCRIPT_NAME']);
+            header("Location: $baseUrl/admin/usuarios");
+            exit;
+        }
+
         $modelo = new M_Usuarios();
         $modelo->eliminar((int)$id);
 
-        return redirect('/admin/usuarios')->with('success', 'Usuario eliminado correctamente.');
+        $_SESSION['mensaje'] = 'Usuario eliminado correctamente.';
+        $baseUrl = dirname($_SERVER['SCRIPT_NAME']);
+        header("Location: $baseUrl/admin/usuarios");
+        exit;
     }
 }

@@ -50,7 +50,7 @@ class C_Operario extends C_Controller
         $tarea = (new M_Tareas())->buscar($id);
 
         if (!$tarea) {
-            // dirname es para obtener la ruta del directorio actual
+            $_SESSION['errorGeneral'] = 'Tarea no encontrada.';
             header('Location: ' . url('/operario/tareas')); exit;
         }
 
@@ -74,8 +74,10 @@ class C_Operario extends C_Controller
         $tarea = $modelo->buscar($id);
 
         if (!$tarea) {
-            // header es para redirigir al usuario a la lista dee usuarios
-            // header('Location: ' . url('/operario/tareas')); exit;
+            $_SESSION['errorGeneral'] = 'Tarea no encontrada.';
+            $baseUrl = dirname($_SERVER['SCRIPT_NAME']);
+            header("Location: $baseUrl/operario/tareas");
+            exit;
         }
 
         $tarea['formActionUrl'] = url('/operario/tareas/editar?id=' . $id);

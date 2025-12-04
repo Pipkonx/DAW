@@ -1,3 +1,12 @@
+<?php
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+$mensaje = $_SESSION['mensaje'] ?? '';
+unset($_SESSION['mensaje']);
+$errorGeneral = $_SESSION['errorGeneral'] ?? '';
+unset($_SESSION['errorGeneral']);
+?>
 @extends('plantillas.plantilla')
 
 @section('titulo', 'Gestión de Usuarios')
@@ -5,21 +14,21 @@
 @section('cuerpo')
     <h1>Gestión de Usuarios</h1>
 
-    @if (session('success'))
+    @if ($mensaje)
         <aside>
-            {{ session('success') }}
+            {{ $mensaje }}
         </aside>
     @endif
 
-    @if (session('error'))
+    @if ($errorGeneral)
         <aside>
-            {{ session('error') }}
+            {{ $errorGeneral }}
         </aside>
     @endif
 
     <p>
-        <a href="/EjerciciosBasicos/SERVIDOR/admin/usuarios/crear" class="button">Crear Nuevo Usuario</a>
-        <a href="/EjerciciosBasicos/SERVIDOR/admin/tareas" class="button">Volver a Tareas</a>
+        <a href="<?php echo dirname($_SERVER['SCRIPT_NAME']); ?>/admin/usuarios/crear" class="button">Crear Nuevo Usuario</a>
+        <a href="<?php echo dirname($_SERVER['SCRIPT_NAME']); ?>/admin/tareas" class="button">Volver a Tareas</a>
     </p>
 
     <table>
@@ -38,8 +47,8 @@
                     <td>{{ $usuario['nombre'] }}</td>
                     <td>{{ $usuario['rol'] }}</td>
                     <td>
-                        <a href="/EjerciciosBasicos/SERVIDOR/admin/usuarios/editar?id={{ $usuario['id'] }}" class="button">Editar</a>
-                        <a href="/EjerciciosBasicos/SERVIDOR/admin/usuarios/confirmarEliminar?id={{ $usuario['id'] }}" class="button">Eliminar</a>
+                        <a href="{{ url('/admin/usuarios/editar/' . $usuario['id']) }}" class="button">Editar</a>
+                        <a href="{{ url('/admin/usuarios/confirmarEliminar/' . $usuario['id']) }}" class="button">Eliminar</a>
                     </td>
                 </tr>
             @empty
@@ -52,7 +61,7 @@
 
     <div class="pagination">
         @for ($i = 1; $i <= $totalPaginas; $i++)
-            <a href="/EjerciciosBasicos/SERVIDOR/admin/usuarios?pagina={{ $i }}" class="button {{ $i == $paginaActual ? 'active' : '' }}">{{ $i }}</a>
+            <a href="{{ url('/admin/usuarios', ['pagina' => $i]) }}" class="button {{ $i == $paginaActual ? 'active' : '' }}">{{ $i }}</a>
         @endfor
     </div>
 @endsection

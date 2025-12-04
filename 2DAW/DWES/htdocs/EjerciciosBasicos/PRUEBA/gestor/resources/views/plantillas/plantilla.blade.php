@@ -9,9 +9,9 @@
 <body>
     @if(!isset($isLoginPage) || !$isLoginPage)
     <nav class="nav">
-        <a href="/EjerciciosBasicos/SERVIDOR/admin/tareas">Tareas</a>
-        <a href="/EjerciciosBasicos/SERVIDOR/admin/usuarios">Usuarios</a>
-        <a href="/EjerciciosBasicos/SERVIDOR/logout">Cerrar Sesión</a>
+        <a href="{{ url('/admin/tareas') }}">Tareas</a>
+        <a href="{{ url('/admin/usuarios') }}">Usuarios</a>
+        <a href="{{ url('/logout') }}">Cerrar Sesión</a>
     </nav>
     @endif
 

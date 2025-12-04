@@ -101,7 +101,16 @@ class M_Usuarios
     {
         $sql = 'INSERT INTO usuarios (nombre, contraseña, rol) VALUES (?, ?, ?)';
         $st = $this->bd()->prepare($sql);
-        return $st->execute([$datos['nombre'], password_hash($datos['contraseña'], PASSWORD_DEFAULT), $datos['rol']]);
+        try {
+            $result = $st->execute([$datos['nombre'], $datos['contraseña'], $datos['rol']]);
+            if (!$result) {
+                error_log("PDO Error in insertar: " . json_encode($st->errorInfo()));
+            }
+            return $result;
+        } catch (\PDOException $e) {
+            error_log("PDO Exception in insertar: " . $e->getMessage());
+            return false;
+        }
     }
 
     /**
@@ -117,7 +126,7 @@ class M_Usuarios
 
         if (!empty($datos['contraseña'])) {
             $sql .= ', contraseña = ?';
-            $params[] = password_hash($datos['contraseña'], PASSWORD_DEFAULT);
+            $params[] = $datos['contraseña'];
         }
 
         $sql .= ' WHERE id = ?';
@@ -168,7 +177,7 @@ class M_Usuarios
      */
     public static function isOperario($rol)
     {
-        $sql = "SELECT * FROM usuarios  WHERE rol = operario";
+        $sql = "SELECT * FROM usuarios  WHERE rol = 'operario'";
         $st = DB::getInstance()->prepare($sql);
         $st->execute([$rol]);
         $fila = $st->fetch(PDO::FETCH_ASSOC);

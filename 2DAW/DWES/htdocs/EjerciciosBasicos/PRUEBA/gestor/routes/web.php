@@ -24,9 +24,9 @@ Route::post('/admin/tareas/eliminar-fichero', [C_Administrador::class, 'eliminar
 Route::get('/admin/usuarios', [C_Usuarios::class, 'listar']);
 Route::get('/admin/usuarios/crear', [C_Usuarios::class, 'crear']);
 Route::post('/admin/usuarios/crear', [C_Usuarios::class, 'guardar']);
-Route::get('/admin/usuarios/editar', [C_Usuarios::class, 'editar']);
+Route::get('/admin/usuarios/editar/{id}', [C_Usuarios::class, 'editar']);
 Route::post('/admin/usuarios/editar', [C_Usuarios::class, 'actualizar']);
-Route::get('/admin/usuarios/confirmarEliminar', [C_Usuarios::class, 'confirmarEliminacion']);
+Route::get('/admin/usuarios/confirmarEliminar/{id}', [C_Usuarios::class, 'confirmarEliminacion']);
 Route::post('/admin/usuarios/eliminar', [C_Usuarios::class, 'eliminar']);
 
 Route::any('/operario/tareas', [C_Operario::class, 'listar']);

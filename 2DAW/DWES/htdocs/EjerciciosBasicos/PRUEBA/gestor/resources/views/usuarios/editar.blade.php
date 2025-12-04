@@ -15,7 +15,7 @@
         </aside>
     @endif
 
-    <form action="/EjerciciosBasicos/SERVIDOR/admin/usuarios/editar" method="POST">
+    <form action="{{ url('/admin/usuarios/editar') }}" method="POST">
         @csrf
         <input type="hidden" name="id" value="{{ $usuario['id'] }}">
         <p>
@@ -39,7 +39,7 @@
         </p>
         <p>
             <button type="submit">Actualizar</button>
-            <a href="/EjerciciosBasicos/SERVIDOR/admin/usuarios" class="button">Cancelar</a>
+            <a href="{{ url('/admin/usuarios') }}" class="button">Cancelar</a>
         </p>
     </form>
 @endsection

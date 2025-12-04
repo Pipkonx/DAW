@@ -132,14 +132,12 @@ class M_Tareas
      * @param int $paginaActual El número de la página actual.
      * @return array Un array de arrays asociativos, donde cada array representa una tarea.
      */
-    public function listar(int $elementosPorPagina, int $paginaActual): array
+    public function listar(int $elementosPorPagina, int $offset): array
     {
-        $inicio = ($paginaActual - 1) * $elementosPorPagina;
-
         $sql = 'SELECT id, nifCif, personaNombre, telefono, correo, descripcionTarea, direccionTarea, poblacion, codigoPostal, provincia, estadoTarea, operarioEncargado, fechaRealizacion, anotacionesAnteriores, anotacionesPosteriores 
                 FROM tareas'
                 . $this->filtrosLista()
-                . " ORDER BY id LIMIT $inicio, $elementosPorPagina";
+                . " ORDER BY id LIMIT $offset, $elementosPorPagina";
 
         return $this->db()->query($sql)->fetchAll(PDO::FETCH_ASSOC);
     }
