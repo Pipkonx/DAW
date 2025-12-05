@@ -1,18 +1,18 @@
-"""
-Crea un programa que:
 
-Genere una lista de 20 números enteros (pueden ser introducidos manualmente o generados con range).
+# Crea un programa que:
 
-Obtenga mediante comprensiones de listas:
+# Genere una lista de 20 números enteros (pueden ser introducidos manualmente o generados con range).
 
-Una lista con los cuadrados de todos los números.
-Una lista con solo los números pares.
-Una lista con los números mayores que 10.
-Cree un diccionario que relacione cada número con su doble.
+# Obtenga mediante comprensiones de listas:
 
-Muestre en pantalla todos los resultados.
+# Una lista con los cuadrados de todos los números.
+# Una lista con solo los números pares.
+# Una lista con los números mayores que 10.
+# Cree un diccionario que relacione cada número con su doble.
 
-Incluya un docstring explicando qué hace el programa."""
+# Muestre en pantalla todos los resultados.
+
+# Incluya un docstring explicando qué hace el programa
 
 #creamos la lista de 20 números enteros con el range()
 numeros = [i for i in range(20)]
