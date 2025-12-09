@@ -55,7 +55,8 @@ Redirect "/int" "/adm"
 ```bash
 sudo a2enmod userdir
 sudo systemctl restart apache2
-mkdir -p ~/public_html
+mkdir ~/public_html
+chmod 711 ~
 chmod 755 ~/public_html
 ```
 
@@ -120,13 +121,13 @@ RewriteRule ^([^/]+)/(+)$ ver.php?c=$1&num=$2
 ### Petición:
 
 ```
-http://localhost/noticia/239
+http://localhost/noticia/236
 ```
 
 ### Archivo servido por Apache:
 
 ```
-ver.php?c=noticia&num=239
+ver.php?c=noticia&num=236
 ```
 
 ---
