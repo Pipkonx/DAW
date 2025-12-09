@@ -35,13 +35,14 @@ Redirect "/int" "/adm"
 
 ---
 
-## Pregunta 3: Permitir acceso solo desde la red 10.0.0.0/24 al directorio "int"
+## Pregunta 3: Permitir acceso solo desde la red 10.9.0.0/16 al directorio "int"
 
 ### Código:
 
 ```apache
 <Directory /var/www/html/int>
-Require ip 10.0.0.0/24
+    Require ip 10.9.0.0/16
+    Require all denied
 </Directory>
 ```
 
