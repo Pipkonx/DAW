@@ -31,6 +31,9 @@ Redirect / /adm/
 
 ```apache
 Redirect "/int" "/adm"
+
+
+sudo mv /var/www/html/inf/* /var/www/html/adm/
 ```
 
 ---
@@ -64,6 +67,19 @@ chmod 755 ~/public_html
 
 ## Pregunta 5: Crear VirtualHost para "int.prueba.intranet"
 
+```apache
+ sudo nano /etc/hosts
+```
+
+y copiamos y pegamos` 127.0.0.1   inf.prueba.intranet`
+
+```apache
+sudo mkdir -p /var/www/int.prueba.intranet
+sudo chown -R  $user:$user /var/www/int.prueba.intranet
+```
+
+Crear `/etc/apache2/sites-available/inf.prueba.intranet.conf:`
+
 ### Código:
 
 ```apache
@@ -78,6 +94,13 @@ DocumentRoot /var/www/html/int
 </Directory>
 
 </VirtualHost>
+```
+
+Por ultimo activar el sitio:
+
+```apache
+sudo a2ensite inf.prueba.intranet.conf
+sudo systemctl reload apache2
 ```
 
 ---
@@ -137,19 +160,19 @@ ver.php?c=noticia&num=236
 ### Nombres de ficheros GIF con 4 dígitos:
 
 ```regex
-^.+\d{4}\.gif$
+^.*[0-9]{4}\.gif$
 ```
 
 ### Números reales positivos/negativos, con o sin decimales:
 
 ```regex
-^-?\d+(\.\d+)?$
+^[+-]?[0-9]+(\.[0-9]+)?$
 ```
 
 ### Códigos de color RGB hexadecimales:
 
 ```regex
-^#([0-9a-fA-F]{6})$
+^#[A-Fa-f0-9]{6}$
 ```
 
 ---
