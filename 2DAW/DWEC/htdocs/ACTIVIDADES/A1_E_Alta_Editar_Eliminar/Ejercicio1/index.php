@@ -29,6 +29,21 @@
         </div>
     </form>
 
+    <h2>Gestión de Poblaciones</h2>
+    <table id="tablaPoblaciones" border="1">
+        <thead>
+            <tr>
+                <th>CP</th>
+                <th>Nombre</th>
+                <th>Habitantes</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Aquí se cargarán las poblaciones -->
+        </tbody>
+    </table>
+
     <script src="main.js"></script>
 </body>
 

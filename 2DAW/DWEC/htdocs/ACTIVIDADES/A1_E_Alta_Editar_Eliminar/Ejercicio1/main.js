@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let datosPoblaciones = [];
 
-    async function obtener() {
+    async function obtenerPoblaciones() {
         const params = new URLSearchParams();
         params.append('action', 'getAllPoblaciones');
 
@@ -15,9 +15,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         let datos = await respuesta.json();
         datosPoblaciones = datos;
+        renderPoblacionesTable();
     }
-
-    obtener();
 
     const entradaCp = document.getElementById('cp');
     const entradaPoblacion = document.getElementById('poblacion');
@@ -26,6 +25,49 @@ document.addEventListener('DOMContentLoaded', () => {
     const seccionGestionHabitantes = document.getElementById('habitantes-section');
     const divSugerenciasCp = document.getElementById('suggestions-cp');
     const divSugerenciasPoblacion = document.getElementById('suggestions-poblacion');
+    const tablaPoblacionesBody = document.querySelector('#tablaPoblaciones tbody');
+
+    async function renderPoblacionesTable() {
+        tablaPoblacionesBody.innerHTML = '';
+        if (datosPoblaciones.length === 0) {
+            await obtenerPoblaciones();
+        }
+        datosPoblaciones.forEach(poblacion => {
+            const row = tablaPoblacionesBody.insertRow();
+            row.insertCell().textContent = poblacion.cp;
+            row.insertCell().textContent = poblacion.nombre;
+            row.insertCell().textContent = poblacion.habitantes;
+            const accionesCell = row.insertCell();
+            const deleteButton = document.createElement('button');
+            deleteButton.textContent = 'Eliminar';
+            deleteButton.addEventListener('click', () => eliminarPoblacion(poblacion.cp));
+            accionesCell.appendChild(deleteButton);
+        });
+    }
+
+    async function eliminarPoblacion(cp) {
+        if (confirm(`¿Estás seguro de que quieres eliminar la población con CP ${cp}?`)) {
+            const params = new URLSearchParams();
+            params.append('action', 'deletePoblacion');
+            params.append('cp', cp);
+
+            const respuesta = await fetch('api.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: params
+            });
+            const resultado = await respuesta.json();
+
+            if (resultado.success) {
+                alert('Población eliminada correctamente.');
+                await obtenerPoblaciones(); // Volver a cargar la tabla
+            } else {
+                alert('Error al eliminar la población.');
+            }
+        }
+    }
 
     async function mostrarSugs(inputElemento, divSugerencias, claveFiltro) {
         const valorInput = inputElemento.value.toLowerCase();
@@ -37,7 +79,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (datosPoblaciones.length === 0) {
-            await obtener();
+            await obtenerPoblaciones();
         }
 
         const sugerenciasFiltradas = [];
@@ -110,7 +152,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (resultado.success) {
                 alert('Habitantes actualizados correctamente.');
-                await obtener();
+                await obtenerPoblaciones(); // Volver a cargar la tabla
                 verificarHab(cp);
             } else {
                 alert('Error al actualizar habitantes.');
@@ -122,4 +164,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     entradaCp.addEventListener('input', () => mostrarSugs(entradaCp, divSugerenciasCp, 'cp'));
     entradaPoblacion.addEventListener('input', () => mostrarSugs(entradaPoblacion, divSugerenciasPoblacion, 'nombre'));
+
+    // Cargar la tabla de poblaciones al inicio
+    obtenerPoblaciones();
 });

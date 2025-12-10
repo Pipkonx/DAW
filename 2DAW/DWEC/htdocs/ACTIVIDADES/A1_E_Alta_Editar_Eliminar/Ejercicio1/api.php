@@ -46,6 +46,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 echo json_encode(['success' => false]); // Indicar fracaso si faltan datos
             }
             break;
+        case 'deletePoblacion':
+            $cp = $_POST['cp'] ?? null;
+            if ($cp) {
+                $stmt = $pdo->prepare('DELETE FROM poblaciones WHERE cp = ?');
+                $success = $stmt->execute([$cp]);
+                echo json_encode(['success' => $success]);
+            } else {
+                echo json_encode(['success' => false]);
+            }
+            break;
         default:
             echo json_encode([]); // Devolver un array vacío para acciones no válidas
             break;
