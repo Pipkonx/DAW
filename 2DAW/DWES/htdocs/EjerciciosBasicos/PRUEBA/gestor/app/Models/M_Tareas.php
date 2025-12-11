@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\M_Funciones;
 use PDO;
 use App\DB\DB;
+use Illuminate\Database\Eloquent\Model;
 
 /**
  * Gestiona operaciones CRUD sobre la tabla `tareas` usando PDO.
