@@ -164,8 +164,7 @@ class M_Tareas
      * basándose en el ID proporcionado.
      *
      * @param int $id El identificador de la tarea a buscar.
-     * @return array|null Un array asociativo con los datos de la tarea si se encuentra,
-     *                    o `null` si no existe ninguna tarea con el ID dado.
+     * @return array|null Un array asociativo con los datos de la tarea si se encuentra, o `null` si no existe ninguna tarea con el ID dado.
      */
     public function buscar(int $id): ?array
     {
