@@ -7,7 +7,6 @@
 * {
     font-family: Arial, Helvetica, sans-serif;
     color: var(--principal);
-    box-sizing: border-box;
 }
 
 body,
@@ -19,9 +18,9 @@ html {
 }
 
 body {
-    display: grid;
-    grid-template-rows: auto 1fr auto;
-    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     background-color: var(--secundario);
 }
 
@@ -32,12 +31,13 @@ body {
 
 header {
     display: flex;
+    position: fixed;
     justify-content: space-between;
     align-items: center;
-    padding: 10px 20px;
+    width: 100vw;
+    top: 0;
     background-color: var(--secundario);
     z-index: 1000;
-
 
     & div ul {
         display: flex;
@@ -46,50 +46,31 @@ header {
         margin: 0;
         padding: 0;
 
+
         & li {
             margin-right: 20px;
+        }
 
-            & a {
-                text-decoration: none;
-                color: var(--principal);
-            }
+        & li a {
+            text-decoration: none;
+            color: var(--principal);
         }
     }
 }
 
-
-main {
-    background-color: var(--secundario);
-    overflow-y: auto;
-
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
-
-    & div {
-        margin: 20px;
-        width: 60%;
-
-        & h1 {
-            text-transform: uppercase;
-        }
-    }
-}
-
-
-/* ESTILOS DEL FOOTER */
 footer {
     display: flex;
     align-items: center;
     justify-content: center;
     background-color: var(--secundario);
+
+    position: fixed;
+    width: 100vw;
+    bottom: 0;
+
     height: 60px;
-    width: 100%;
 
     & p {
-        text-align: center;
-        width: 100%;
         margin: 0;
         padding: 0;
     }
@@ -131,15 +112,11 @@ footer {
 }
 
 
-/* CARRUSEL IMAGENES  */
+/* CARRUSEL IMAGENES */
 #carouselExampleIndicators {
-    height: 40vh;
-    
-    
-    max-height: 40vh;
-    max-width: 30vw;
+    height: 35vw;
+    width: 25vw;
     border-radius: 10px;
-    overflow: hidden;
 }
 
 #carouselExampleIndicators .carousel-inner,
@@ -147,15 +124,8 @@ footer {
     margin: 0;
     height: 100%;
     border-radius: 10px;
-    transition: transform 0.8s ease, opacity 0.8s ease-in-out;
-}
 
-#carouselExampleIndicators .carousel-item {
-    display: block !important;
-    opacity: 0;
-    position: absolute;
-    top: 0;
-    left: 0;
+    transition: transform 0.8s ease, opacity 0.8s ease-in-out;
 }
 
 #carouselExampleIndicators .carousel-item img {
@@ -164,14 +134,49 @@ footer {
     height: 100%;
 }
 
+/* Forzar que todos los elementos estén visibles por display:block */
+#carouselExampleIndicators .carousel-item {
+    display: block !important;
+    opacity: 0;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+}
+
+
+
+/* El elemento activo siempre se muestra con opacidad 1 */
 #carouselExampleIndicators .carousel-item.active {
     opacity: 1;
     position: relative;
 }
 
+/* quitamos la animacion de boostrap */
 #carouselExampleIndicators .carousel-item-start,
 #carouselExampleIndicators .carousel-item-end,
 #carouselExampleIndicators .carousel-item-next,
 #carouselExampleIndicators .carousel-item-prev {
     transform: none !important;
+}
+
+/*! ----------------------------------------- */
+
+/* carousel-indicators esta dentro de d-block pero tiene que estar centrado*/
+/* #carousel-indicators {} */
+
+main {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--secundario);
+
+    & div {
+        margin: 20px;
+        width: 60%;
+
+        & h1 {
+            text-transform: uppercase;
+        }
+    }
 }
