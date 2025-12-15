@@ -100,7 +100,10 @@ class C_Usuarios extends C_Controller
         }
 
         $modelo = new M_Usuarios();
-        $modelo->insertar($_POST);
+        if (!$modelo->insertar($_POST)) {
+            $errores['general'] = 'Error al crear el usuario en la base de datos.';
+            return view('usuarios.crear', ['errores' => $errores, 'usuario' => (object)$_POST, 'modo' => 'alta']);
+        }
 
         $_SESSION['mensaje'] = 'Usuario creado correctamente.';
         $baseUrl = dirname($_SERVER['SCRIPT_NAME']);

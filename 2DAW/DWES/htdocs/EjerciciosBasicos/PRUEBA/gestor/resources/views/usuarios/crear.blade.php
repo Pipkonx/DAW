@@ -15,15 +15,18 @@
         </aside>
     @endif
 
-    <form action="<?php echo dirname($_SERVER['SCRIPT_NAME']); ?>/admin/usuarios/guardar" method="POST">
+    <form action="<?php echo dirname($_SERVER['SCRIPT_NAME']); ?>/admin/usuarios/crear" method="POST">
         @csrf
         <label for="nombre">Nombre:</label>
         <input type="text" id="nombre" name="nombre" value="{{ old('nombre') }}" required>
 
 
 
-        <label for="password">Contraseña:</label>
-        <input type="password" id="password" name="password" required>
+        <label for="contraseña">Contraseña:</label>
+        <input type="password" id="contraseña" name="contraseña" required>
+
+        <label for="confirmar_contraseña">Confirmar Contraseña:</label>
+        <input type="password" id="confirmar_contraseña" name="confirmar_contraseña" required>
 
         <label for="rol">Rol:</label>
         <select id="rol" name="rol" required>

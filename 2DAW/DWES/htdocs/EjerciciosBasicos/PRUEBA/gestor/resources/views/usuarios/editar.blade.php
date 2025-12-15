@@ -23,12 +23,12 @@
             <input type="text" id="nombre" name="nombre" value="{{ old('nombre', $usuario['nombre'] ?? '') }}" required>
         </p>
         <p>
-            <label for="contraseña">Nueva Contraseña (obligatoria)</label>
-            <input type="password" id="contraseña" name="contraseña" required>
+            <label for="contraseña">Nueva Contraseña (dejar vacío para no cambiar)</label>
+            <input type="password" id="contraseña" name="contraseña">
         </p>
         <p>
             <label for="confirmar_contraseña">Confirmar Nueva Contraseña</label>
-            <input type="password" id="confirmar_contraseña" name="confirmar_contraseña" required>
+            <input type="password" id="confirmar_contraseña" name="confirmar_contraseña">
         </p>
         <p>
             <label for="rol">Rol</label>

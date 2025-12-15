@@ -47,8 +47,8 @@ unset($_SESSION['errorGeneral']);
                     <td>{{ $usuario['nombre'] }}</td>
                     <td>{{ $usuario['rol'] }}</td>
                     <td>
-                        <a href="{{ url('/admin/usuarios/editar/' . $usuario['id']) }}" class="button">Editar</a>
-                        <a href="{{ url('/admin/usuarios/confirmarEliminar/' . $usuario['id']) }}" class="button">Eliminar</a>
+                        <a href="{{ url('/admin/usuarios/editar/' . $usuario['id']) }}" class="button">✏</a>
+                        <a href="{{ url('/admin/usuarios/confirmarEliminar/' . $usuario['id']) }}" class="button">🗑</a>
                     </td>
                 </tr>
             @empty

@@ -13,7 +13,7 @@ class C_Administrador extends C_Controller
      * Muestra una lista paginada de todas las tareas disponibles para el administrador.
      *
      * Este método verifica el rol del usuario para asegurar que solo los administradores
-     * puedan acceder. Recupera las tareas de la base de datos, aplica paginación
+     * puedan acceder. Recupera las tareas de la base de datos, aplica paginación 
      * y las presenta en una vista.
      *
      * @return void Una respuesta HTTP que carga la vista con la lista de tareas.
