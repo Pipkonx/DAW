@@ -233,3 +233,4 @@ function modificaalumno2() {
         })
         .catch(err => console.error(err));
 }
+
