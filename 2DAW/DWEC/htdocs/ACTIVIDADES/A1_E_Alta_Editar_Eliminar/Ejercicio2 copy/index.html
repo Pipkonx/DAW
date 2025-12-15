@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <form action="" method="post">
+        <label for="codigo">Codigo</label>
+        <input type="text" id="codigo" name="codigo">
+        <button type="button" id="btnBuscarArticulos">Buscar Artículos</button>
+
+        <div id="capaArticulos">
+            <h3>Seleccionar Artículo</h3>
+            <input type="text" id="buscadorArticulos" placeholder="Buscar por descripción...">
+            <table id="tablaArticulos" border="1">
+                <thead>
+                    <tr>
+                        <th>Código</th>
+                        <th>Descripción</th>
+                        <th>Precio</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Artículos se cargarán aquí -->
+                </tbody>
+            </table>
+            <button type="button" id="cerrarCapaArticulos">Cerrar</button>
+        </div>
+
+        <label for="descripcion">Descripcion</label>
+        <input type="text" id="descripcion" name="descripcion" readonly>
+
+        <label for="cantidad">cantidad</label>
+        <input type="number" id="cantidad" name="cantidad" value="1" min="1">
+
+        <label for="precio">precio</label>
+        <input type="text" id="precio" name="precio" readonly>
+
+        <label for="subtotal">Subtotal</label>
+        <input type="text" id="subtotal" name="subtotal" readonly>
+
+        <input type="button" id="insertar" value="Insertar">
+
+    </form>
+
+    <h2>Detalle de Factura</h2>
+    <table id="tablaFactura" border="1">
+        <thead>
+            <tr>
+                <th>Código</th>
+                <th>Descripción</th>
+                <th>Cantidad</th>
+                <th>Precio</th>
+                <th>Subtotal</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Aquí se insertarán las líneas de la factura -->
+        </tbody>
+    </table>
+
+    <div>
+        <label for="base">Base Imponible:</label>
+        <input type="text" id="base" readonly>
+    </div>
+    <div>
+        <label for="total">Total con IVA (21%):</label>
+        <input type="text" id="total" readonly>
+    </div>
+
+    <script src="main.js"></script>
+</body>
+
+</html>
