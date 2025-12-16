@@ -14,13 +14,6 @@ class M_juego {
         return $declaracion->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function obtenerPalabraAleatoria(): ?array {
-        $sql = 'SELECT id_palabra, texto_palabra FROM PALABRAS ORDER BY RAND() LIMIT 1';
-        $declaracion = $this->pdo->query($sql);
-        $fila = $declaracion->fetch(PDO::FETCH_ASSOC);
-        return $fila ? $fila : null;
-    }
-
     public function iniciarPartida(string $nombreUsuario, int $idCategoria, string $dificultadJuego): array {
         if ($nombreUsuario === '' || $idCategoria <= 0 || $dificultadJuego === '') {
             return ['success' => false, 'message' => 'Datos inválidos.'];

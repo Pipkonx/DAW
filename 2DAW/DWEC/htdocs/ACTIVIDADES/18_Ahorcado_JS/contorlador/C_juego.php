@@ -1,6 +1,4 @@
 <?php
-session_start();
-
 require_once __DIR__ . '/../conexion/DB.php';
 require_once __DIR__ . '/C_utils.php';
 require_once __DIR__ . '/../modelos/M_auth.php';
@@ -17,20 +15,34 @@ if ($_GET && isset($_GET['action'])) {
             header('Content-Type: application/json');
             echo json_encode($categorias);
             exit;
-        case 'palabra':
-            $modeloJuego = new M_juego();
-            $palabra = $modeloJuego->obtenerPalabraAleatoria();
+        case 'get_user_games':
             header('Content-Type: application/json');
-            if ($palabra) {
-                echo json_encode(['palabra' => $palabra['texto_palabra'], 'id' => (int)$palabra['id_palabra']]);
-            } else {
-                echo json_encode(['error' => 'No hay palabras']);
+            $nombreUsuario = $_GET['login'] ?? '';
+            if (empty($nombreUsuario)) {
+                echo json_encode([]);
+                exit;
             }
+            $declaracionUsuario = $pdo->prepare('SELECT id_jugador FROM JUGADORES WHERE login = ? LIMIT 1');
+            $declaracionUsuario->execute([$nombreUsuario]);
+            $datosUsuario = $declaracionUsuario->fetch();
+
+            if (!$datosUsuario) {
+                echo json_encode([]);
+                exit;
+            }
+            $idJugador = $datosUsuario['id_jugador'];
+
+            $consultaPartidas = $pdo->prepare('SELECT p.id_partida, p.fecha_partida, p.letras_acertadas, p.letras_falladas, p.palabra_acertada, p.puntuacion_obtenida, w.texto_palabra
+                                FROM PARTIDAS p
+                                JOIN PALABRAS w ON w.id_palabra = p.id_palabra_jugada
+                                WHERE p.id_jugador = ?
+                                ORDER BY p.fecha_partida DESC');
+            $consultaPartidas->execute([$idJugador]);
+            $listaPartidas = $consultaPartidas->fetchAll(PDO::FETCH_ASSOC);
+            echo json_encode($listaPartidas);
             exit;
         case 'logout':
-            session_unset();
-            session_destroy();
-            redirect('../vistas/autentificarse/V_login.php?ok=Sesión cerrada correctamente.');
+            echo json_encode(['success' => true, 'message' => 'Sesión cerrada correctamente.', 'redirect' => '../vistas/autentificarse/V_login.php']);
             break;
     }
 }
@@ -52,9 +64,9 @@ if ($_POST) {
                 // Call the authentication function from M_auth.php
                 $result = manejarInicioSesion($pdo, $nombreUsuario, $contrasena);
                 if ($result['success']) {
-                    redirect('../vistas/juego/V_configurar.php?login=' . urlencode($nombreUsuario));
+                    echo json_encode(['success' => true, 'message' => $result['message'], 'redirect' => '../vistas/juego/V_configurar.php']);
                 } else {
-                    redirect('../vistas/autentificarse/V_login.php?error=' . urlencode($result['message']));
+                    echo json_encode(['success' => false, 'message' => $result['message']]);
                 }
                 break;
 
@@ -72,9 +84,9 @@ if ($_POST) {
                 // Call the registration function from M_auth.php
                 $result = manejarRegistro($pdo, $nombreUsuario, $contrasena, $confirmarContrasena);
                 if ($result['success']) {
-                    redirect('../vistas/autentificarse/V_login.php?ok=' . urlencode($result['message']));
+                    echo json_encode(['success' => true, 'message' => $result['message'], 'redirect' => '../vistas/autentificarse/V_login.php']);
                 } else {
-                    redirect('../vistas/autentificarse/V_register.php?error=' . urlencode($result['message']));
+                    echo json_encode(['success' => false, 'message' => $result['message']]);
                 }
                 break;
             case 'start':
@@ -86,9 +98,9 @@ if ($_POST) {
                 $result = $modeloJuego->iniciarPartida($nombreUsuario, $idCategoria, $dificultadJuego);
 
                 if ($result['success']) {
-                    redirect($result['urlRedireccion']);
+                    echo json_encode(['success' => true, 'redirect' => $result['urlRedireccion']]);
                 } else {
-                    redirect('../vistas/juego/V_configurar.php?login=' . urlencode($nombreUsuario) . '&error=' . urlencode($result['message']));
+                    echo json_encode(['success' => false, 'message' => $result['message']]);
                 }
                 break;
 
@@ -104,17 +116,17 @@ if ($_POST) {
                 $result = $modeloJuego->finalizarPartida($nombreUsuario, $idPalabraJugada, $letrasAcertadas, $letrasFalladas, $palabraAcertada, $puntuacionObtenida);
 
                 if ($result['success']) {
-                    redirect($result['urlRedireccion']);
+                    echo json_encode(['success' => true, 'message' => $result['message'], 'redirect' => '../vistas/juego/V_configurar.php']);
                 } else {
-                    // Aquí puedes manejar el error, por ejemplo, redirigir con un mensaje de error o mostrar un JSON
-                    redirect('../vistas/juego/V_configurar.php?login=' . urlencode($nombreUsuario) . '&error=' . urlencode($result['message']));
+                    echo json_encode(['success' => false, 'message' => $result['message']]);
                 }
                 break;
 
             case 'logout':
                 session_unset();
                 session_destroy();
-                redirect('../vistas/autentificarse/V_login.php?ok=Sesión cerrada correctamente.');
+                echo json_encode(['success' => true, 'message' => 'Sesión cerrada correctamente.', 'redirect' => '../vistas/autentificarse/V_login.php']);
+                exit;
                 break;
 
             default:

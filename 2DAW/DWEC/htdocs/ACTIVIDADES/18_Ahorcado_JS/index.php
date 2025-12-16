@@ -1,4 +1,3 @@
 <?php
-header("Location: vistas/autentificarse/V_login.php");
-exit();
+require_once 'vistas/autentificarse/V_login.php';
 ?>

@@ -43,7 +43,8 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center; /* Centrar verticalmente el contenido */
+    justify-content: center;
+    /* Centrar verticalmente el contenido */
     min-height: 100vh;
 }
 
@@ -58,7 +59,8 @@ main {
     text-align: center;
 }
 
-h1, h2 {
+h1,
+h2 {
     color: var(--color-texto);
     margin-bottom: 20px;
 }
@@ -94,7 +96,8 @@ button[type="submit"]:hover {
     background-color: var(--color-primario-hover);
 }
 
-.flex-container a:active, .btn-submit:active {
+.flex-container a:active,
+.btn-submit:active {
     color: white;
 }
 
@@ -129,7 +132,7 @@ button[type="submit"]:hover {
     background: none;
     border: none;
     cursor: pointer;
-    font-size: 1.2em; 
+    font-size: 1.2em;
     padding: 0;
     color: inherit;
 }
@@ -183,22 +186,28 @@ table .inline-form button {
 .letra {
     background-color: var(--color-exito);
     color: white;
-    padding: 25px 35px; /* Aún más grandes */
-    margin: 5px; /* Espacio entre botones */
+    padding: 25px 35px;
+    /* Aún más grandes */
+    margin: 5px;
+    /* Espacio entre botones */
     border: none;
-    border-radius: 12px; /* Bordes más redondeados */
+    border-radius: 12px;
+    /* Bordes más redondeados */
     cursor: pointer;
-    font-size: 2em; /* Tamaño de fuente más grande */
+    font-size: 2em;
+    /* Tamaño de fuente más grande */
     font-weight: bold;
     transition: background-color 0.3s ease, transform 0.2s ease;
     box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
-    min-width: 70px; /* Asegura un tamaño mínimo */
+    min-width: 70px;
+    /* Asegura un tamaño mínimo */
     text-transform: uppercase;
 }
 
 .letra:hover {
     background-color: var(--color-exito-hover);
-    transform: translateY(-3px); /* Efecto de elevación al pasar el ratón */
+    transform: translateY(-3px);
+    /* Efecto de elevación al pasar el ratón */
 }
 
 .letra:disabled {
@@ -211,17 +220,22 @@ table .inline-form button {
 
 /* Estilos para el área de la palabra oculta */
 #palabras {
-    font-size: 2.8em; /* Aumentar un poco el tamaño de la fuente */
-    letter-spacing: 12px; /* Aumentar el espaciado entre letras */
+    font-size: 2.8em;
+    /* Aumentar un poco el tamaño de la fuente */
+    letter-spacing: 12px;
+    /* Aumentar el espaciado entre letras */
     margin-bottom: 30px;
     font-weight: bold;
     color: var(--color-primario);
-    background-color: var(--color-superficie-claro); /* Fondo claro para la palabra */
+    background-color: var(--color-superficie-claro);
+    /* Fondo claro para la palabra */
     padding: 20px 30px;
     border-radius: 10px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    display: block; /* Para que el padding y el shadow se apliquen correctamente */
-    margin: 0 auto 30px auto; /* Centrar horizontalmente y mantener margin-bottom */
+    display: block;
+    /* Para que el padding y el shadow se apliquen correctamente */
+    margin: 0 auto 30px auto;
+    /* Centrar horizontalmente y mantener margin-bottom */
 }
 
 /* Estilos para el contenedor de información del juego (fallos y palabra) */
@@ -239,14 +253,17 @@ table .inline-form button {
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 1.3em; /* Aumentar un poco el tamaño de la fuente */
+    font-size: 1.3em;
+    /* Aumentar un poco el tamaño de la fuente */
     margin-bottom: 20px;
     color: var(--color-texto-claro);
-    background-color: var(--surface-color); /* Fondo para el estado */
+    background-color: var(--surface-color);
+    /* Fondo para el estado */
     padding: 15px 25px;
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-    /* display: inline-block; */ /* Removed as flex is used */
+    /* display: inline-block; */
+    /* Removed as flex is used */
 }
 
 #status div {
@@ -255,10 +272,12 @@ table .inline-form button {
     gap: 10px;
 }
 
-#numeroFallos, #maximoFallos {
+#numeroFallos,
+#maximoFallos {
     font-weight: bold;
     color: var(--color-error);
-    font-size: 1.1em; /* Hacer los números un poco más grandes */
+    font-size: 1.1em;
+    /* Hacer los números un poco más grandes */
 }
 
 /* Estilos para mensajes del juego */
@@ -299,7 +318,8 @@ form label {
     color: var(--color-texto-claro);
 }
 
-form select, form input {
+form select,
+form input {
     width: calc(100% - 20px);
     padding: 10px;
     margin-bottom: 15px;
@@ -312,7 +332,8 @@ form select, form input {
     background-color: #f8d7da;
     color: #721c24;
     border: 1px solid #f5c6cb;
-    padding: 5px 10px; /* Reducido el padding vertical */
+    padding: 5px 10px;
+    /* Reducido el padding vertical */
     margin-bottom: 15px;
     border-radius: 5px;
     text-align: center;
@@ -322,7 +343,8 @@ form select, form input {
     background-color: #d4edda;
     color: #155724;
     border: 1px solid #c3e6cb;
-    padding: 5px 10px; /* Reducido el padding vertical */
+    padding: 5px 10px;
+    /* Reducido el padding vertical */
     margin-bottom: 15px;
     border-radius: 5px;
     text-align: center;
@@ -353,7 +375,8 @@ table {
     background-color: #fff;
 }
 
-table th, table td {
+table th,
+table td {
     border: 1px solid var(--color-borde-tabla);
     padding: 12px;
     text-align: left;
@@ -382,7 +405,8 @@ table tr:hover {
 
 /* Estilos para el footer */
 footer {
-    margin-top: auto; /* Empuja el footer hacia abajo */
+    margin-top: auto;
+    /* Empuja el footer hacia abajo */
     padding: 20px;
     background-color: var(--color-texto);
     color: white;
@@ -399,5 +423,3 @@ footer {
     text-align: center;
     width: 100%;
 }
-
-
