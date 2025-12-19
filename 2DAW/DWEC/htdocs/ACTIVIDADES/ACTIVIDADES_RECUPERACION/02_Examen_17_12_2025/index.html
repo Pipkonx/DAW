@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>17-12-2025</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header>
+        <h1>Examen Diciembre 2025 (Modelos y coches)</h1>
+    </header>
+    <main>
+        <section id="modelo-marca-section">
+            <h2>Modelo y Marca</h2>
+            <div class="grupo-formulario">
+                <img id="logo-marca" alt="Logo de la marca">
+            </div>
+            <div class="grupo-formulario">
+                <select name="marcas" id="select-marcas">
+                    <option value="#">Selecciona una Marca</option>
+                </select>
+            </div>
+            <div class="grupo-formulario">
+                <p id="contador-modelos"></p>
+                <select name="modelos" id="select-modelos">
+                    <option value="#">Selecciona un Modelo</option>
+                </select>
+            </div>
+        </section>
+
+        <section id="precio-extras-section">
+            <h2>Precio y Extras</h2>
+            <div id="info-modelo"></div>
+
+            <form id="form-extras">
+                <div class="grupo-formulario">
+                    <label><input type="radio" name="color" value="0" checked> Color blanco (mismo precio)</label>
+                </div>
+                <div class="grupo-formulario">
+                    <label><input type="radio" name="color" value="300"> Color rojo, azul o negro (+300€)</label>
+                </div>
+                <div class="grupo-formulario">
+                    <label><input type="radio" name="puertas" value="0" checked> Dos puertas (mismo precio)</label>
+                </div>
+                <div class="grupo-formulario">
+                    <label><input type="radio" name="puertas" value="800"> Cinco puertas (+800€)</label>
+                </div>
+                <div class="grupo-formulario">
+                    <label><input type="checkbox" name="aire" value="1000"> Aire acondicionado (+1000€)</label>
+                </div>
+                <div class="grupo-formulario">
+                    <label><input type="checkbox" name="llantas" value="500"> Llantas (+500€)</label>
+                </div>
+            </form>
+
+            <p class="precio-final">Precio final: <span id="precioFinal">0 €</span></p>
+            <button id="btn-comprar" class="btn-principal">Comprar</button>
+        </section>
+
+        <section id="buscador-modelos-section">
+            <h2>Buscador de Modelos</h2>
+            <div class="grupo-formulario">
+                <input type="text" id="input-buscador-modelo" placeholder="Buscar modelo...">
+            </div>
+            <div id="resultados-busqueda-modelo"></div>
+            <p id="marca-modelo-buscado"></p>
+        </section>
+
+        <section id="historial-compras-section">
+            <h2>Historial de Compras</h2>
+            <div id="historial-compras">
+                <table id="tabla-compras">
+                    <thead>
+                        <tr>
+                            <th>Marca</th>
+                            <th>Modelo</th>
+                            <th>Precio Final</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Las compras se añadirán aquí -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <script src="main.js"></script>
+</body>
+
+</html>

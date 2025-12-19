@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Listado de marcas</title>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Marca y modelo</h1>
+        <select value="select-marcas"></select><br>
+        <select value="select-modelos"></select><br>
+
+        <button onclick="cargamodelos();">Carga modelos</button><br>
+        Lista modelos:
+        <ul id="lista-modelos">
+        </ul>
+
+    </div>
+
+    <h3>Precio</h3>
+
+    <hr>
+    <!-- prueba 2 -->
+    <div>
+        <!-- <select id="categoria" onchange="cargarSubcategorias()"> -->
+        <select id="categoria" onchange="cargarCategoria()">
+            <option value="">Marca</option>
+        </select>
+    </div>
+    <div>
+        <select id="subcategoria">
+            <option value="">Modelo</option>
+        </select>
+    </div>
+</body>
+
+
+<script src="js/utiles.js"></script>
+
+</html>

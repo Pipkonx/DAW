@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Listado de Alumnos (AJAX)</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+</head>
+<body>
+<div class="container">
+<h1>Gestión de Clientes y Mascotas</h1>
+
+<div id="cargando">Cargando clientes...</div>
+<table class="table" id="tabla-clientes" style="display: none;">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Apellidos</th>
+            <th>Teléfono</th>
+            <th>Email</th>
+            <th>Dirección</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+<br><br>
+
+<h2>Agregar/Modificar Cliente</h2>
+Nombre: <input type="text" id="nombre"><br>
+Apellidos: <input type="text" id="apellidos"><br>
+Teléfono: <input type="text" id="telefono"><br>
+Email: <input type="text" id="email"><br>
+Dirección: <input type="text" id="direccion"><br>
+<button onclick="altacliente();">Alta Cliente</button>
+<button onclick="modificacliente2();">Modificar Cliente</button>
+
+<hr>
+
+<h2>Mascotas del Cliente Seleccionado</h2>
+<div id="mascotas">
+    <!-- Aquí se mostrarán las mascotas del cliente seleccionado -->
+</div>
+
+<h2>Agregar Mascota</h2>
+<p>Selecciona un cliente de la tabla para agregarle una mascota.</p>
+Nombre Mascota: <input type="text" id="nombre_mascota"><br>
+Especie: <input type="text" id="especie_mascota"><br>
+Raza: <input type="text" id="raza_mascota"><br>
+Fecha Nacimiento: <input type="date" id="fech-nacimiento_mascota"><br>
+<button onclick="altamascota();" disabled id="btn-altamascota">Alta Mascota</button>
+
+</div>
+</body>
+
+
+<script src="js/utiles.js"></script>
+</html>

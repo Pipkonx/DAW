@@ -1,0 +1,183 @@
+:root {
+    --color-fondo-claro: #f4f7f6;
+    --color-texto-oscuro: #333333;
+    --color-borde-claro: #e0e0e0;
+    --color-fondo-blanco: #ffffff;
+    --color-sombra-suave: rgba(0,0,0,0.1);
+    --color-azul-elegante: #4a90e2;
+    --color-fondo-estadisticas: #e8f4f8;
+    --color-borde-estadisticas: #c1dbe3;
+    --color-fondo-formulario: #f9f9f9;
+    --color-gris-medio: #555555;
+    --color-borde-input: #cccccc;
+    --color-rojo-sutil: #d0021b;
+}
+
+html, body {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    background-color: var(--color-fondo-claro); /* Fondo claro y elegante */
+    color: var(--color-texto-oscuro); /* Texto oscuro */
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box; /* Incluir padding en el cálculo del ancho/alto */
+    min-height: 100vh; /* Asegura que el body ocupe al menos el 100% de la altura del viewport */
+}
+
+.contenedor-principal {
+    display: flex;
+    flex-grow: 1;
+    width: 100%;
+    height: 100%;
+    overflow: hidden; /* Para manejar el scroll de las columnas internas */
+}
+
+.columna-izquierda,
+.columna-derecha {
+    flex: 1;
+    padding: 10px;
+    overflow-y: auto; /* Permite el scroll individual en cada columna si el contenido es muy largo */
+    height: 100%;
+    box-sizing: border-box;
+}
+
+.columna-izquierda {
+    border-right: 1px solid var(--color-borde-claro); /* Separador visual entre columnas */
+}
+
+.contenedor {
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 15px;
+    background: var(--color-fondo-blanco); /* Contenedor blanco */
+    border-radius: 8px;
+    box-shadow: 0 2px 5px var(--color-sombra-suave); /* Sombra suave */
+    display: flex;
+    flex-direction: column;
+    min-height: fit-content;
+    flex-grow: 1;
+}
+
+h1, h2 {
+    color: var(--color-azul-elegante); /* Azul elegante para encabezados */
+    margin-bottom: 10px;
+    border-bottom: 1px solid var(--color-borde-claro); /* Borde claro */
+    padding-bottom: 5px;
+    flex-shrink: 0;
+}
+
+/* Estadísticas */
+.estadisticas-container {
+    background-color: var(--color-fondo-estadisticas); /* Fondo azul claro para estadísticas */
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    border: 1px solid var(--color-borde-estadisticas); /* Borde azul claro */
+    flex-shrink: 0;
+}
+
+.estadisticas-container p {
+    margin-bottom: 3px;
+    font-size: 0.9rem;
+    color: var(--color-texto-oscuro); /* Texto oscuro */
+}
+
+/* Formularios */
+form {
+    margin-bottom: 15px;
+    padding: 15px;
+    border: 1px solid var(--color-borde-claro); /* Borde claro */
+    border-radius: 5px;
+    background-color: var(--color-fondo-formulario); /* Fondo muy claro para formularios */
+    position: relative;
+    flex-shrink: 0;
+}
+
+form div {
+    margin-bottom: 10px;
+}
+
+label {
+    display: block;
+    margin-bottom: 3px;
+    font-weight: bold;
+    color: var(--color-gris-medio); /* Gris medio para labels */
+    font-size: 0.9rem;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="date"],
+select {
+    width: calc(100% - 20px); /* Ajuste para padding y borde */
+    padding: 8px;
+    border: 1px solid var(--color-borde-input); /* Borde medio claro */
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 0.9rem;
+    background-color: var(--color-fondo-blanco); /* Fondo blanco para inputs */
+    color: var(--color-texto-oscuro); /* Texto oscuro */
+}
+
+button[type="submit"],
+.btn-editar,
+.btn-eliminar,
+.btn-eliminar-mascota {
+    background-color: var(--color-azul-elegante); /* Azul elegante para botones */
+    color: var(--color-fondo-blanco); /* Texto blanco para botones */
+    padding: 8px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background-color 0.3s ease;
+    margin-right: 5px;
+}
+
+/* Tablas */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 15px;
+    background-color: var(--color-fondo-blanco); /* Fondo blanco para tablas */
+    box-shadow: 0 1px 3px var(--color-sombra-suave); /* Sombra suave */
+    border-radius: 8px;
+    overflow: hidden;
+    flex-grow: 1; /* Permite que las tablas crezcan y ocupen el espacio disponible */
+    display: block; /* Necesario para overflow-y */
+    overflow-y: auto; /* Scroll interno para la tabla */
+}
+
+table th,
+table td {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--color-borde-claro); /* Borde claro */
+    text-align: left;
+    font-size: 0.9rem;
+    color: var(--color-texto-oscuro); /* Texto oscuro */
+}
+
+/* Cerrar formulario de edición */
+.cerrar-formulario-edicion {
+    position: absolute;
+    top: 8px;
+    right: 12px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    color: var(--color-rojo-sutil); /* Rojo sutil para el botón de cerrar */
+}
+
+/* Estilos para los iconos de especie */
+.icono-especie {
+    width: 20px;
+    height: 20px;
+    vertical-align: middle;
+    margin-right: 3px;
+}

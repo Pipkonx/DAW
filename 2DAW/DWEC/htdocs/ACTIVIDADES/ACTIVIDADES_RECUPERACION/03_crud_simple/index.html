@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>crud simple con base de datos JS</title>
+    <link rel="stylesheet" href="./css/style.css">
+</head>
+
+<body>
+
+    <h1>Agregar cliente</h1>
+    <form action="post">
+        <label for="nombre">Nombre</label>
+        <input type="text" id="nombre"><br>
+        <label for="apellidos">apellidos</label>
+        <input type="text" id="apellidos"><br>
+        <label for="telefono">telefono</label>
+        <input type="text" id="telefono"><br>
+        <label for="email">email</label>
+        <input type="text" id="email"><br>
+        <label for="direccion">direccion</label>
+        <input type="text" id="direccion"><br>
+        <input type="submit">
+    </form>
+
+
+    <div class="container">
+        <h3>Listado de clientes</h3>
+        <div id="clientes-container"></div>
+    </div>
+
+
+    <script src="./js/app.js"></script>
+</body>
+
+</html>

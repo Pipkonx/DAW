@@ -1,0 +1,197 @@
+/* Estilos Generales */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f7f6;
+    color: #333;
+    line-height: 1.6;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+/* Encabezado */
+header {
+    background-color: #2c3e50;
+    color: #fff;
+    padding: 1rem 0;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+header h1 {
+    margin: 0;
+    font-size: 2.5rem;
+}
+
+/* Contenedor Principal */
+main {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1.5rem;
+}
+
+/* Secciones */
+section {
+    background-color: #fff;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+}
+
+section h2 {
+    color: #2c3e50;
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+    font-size: 1.8rem;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 0.5rem;
+}
+
+/* Grupos de Formulario */
+.grupo-formulario {
+    margin-bottom: 1rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+}
+
+.grupo-formulario input[type="text"],
+.grupo-formulario select {
+    width: 100%;
+    padding: 0.8rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+}
+
+.grupo-formulario input[type="text"]:focus,
+.grupo-formulario select:focus {
+    border-color: #3498db;
+    outline: none;
+}
+
+/* Radio y Checkbox */
+input[type="radio"],
+input[type="checkbox"] {
+    margin-right: 0.5rem;
+}
+
+/* Botones */
+.btn-principal {
+    display: inline-block;
+    background-color: #3498db;
+    color: #fff;
+    padding: 0.8rem 1.5rem;
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 1rem;
+}
+
+.btn-principal:hover {
+    background-color: #2980b9;
+}
+
+/* Imagen de Marca */
+#logo-marca {
+    max-width: 150px;
+    height: auto;
+    display: block;
+    margin: 0 auto 1.5rem auto;
+    border: 1px solid #eee;
+    border-radius: 4px;
+    padding: 0.5rem;
+}
+
+/* Precio Final */
+p.precio-final {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #2c3e50;
+    margin-top: 2rem;
+}
+
+p.precio-final span {
+    color: #e74c3c;
+}
+
+/* Resultados de Búsqueda */
+#resultados-busqueda-modelo {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    max-height: 200px;
+    overflow-y: auto;
+    margin-top: 0.5rem;
+}
+
+.resultado-busqueda-item {
+    padding: 0.8rem;
+    cursor: pointer;
+    border-bottom: 1px solid #eee;
+    transition: background-color 0.2s ease;
+}
+
+.resultado-busqueda-item:last-child {
+    border-bottom: none;
+}
+
+.resultado-busqueda-item:hover {
+    background-color: #f0f0f0;
+}
+
+#marca-modelo-buscado {
+    margin-top: 1rem;
+    font-style: italic;
+    color: #555;
+}
+
+/* Tabla de Compras */
+#purchase-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1.5rem;
+}
+
+#purchase-table th,
+#purchase-table td {
+    padding: 1rem;
+    border: 1px solid #eee;
+    text-align: left;
+}
+
+#purchase-table th {
+    background-color: #f8f8f8;
+    font-weight: bold;
+    color: #555;
+}
+
+#purchase-table tbody tr:nth-child(even) {
+    background-color: #fcfcfc;
+}
+
+/* Responsividad básica */
+@media (max-width: 768px) {
+    main {
+        grid-template-columns: 1fr;
+    }
+
+    header h1 {
+        font-size: 2rem;
+    }
+
+    section {
+        padding: 1.5rem;
+    }
+}
