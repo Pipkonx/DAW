@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Productos por Categoría</h1>
+
+    <label for="categorySelect">Selecciona una Categoría:</label>
+    <select id="categorySelect">
+        <option value="">Todas las categorías</option>
+    </select>
+
+    <h2>Productos de la Categoría:</h2>
+    <div id="productsTableContainer">
+        <p>Selecciona una categoría para ver los productos en una tabla.</p>
+    </div>
+
+    <h2>Selecciona un Producto Específico:</h2>
+    <label for="productSelect">Producto:</label>
+    <select id="productSelect" disabled>
+        <option value="">Selecciona un producto</option>
+    </select>
+
+    <div id="selectedProductDetails">
+        <p>Detalles del producto seleccionado aparecerán aquí.</p>
+    </div>
+
+    <script src="utiles.js"></script>
+</body>
+</html>

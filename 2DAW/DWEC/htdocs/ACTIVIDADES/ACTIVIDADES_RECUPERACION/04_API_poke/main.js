@@ -1,5 +1,5 @@
 const filtroTipo = document.querySelector("#tipo");
-const listaPokemon = document.querySelector("#lista-pokemon")ñ
+const listaPokemon = document.querySelector("#lista-pokemon");
 const form = document.querySelector("#form-pokemon");
 const inputPokemon = document.querySelector("#pokemon");
 
