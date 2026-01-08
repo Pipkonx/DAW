@@ -132,10 +132,9 @@ footer {
 
 
 /* CARRUSEL IMAGENES  */
+/* esto es de internet porque no lo conseguia */
 #carouselExampleIndicators {
     height: 40vh;
-    
-    
     max-height: 40vh;
     max-width: 30vw;
     border-radius: 10px;
