@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+</head>
+
+<body>
+    <div id="div">
+
+
+
+        <!-- el v-if sirve para mostrar u ocultar un elemento -->
+        <h1 v-if="muestra">{{ mensaje }}</h1>
+        <br>
+        <!-- para lanzar un envento usamos el v-on -->
+        <button v-on:click="cambia()">Mostrar/Ocultar titulo</button> <br>
+
+        <h3>Annadir fruta</h3>
+        <input type="text" v-model="nuevaFruta" placeholder="nombre fruta"><br>
+        <input type="number" v-model="nuevoStock"><br>
+
+        <!-- el v-on:clik es lo mismo que el @click -->
+        <button @click="annadeFruta(nuevaFruta, nuevoStock)">Annadir</button>
+        <ul>
+            <!-- <li v-for="fruta in frutas">Id: {{ frutas.indexOf(fruta) }} - {{ fruta.nombre}} - {{ fruta.stock }} -
+                <button @click="eliminar(fruta)">Eliminar</button>
+            </li> -->
+
+            <!-- eliminarlo ahora con el item -->
+            <li v-for="fruta in frutas">{{ fruta.nombre}} - {{ fruta.stock }} -
+                <button @click="eliminar(fruta)">Eliminar</button>
+            </li>
+            <!-- <li v-for="fruta in frutas">{{fruta}}</li> -->
+        </ul>
+
+        <!-- <p >Total kilos: {{ totalKilos }}</p> -->
+        <!-- otra forma de hacerlo -->
+        <p>Total kilos: {{ sumarKilos }}</p>
+
+        <img @click="cambiaFoto" :src="foto" width="200" alt="">
+
+    </div>
+    <script src="utiles.js"></script>
+</body>
+
+</html>
