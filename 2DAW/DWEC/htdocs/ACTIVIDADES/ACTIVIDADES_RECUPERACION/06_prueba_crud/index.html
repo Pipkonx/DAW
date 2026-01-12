@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>CRUD Fetch</title>
+</head>
+
+<body>
+
+    <h1>CRUD con Fetch</h1>
+
+    <form id="formCategoria">
+        <input type="hidden" id="id_editar">
+        <input type="text" id="nombre" placeholder="Nombre categoría">
+        <button id="btnAccion">Agregar</button>
+    </form>
+
+    <table border="1">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody id="lista"></tbody>
+    </table>
+
+    <script src="app.js"></script>
+</body>
+
+</html>

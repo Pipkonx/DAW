@@ -1,21 +1,29 @@
 <?php
+// 1. Conectamos a la base de datos
 include "conn.php";
 
-// 1. Cogemos el ID que nos manda JavaScript desde la URL
+// 2. Recogemos el ID de la categoría que nos envía JavaScript a través de la URL (ej: ?id_cat=1)
 $id = $_GET['id_cat'];
 
-// 2. Buscamos los productos de esa categoría
+// 3. Preparamos la consulta SQL para buscar solo los productos de esa categoría
 $sql = "SELECT id_producto, nombre_producto, precio FROM productos WHERE id_categoria = $id";
+
+// 4. Ejecutamos la consulta
 $resultado = $conn->query($sql);
 
-// 3. Metemos los resultados en una lista
+// 5. Creamos una lista vacía para los productos
 $lista = [];
-while($fila = $resultado->fetch_assoc()) {
-    $lista[] = $fila;
+
+// 6. Si encontramos productos, los metemos en nuestra lista
+if ($resultado) {
+    while ($fila = $resultado->fetch_assoc()) {
+        $lista[] = $fila;
+    }
 }
 
-// 4. Lo enviamos todo como JSON
+// 7. Lo enviamos todo en formato JSON (como un texto estructurado) para JavaScript
 echo json_encode($lista);
 
+// 8. Cerramos la conexión
 $conn->close();
 ?>
