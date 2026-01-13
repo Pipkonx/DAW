@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AlumnoController;
+use App\Http\Controllers\ProvControl;
 
 Route::get('/', function () {
     return view('welcome');
@@ -19,3 +20,14 @@ Route::get('/alumnos/borrar7', [AlumnoController::class, 'borrar7']);
 Route::get('/alumnos/crear', [AlumnoController::class, 'crear']);
 
 
+Route::resource("photo", ProvControl::class);
+
+
+
+// REVISAR DOC
+// https://laravel.com/docs/12.x/controllers\
+
+// php artisan make:controller ProvControl --resource
+// php artisan make:controller ProvControl --resource
+
+// https://laravel.com/docs/12.x/eloquent-resources#main-content
