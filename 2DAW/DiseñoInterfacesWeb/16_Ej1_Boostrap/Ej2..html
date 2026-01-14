@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="bootstrap-5.0.2-dist/css/bootstrap.min.css">
+</head>
+
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-1 col-12 border">Header</div>
+        </div>
+
+        <div class="row">
+            <div class="col-4 border">1</div>
+            <div class="col-8 border">2</div>
+        </div>
+
+        <div class="row">
+            <div class="col-4 border">texto</div>
+            <div class="col-4 border">texto</div>
+            <div class="col-4 border">texto</div>
+        </div>
+
+        <div class="row">
+            <div class="col-4 border">texto</div>
+            <div class="col-2 border">texto</div>
+            <div class="col-3 border">texto</div>
+            <div class="col-2 border">texto</div>
+            <div class="col-1 border"></div>
+        </div>
+        <div class="row">
+            <div class="col-12 border">texto</div>
+        </div>
+    </div>
+
+
+    <style>
+        .row:nth-child(2) div {
+            background-color: blue;
+        }
+        .row:nth-child(3) div {
+            background-color: yellow;
+        }
+        .row:nth-child(4) div, .row:nth-child(5) div  {
+            background-color: lightblue;
+        }
+        .row:last-child div , .row:first-child div{
+            background-color: green;
+        }
+    </style>
+
+    <script src="bootstrap-5.0.2-dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
