@@ -1,6 +1,4 @@
 <?php
-
-
 use App\Http\Controllers\C_Auth;
 use App\Http\Controllers\C_Usuarios;
 use App\Http\Controllers\C_Administrador;
@@ -35,7 +33,6 @@ Route::get('/operario/tareas/detalle', [C_Operario::class, 'mostrar']);
 Route::get('/operario/tareas/editar', [C_Operario::class, 'editar']);
 Route::post('/operario/tareas/editar', [C_Operario::class, 'actualizar']);
 Route::post('/operario/tareas/eliminar-fichero', [C_Operario::class, 'eliminarFichero']);
-
 
 // Autenticación simple con contraseña plana, sesión y cookie para recordar la clave.
 Route::any('/login', [C_Auth::class, 'login']);

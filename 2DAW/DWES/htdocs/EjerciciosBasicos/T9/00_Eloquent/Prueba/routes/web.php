@@ -28,7 +28,6 @@ Route::resource("photo", ProvControl::class);
 // https://laravel.com/docs/12.x/controllers\
 
 // php artisan make:controller ProvControl --resource
-// php artisan make:controller ProvControl --resource
 
 // https://laravel.com/docs/12.x/eloquent-resources#main-content
 
@@ -39,3 +38,15 @@ Route::resource("photo", ProvControl::class);
 // aconsejable crear un proyecto nuevo de laravel con vue y laravel de auth y con npm
 
 // revisar el middleware
+
+//El examen eloquent relaciones formulario  validando etc haciendo to el proceso
+
+// tenemos que agregar el laravel ui
+
+// leer sobre 
+//https://vite.dev/
+
+// leer m'as sobre 
+// https://filamentphp.com/docs
+// y para el crud
+// https://nova.laravel.com/
