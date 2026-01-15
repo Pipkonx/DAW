@@ -18,10 +18,31 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
+        'dni',
         'name',
         'email',
+        'phone',
+        'address',
+        'hire_date',
+        'role',
+        'is_active',
         'password',
     ];
+
+    public function tasks()
+    {
+        return $this->hasMany(Task::class, 'operator_id');
+    }
+
+    public function isAdmin()
+    {
+        return $this->role === 'admin';
+    }
+
+    public function isOperator()
+    {
+        return $this->role === 'operator';
+    }
 
     /**
      * The attributes that should be hidden for serialization.
