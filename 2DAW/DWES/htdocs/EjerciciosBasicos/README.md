@@ -1,39 +1,11 @@
-# 🚀 Notas de Aprendizaje: Laravel 12.x
+/ REVISAR DOC
 
----
+tras crear el proyecto nuevo pero con laravel new P2Trim 
 
-## 📖 Documentación Oficial y Recursos
-- **Controladores:** [Laravel Docs - Controllers](https://laravel.com/docs/12.x/controllers)
-- **Eloquent Resources:** [Documentación Eloquent Resources](https://laravel.com/docs/12.x/eloquent-resources#main-content)
-- **Vite:** [Vite.dev](https://vite.dev/)
-- **Laravel Sail (Docker):** [Documentación Sail](https://laravel.com/docs/12.x/sail)
+usamos el php artisan migrate para que nos cree las tablas 
 
-## 🛠️ Comandos Útiles
-Crear un controlador de tipo recurso para una entidad (ej. ProvControl):
-```bash
-php artisan make:controller ProvControl --resource
-```
+=======
 
-## 🔐 Autenticación y Seguridad
-- **Auth General:** [Documentación Authentication](https://laravel.com/docs/12.x/authentication)
-- **Recomendación:** Iniciar proyectos nuevos con Vue, Laravel Auth y NPM.
-- **Socialite:** Implementar inicio de sesión con Google.
-- **Middleware:** Pendiente revisar a fondo la configuración y el uso de middlewares.
-
-## 🏗️ Herramientas de UI y Administración
-- **Laravel UI:** Integrar el paquete para la gestión de interfaces.
-- **Filament PHP:** [Filament Docs](https://filamentphp.com/docs) - Panel administrativo moderno.
-- **Laravel Nova:** [Nova Docs](https://nova.laravel.com/) - Herramienta avanzada para la creación de CRUDs.
-
-## ✍️ Notas para el Examen (Eloquent)
-El examen se centrará en el proceso completo utilizando Eloquent:
-1.  **Relaciones:** Definir y utilizar relaciones entre modelos.
-2.  **Formularios:** Creación y manejo de datos.
-3.  **Validación:** Implementar reglas de validación en las peticiones.
-4.  **Flujo completo:** Realizar todo el proceso desde la base de datos hasta la vista.
-
-
-<!-- // REVISAR DOC
 // https://laravel.com/docs/12.x/controllers\
 
 // php artisan make:controller ProvControl --resource
@@ -60,4 +32,13 @@ El examen se centrará en el proceso completo utilizando Eloquent:
 // y para el crud
 // https://nova.laravel.com/
 
-// inicio sesion con google enlaravel google socialite -->
+// inicio sesion con google enlaravel google socialite
+
+
+REVISAR QUE PUEDO USAR
+BREEZER con las plantillas laravel 
+se suele usar a d'ia de hoy pero es m'as complicado porque a diferencia de laravel ui no te permite usar boostrap a menos que quites tailwand css vue o demas y lo cambies por boostrap pero pierde la gracia , la curva de aprendizaje es más alta pero es más moderno
+
+Laravel ui 
+Segun lo que he estado leyendo laravel ui es antiguo se usa para iniciarse pero es desactualizado se dejo de usar en laravel 7 y no es realista con las aplicaciones modernas
+https://www.parthpatel.net/laravel-8-bootstrap-auth-scaffolding/
