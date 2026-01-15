@@ -7,6 +7,25 @@
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            @php
+                $missingFields = [];
+                if (empty(auth()->user()->dni)) $missingFields[] = 'DNI';
+                if (empty(auth()->user()->cif)) $missingFields[] = 'CIF';
+                if (empty(auth()->user()->phone)) $missingFields[] = 'Teléfono';
+                if (empty(auth()->user()->address)) $missingFields[] = 'Dirección';
+            @endphp
+
+            @if(count($missingFields) > 0)
+                <div class="alert alert-warning shadow-sm border-0 mb-4 d-flex align-items-center" role="alert">
+                    <i class="fas fa-exclamation-triangle me-3 fs-4"></i>
+                    <div>
+                        <strong>¡Perfil incompleto!</strong> Por favor, completa los siguientes campos en tu perfil: 
+                        <span class="fw-bold text-dark">{{ implode(', ', $missingFields) }}</span>.
+                        <a href="{{ route('profile.edit') }}" class="alert-link ms-2 text-decoration-underline">Ir a completar perfil</a>
+                    </div>
+                </div>
+            @endif
+
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
                 <div class="row g-4">
                     <div class="col-12 mb-2">

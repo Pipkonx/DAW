@@ -123,6 +123,20 @@ class BusinessSeeder extends Seeder
             ]
         );
 
+        $operator3 = User::firstOrCreate(
+            ['email' => 'corderorafa0@gmail.com'],
+            [
+                'dni' => '44444444D',
+                'name' => 'Rafael Corderor',
+                'password' => Hash::make('user123'),
+                'role' => 'operator',
+                'is_active' => true,
+                'hire_date' => '2025-04-01',
+                'phone' => '600000004',
+                'address' => 'Calle Secundaria 20, Sevilla'
+            ]
+        );
+
         // Clientes
         $client1 = Client::firstOrCreate(
             ['cif' => 'B12345678'],
@@ -279,6 +293,23 @@ class BusinessSeeder extends Seeder
                 'status' => 'pending',
                 'operator_id' => $operator2->id,
                 'previous_notes' => 'Instalar en los 15 equipos de administración.'
+            ]
+        );
+
+        Task::firstOrCreate(
+            ['description' => 'Configuración de copias de seguridad'],
+            [
+                'client_id' => $client1->id,
+                'contact_person' => 'Rafael Corderor',
+                'contact_phone' => '600000004',
+                'contact_email' => 'corderorafa0@gmail.com',
+                'address' => 'Calle Principal 1',
+                'city' => 'Sevilla',
+                'postal_code' => '41001',
+                'province_code' => '41',
+                'status' => 'pending',
+                'operator_id' => $operator3->id,
+                'previous_notes' => 'Configurar copias en la nube'
             ]
         );
     }

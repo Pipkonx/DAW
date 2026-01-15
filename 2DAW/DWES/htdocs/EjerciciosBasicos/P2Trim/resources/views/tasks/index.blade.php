@@ -9,7 +9,7 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
                 <div class="d-flex justify-content-between mb-4">
-                    <h3>Lista de Tareas</h3>
+                    <h3>Lista de Tareas (Total: {{ $tasks->count() }})</h3>
                     @if(auth()->user()->isAdmin())
                         <a href="{{ route('tasks.create') }}" class="btn btn-primary">
                             <i class="fas fa-plus"></i> Nueva Tarea
@@ -53,11 +53,11 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach($tasks as $task)
+                            @forelse($tasks as $task)
                                 <tr>
                                     <td>{{ $task->id }}</td>
-                                    <td>{{ $task->client->name }}</td>
-                                    <td>{{ Str::limit($task->description, 50) }}</td>
+                                    <td>{{ $task->client ? $task->client->name : 'N/A' }}</td>
+                                    <td>{{ \Illuminate\Support\Str::limit($task->description, 50) }}</td>
                                     <td>{{ $task->operator ? $task->operator->name : 'Sin asignar' }}</td>
                                     <td>
                                         <span class="badge {{ $task->status == 'done' ? 'bg-success' : ($task->status == 'pending' ? 'bg-warning' : 'bg-danger') }}">
@@ -80,7 +80,11 @@
                                         @endif
                                     </td>
                                 </tr>
-                            @endforeach
+                            @empty
+                                <tr>
+                                    <td colspan="7" class="text-center">No se encontraron tareas.</td>
+                                </tr>
+                            @endforelse
                         </tbody>
                     </table>
                 </div>

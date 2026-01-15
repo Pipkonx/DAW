@@ -15,18 +15,19 @@ class TaskController extends Controller
 {
     public function index(Request $request)
     {
+        $user = auth()->user();
         $query = Task::with(['client', 'operator', 'province']);
 
-        if (auth()->check()) {
-            if (auth()->user()->isOperator()) {
-                $query->where('operator_id', auth()->id());
-            }
+        // Los operarios solo ven sus propias tareas asignadas
+        if ($user && $user->role === 'operator') {
+            $query->where('operator_id', $user->id);
         }
 
-        if ($request->has('status')) {
+        if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
-        if ($request->has('client_id')) {
+
+        if ($request->filled('client_id')) {
             $query->where('client_id', $request->client_id);
         }
 
@@ -69,10 +70,7 @@ class TaskController extends Controller
 
     public function show(Task $task)
     {
-        if (auth()->user()->isOperator() && $task->operator_id !== auth()->id()) {
-            abort(403);
-        }
-
+        // Permitimos que tanto administradores como operarios vean los detalles
         return view('tasks.show', [
             'task' => $task->load(['client', 'operator', 'province'])
         ]);
