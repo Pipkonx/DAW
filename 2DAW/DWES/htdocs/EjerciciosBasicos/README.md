@@ -27,13 +27,15 @@ usamos el php artisan migrate para que nos cree las tablas
 // leer sobre 
 //https://vite.dev/
 
-// leer m'as sobre 
+// leer más sobre 
 // https://filamentphp.com/docs
 // y para el crud
 // https://nova.laravel.com/
 
 // inicio sesion con google enlaravel google socialite
 
+
+Para todo esto tengo que tener instalado nodejs, para poder compilar 
 
 REVISAR QUE PUEDO USAR
 BREEZER con las plantillas laravel 
@@ -42,3 +44,6 @@ se suele usar a d'ia de hoy pero es m'as complicado porque a diferencia de larav
 Laravel ui 
 Segun lo que he estado leyendo laravel ui es antiguo se usa para iniciarse pero es desactualizado se dejo de usar en laravel 7 y no es realista con las aplicaciones modernas
 https://www.parthpatel.net/laravel-8-bootstrap-auth-scaffolding/
+
+doc del proyecto
+https://docs.google.com/document/d/1QZKz1EFeCWT4cnRBDNrUDATO6wG0-0mcnZSEnp1ZjW8/edit?tab=t.0 -->
