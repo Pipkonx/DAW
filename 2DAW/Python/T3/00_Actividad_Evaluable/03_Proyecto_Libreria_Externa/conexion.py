@@ -1,5 +1,6 @@
 import yfinance as yf
 # ! Tutorial https://fortinux.com/python/tutorial-yahoo-finance-para-consultar-acciones-y-titulos-de-la-bolsa/
+# ! Tutorial 2 https://ranaroussi.github.io/yfinance/reference/yfinance.ticker_tickers.html
 def obtener_precio_actual(simbolo):
     """
     Busca el precio más reciente de un activo (como BTC-USD o XRP)
