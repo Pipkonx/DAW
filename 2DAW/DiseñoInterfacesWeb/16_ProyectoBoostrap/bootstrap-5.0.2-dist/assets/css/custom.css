@@ -40,6 +40,21 @@ body.dark-mode .form-control {
     color: #fff;
 }
 
+/* Ajustes para las secciones bg-light en modo oscuro */
+/* Así evitamos que las letras claras se pierdan en fondos claros */
+body.dark-mode .bg-light {
+    background-color: #1a1a1a !important;
+    color: #e0e0e0 !important;
+}
+
+body.dark-mode .bg-light h2,
+body.dark-mode .bg-light h4,
+body.dark-mode .bg-light h6,
+body.dark-mode .bg-light label,
+body.dark-mode .bg-light .text-dark {
+    color: #ffffff !important;
+}
+
 /* EFECTO DE LA IMAGEN DE FONDO (PARALLAX) */
 /* He usado la imagen que me pasaste para el fondo del principio */
 .hero-parallax {

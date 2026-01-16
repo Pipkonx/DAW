@@ -22,7 +22,7 @@
 <!-- Pongo dark-mode por defecto como me pidieron -->
 <body>
 
-    <!-- BARRA DE NAVEGACIÓN (Navbar) -->
+    <!--! BARRA DE NAVEGACIÓN (Navbar) -->
     <!-- Uso bg-white pero con mi CSS se vuelve oscura si activo el modo noche -->
     <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom sticky-top shadow-sm">
         <div class="container">
@@ -32,16 +32,17 @@
             </a>
             
             <!-- Botón para cuando se ve en el móvil -->
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menuPrincipal">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
             
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav mx-auto text-center">
-                    <li class="nav-item"><a class="nav-link" href="#planificacion">Plan</a></li>
+                <ul class="navbar-nav ms-auto text-center">
+                    <li class="nav-item"><a class="nav-link" href="#planificacion">Planificación</a></li>
                     <li class="nav-item"><a class="nav-link" href="#creacion">Creación</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#interactivo">Cosas Interactivas</a></li>
-                    
+                    <li class="nav-item"><a class="nav-link" href="#multimedia">Multimedia</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#interactivo">Interactividad</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#memoria">Memoria</a></li>
                     <!-- El botón para cambiar de sol a luna -->
                     <li class="nav-item ms-lg-3">
                         <span id="theme-toggle" class="nav-link">
@@ -53,7 +54,7 @@
         </div>
     </nav>
 
-    <!-- EL HEADER CON LA FOTO DE FONDO (Hero) -->
+    <!--! EL HEADER CON LA FOTO DE FONDO (Hero) -->
     <!-- Aquí uso la clase hero-parallax que hice en el CSS -->
     <header class="hero-parallax">
         <div class="hero-overlay"></div>
@@ -64,7 +65,7 @@
         </div>
     </header>
 
-    <!-- PARTE 1: PLANIFICACIÓN -->
+    <!--! PARTE 1: PLANIFICACIÓN -->
     <section id="planificacion" class="py-5">
         <div class="container">
             <h2 class="mb-4">1. ¿Cómo me he organizado?</h2>
@@ -86,9 +87,14 @@
                         <i class="bi bi-github mb-3" style="font-size: 2.5rem;"></i>
                         <h5>GitHub</h5>
                         <p>Aquí guardo todo el código y veo los cambios que hago.</p>
-                        <a href="https://github.com/Pipkonx/DAW" target="_blank" class="btn btn-dark">
-                            <i class="bi bi-github me-2"></i>Explorar Repositorio
-                        </a>
+                        <div class="d-grid gap-2">
+                            <a href="https://github.com/Pipkonx/DAW/tree/main/2DAW/Dise%C3%B1oInterfacesWeb/16_ProyectoBoostrap" target="_blank" class="btn btn-dark">
+                                <i class="bi bi-github me-2"></i>Explorar Repositorio
+                            </a>
+                            <a href="https://github.com/Pipkonx/DAW/commit/fa9466a00df787f2e3d58e54f002e862fe2b4da7" target="_blank" class="btn btn-outline-secondary btn-sm">
+                                <i class="bi bi-shield-check me-2"></i>Verificar Commits Públicos
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -106,7 +112,7 @@
         </div>
     </section>
 
-    <!-- PARTE 2: CREACIÓN -->
+    <!--! PARTE 2: CREACIÓN -->
     <section id="creacion" class="py-5 bg-light text-dark">
         <div class="container">
             <h2 class="text-center mb-5">2. Creando la web con la rejilla</h2>
@@ -169,7 +175,7 @@
         </div>
     </section>
 
-    <!-- PARTES 3 Y 4: COSAS INTERACTIVAS -->
+    <!--! PARTES 3 Y 4: COSAS INTERACTIVAS -->
     <section id="interactivo" class="py-5">
         <div class="container">
             <h2 class="mb-4">3. Multimedia y Cosas que se mueven</h2>
@@ -222,7 +228,7 @@
         </div>
     </section>
 
-    <!-- VENTANA MODAL (Aviso) -->
+    <!--! VENTANA MODAL (Aviso) -->
     <div class="modal fade" id="miModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -241,15 +247,18 @@
         </div>
     </div>
 
-    <!-- SECCIÓN DE MULTIMEDIA Y VIDEO -->
+    <!--! SECCIÓN DE MULTIMEDIA Y VIDEO -->
     <section id="multimedia" class="py-5 bg-light">
         <div class="container">
             <h2 class="text-center mb-5">📹 Contenido Multimedia Optimizado</h2>
             <div class="row align-items-center">
                 <div class="col-lg-6 mb-4 mb-lg-0">
                     <div class="ratio ratio-16x9 shadow rounded overflow-hidden mb-3">
-                        <!-- He configurado el vídeo solicitado por el usuario -->
-                        <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="Vídeo solicitado: Rick Astley" allowfullscreen></iframe>
+                        <!-- He configurado el vídeo local solicitado por el usuario -->
+                        <video controls class="w-100">
+                            <source src="assets/video/Rick_Astley_-_Never_Gonna_Give_You_Up_Official_Video_4K_Remaster_720p.mp4" type="video/mp4">
+                            Tu navegador no soporta la reproducción de vídeos.
+                        </video>
                     </div>
                     <div class="text-center">
                         <a href="https://youtu.be/dQw4w9WgXcQ" target="_blank" class="btn btn-outline-danger btn-sm">
@@ -270,7 +279,7 @@
         </div>
     </section>
 
-    <!-- SECCIÓN FINAL: WEBGRAFÍA, INCIDENCIAS Y CONCLUSIONES -->
+    <!--! SECCIÓN FINAL: WEBGRAFÍA, INCIDENCIAS Y CONCLUSIONES -->
     <!-- Uso bg-dark para que resalte como el cierre del proyecto -->
     <section id="memoria" class="py-5 bg-dark text-white">
         <div class="container">
@@ -285,7 +294,7 @@
             </div>
 
             <div class="row g-4">
-                <!-- Columna de Webgrafía y Justificación Multimedia -->
+                <!--? Columna de Webgrafía y Justificación Multimedia -->
                 <div class="col-lg-4">
                     <div class="p-4 border border-secondary rounded h-100">
                         <h5 class="mb-4"><i class="bi bi-journal-bookmark me-2"></i>Recursos y Tecnologías</h5>
@@ -295,12 +304,15 @@
                             <li class="mb-2"><a href="https://coolors.co/" target="_blank" class="text-info text-decoration-none"><i class="bi bi-palette2 me-2"></i>Coolors (Paletas)</a></li>
                             <li class="mb-2"><a href="https://trello.com/" target="_blank" class="text-info text-decoration-none"><i class="bi bi-trello me-2"></i>Trello (Organización)</a></li>
                             <li class="mb-2"><a href="https://unsplash.com/" target="_blank" class="text-info text-decoration-none"><i class="bi bi-image me-2"></i>Unsplash (Fotos)</a></li>
+                            <li class="mb-2"><a href="https://vidssave.com/es/youtube-to-mp4" target="_blank" class="text-info text-decoration-none"><i class="bi bi-download me-2"></i>VidsSave (Descarga MP4)</a></li>
                         </ul>
 
-                        <p class="small text-muted mb-2">Desarrollo:</p>
+                        <p class="small text-muted mb-2">Desarrollo y Documentación:</p>
                         <ul class="list-unstyled mb-3">
                             <li class="mb-2"><a href="https://github.com/" target="_blank" class="text-info text-decoration-none"><i class="bi bi-github me-2"></i>GitHub (Repositorio)</a></li>
                             <li class="mb-2"><a href="https://getbootstrap.com/docs/5.0/" target="_blank" class="text-info text-decoration-none"><i class="bi bi-bootstrap me-2"></i>Bootstrap 5</a></li>
+                            <li class="mb-2"><a href="https://www.eniun.com/formatos-archivos-video-conversiones-web/" target="_blank" class="text-info text-decoration-none"><i class="bi bi-file-earmark-play me-2"></i>Formatos de Vídeo (Eniun)</a></li>
+                            <li class="mb-2"><a href="https://www.eniun.com/animaciones-css-keyframes-propiedad-animation/" target="_blank" class="text-info text-decoration-none"><i class="bi bi-magic me-2"></i>Animaciones CSS (Eniun)</a></li>
                         </ul>
 
                         <p class="small text-muted mb-2">Tecnologías Core:</p>
@@ -342,7 +354,7 @@
         </div>
     </section>
 
-    <!-- EL FINAL DE LA PÁGINA (Footer) -->
+    <!--! EL FINAL DE LA PÁGINA (Footer) -->
     <footer class="py-3 bg-white border-top">
         <div class="container text-center">
             <p class="m-0 text-muted small">&copy; <span id="currentYear"></span> EcoConnect - Rafael Cordero</p>
@@ -351,57 +363,7 @@
 
     <!-- Scripts de Bootstrap y mis funciones personalizadas -->
     <script src="js/bootstrap.bundle.min.js"></script>
-    <script>
-        // Poner el año actual automáticamente
-        document.getElementById('currentYear').textContent = new Date().getFullYear();
-
-        // Función para cambiar el modo oscuro/claro
-        const botonTema = document.getElementById('theme-toggle');
-        const iconoTema = document.getElementById('theme-icon');
-        const cuerpo = document.body;
-
-        // Cuando hago clic en el botón del sol/luna...
-        botonTema.addEventListener('click', () => {
-            // Le quito o le pongo la clase dark-mode al body
-            cuerpo.classList.toggle('dark-mode');
-            
-            // Si ahora está en modo oscuro, pongo el icono del sol
-            if (cuerpo.classList.contains('dark-mode')) {
-                iconoTema.classList.replace('bi-moon-fill', 'bi-sun-fill');
-                iconoTema.classList.replace('text-primary', 'text-warning');
-            } else {
-                // Si no, pongo la luna
-                iconoTema.classList.replace('bi-sun-fill', 'bi-moon-fill');
-                iconoTema.classList.replace('text-warning', 'text-primary');
-            }
-        });
-
-        // Esto es para que funcionen los mensajitos flotantes (tooltips)
-        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-            return new bootstrap.Tooltip(tooltipTriggerEl)
-        })
-
-        // LÓGICA PARA ENVIAR EL EMAIL
-        const formulario = document.getElementById('formularioContacto');
-        
-        formulario.addEventListener('submit', (e) => {
-            e.preventDefault(); // Evito que la página se recargue
-            
-            // Cojo los valores que ha escrito el usuario
-            const nombre = document.getElementById('nombreForm').value;
-            const email = document.getElementById('emailForm').value;
-            const mensaje = document.getElementById('mensajeForm').value;
-            
-            // Configuro el destino y el contenido del correo
-            const destinatario = 'corderorafa0@gmail.com';
-            const asunto = `Nuevo mensaje de EcoConnect de ${nombre}`;
-            const cuerpo = `Nombre: ${nombre}%0DEmail: ${email}%0DMensaje: ${mensaje}`;
-            
-            // Abro el gestor de correo del usuario (Outlook, Gmail, etc.)
-            window.location.href = `mailto:${destinatario}?subject=${asunto}&body=${cuerpo}`;
-        });
-    </script>
+    <script src="assets/js/main.js"></script>
 </body>
 
 </html>
