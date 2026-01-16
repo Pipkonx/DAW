@@ -1,0 +1,120 @@
+/* ESTILOS PARA MI PROYECTO ECOCONNECT */
+/* Aquí pongo los colores que voy a usar en toda la web */
+:root {
+    --bs-primary: #198754; /* Un verde que me gusta para el tema ecológico */
+}
+
+/* CONFIGURACIÓN DEL MODO OSCURO */
+/* Esto lo activo con una clase en el body desde el botón del menú */
+body.dark-mode {
+    background-color: #121212; /* Un gris casi negro para que no canse la vista */
+    color: #e0e0e0;
+}
+
+/* Hago que las tarjetas y el menú también se vean oscuros */
+body.dark-mode .navbar,
+body.dark-mode .card,
+body.dark-mode .modal-content,
+body.dark-mode footer,
+body.dark-mode .contact-form-card {
+    background-color: #1e1e1e !important;
+    color: #e0e0e0 !important;
+    border-color: #333 !important;
+}
+
+/* En modo oscuro, las letras del menú y el nombre de la web deben ser claros */
+body.dark-mode .navbar .nav-link,
+body.dark-mode .navbar .navbar-brand {
+    color: #ffffff !important;
+}
+
+/* Para que los textos que Bootstrap pone claritos se vean bien aquí */
+body.dark-mode .text-muted {
+    color: #b0b0b0 !important;
+}
+
+/* Configuro los inputs del formulario para que no brillen mucho en oscuro */
+body.dark-mode .form-control {
+    background-color: #2d2d2d;
+    border-color: #444;
+    color: #fff;
+}
+
+/* EFECTO DE LA IMAGEN DE FONDO (PARALLAX) */
+/* He usado la imagen que me pasaste para el fondo del principio */
+.hero-parallax {
+    background-image: url('../img/optimizados/fondo.jpg');
+    height: 60vh; /* Que ocupe un poco más de la mitad de la pantalla */
+    background-attachment: fixed; /* El truco para que la imagen se quede quieta al bajar */
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+/* Una capa oscura encima de la foto para que se lea bien el texto */
+.hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+}
+
+.hero-content {
+    position: relative;
+    z-index: 1;
+    color: white;
+}
+
+/* AJUSTES PARA EL BOTÓN DEL MÓVIL Y ICONOS */
+/* Invierto los colores del icono del menú para que se vea blanco en oscuro */
+body.dark-mode .navbar-toggler-icon {
+    filter: invert(1);
+}
+
+body.dark-mode .bi-github {
+    color: #fff !important;
+}
+
+/* ESTO ES PARA LA PALETA DE COLORES DE LA MEMORIA */
+.color-swatch {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+    margin-right: 8px;
+    vertical-align: middle;
+    border: 1px solid rgba(0,0,0,0.1);
+}
+
+/* TRANSICIONES PARA LOS BOTONES */
+/* Hago que todos los botones cambien de color suavemente cuando paso el ratón */
+.btn {
+    transition: all 0.3s ease-in-out !important;
+}
+
+/* Un pequeño efecto de levantamiento al pasar el ratón */
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+/* Una animación sencillita para que el título aparezca suave */
+.fade-in {
+    animation: fadeIn 1s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Cursor de manita para el botón de cambio de tema */
+#theme-toggle {
+    cursor: pointer;
+}

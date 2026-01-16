@@ -1,5 +1,6 @@
 {
     "require": {
-        "laravel/tinker": "^2.11"
+        "laravel/tinker": "^2.11",
+        "laravel/ui": "^4.6"
     }
 }
