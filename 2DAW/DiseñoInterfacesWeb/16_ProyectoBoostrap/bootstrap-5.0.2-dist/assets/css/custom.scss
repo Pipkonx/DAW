@@ -1,0 +1,103 @@
+// VARIABLES SASS
+$primary-color: #198754;
+$dark-bg: #121212;
+$dark-card-bg: #1e1e1e;
+$dark-text: #e0e0e0;
+$dark-border: #333;
+$transition-speed: 0.3s;
+
+// MIXIN PARA MODO OSCURO
+@mixin dark-mode-styles {
+    background-color: $dark-bg;
+    color: $dark-text;
+
+    .navbar, .card, .modal-content, footer, .contact-form-card {
+        background-color: $dark-card-bg !important;
+        color: $dark-text !important;
+        border-color: $dark-border !important;
+    }
+
+    .navbar {
+        .nav-link, .navbar-brand {
+            color: #ffffff !important;
+        }
+    }
+
+    .text-muted { color: #b0b0b0 !important; }
+
+    .form-control {
+        background-color: #2d2d2d;
+        border-color: #444;
+        color: #fff;
+    }
+
+    .bg-light {
+        background-color: #1a1a1a !important;
+        color: $dark-text !important;
+        h2, h4, h6, label, .text-dark { color: #ffffff !important; }
+    }
+
+    .navbar-toggler-icon { filter: invert(1); }
+    .bi-github { color: #fff !important; }
+}
+
+// ESTILOS GENERALES
+:root {
+    --bs-primary: #{$primary-color};
+}
+
+body.dark-mode {
+    @include dark-mode-styles;
+}
+
+// COMPONENTES
+.hero-parallax {
+    background: url('../img/optimizados/fondo.jpg') no-repeat center fixed;
+    background-size: cover;
+    height: 60vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+
+    .hero-overlay {
+        position: absolute;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0, 0, 0, 0.6);
+    }
+
+    .hero-content {
+        position: relative;
+        z-index: 1;
+        color: white;
+    }
+}
+
+.color-swatch {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+    margin-right: 8px;
+    vertical-align: middle;
+    border: 1px solid rgba(0,0,0,0.1);
+}
+
+.btn {
+    transition: all $transition-speed ease-in-out !important;
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
+}
+
+.fade-in {
+    animation: fadeIn 1s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+#theme-toggle { cursor: pointer; }
