@@ -1,0 +1,170 @@
+* {
+  box-sizing: border-box
+}
+
+:root {
+  --border: #e5e7eb;
+  --fg: #111827;
+  --bg: #ffffff;
+  --primary: #2563eb
+}
+
+html,
+body {
+  height: 100%
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  color: var(--fg);
+  background: var(--bg)
+}
+
+body.login-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  /* Asegura que el body ocupe al menos el 100% del viewport height */
+}
+
+body.login-page .container {
+  margin: 0;
+  /* Elimina el margen automático para que flexbox pueda centrarlo */
+  max-width: 400px;
+}
+
+.container {
+  max-width: 800px;
+  margin: 24px auto;
+  padding: 16px
+}
+
+h1,
+h2,
+h3 {
+  margin: 0 0 12px
+}
+
+a {
+  color: var(--primary);
+  text-decoration: none
+}
+
+a:hover {
+  text-decoration: underline
+}
+
+.error {
+  color: #dc2626;
+  font-size: 0.9rem;
+  margin-top: 4px
+}
+
+.msg {
+  color: #065f46;
+  background: #d1fae5;
+  border: 1px solid #10b981;
+  padding: 8px 10px;
+  border-radius: 6px;
+  margin: 8px 0
+}
+
+.btn {
+  display: inline-block;
+  padding: 12px 24px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: #f9fafb;
+  color: var(--fg);
+  cursor: pointer;
+  min-width: 180px;
+  max-width: 120px;
+  text-align: center;
+}
+
+.btn:hover {
+  background: #f3f4f6
+}
+
+.inline {
+  display: inline
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 12px 0
+}
+
+th,
+td {
+  border: 1px solid var(--border);
+  padding: 8px;
+  text-align: left
+}
+
+form label {
+  display: block;
+  font-weight: 500;
+  margin: 8px 0 4px
+}
+
+input[type=text],
+input[type=password],
+input[type=date],
+select,
+textarea {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: #fff;
+  text-align: left;
+}
+
+textarea {
+  min-height: 100px
+}
+
+.nav {
+  margin-bottom: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px; /* Espacio entre elementos */
+  flex-wrap: wrap; /* Permite que los elementos salten de línea */
+}
+
+.actions-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.filter-form {
+  display: flex;
+  gap: 8px;
+}
+
+.logout-form {
+  margin-left: auto;
+}
+
+.fila-formulario {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.etiqueta-fila-formulario {
+  margin-right: 10px;
+  min-width: 80px;
+}
+
+.radio-group-item {
+  display: inline-block;
+  margin-right: 10px;
+}
