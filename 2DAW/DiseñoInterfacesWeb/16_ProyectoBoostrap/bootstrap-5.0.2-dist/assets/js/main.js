@@ -55,4 +55,70 @@ document.addEventListener('DOMContentLoaded', () => {
             window.location.href = `mailto:${destinatario}?subject=${asunto}&body=${cuerpoEmail}`;
         });
     }
+
+    // 5. Gráfico Canvas Decorativo (Sistema de partículas conectadas)
+    const canvas = document.getElementById('canvasDecorativo');
+    if (canvas) {
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        const particleCount = 12;
+        const maxDistance = 40;
+        
+        // Inicialización de partículas
+        for(let i = 0; i < particleCount; i++) {
+            particles.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                radius: 2,
+                vx: (Math.random() - 0.5) * 0.4,
+                vy: (Math.random() - 0.5) * 0.4
+            });
+        }
+
+        function animateCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Obtener el color primario dinámicamente o usar el de la marca
+            const color = getComputedStyle(document.documentElement).getPropertyValue('--bs-primary').trim() || '#198754';
+            
+            for(let i = 0; i < particleCount; i++) {
+                let p = particles[i];
+                
+                // Dibujar partícula
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                ctx.fillStyle = color;
+                ctx.fill();
+                
+                // Mover partícula
+                p.x += p.vx;
+                p.y += p.vy;
+                
+                // Rebotes
+                if(p.x < 0 || p.x > canvas.width) p.vx *= -1;
+                if(p.y < 0 || p.y > canvas.height) p.vy *= -1;
+
+                // Dibujar líneas de conexión
+                for(let j = i + 1; j < particleCount; j++) {
+                    let p2 = particles[j];
+                    let dx = p.x - p2.x;
+                    let dy = p.y - p2.y;
+                    let dist = Math.sqrt(dx*dx + dy*dy);
+
+                    if(dist < maxDistance) {
+                        ctx.beginPath();
+                        ctx.strokeStyle = color;
+                        ctx.globalAlpha = 1 - (dist / maxDistance);
+                        ctx.lineWidth = 0.5;
+                        ctx.moveTo(p.x, p.y);
+                        ctx.lineTo(p2.x, p2.y);
+                        ctx.stroke();
+                        ctx.globalAlpha = 1;
+                    }
+                }
+            }
+            requestAnimationFrame(animateCanvas);
+        }
+        animateCanvas();
+    }
 });

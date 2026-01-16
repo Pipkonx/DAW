@@ -105,13 +105,38 @@
 
             <!-- Un pequeño resumen de lo que he usado -->
             <div class="mt-5 p-4 bg-light rounded border text-dark">
-                <h5>Guía de colores que he elegido:</h5>
-                <p>
-                    <span class="color-swatch" style="background-color: #198754;"></span> #198754 (Verde) |
-                    <span class="color-swatch" style="background-color: #ffffff;"></span> #FFFFFF (Blanco) |
-                    <span class="color-swatch" style="background-color: #212529;"></span> #212529 (Negro)
-                </p>
-                <p><strong>Tipografía:</strong> He usado la que viene por defecto en Bootstrap porque es limpia.</p>
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h5>Guía de colores del proyecto:</h5>
+                        <div class="row g-2">
+                            <div class="col-6 col-sm-4">
+                                <span class="color-swatch" style="background-color: #198754;"></span> #198754 (Primario)
+                            </div>
+                            <div class="col-6 col-sm-4">
+                                <span class="color-swatch" style="background-color: #ffffff;"></span> #FFFFFF (Fondo)
+                            </div>
+                            <div class="col-6 col-sm-4">
+                                <span class="color-swatch" style="background-color: #212529;"></span> #212529 (Texto)
+                            </div>
+                            <div class="col-6 col-sm-4">
+                                <span class="color-swatch" style="background-color: #121212;"></span> #121212 (Dark BG)
+                            </div>
+                            <div class="col-6 col-sm-4">
+                                <span class="color-swatch" style="background-color: #1e1e1e;"></span> #1E1E1E (Dark Card)
+                            </div>
+                            <div class="col-6 col-sm-4">
+                                <span class="color-swatch" style="background-color: #0dcaf0;"></span> #0DCAF0 (Info/Links)
+                            </div>
+                        </div>
+                        <p class="mb-0 mt-3"><strong>Tipografía:</strong> He usado la que viene por defecto en Bootstrap porque es limpia.</p>
+                    </div>
+                    <div class="col-md-4 text-center mt-3 mt-md-0">
+                        <div class="p-2 border rounded bg-white shadow-sm d-inline-block">
+                            <canvas id="canvasDecorativo" width="120" height="80" title="Gráfico Canvas Decorativo"></canvas>
+                            <p class="x-small text-muted mb-0 mt-1">Visualización Dinámica</p>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
@@ -301,129 +326,90 @@
     </section>
 
     <!--! SECCIÓN FINAL: WEBGRAFÍA, INCIDENCIAS Y CONCLUSIONES -->
-    <!-- Uso bg-dark para que resalte como el cierre del proyecto -->
-    <section id="memoria" class="py-5 bg-dark text-white">
+    <section id="memoria" class="py-5 bg-dark text-white border-top border-secondary">
         <div class="container">
             <h2 class="mb-5 text-center">📄 Memoria Final del Proyecto</h2>
 
             <!-- Datos del Proyecto -->
             <div class="row mb-5 text-center">
                 <div class="col-12">
-                    <p class="mb-1"><strong>Comienzo:</strong> 10 de diciembre | <strong>Inicio Desarrollo:</strong> 16
-                        de diciembre | <strong></strong>Entregas:</strong> 22 y 23 de enero / 13 de mayo</p>
+                    <p class="mb-1 text-info"><strong>Comienzo:</strong> 10 de diciembre | <strong>Desarrollo:</strong> 16 de diciembre | <strong>Entregas:</strong> 22-23 Enero / 13 Mayo</p>
                     <p class="small opacity-75">Proyecto de Planificación, Diseño y Validación de Interfaz Web</p>
                 </div>
             </div>
 
             <div class="row g-4">
-                <!--? Columna de Webgrafía y Justificación Multimedia -->
+                <!--? Columna 1: Planificación y Organización -->
                 <div class="col-lg-4">
-                    <div class="p-4 border border-secondary rounded h-100">
-                        <h5 class="mb-4"><i class="bi bi-journal-bookmark me-2"></i>Recursos y Tecnologías</h5>
-
-                        <p class="small text-muted mb-2">Planificación y Organización:</p>
+                    <div class="p-4 border border-secondary rounded h-100 shadow-sm">
+                        <h5 class="mb-4 text-info"><i class="bi bi-journal-bookmark me-2"></i>Recursos y Planificación</h5>
+                        
+                        <p class="small text-muted mb-2">Organización:</p>
                         <ul class="list-unstyled mb-3">
-                            <li class="mb-2"><a href="https://trello.com/" target="_blank"
-                                    class="text-info text-decoration-none"><i class="bi bi-trello me-2"></i>Trello
-                                    (Organización)</a></li>
-                            <li class="mb-2"><a href="https://github.com/" target="_blank"
-                                    class="text-info text-decoration-none"><i class="bi bi-github me-2"></i>GitHub
-                                    (Repositorio)</a></li>
+                            <li class="mb-2"><a href="https://trello.com/" target="_blank" class="text-info text-decoration-none"><i class="bi bi-trello me-2"></i>Trello (Organización)</a></li>
+                            <li class="mb-2"><a href="https://github.com/" target="_blank" class="text-info text-decoration-none"><i class="bi bi-github me-2"></i>GitHub (Repositorio)</a></li>
                         </ul>
 
-                        <p class="small text-muted mb-2">Diseño y Recursos Multimedia:</p>
+                        <p class="small text-muted mb-2">Diseño Multimedia:</p>
                         <ul class="list-unstyled mb-3">
-                            <li class="mb-2"><a href="https://coolors.co/" target="_blank"
-                                    class="text-info text-decoration-none"><i class="bi bi-palette2 me-2"></i>Coolors
-                                    (Paletas)</a></li>
-                            <li class="mb-2"><a href="https://unsplash.com/" target="_blank"
-                                    class="text-info text-decoration-none"><i class="bi bi-image me-2"></i>Unsplash
-                                    (Fotos)</a></li>
-                            <li class="mb-2">
-                                <a href="https://gemini.google.com/share/3546974413b9" target="_blank"
-                                    class="text-info text-decoration-none"><i class="bi bi-google me-2"></i>Google
-                                    Gemini (Imagen IA)</a>
-                            </li>
-                            <li class="mb-2">
-                                <a href="https://www.remove.bg/es/upload" target="_blank"
-                                    class="text-info text-decoration-none"><i class="bi bi-trash me-2"></i>Remove.bg
-                                    (Borrar fondos)</a>
-                            </li>
-                            <li class="mb-2"><a
-                                    href="https://www.iloveimg.com/es/descarga/xhhtcdp4Azc4w72yctn4y8kks0r9v6431z5x5qA85938r4hxbrxyymyjkAsq0byzb4347A6prdAz1Ak40j8tyfAktp3nm77ltjdqhsr4w2lzbbcAspdsAn33t8t1fhpctnqmpmt9nvnxm11pccwypn4cldn6l6gd630sf2jn73jwv02ff7cq/6"
-                                    target="_blank" class="text-info text-decoration-none"><i
-                                        class="bi bi-recycle me-2"></i>Iloveimg (Optimizar imágenes)</a></li>
-                            <li class="mb-2"><a href="https://vidssave.com/es/youtube-to-mp4" target="_blank"
-                                    class="text-info text-decoration-none"><i class="bi bi-download me-2"></i>VidsSave
-                                    (Vídeo MP4)</a></li>
-                        </ul>
-
-                        <p class="small text-muted mb-2">Desarrollo y Documentación:</p>
-                        <ul class="list-unstyled mb-3">
-                            <li class="mb-2"><a href="https://getbootstrap.com/docs/5.0/" target="_blank"
-                                    class="text-info text-decoration-none"><i class="bi bi-bootstrap me-2"></i>Bootstrap
-                                    5 (Docs)</a></li>
-                            <li class="mb-2">
-                                <a href="https://icons.getbootstrap.com/" target="_blank"
-                                    class="text-info text-decoration-none"><i class="bi bi-bootstrap-reboot me-2"></i>Bootstrap
-                                    Icons</a>
-                            </li>
-                            <li class="mb-2"><a href="https://getbootstrap.com/docs/4.0/layout/grid/" target="_blank"
-                                    class="text-info text-decoration-none"><i class="bi bi-grid-3x3-gap me-2"></i>Sistema
-                                    de Rejillas</a></li>
-                            <li class="mb-2"><a href="https://www.eniun.com/formatos-archivos-video-conversiones-web/"
-                                    target="_blank" class="text-info text-decoration-none"><i
-                                        class="bi bi-file-earmark-play me-2"></i>Formatos de Vídeo (Eniun)</a></li>
-                            <li class="mb-2"><a
-                                    href="https://www.eniun.com/animaciones-css-keyframes-propiedad-animation/"
-                                    target="_blank" class="text-info text-decoration-none"><i
-                                        class="bi bi-magic me-2"></i>Animaciones CSS (Eniun)</a></li>
-                            <li class="mb-2"><a href="https://css2sass.herokuapp.com/" target="_blank"
-                                    class="text-info text-decoration-none"><i class="bi bi-braces-asterisk me-2"></i>CSS to
-                                    SASS Converter</a></li>
+                            <li class="mb-2"><a href="https://coolors.co/" target="_blank" class="text-info text-decoration-none"><i class="bi bi-palette2 me-2"></i>Coolors (Paletas)</a></li>
+                            <li class="mb-2"><a href="https://unsplash.com/" target="_blank" class="text-info text-decoration-none"><i class="bi bi-image me-2"></i>Unsplash (Fotos)</a></li>
+                            <li class="mb-2"><a href="https://gemini.google.com/share/3546974413b9" target="_blank" class="text-info text-decoration-none"><i class="bi bi-google me-2"></i>Google Gemini (IA)</a></li>
                         </ul>
 
                         <p class="small text-muted mb-2">Tecnologías Core:</p>
-                        <div class="d-flex gap-3 mb-3">
-                            <span class="badge bg-secondary"><i class="bi bi-filetype-html me-1"></i>HTML5</span>
-                            <span class="badge bg-secondary"><i class="bi bi-filetype-css me-1"></i>CSS3</span>
-                            <span class="badge bg-secondary"><i class="bi bi-filetype-js me-1"></i>JS</span>
+                        <div class="d-flex flex-wrap gap-2">
+                            <span class="badge border border-secondary text-light"><i class="bi bi-filetype-html me-1"></i>HTML5</span>
+                            <span class="badge border border-secondary text-light"><i class="bi bi-filetype-css me-1"></i>CSS3</span>
+                            <span class="badge border border-secondary text-light"><i class="bi bi-filetype-js me-1"></i>JS</span>
                         </div>
-                        <hr class="border-secondary">
-                        <h6 class="small fw-bold text-info">Justificación Multimedia:</h6>
-                        <p class="x-small mb-1"><strong>Optimización:</strong> Es vital para reducir el tiempo de carga
-                            (LCP) y mejorar el SEO. Una web lenta pierde usuarios.</p>
-                        <p class="x-small"><strong>Formatos:</strong> Uso de <strong>SVG</strong> para logos
-                            (escalabilidad sin pérdida) y <strong>WebP/JPG</strong> optimizados para fotos de fondo.</p>
                     </div>
                 </div>
 
-                <!-- Columna de Incidencias -->
+                <!--? Columna 2: Optimización y Documentación -->
                 <div class="col-lg-4">
-                    <div class="p-4 border border-secondary rounded h-100">
-                        <h5 class="mb-4"><i class="bi bi-exclamation-triangle me-2"></i>Incidencias</h5>
-                        <p class="small text-light opacity-75">Retos superados:</p>
+                    <div class="p-4 border border-secondary rounded h-100 shadow-sm">
+                        <h5 class="mb-4 text-info"><i class="bi bi-tools me-2"></i>Herramientas y Docs</h5>
+                        
+                        <p class="small text-muted mb-2">Optimización de Activos:</p>
+                        <ul class="list-unstyled mb-3">
+                            <li class="mb-2"><a href="https://www.remove.bg/es/upload" target="_blank" class="text-info text-decoration-none"><i class="bi bi-trash me-2"></i>Remove.bg (Fondos)</a></li>
+                            <li class="mb-2"><a href="https://www.iloveimg.com/es/descarga/xhhtcdp4Azc4w72yctn4y8kks0r9v6431z5x5qA85938r4hxbrxyymyjkAsq0byzb4347A6prdAz1Ak40j8tyfAktp3nm77ltjdqhsr4w2lzbbcAspdsAn33t8t1fhpctnqmpmt9nvnxm11pccwypn4cldn6l6gd630sf2jn73jwv02ff7cq/6" target="_blank" class="text-info text-decoration-none"><i class="bi bi-recycle me-2"></i>Iloveimg (Imágenes)</a></li>
+                            <li class="mb-2"><a href="https://vidssave.com/es/youtube-to-mp4" target="_blank" class="text-info text-decoration-none"><i class="bi bi-download me-2"></i>VidsSave (Vídeo)</a></li>
+                        </ul>
+
+                        <p class="small text-muted mb-2">Documentación Técnica:</p>
+                        <ul class="list-unstyled mb-3">
+                            <li class="mb-2"><a href="https://getbootstrap.com/docs/5.0/" target="_blank" class="text-info text-decoration-none"><i class="bi bi-bootstrap me-2"></i>Bootstrap 5 Docs</a></li>
+                            <li class="mb-2"><a href="https://icons.getbootstrap.com/" target="_blank" class="text-info text-decoration-none"><i class="bi bi-bootstrap-reboot me-2"></i>Bootstrap Icons</a></li>
+                            <li class="mb-2"><a href="https://getbootstrap.com/docs/4.0/layout/grid/" target="_blank" class="text-info text-decoration-none"><i class="bi bi-grid-3x3-gap me-2"></i>Bootstrap Grid</a></li>
+                            <li class="mb-2"><a href="https://developer.mozilla.org/es/docs/Web/API/Canvas_API" target="_blank" class="text-info text-decoration-none"><i class="bi bi-cpu me-2"></i>Canvas API</a></li>
+                        </ul>
+
+                        <p class="small text-muted mb-2">Recursos de Aprendizaje:</p>
                         <ul class="list-unstyled mb-0">
-                            <li class="mb-2 small"><i class="bi bi-check2-circle text-success me-2"></i>Organización de
-                                carpetas en <code>/originales</code> y <code>/optimizados</code>.</li>
-                            <li class="mb-2 small"><i class="bi bi-check2-circle text-success me-2"></i>Modo oscuro:
-                                Ajuste de contrastes en el menú de navegación.</li>
-                            <li class="mb-2 small"><i class="bi bi-check2-circle text-success me-2"></i>Parallax:
-                                Compatibilidad con diferentes tamaños de pantalla.</li>
+                            <li class="mb-1"><a href="https://www.eniun.com/formatos-archivos-video-conversiones-web/" target="_blank" class="text-info text-decoration-none small"><i class="bi bi-file-earmark-play me-2"></i>Formatos Vídeo (Eniun)</a></li>
+                            <li class="mb-1"><a href="https://www.eniun.com/animaciones-css-keyframes-propiedad-animation/" target="_blank" class="text-info text-decoration-none small"><i class="bi bi-magic me-2"></i>Animaciones CSS (Eniun)</a></li>
+                            <li class="mb-1"><a href="https://css2sass.herokuapp.com/" target="_blank" class="text-info text-decoration-none small"><i class="bi bi-braces-asterisk me-2"></i>SASS Converter</a></li>
                         </ul>
                     </div>
                 </div>
 
-                <!-- Columna de Conclusiones -->
+                <!--? Columna 3: Incidencias y Conclusiones -->
                 <div class="col-lg-4">
-                    <div class="p-4 border border-secondary rounded h-100">
-                        <h5 class="mb-4"><i class="bi bi-journal-check me-2"></i>Conclusiones</h5>
-                        <p class="small text-light opacity-75">Aprendizaje:</p>
-                        <p class="small">He aprendido a usar la rejilla de Bootstrap para que la web sea 100%
-                            responsive. La importancia de planificar en Trello y versionar en GitHub me ha ahorrado
-                            muchos problemas.</p>
-                        <p class="small mb-0">La validación de la interfaz mediante componentes interactivos como
-                            modales y tooltips mejora mucho la experiencia del usuario final.</p>
+                    <div class="p-4 border border-secondary rounded h-100 shadow-sm">
+                        <h5 class="mb-4 text-info"><i class="bi bi-journal-check me-2"></i>Cierre del Proyecto</h5>
+                        
+                        <p class="small text-muted mb-2">Incidencias y Retos:</p>
+                        <ul class="list-unstyled mb-3">
+                            <li class="mb-2 small"><i class="bi bi-check2-circle text-success me-2"></i>Organización de carpetas (/originales y /optimizados).</li>
+                            <li class="mb-2 small"><i class="bi bi-check2-circle text-success me-2"></i>Modo oscuro: Ajuste de contrastes en el menú.</li>
+                            <li class="mb-2 small"><i class="bi bi-check2-circle text-success me-2"></i>Parallax: Compatibilidad en pantallas móviles.</li>
+                        </ul>
+
+                        <p class="small text-muted mb-2">Conclusiones Finales:</p>
+                        <p class="small mb-3">He aprendido a usar la rejilla de Bootstrap para que la web sea 100% responsive. La importancia de planificar en Trello y versionar en GitHub me ha ahorrado muchos problemas.</p>
+                        <p class="small mb-0">La validación de la interfaz mediante componentes interactivos como modales y tooltips mejora mucho la experiencia del usuario final.</p>
                     </div>
                 </div>
             </div>
