@@ -30,6 +30,10 @@ Este repositorio contiene ejercicios y prácticas relacionadas con el despliegue
 
 ### [📁 Ejercicio 6: Practica Servidor Web 1 Trimestre](./06_Practica_Servidor_Web/README.md)
 
+### [📁 Ejercicio 7: Servidor DNS con Bind](./07_Bind_ServidorDNS/README.md)
+
+### [📄 Guía Rápida Bash](./GUIA%20RAPIDA%20bash.pdf)
+
 ## 💡 Notas adicionales
 
 - Para detener cualquier servidor, presionar `Ctrl+C` en la línea de comandos
