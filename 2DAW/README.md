@@ -19,12 +19,11 @@ Este repositorio contiene los proyectos, ejercicios y prácticas realizados dura
 
 <div align="center">
   <img src="https://img.shields.io/badge/JavaScript-F7DF1E?style=flat-square&logo=javascript&logoColor=black" alt="JavaScript"/>
-  <img src="https://img.shields.io/badge/React-61DAFB?style=flat-square&logo=react&logoColor=black" alt="React"/>
   <img src="https://img.shields.io/badge/Vue.js-4FC08D?style=flat-square&logo=vue.js&logoColor=white" alt="Vue.js"/>
 </div>
 
 - **Descripción**: Desarrollo de interfaces web dinámicas e interactivas utilizando tecnologías del lado del cliente.
-- **Tecnologías**: JavaScript, TypeScript, React, Vue.js, Angular
+- **Tecnologías**: JavaScript, Laravel, Vue.js.
 - **Contenidos**: DOM, AJAX, Frameworks frontend, SPA, APIs del navegador
 - **[Ver proyectos y ejercicios](./DWEC)**
 
