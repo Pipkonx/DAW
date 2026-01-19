@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+</head>
+
+<body>
+    <div id="div">
+        <h1>Calculadora suma</h1>
+        <label for="num1">Num1</label>
+        <input v-model.number='num1' type="number" v-model="num1">
+        <br><br>
+        <label for="num2">Num2</label>
+        <input v-model.number='num2' type="number" v-model="num2"><br>
+        <h2>Resultado suma: {{ sumar() }}</h2>
+        <h2>Resultado resta: {{ restar() }}</h2>
+    </div>
+    <script src="utiles.js"></script>
+</body>
+
+</html>
