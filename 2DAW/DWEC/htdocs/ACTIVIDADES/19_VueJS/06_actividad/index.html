@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>bucle for</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script> -->
+
+</head>
+
+<body>
+    <div id="div">
+        <label for="salida">palabra</label>
+        <input type="text" v-model="seleccionada">
+        <button v-on:click="annadir">Añadir</button>
+
+        <select name="lista" id="salida" v-model="palabraSeleccionada">
+            <option v-for="item in items">{{item}}</option>
+        </select>
+
+        <label for="salida">Seleccionada: {{palabraSeleccionada}}</label>
+    </div>
+    <script src="utiles.js"></script>
+</body>
+
+</html>

@@ -4,12 +4,13 @@ var app = new Vue({
         jugador1: 0,
         jugador2: 0,
         ganador: "",
-        contadorJugador1:0,
-        contadorJugador2:0,
-        contadorEmpates:0,
-    },  
+        contadorJugador1: 0,
+        contadorJugador2: 0,
+        contadorEmpates: 0,
+        contadorTotal: 0,
+    },
     methods: {
-        jugar: function(event) {
+        jugar: function (event) {
             this.jugador1 = Math.floor(Math.random() * 100)
             this.jugador2 = Math.floor(Math.random() * 100)
 
@@ -23,6 +24,16 @@ var app = new Vue({
                 this.ganador = 'Empate'
                 this.contadorEmpates++
             }
+            this.contadorTotal++
+        },
+        reiniciar: function (event) {
+            this.jugador1 = 0,
+                this.jugador2 = 0,
+                this.ganador = "",
+                this.contadorJugador1 = 0,
+                this.contadorJugador2 = 0,
+                this.contadorEmpates = 0,
+                this.contadorTotal = 0
         }
     }
 })
