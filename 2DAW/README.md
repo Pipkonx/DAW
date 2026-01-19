@@ -70,20 +70,6 @@ Este repositorio contiene los proyectos, ejercicios y prácticas realizados dura
 - **[Ver proyectos y ejercicios](./DespliegueDeAplicacionesWeb/)**
 
 
-## 📅 Calendario Académico
-
-| Trimestre | Periodo | Contenidos Principales |
-|-----------|---------|------------------------|
-| 1º | Septiembre - Diciembre | Fundamentos de JavaScript y PHP, Bases de datos |
-| 2º | Enero - Marzo | Frameworks frontend y backend, APIs |
-| 3º | Abril - Junio | Proyecto final, Prácticas en empresa |
-
-## 🚀 Proyectos Destacados
-
-- **Aplicación web con React y Laravel**: Desarrollo fullstack con autenticación y CRUD
-- **Tienda online con PHP y MySQL**: Sistema de gestión de productos y pedidos
-- **Dashboard interactivo con Vue.js**: Visualización de datos con gráficos y filtros
-
 ## 💼 Competencias Profesionales
 
 - ✅ Desarrollo de aplicaciones web en entorno cliente y servidor
@@ -106,9 +92,6 @@ Para cualquier consulta relacionada con este repositorio, puedes contactar a tra
 
 ---
 
-<div align="center">
-  <p>Desarrollado con ❤️ para el Ciclo Formativo de Grado Superior en Desarrollo de Aplicaciones Web</p>
-</div>
 ## Cómo Navegar
 
 Cada carpeta de asignatura contiene su propia estructura organizada por temas o proyectos. Consulta los README específicos dentro de cada carpeta para más información detallada sobre cada módulo.
