@@ -1,0 +1,124 @@
+:root {
+  --bg: #0f172a;
+  --card: #111827;
+  --text: #e5e7eb;
+  --muted: #9ca3af;
+  --primary: #2563eb;
+  --primary-dark: #1d4ed8;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+  background: radial-gradient(800px 400px at 20% 10%, #1f2937 0%, var(--bg) 80%);
+  color: var(--text);
+}
+
+header {
+  padding: 24px;
+  text-align: center;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 1.8rem;
+}
+
+.container {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+.card,
+.form-card {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0));
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 20px;
+  backdrop-filter: blur(6px);
+}
+
+.card h2 {
+  margin-top: 0;
+}
+
+.actions {
+  display: flex;
+  gap: 12px;
+}
+
+.btn {
+  display: inline-block;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: var(--primary);
+  color: white;
+  text-decoration: none;
+  font-weight: 600;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  transition: 0.3s ease;
+
+  &:hover {
+    background-color: transparent;
+    background: var(--primary-dark);
+  }
+}
+
+
+.btn.secondary {
+  background: transparent;
+  color: var(--text);
+  border-color: rgba(255, 255, 255, 0.25);
+  transition: 0.3s ease;
+
+  &:hover {
+    background-color: var(--text);
+    color: var(--bg);
+    border-color: var(--bg);
+  }
+}
+
+label {
+  display: block;
+  margin-top: 12px;
+  color: var(--muted);
+}
+
+input {
+  width: 100%;
+  margin-top: 6px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(0, 0, 0, 0.3);
+  color: var(--text);
+}
+
+.form-card button {
+  margin-top: 16px;
+}
+
+.alt-link {
+  margin-top: 10px;
+  color: var(--muted);
+}
+
+.alt-link a {
+  color: var(--text);
+}
+
+footer {
+  text-align: center;
+  padding: 20px;
+  color: var(--muted);
+}

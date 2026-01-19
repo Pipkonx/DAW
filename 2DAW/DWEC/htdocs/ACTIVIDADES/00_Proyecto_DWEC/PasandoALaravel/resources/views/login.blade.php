@@ -1,23 +1,21 @@
-<?php
-require_once __DIR__ . '/../config/database.php';
-ensure_session();
-$csrf = $_SESSION['csrf_token'];
-?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inicio de sesión</title>
-    <link rel="stylesheet" href="../../public/css/styles.css">
+    <title>Inicio de sesión - DAW Finance</title>
+    <link rel="stylesheet" href="{{ asset('css/styles.css') }}">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="app-url" content="{{ url('/') }}">
 </head>
 <body>
     <header>
-        <h1>Inicio de sesión</h1>
+        <h1>DAW Finance</h1>
     </header>
     <main class="container">
         <form id="loginForm" class="form-card">
-            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf) ?>">
+            @csrf
+            <h2>Inicio de sesión</h2>
             <label for="email">Email</label>
             <input type="email" id="email" name="email" required placeholder="tu@correo.com">
 
@@ -25,10 +23,14 @@ $csrf = $_SESSION['csrf_token'];
             <input type="password" id="password" name="password" required placeholder="••••••••">
 
             <button type="submit" class="btn">Entrar</button>
-            <p class="alt-link">¿No tienes cuenta? <a href="registro.php">Regístrate</a></p>
+            <p class="alt-link">¿No tienes cuenta? <a href="{{ route('registro') }}">Regístrate aquí</a></p>
         </form>
     </main>
 
-    <script type="module" src="../../public/js/main.js"></script>
+    <footer>
+        <p>&copy; 2026 Gestión de Finanzas Personales</p>
+    </footer>
+
+    <script type="module" src="{{ asset('js/main.js') }}"></script>
 </body>
 </html>
