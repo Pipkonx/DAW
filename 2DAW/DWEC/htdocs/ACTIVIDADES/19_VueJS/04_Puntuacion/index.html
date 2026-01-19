@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Puntuaciones de jugadores</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+
+</head>
+
+<body>
+    <div id="div">
+        <h2>Jugador1 : {{jugador1}}</h2>
+        <h2>Jugador2 : {{jugador2}}</h2>
+        <h1>Ganador: {{ganador}}</h1>
+
+        <h3>Contador de victorias</h3>
+        <p>Jugador1: {{ contadorJugador1 }}</p>
+        <p>Jugador2: {{ contadorJugador2 }}</p>
+        <p>Empates: {{ contadorEmpates }}</p>
+
+        <input type="button" v-on:click="jugar" value="Jugar">
+    </div>
+    <script src="utiles.js"></script>
+</body>
+
+</html>
