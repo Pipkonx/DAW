@@ -47,3 +47,23 @@ https://www.parthpatel.net/laravel-8-bootstrap-auth-scaffolding/
 
 doc del proyecto
 https://docs.google.com/document/d/1QZKz1EFeCWT4cnRBDNrUDATO6wG0-0mcnZSEnp1ZjW8/edit?tab=t.0 -->
+
+mailtrap para el tema del correo
+
+
+Pasar de breeze a laravel ui porque es más sencillo
+
+
+Examen santi
+
+Procesar un formulario validando las entradas, mostrando los errores, hacer consultas en una tabla (crud), usar las relaciones que nos trae laravel
+
+relaciones
+validacion
+controlador
+
+nos dara dos tablas con datos relacionadas y tendremos que mostrar la lista , paginarla , filtrarla,
+
+nos dara el modelo de workbench , el esquema de proyecto y nos pondra la imagen
+
+crud usando todas las funciones de laravel y sus relaciones, nos da la base de datos

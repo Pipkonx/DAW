@@ -1,4 +1,5 @@
 <?php
+
 use App\Http\Controllers\C_Auth;
 use App\Http\Controllers\C_Usuarios;
 use App\Http\Controllers\C_Administrador;
@@ -43,4 +44,3 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/operario/tareas/editar', [C_Operario::class, 'actualizar']);
     Route::post('/operario/tareas/eliminar-fichero', [C_Operario::class, 'eliminarFichero']);
 });
-
