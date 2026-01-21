@@ -14,7 +14,6 @@ nos dara el modelo de workbench , el esquema de proyecto y nos pondra la imagen
 
 crud usando todas las funciones de laravel y sus relaciones, nos da la base de datos
 
-
 # login register vista como admin y tablas y demas
 
 ```bash
@@ -185,7 +184,7 @@ public static function form(Form $form): Form
             TextInput::make('name')
                 ->required()
                 ->maxLength(255),
-                
+
             TextInput::make('email')
                 ->email()
                 ->required()
@@ -209,7 +208,7 @@ public static function table(Table $table): Table
             TextColumn::make('name')
                 ->searchable()
                 ->sortable(),
-                
+
             TextColumn::make('email')
                 ->searchable()
                 ->sortable(),
@@ -351,4 +350,39 @@ public static function table(Table $table): Table
 # Prueba final: Ve a tu panel /admin/products, crea un producto nuevo y verás que ahora el primer campo es una lista desplegable con los nombres de tus usuarios. Guía de relaciones en Filament.
 
 ```
+
 ---
+
+Arreglar el login y register para que no se peleen breezer y filament, como usamos filament pasaré todo allí
+comentamos el bloque de dashboard y ponemos el siguiente
+
+```bash
+Route::get('/dashboard', function () {
+    return redirect('/admin');
+})->middleware(['auth', 'verified']);
+```
+
+Y ahora cambiamos los botones para que nos redirijan a /admin entramos a la vista de welcome y cambiamos
+
+```bash
+@if (Route::has('login'))
+            <nav class="flex items-center justify-end gap-4">
+                @auth
+                    <a href="{{ url('/admin') }}"
+                        class="inline-block px-5 py-1.5 dark:text-[#EDEDEC] border-[#19140035] hover:border-[#1915014a] border text-[#1b1b18] dark:border-[#3E3E3A] dark:hover:border-[#62605b] rounded-sm text-sm leading-normal">
+                        Dashboard
+                    </a>
+                @else
+                    <a href="{{ url('/admin/login') }}"
+                        class="inline-block px-5 py-1.5 dark:text-[#EDEDEC] text-[#1b1b18] border border-transparent hover:border-[#19140035] dark:hover:border-[#3E3E3A] rounded-sm text-sm leading-normal">
+                        Log in
+                    </a>
+
+                    <a href="{{ url('/register') }}"
+                        class="inline-block px-5 py-1.5 dark:text-[#EDEDEC] border-[#19140035] hover:border-[#1915014a] border text-[#1b1b18] dark:border-[#3E3E3A] dark:hover:border-[#62605b] rounded-sm text-sm leading-normal">
+                        Register
+                    </a>
+                @endauth
+            </nav>
+        @endif
+```
