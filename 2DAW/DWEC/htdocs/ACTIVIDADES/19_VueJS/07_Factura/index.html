@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>bucle for</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
+</head>
+
+<body>
+    <div id="div">
+        <label for="salida">Cod</label>
+        <input type="number" id='cod' v-model="cod" placeholder="Codigo"><br>
+
+        <label for="descripcion">Descripcion</label>
+        <input type="text" id='descripcion' v-model="descripcion" placeholder="Descripcion"><br>
+
+        <label for="cantidad">Cantidad</label>https://jsonplaceholder.typicode.com
+        <input type="number" id='cantidad' v-model="cantidad" placeholder="Cantidad"><br>
+
+        <label for="precio">Precio</label>
+        <input type="number" id='precio' v-model="precio" placeholder="precio">
+        <label for="precio">€</label><br>
+
+        <button v-on:click="annadir">Añadir</button>
+
+        <table class="table-auto">
+            <tr>
+                <th>Cod</th>
+                <th>Descripcion</th>
+                <th>Cantidad</th>
+                <th>Precio</th>
+                <th>Subtotal</th>
+            </tr>
+            <tr v-for="item in items">
+                <td>{{item.cod}}</td>
+                <td>{{item.descripcion}}</td>
+                <td>{{item.cantidad}}</td>
+                <td>{{item.precio}}</td>
+                <td>{{item.subtotal}}</td>
+            </tr>
+        </table>
+
+    </div>
+    <script src="utiles.js"></script>
+</body>
+
+</html>
+
+<!-- 
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventario con Tailwind</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+</head>
+
+<body class="bg-gray-100 p-8">
+    <div id="div" class="max-w-4xl mx-auto bg-white p-6 rounded-lg shadow-md">
+
+        <h2 class="text-2xl font-bold mb-6 text-gray-800">Registro de Productos</h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Código</label>
+                <input type="number" v-model="cod"
+                    class="w-full mt-1 p-2 border rounded-md focus:ring-blue-500 focus:border-blue-500">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Descripción</label>
+                <input type="text" v-model="descripcion" class="w-full mt-1 p-2 border rounded-md">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Cantidad</label>
+                <input type="number" v-model="cantidad" class="w-full mt-1 p-2 border rounded-md">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Precio (€)</label>
+                <input type="number" v-model="precio" class="w-full mt-1 p-2 border rounded-md">
+            </div>
+        </div>
+
+        <button v-on:click="annadir"
+            class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-300 mb-8">
+            Añadir a la tabla
+        </button>
+
+        <div class="overflow-x-auto">
+            <table class="min-w-full table-auto border-collapse">
+                <thead>
+                    <tr class="bg-gray-200 text-gray-700 uppercase text-sm">
+                        <th class="py-3 px-4 text-left">Cod</th>
+                        <th class="py-3 px-4 text-left">Descripción</th>
+                        <th class="py-3 px-4 text-center">Cant.</th>
+                        <th class="py-3 px-4 text-right">Precio</th>
+                        <th class="py-3 px-4 text-right">Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody class="text-gray-600 text-sm">
+                    <tr v-for="item in items" class="border-b border-gray-200 hover:bg-gray-50">
+                        <td class="py-3 px-4">{{item.cod}}</td>
+                        <td class="py-3 px-4 font-medium">{{item.descripcion}}</td>
+                        <td class="py-3 px-4 text-center">{{item.cantidad}}</td>
+                        <td class="py-3 px-4 text-right">{{item.precio}}€</td>
+                        <td class="py-3 px-4 text-right font-bold text-blue-600">{{item.subtotal}}€</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="utiles.js"></script>
+</body>
+
+</html> -->

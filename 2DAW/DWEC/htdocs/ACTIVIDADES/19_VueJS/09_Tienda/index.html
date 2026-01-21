@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catálogo Simple - daisyUI</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-base-200 p-4 md:p-10">
+
+    <div id="div" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+
+        <div v-for="item in items"
+            class="card bg-base-100 shadow-xl hover:shadow-2xl transition-all border border-base-300">
+            <figure class="px-4 pt-4">
+                <img :src="item.image" :alt="item.title" class="rounded-xl h-48 w-full object-contain bg-white p-2" />
+            </figure>
+            <div class="card-body p-6">
+                <div class="flex justify-between gap-2 items-center">
+                    <h2 class="card-title text-sm leading-tight h-12 overflow-hidden">{{item.title}}</h2>
+                    <div class="badge badge-neutral">#{{item.id}}</div>
+                </div>
+
+                <p class="text-xs text-gray-500 line-clamp-3">{{item.description}}</p>
+
+                <div class="flex items-center justify-between mt-4">
+                    <span class="text-2xl font-bold text-success">{{item.price}} €</span>
+                    <div class="flex flex-col items-end">
+                        <div class="rating rating-xs">
+                            <input type="radio" class="mask mask-star-2 bg-warning" disabled
+                                :checked="item.rating.rate >= 1" />
+                            <span class="text-xs ml-1 font-bold">{{item.rating.rate}}</span>
+                        </div>
+                        <span class="text-[10px] opacity-50">{{item.rating.count}} reviews</span>
+                    </div>
+                </div>
+
+                <div class="card-actions justify-center mt-4 pt-4 border-t border-base-200">
+                    <div class="badge badge-outline badge-md px-4 italic opacity-70">{{item.category}}</div>
+                </div>
+                <hr>
+                <button class="btn btn-error btn-sm text-white" @click="eliminar(item.id)">Borrar</button>
+
+            </div>
+        </div>
+    </div>
+
+    <script src="utiles.js"></script>
+</body>
+
+</html>
+
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>bucle for</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
+</head>
+
+<body>
+    <div id="div" class="overlow-x-auto">
+        <table class="table table-xs">
+            <tr>
+                <th>Id</th>
+                <th>title</th>
+                <th>price</th>
+                <th>description</th>
+                <th>category</th>
+                <th>image</th>
+                <th>rate</th>
+                <th>count</th>
+            </tr>
+            <tr v-for="item in items">
+                <div class="card bg-base-100 w-96 shadow-sm">
+                    <figure>
+                        <img src="https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp"
+                            alt="Shoes" />
+                    </figure>
+                    <div class="card-body">
+                        <h2 class="card-title">Card Title</h2>
+                        <p>A card component has a figure, a body part, and inside body there are title and actions parts
+                        </p>
+                        <div class="card-actions justify-end">
+                            <button class="btn btn-primary">Buy Now</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <td>{{item.id}}</td>
+                <td>{{item.title}}</td>
+                <td>{{item.price}} €</td>
+                <td>{{item.description}}</td>
+                <td>{{item.category}}</td>
+                <td><img :src="item.image"></img></td>
+                <td>{{item.rating.rate}}⭐</td>
+                <td>{{item.rating.count}} reviews</td>
+            </tr>
+        </table>
+
+    </div>
+    <script src="utiles.js"></script>
+</body>
+
+</html> -->
