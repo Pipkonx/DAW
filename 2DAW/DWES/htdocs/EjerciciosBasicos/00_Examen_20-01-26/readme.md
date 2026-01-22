@@ -18,7 +18,8 @@ crud usando todas las funciones de laravel y sus relaciones, nos da la base de d
 
 Primer paso
 ```bash
-composer create-project laravel/laravel:^12.0 proyecto-filament
+composer create-project laravel/laravel:^12.0 proyecto
+cd proyecto-filament
 ```
 En el env tenemos que tner lo siguiente
 ```bash
