@@ -14,59 +14,73 @@ nos dara el modelo de workbench , el esquema de proyecto y nos pondra la imagen
 
 crud usando todas las funciones de laravel y sus relaciones, nos da la base de datos
 
-# login register vista como admin y tablas y demas
+### Login register vista como admin y tablas y demas
 
+Primer paso
 ```bash
-#primer paso
 composer create-project laravel/laravel:^12.0 proyecto-filament
-
-#En el env tenemos que tner lo siguiente
+```
+En el env tenemos que tner lo siguiente
+```bash
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
 DB_PORT=3306
 DB_DATABASE=db_filament
 DB_USERNAME=root
 DB_PASSWORD=
-
-# ahora instalamos lo siuginete
+```
+Ahora instalamos lo siuginete
+```bash
 composer require filament/filament -W
-# y deberia de ir en caso de no ir podemos hacer lo siguiente
+```
+y deberia de ir en caso de no ir podemos hacer lo siguiente
+```bash
 composer require filament/filament -W --ignore-platform-reqs
-
-# Ahora creamos y instalamos lo siguente
+```
+Ahora creamos y instalamos lo siguente
+```bash
 php artisan filament:install --panels
-
-# probamos borrar la version vieja
+```
+Probamos borrar la version vieja
+```bash
 composer remove filament/filament
+```
 
-
-# limpiamos archivos antiguos
+Limpiamos archivos antiguos
+```bash
 del composer.lock
 rmdir /s /q vendor
 composer clear-cache
-
-# entramos en la carpeta de xamp php y buscamos el php.ini y descomentamos el intl y el zip
-# y ahora ejecutamos lo siguiente
+```
+Entramos en la carpeta de xamp php y buscamos el php.ini y descomentamos el intl y el zip
+Y ahora ejecutamos lo siguiente
+```bash
 composer require filament/filament:3.x-dev -W --ignore-platform-reqs
-
-# Y ahora creamos los modelos y migraciones con lo siguiente
+```
+Y ahora creamos los modelos y migraciones con lo siguiente
+```bash
 php artisan filament:install --panels
-# nos preguntara varias cosas la rpimera la dejamos predeterminada a la segunda le damos que no
+```
+Nos preguntara varias cosas la rpimera la dejamos predeterminada a la segunda le damos que no
 
-# hacemos ahora el migrate
+Hacemos ahora el migrate
+```bash
 php artisan migrate
+```
 
-
-# Ahora creamos lo del usuario
+Ahora creamos lo del usuario
+```bash
 php artisan make:filament-user
+```
 
-
-# Ahor pasamos acrear el resource para tener el crud
+Ahora pasamos acrear el resource para tener el crud
+```bash
 php artisan make:filament-resource Product
+```
 
-
-# Abre app/Providers/Filament/AdminPanelProvider.php.
-# Añade la función registration() dentro de panel():
+Abre app/Providers/Filament/AdminPanelProvider.php.
+Añade la función registration() dentro de panel():
+```bash
 public function panel(Panel $panel): Panel
 {
     return $panel
@@ -76,28 +90,33 @@ public function panel(Panel $panel): Panel
         ->registration() // <--- AÑADE ESTA LÍNEA
         ...
 }
+```
 
-# ahora agregamos el starter kit de breezer
+Ahora agregamos el starter kit de breezer
+```bash
 composer require laravel/breeze --dev -W --ignore-platform-reqs
 php artisan breeze:install blade
 php artisan migrate
+```
 
-
-# y por ultimo el
+Y por ultimo el
+```bash
 npm install
 npm run dev
+```
 
-
-
-# todo esto era solo para el auth y tablas pero ahora viene el crud
+Todo esto era solo para el auth y tablas pero ahora viene el crud
+```bash
 php artisan make:filament-resource User
+```
+Y ya podríamos entrar en /login para acceder como un usuario o a /admin/login para las vistas como administrador
 
-# y ya podríamos entrar en /login para acceder como un usuario o a /admin/login para las vistas como administrador
-
-# Si no se muestran es porque nos falta crear el modelo y la migracion
+Si no se muestran es porque nos falta crear el modelo y la migracion
+```bash
 php artisan make:model Product -m
-
-# Ahora tendríamos que entrar a las migracion que acabamos de crear y pegar lo siguiente (xxxx_xx_xx_create_products_table.php)
+```
+Ahora tendríamos que entrar a las migracion que acabamos de crear y pegar lo siguiente (xxxx_xx_xx_create_products_table.php)
+```bash
 public function up(): void
 {
     Schema::create('products', function (Blueprint $table) {
@@ -108,12 +127,15 @@ public function up(): void
         $table->timestamps();
     });
 }
+```
 
-# y luego pegamos
+Y luego pegamos
+```bash
 php artisan migrate
+```
 
-
-# Ahora entramos al modelo de producto en app model product
+Ahora entramos al modelo de producto en app model product
+```bash
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
@@ -126,10 +148,10 @@ class Product extends Model
     // Esto permite que todos los campos se puedan rellenar desde Filament
     protected $guarded = [];
 }
-
-# Ahora vamos a poner los inputs del formulario Abre el archivo app/Filament/Resources/ProductResource.php.
-# Buscamos public static function form(Form $form): Form
-
+```
+Ahora vamos a poner los inputs del formulario Abre el archivo app/Filament/Resources/ProductResource.php.
+Buscamos public static function form(Form $form): Form
+```bash
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 
@@ -155,8 +177,9 @@ public static function form(Form $form): Form
                 ->required(),
         ]);
 }
-
-# Ahora para ver la lista funcion table
+```
+Ahora para ver la lista funcion table
+```bash
 use Filament\Tables\Columns\TextColumn;
 
 // ...
@@ -171,10 +194,11 @@ public static function table(Table $table): Table
         ])
         // ... el resto del código (filters, actions, etc.)
 }
+```
 
-
-# Ahora para ver a los usuarios vamos a modificar el user resource
-# app/Filament/Resources/UserResource.php
+Ahora para ver a los usuarios vamos a modificar el user resource
+app/Filament/Resources/UserResource.php
+```bash
 use Filament\Forms\Components\TextInput;
 
 public static function form(Form $form): Form
@@ -197,8 +221,9 @@ public static function form(Form $form): Form
                 ->maxLength(255),
         ]);
 }
-
-# misma dinámica configuramos la lista de la tabla
+```
+Misma dinámica configuramos la lista de la tabla
+```bash
 use Filament\Tables\Columns\TextColumn;
 
 public static function table(Table $table): Table
@@ -225,20 +250,24 @@ public static function table(Table $table): Table
             \Filament\Tables\Actions\EditAction::make(),
         ]);
 }
+```
 
 # Relaciones
-# Creamos la migracion
+## Creamos la migracion
+```bash
 php artisan make:migration add_user_id_to_products_table
-
-# entramos a la migracion creada database/migrations/xxxx_add_user_id...
+```
+Entramos a la migracion creada database/migrations/xxxx_add_user_id...
+```bash
 public function up(): void
 {
     Schema::table('products', function (Blueprint $table) {
         $table->foreignId('user_id')->constrained()->onDelete('cascade');
     });
 }
-
-# entramos a app/Models/Product.php
+```
+Entramos a app/Models/Product.php
+```bash
 public function user()
 {
     return $this->belongsTo(\App\Models\User::class);
@@ -249,12 +278,12 @@ public function products()
 {
     return $this->hasMany(\App\Models\Product::class);
 }
+```
 
 
 
-
-# Implementar el Select en ProductResource.php
-
+Implementar el Select en ProductResource.php
+```bash
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Select; // No olvides este import arriba
@@ -290,10 +319,11 @@ public static function form(Form $form): Form
                 ->required(),
         ]);
 }
-
+```
 
 
 # Filtro
+```bash
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 
@@ -338,23 +368,21 @@ public static function table(Table $table): Table
             ]),
         ]);
 }
-
-# ¿Qué has logrado con esto para tu examen/ejercicio?
-
-#     Relaciones: Has usado belongsTo y hasMany (Relaciones de Laravel).
-#     CRUD completo: Puedes crear productos asociados a usuarios.
-#     Filtrado: Tienes un botón de embudo en la tabla que permite filtrar productos por el usuario que los creó.
-#     Paginación: Filament la incluye automáticamente al pie de la tabla (verás que pone "Showing 1 to 10...").
-#     Validación: El método ->required() y ->maxLength() del formulario procesan las entradas y muestran errores automáticamente si el usuario se equivoca.
-
-# Prueba final: Ve a tu panel /admin/products, crea un producto nuevo y verás que ahora el primer campo es una lista desplegable con los nombres de tus usuarios. Guía de relaciones en Filament.
-
 ```
+## ¿Qué has logrado con esto para tu examen/ejercicio?
+
+Relaciones: Has usado belongsTo y hasMany (Relaciones de Laravel).
+CRUD completo: Puedes crear productos asociados a usuarios.
+Filtrado: Tienes un botón de embudo en la tabla que permite filtrar productos por el usuario que los creó.
+Paginación: Filament la incluye automáticamente al pie de la tabla (verás que pone "Showing 1 to 10...").
+Validación: El método ->required() y ->maxLength() del formulario procesan las entradas y muestran errores automáticamente si el usuario se equivoca.
+
+Prueba final: Ve a tu panel /admin/products, crea un producto nuevo y verás que ahora el primer campo es una lista desplegable con los nombres de tus usuarios. Guía de relaciones en Filament.
 
 ---
 
-Arreglar el login y register para que no se peleen breezer y filament, como usamos filament pasaré todo allí
-comentamos el bloque de dashboard y ponemos el siguiente
+### Arreglar el login y register para que no se peleen breezer y filament, como usamos filament pasaré todo allí
+Comentamos el bloque de dashboard y ponemos el siguiente
 
 ```bash
 Route::get('/dashboard', function () {
@@ -362,7 +390,7 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified']);
 ```
 
-Y ahora cambiamos los botones para que nos redirijan a /admin entramos a la vista de welcome y cambiamos
+Y ahora cambiamos los botones para que nos redirijan a /admin entramos a la vista de la vista de welcome y cambiamos
 
 ```bash
 @if (Route::has('login'))
