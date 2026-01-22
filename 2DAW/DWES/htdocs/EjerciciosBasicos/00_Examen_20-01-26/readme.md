@@ -29,29 +29,7 @@ DB_DATABASE=db_filament
 DB_USERNAME=root
 DB_PASSWORD=
 ```
-Ahora instalamos lo siuginete
-```bash
-composer require filament/filament -W
-```
-y deberia de ir en caso de no ir podemos hacer lo siguiente
-```bash
-composer require filament/filament -W --ignore-platform-reqs
-```
-Ahora creamos y instalamos lo siguente
-```bash
-php artisan filament:install --panels
-```
-Probamos borrar la version vieja
-```bash
-composer remove filament/filament
-```
 
-Limpiamos archivos antiguos
-```bash
-del composer.lock
-rmdir /s /q vendor
-composer clear-cache
-```
 Entramos en la carpeta de xamp php y buscamos el php.ini y descomentamos el intl y el zip
 Y ahora ejecutamos lo siguiente
 ```bash
