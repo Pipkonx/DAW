@@ -48,7 +48,7 @@ class LibrosResource extends Resource
 
                 // 3. Campo de fecha de publicacion
                 DatePicker::make('fecha_publicacion')
-                    ->format('d/m/Y')
+                    ->displayFormat('d/m/Y')
                     ->timezone('Europe/Madrid')
                     ->label('Fecha de Publicación')
                     ->required()
@@ -61,7 +61,10 @@ class LibrosResource extends Resource
                 // 4. Columna de Usuario (Relación)
                 TextColumn::make('user.name')->label('Autor')->sortable()->searchable(),
                 TextColumn::make('titulo')->sortable()->searchable(),
-                TextColumn::make('fecha_publicacion')->sortable()->searchable(),
+                TextColumn::make('fecha_publicacion')
+                    ->date('d/m/Y')
+                    ->sortable()
+                    ->searchable(),
             ])
             ->filters([
                 // 5. Añadimos el filtro por la relacion
