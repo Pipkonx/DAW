@@ -1,31 +1,35 @@
 # Práctica 2º trimestre
 
 ## Servidor alojamiento web
+
 Se pide las instalación, configuración y puesta en marcha de un servidor que ofrezca servicio de alojamiento web configurable:
 
 Se dará alojamiento a páginas web tanto estáticas como dinámicas con “php”
-Los clientes dispondrán de un directorio de usuario con una página web por defecto. 
-Además contarán con una base de datos sql que podrán administrar con phpmyadmin
-Los clientes podrán acceder mediante ftp para la administración de archivos configurando adecuadamente TLS
-Se habilitará el acceso mediante ssh y sftp. 
-Se automatizará mediante el uso de scripts: 
-La creación de usuarios y del directorio correspondiente para el alojamiento web
-Host virtual en apache
-Creación de usuario del sistema para acceso a ftp, ssh, smtp, …
-Se creará un subdominio en el servidor DNS con las resolución directa e inversa
-Se creará una base de datos además de un usuario con todos los permisos sobre dicha base de datos (ALL PRIVILEGES)
-Se habilitará la ejecución de aplicaciones Python con el servidor web 
+
+- Los clientes dispondrán de un directorio de usuario con una página web por defecto.
+  Además contarán con una base de datos sql que podrán administrar con phpmyadmin
+- Los clientes podrán acceder mediante ftp para la administración de archivos configurando adecuadamente TLS
+  Se habilitará el acceso mediante ssh y sftp.
+- Se automatizará mediante el uso de scripts:
+  - La creación de usuarios y del directorio correspondiente para el alojamiento web
+  - Host virtual en apache
+  - Creación de usuario del sistema para acceso a ftp, ssh, smtp, …
+  - Se creará un subdominio en el servidor DNS con las resolución directa e inversa
+  - Se creará una base de datos además de un usuario con todos los permisos sobre dicha base de datos (ALL PRIVILEGES)
+  - Se habilitará la ejecución de aplicaciones Python con el servidor web
 
 Adicionalmente se podrá incluir:
-Creación mediante mediante Docker de un contenedor DNS y al menos un contenedor que actuará como servidor (web, mysql, ssh,...) Se configurará la red, volúmenes y scripts necesarios para ponerlos en marcha. Este apartado se valorará con hasta el 10% de la nota de la práctica.
+  - Creación mediante mediante Docker de un contenedor DNS y al menos un contenedor que actuará como servidor (web, mysql, ssh,...) Se configurará la red, volúmenes y scripts necesarios para ponerlos en marcha. Este apartado se valorará con hasta el 10% de la nota de la práctica.
 
 El trabajo incluirá una presentación además de los scripts necesarios. A la finalización del trabajo se procederá a una exposición en la que se detallarán los pasos llevados a cabo para la puesta en marcha de la práctica. Se explicarán de forma clara las modificaciones de los ficheros de configuración y los script utilizados.
 
 ## Instrucciones de entrega práctica
+
 Añadir cómo colaborador del repositorio github a https://github.com/jpritin
 Fecha de entrega práctica 1: Se entregará el 30 de abril.
 
 ## Enlaces: Creación mediante script de subdominios
+
 http://bash.cyberciti.biz/domain/create-bind9-domain-zone-configuration-file/
 http://www.freeos.com/guides/lsst/scripts/AddDomain
 https://python-for-system-administrators.readthedocs.io/en/latest/
@@ -36,9 +40,11 @@ https://www.shellscript.sh/index.html //Tutorial de Scripting
 Los ejemplos mostrados a continuación son meramente ilustrativos, quizás sean necesarios algunos “ajustes”.
 
 ## Creación de usuarios mediante Scripts:
+
 https://www.shellscript.sh/functions.html
 
 Creación de subdominio
+
 ```bash
 #!/bin/bash
 #crear_subdominio.sh nombre_subdominio ip
@@ -127,6 +133,3 @@ if [ -f $PATH_AVAILABLE ] ; then
    a2ensite $CONF
 fi
 ```
-
-
-
