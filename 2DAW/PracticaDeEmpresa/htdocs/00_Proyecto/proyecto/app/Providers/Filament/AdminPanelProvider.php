@@ -27,10 +27,9 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
-            ->registration()
         
             ->colors([
-                'primary' => Color::Amber,
+                'primary' => Color::Indigo,
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
@@ -39,8 +38,10 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
-                Widgets\AccountWidget::class,
-                Widgets\FilamentInfoWidget::class,
+                \App\Filament\Widgets\StatsOverview::class,
+                \App\Filament\Widgets\NotaMediaAlumnoWidget::class,
+                \App\Filament\Widgets\AlumnosPorCursoChart::class,
+                \App\Filament\Widgets\EvolucionObservacionesChart::class,
             ])
             ->middleware([
                 EncryptCookies::class,

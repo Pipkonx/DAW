@@ -1,0 +1,95 @@
+<?php
+
+namespace App\Filament\Resources;
+
+use App\Filament\Resources\CapacidadEvaluacionResource\Pages;
+use App\Filament\Resources\CapacidadEvaluacionResource\RelationManagers;
+use App\Models\CapacidadEvaluacion;
+use Filament\Forms;
+use Filament\Forms\Form;
+use Filament\Resources\Resource;
+use Filament\Tables;
+use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
+
+class CapacidadEvaluacionResource extends Resource
+{
+    protected static ?string $model = CapacidadEvaluacion::class;
+
+    protected static ?string $navigationIcon = 'heroicon-o-list-bullet';
+
+    protected static ?string $navigationGroup = 'Configuración Académica';
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        return auth()->user()->isAdmin();
+    }
+
+    public static function form(Form $form): Form
+    {
+        return $form
+            ->schema([
+                Forms\Components\Select::make('criterio_id')
+                    ->relationship('criterio', 'nombre')
+                    ->required(),
+                Forms\Components\TextInput::make('nombre')
+                    ->required()
+                    ->maxLength(255),
+                Forms\Components\Textarea::make('descripcion')
+                    ->columnSpanFull(),
+            ]);
+    }
+
+    public static function table(Table $table): Table
+    {
+        return $table
+            ->columns([
+                Tables\Columns\TextColumn::make('criterio.nombre')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('nombre')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('created_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('updated_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('deleted_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+            ])
+            ->filters([
+                //
+            ])
+            ->actions([
+                Tables\Actions\ViewAction::make(),
+                Tables\Actions\EditAction::make(),
+            ])
+            ->bulkActions([
+                Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\DeleteBulkAction::make(),
+                ]),
+            ]);
+    }
+
+    public static function getRelations(): array
+    {
+        return [
+            //
+        ];
+    }
+
+    public static function getPages(): array
+    {
+        return [
+            'index' => Pages\ListCapacidadEvaluacions::route('/'),
+            'create' => Pages\CreateCapacidadEvaluacion::route('/create'),
+            'view' => Pages\ViewCapacidadEvaluacion::route('/{record}'),
+            'edit' => Pages\EditCapacidadEvaluacion::route('/{record}/edit'),
+        ];
+    }
+}

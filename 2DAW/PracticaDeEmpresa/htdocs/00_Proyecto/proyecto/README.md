@@ -1,66 +1,76 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Sistema de Gestión de Prácticas en Empresa (FCT)
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Este es un sistema integral desarrollado con **Laravel 12** y **Filament PHP 3** para la gestión, seguimiento y evaluación de alumnos en el periodo de Formación en Centros de Trabajo (FCT).
 
-## About Laravel
+## 🚀 Tecnologías Utilizadas
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- **Framework:** Laravel 12.x
+- **Panel Administrativo:** Filament PHP 3.x
+- **Base de Datos:** MySQL / MariaDB
+- **Seguridad:** Spatie Laravel Permission (Roles y Permisos)
+- **Generación de Informes:** Barryvdh Laravel DomPDF
+- **Exportación de Datos:** Filament Excel
+- **Iconos:** Heroicons
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## 🛠️ Instalación
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+Sigue estos pasos para poner en marcha el proyecto en tu entorno local:
 
-## Learning Laravel
+1. **Clonar el repositorio:**
+   ```bash
+   git clone <url-del-repositorio>
+   cd proyecto
+   ```
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+2. **Instalar dependencias de PHP:**
+   ```bash
+   composer install
+   ```
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+3. **Configurar el archivo de entorno:**
+   ```bash
+   cp .env.example .env
+   # Configura tus credenciales de base de datos en el archivo .env
+   ```
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+4. **Generar la clave de la aplicación:**
+   ```bash
+   php artisan key:generate
+   ```
 
-## Laravel Sponsors
+5. **Ejecutar migraciones y seeders:**
+   ```bash
+   php artisan migrate --seed
+   ```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+6. **Instalar dependencias de JS (opcional si usas Vite):**
+   ```bash
+   npm install && npm run dev
+   ```
 
-### Premium Partners
+7. **Iniciar el servidor local:**
+   ```bash
+   php artisan serve
+   ```
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+## 🔐 Credenciales de Acceso (Demo)
 
-## Contributing
+El sistema cuenta con 4 roles predefinidos con diferentes niveles de acceso:
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+| Rol | Email | Contraseña | Descripción |
+| :--- | :--- | :--- | :--- |
+| **Administrador** | `admin@admin.com` | `password` | Control total del sistema y configuración. |
+| **Tutor de Curso** | `tutor.curso@ejemplo.com` | `password` | Gestiona alumnos y observa incidencias de su curso. |
+| **Tutor de Empresa** | `tutor.empresa@ejemplo.com` | `password` | Evalúa alumnos y registra observaciones en su empresa. |
+| **Alumno** | `alumno@ejemplo.com` | `password` | Consulta sus notas, registra incidencias y descarga informes. |
 
-## Code of Conduct
+## 🌟 Características Principales
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+- **Dashboard Dinámico:** Estadísticas y gráficos personalizados según el rol.
+- **Evaluación por Competencias:** Sistema de rúbricas con cálculo automático de nota final.
+- **Gestión de Incidencias:** Flujo de resolución con notificaciones en tiempo real para tutores.
+- **Informes PDF:** Generación automática de informes de seguimiento para alumnos.
+- **Seguridad Robusta:** Políticas de acceso (Policies) y Scopes globales para filtrar datos por rol.
 
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+---
+Desarrollado para el módulo de Proyecto de 2º DAW.
