@@ -25,8 +25,8 @@ class Incidencia extends Model
             $tutorCurso = $alumno->tutorCurso;
 
             $recipients = $admins;
-            if ($tutorCurso) {
-                $recipients->push($tutorCurso);
+            if ($tutorCurso && $tutorCurso->user) {
+                $recipients->push($tutorCurso->user);
             }
 
             Notification::make()

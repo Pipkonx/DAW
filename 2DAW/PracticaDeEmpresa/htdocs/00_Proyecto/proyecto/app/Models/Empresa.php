@@ -19,11 +19,15 @@ class Empresa extends Model
         'nombre',
         'cif',
         'direccion',
+        'localidad',
+        'provincia',
+        'codigo_postal',
         'telefono',
         'email',
+        'web',
         'persona_contacto',
         'sector',
-        'activo',
+        'activa',
         'fecha_creacion',
     ];
 

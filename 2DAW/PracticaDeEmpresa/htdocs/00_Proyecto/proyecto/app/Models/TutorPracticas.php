@@ -23,7 +23,7 @@ class TutorPracticas extends Model
         'dni',
         'email',
         'telefono',
-        'cargo',
+        'puesto',
         'horario',
     ];
 

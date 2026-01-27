@@ -48,6 +48,14 @@ class AlumnoResource extends Resource
                 Forms\Components\Select::make('empresa_id')
                     ->relationship('empresa', 'nombre')
                     ->default(null),
+                Forms\Components\Select::make('tutor_curso_id')
+                    ->relationship('tutorCurso', 'nombre')
+                    ->label('Tutor de Curso')
+                    ->default(null),
+                Forms\Components\Select::make('tutor_practicas_id')
+                    ->relationship('tutorPracticas', 'nombre')
+                    ->label('Tutor de Prácticas')
+                    ->default(null),
             ]);
     }
 

@@ -47,7 +47,7 @@ class EmpresaResource extends Resource
                         Forms\Components\TextInput::make('sector')
                             ->label('Sector de Actividad')
                             ->maxLength(255),
-                        Forms\Components\Toggle::make('activo')
+                        Forms\Components\Toggle::make('activa')
                             ->label('Empresa Activa')
                             ->default(true),
                     ])->columns(2),
@@ -57,6 +57,15 @@ class EmpresaResource extends Resource
                         Forms\Components\TextInput::make('direccion')
                             ->label('Dirección')
                             ->maxLength(255),
+                        Forms\Components\TextInput::make('localidad')
+                            ->label('Localidad')
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('provincia')
+                            ->label('Provincia')
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('codigo_postal')
+                            ->label('Código Postal')
+                            ->maxLength(10),
                         Forms\Components\TextInput::make('telefono')
                             ->label('Teléfono')
                             ->tel()
@@ -64,6 +73,10 @@ class EmpresaResource extends Resource
                         Forms\Components\TextInput::make('email')
                             ->label('Correo Electrónico')
                             ->email()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('web')
+                            ->label('Sitio Web')
+                            ->url()
                             ->maxLength(255),
                         Forms\Components\TextInput::make('persona_contacto')
                             ->label('Persona de Contacto')
@@ -96,7 +109,11 @@ class EmpresaResource extends Resource
                 Tables\Columns\TextColumn::make('persona_contacto')
                     ->label('Contacto')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('activo')
+                Tables\Columns\TextColumn::make('localidad')
+                    ->label('Localidad')
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('activa')
                     ->label('Estado')
                     ->badge()
                     ->color(fn (bool $state): string => $state ? 'success' : 'danger')
@@ -111,8 +128,8 @@ class EmpresaResource extends Resource
                 Tables\Filters\SelectFilter::make('sector')
                     ->label('Filtrar por Sector')
                     ->options(fn () => Empresa::pluck('sector', 'sector')->filter()->toArray()),
-                Tables\Filters\TernaryFilter::make('activo')
-                    ->label('Estado Activo'),
+                Tables\Filters\TernaryFilter::make('activa')
+                    ->label('Estado Activa'),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

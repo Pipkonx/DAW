@@ -12,8 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('empresas', function (Blueprint $table) {
-            $table->boolean('activo')->default(true)->after('sector');
-            $table->timestamp('fecha_creacion')->nullable()->after('activo');
+            $table->string('localidad')->nullable()->after('direccion');
+            $table->string('provincia')->nullable()->after('localidad');
+            $table->string('codigo_postal')->nullable()->after('provincia');
+            $table->string('web')->nullable()->after('email');
+            $table->boolean('activa')->default(true)->after('sector');
+            $table->timestamp('fecha_creacion')->nullable()->after('activa');
         });
 
         Schema::table('cursos', function (Blueprint $table) {
@@ -31,7 +35,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('empresas', function (Blueprint $table) {
-            $table->dropColumn(['activo', 'fecha_creacion']);
+            $table->dropColumn(['localidad', 'provincia', 'codigo_postal', 'web', 'activa', 'fecha_creacion']);
         });
 
         Schema::table('cursos', function (Blueprint $table) {

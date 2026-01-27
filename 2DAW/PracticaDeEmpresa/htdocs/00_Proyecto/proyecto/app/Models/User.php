@@ -8,18 +8,37 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
+use Filament\Models\Contracts\FilamentUser;
+use Filament\Models\Contracts\HasAvatar;
+use Filament\Panel;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * @class User
  * @brief Modelo que representa a un usuario del sistema.
  * 
  * Centraliza la autenticación y las relaciones con los diferentes perfiles
- * de usuario (Alumno, Tutor de Curso, Tutor de Prácticas).
+ * de usuario. Utiliza el trait Notifiable para la gestión de notificaciones.
  */
-class User extends Authenticatable
+class User extends Authenticatable implements HasAvatar
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
+    /**
+     * @brief Trait Notifiable
+     * Esencial para que Filament pueda enviar notificaciones a la base de datos
+     * y mostrarlas en el panel de usuario.
+     */
     use HasFactory, Notifiable, HasRoles;
+
+    /**
+     * @brief Obtiene la URL del avatar para Filament.
+     * 
+     * @return string|null
+     */
+    public function getFilamentAvatarUrl(): ?string
+    {
+        return $this->avatar_url ? Storage::url($this->avatar_url) : null;
+    }
 
     /**
      * @brief Obtiene el nombre del primer rol asignado.
@@ -117,6 +136,7 @@ class User extends Authenticatable
         'email',
         'password',
         'reference_id',
+        'avatar_url',
     ];
 
     /**

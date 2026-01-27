@@ -19,6 +19,8 @@ class Alumno extends Model
         'user_id',
         'curso_id',
         'empresa_id',
+        'tutor_curso_id',
+        'tutor_practicas_id',
         'nombre',
         'apellidos',
         'dni',
@@ -29,7 +31,6 @@ class Alumno extends Model
         'horario',
         'fecha_inicio',
         'fecha_fin',
-        'tutor_empresa_id',
     ];
 
     public function user(): BelongsTo
@@ -47,9 +48,14 @@ class Alumno extends Model
         return $this->belongsTo(Empresa::class);
     }
 
-    public function tutorEmpresa(): BelongsTo
+    public function tutorCurso(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'tutor_empresa_id');
+        return $this->belongsTo(TutorCurso::class);
+    }
+
+    public function tutorPracticas(): BelongsTo
+    {
+        return $this->belongsTo(TutorPracticas::class);
     }
 
     public function observacionesDiarias(): HasMany

@@ -31,7 +31,7 @@ class CapacidadEvaluacionResource extends Resource
         return $form
             ->schema([
                 Forms\Components\Select::make('criterio_id')
-                    ->relationship('criterio', 'nombre')
+                    ->relationship('perteneceACriterio', 'nombre')
                     ->required(),
                 Forms\Components\TextInput::make('nombre')
                     ->required()
@@ -45,7 +45,7 @@ class CapacidadEvaluacionResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('criterio.nombre')
+                Tables\Columns\TextColumn::make('perteneceACriterio.nombre')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('nombre')
                     ->searchable(),
@@ -63,16 +63,28 @@ class CapacidadEvaluacionResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                Tables\Filters\TrashedFilter::make()
+                    ->visible(fn() => auth()->user()->hasRole('admin')),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\RestoreAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\RestoreBulkAction::make(),
+                    Tables\Actions\ForceDeleteBulkAction::make(),
                 ]),
+            ]);
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->withoutGlobalScopes([
+                SoftDeletingScope::class,
             ]);
     }
 

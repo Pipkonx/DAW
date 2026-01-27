@@ -192,7 +192,13 @@ class UserResource extends Resource
                         };
                     }),
             ])
-            ->filters([])
+            ->filters([
+                Tables\Filters\SelectFilter::make('roles')
+                    ->label('Filtrar por Rol')
+                    ->relationship('roles', 'name')
+                    ->multiple()
+                    ->preload(),
+            ])
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make()

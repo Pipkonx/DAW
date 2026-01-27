@@ -21,7 +21,7 @@ class TutorCurso extends Model
         'dni',
         'email',
         'telefono',
-        'especialidad',
+        'departamento',
     ];
 
     public function user(): BelongsTo

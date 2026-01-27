@@ -42,7 +42,7 @@ return new class extends Migration
             $table->string('dni')->nullable();
             $table->string('email')->nullable();
             $table->string('telefono')->nullable();
-            $table->string('especialidad')->nullable();
+            $table->string('departamento')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
@@ -57,7 +57,7 @@ return new class extends Migration
             $table->string('dni')->nullable();
             $table->string('email')->nullable();
             $table->string('telefono')->nullable();
-            $table->string('cargo')->nullable();
+            $table->string('puesto')->nullable();
             $table->string('horario')->nullable();
             $table->timestamps();
             $table->softDeletes();
@@ -69,7 +69,8 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('curso_id')->nullable()->constrained()->onDelete('cascade');
             $table->foreignId('empresa_id')->nullable()->constrained()->onDelete('set null');
-            $table->unsignedBigInteger('tutor_empresa_id')->nullable();
+            $table->foreignId('tutor_curso_id')->nullable()->constrained('tutor_cursos')->onDelete('set null');
+            $table->foreignId('tutor_practicas_id')->nullable()->constrained('tutor_practicas')->onDelete('set null');
             $table->string('nombre')->nullable();
             $table->string('apellidos')->nullable();
             $table->string('dni')->nullable();

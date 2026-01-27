@@ -27,7 +27,9 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
-        
+            ->profile(\App\Filament\Pages\EditProfile::class)
+            ->databaseNotifications()
+            ->databaseNotificationsPolling('30s')
             ->colors([
                 'primary' => Color::Indigo,
             ])
@@ -38,8 +40,9 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
-                \App\Filament\Widgets\StatsOverview::class,
-                \App\Filament\Widgets\NotaMediaAlumnoWidget::class,
+                \App\Filament\Widgets\EstadisticasPersonalizadas::class,
+                \App\Filament\Widgets\AccionesPrincipales::class,
+                \App\Filament\Widgets\CalendarioActividades::class,
                 \App\Filament\Widgets\AlumnosPorCursoChart::class,
                 \App\Filament\Widgets\EvolucionObservacionesChart::class,
             ])
