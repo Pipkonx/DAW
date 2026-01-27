@@ -21,6 +21,10 @@ class CursoResource extends Resource
 
     protected static ?string $navigationGroup = 'Gestión Académica';
 
+    protected static ?string $modelLabel = 'Curso';
+
+    protected static ?string $pluralModelLabel = 'Cursos';
+
     /**
      * @brief Configura el formulario para el recurso Curso.
      * 
@@ -67,6 +71,10 @@ class CursoResource extends Resource
                             ->validationMessages([
                                 'after_or_equal' => 'La fecha de fin no puede ser anterior a la fecha de inicio.',
                             ]),
+                        Forms\Components\Toggle::make('activo')
+                            ->label('Activo')
+                            ->default(true)
+                            ->required(),
                     ])->columns(2),
             ]);
     }
@@ -92,6 +100,10 @@ class CursoResource extends Resource
                 Tables\Columns\TextColumn::make('duracion')
                     ->label('Horas')
                     ->suffix(' h')
+                    ->sortable(),
+                Tables\Columns\IconColumn::make('activo')
+                    ->label('Activo')
+                    ->boolean()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('fecha_inicio')
                     ->label('Inicio')

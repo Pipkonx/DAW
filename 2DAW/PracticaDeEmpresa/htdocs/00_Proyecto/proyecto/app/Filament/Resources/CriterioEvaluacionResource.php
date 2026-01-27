@@ -21,6 +21,10 @@ class CriterioEvaluacionResource extends Resource
 
     protected static ?string $navigationGroup = 'Configuración Académica';
 
+    protected static ?string $modelLabel = 'Criterio';
+
+    protected static ?string $pluralModelLabel = 'Criterios';
+
     public static function form(Form $form): Form
     {
         return $form
@@ -28,6 +32,18 @@ class CriterioEvaluacionResource extends Resource
                 Forms\Components\TextInput::make('nombre')
                     ->required()
                     ->maxLength(255),
+                Forms\Components\TextInput::make('peso')
+                    ->label('Peso (%)')
+                    ->numeric()
+                    ->step(0.01)
+                    ->minValue(0)
+                    ->maxValue(100)
+                    ->suffix('%')
+                    ->nullable(),
+                Forms\Components\Toggle::make('activo')
+                    ->label('Activo')
+                    ->default(true)
+                    ->required(),
                 Forms\Components\Textarea::make('descripcion')
                     ->columnSpanFull(),
             ]);
@@ -39,6 +55,14 @@ class CriterioEvaluacionResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('nombre')
                     ->searchable(),
+                Tables\Columns\TextColumn::make('peso')
+                    ->label('Peso')
+                    ->suffix('%')
+                    ->sortable(),
+                Tables\Columns\IconColumn::make('activo')
+                    ->label('Activo')
+                    ->boolean()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

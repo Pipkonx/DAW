@@ -24,6 +24,10 @@ class AlumnoResource extends Resource
 
     protected static ?string $navigationGroup = 'Gestión Académica';
 
+    protected static ?string $modelLabel = 'Alumno';
+
+    protected static ?string $pluralModelLabel = 'Alumnos';
+
     /**
      * @brief Deshabilita la creación de alumnos desde este recurso.
      * La creación se centraliza en UserResource.
@@ -74,6 +78,11 @@ class AlumnoResource extends Resource
                     ->visible(fn () => auth()->user()->isAdmin()),
             ])
             ->columns([
+                Tables\Columns\ImageColumn::make('user.avatar_url')
+                    ->label('Avatar')
+                    ->circular()
+                    ->disk('public')
+                    ->defaultImageUrl(fn ($record) => 'https://ui-avatars.com/api/?name=' . urlencode($record->user->name) . '&color=FFFFFF&background=111827'),
                 Tables\Columns\TextColumn::make('user.name')
                     ->label('Nombre Alumno')
                     ->searchable()

@@ -37,7 +37,9 @@ class User extends Authenticatable implements HasAvatar
      */
     public function getFilamentAvatarUrl(): ?string
     {
-        return $this->avatar_url ? Storage::url($this->avatar_url) : null;
+        return $this->avatar_url 
+            ? Storage::disk('public')->url($this->avatar_url) 
+            : 'https://ui-avatars.com/api/?name=' . urlencode($this->name) . '&color=FFFFFF&background=111827';
     }
 
     /**
@@ -69,12 +71,12 @@ class User extends Authenticatable implements HasAvatar
     }
 
     /**
-     * @brief Comprueba si el usuario tiene el rol de tutor de empresa.
+     * @brief Comprueba si el usuario tiene el rol de tutor de prácticas.
      * @return bool
      */
-    public function isTutorEmpresa(): bool
+    public function isTutorPracticas(): bool
     {
-        return $this->hasRole('tutor_empresa');
+        return $this->hasRole('tutor_practicas');
     }
 
     /**

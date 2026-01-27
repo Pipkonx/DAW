@@ -15,6 +15,13 @@ class Curso extends Model
         'fecha_inicio',
         'fecha_fin',
         'tutor_curso_id',
+        'activo',
+    ];
+
+    protected $casts = [
+        'fecha_inicio' => 'date',
+        'fecha_fin' => 'date',
+        'activo' => 'boolean',
     ];
 
     /**

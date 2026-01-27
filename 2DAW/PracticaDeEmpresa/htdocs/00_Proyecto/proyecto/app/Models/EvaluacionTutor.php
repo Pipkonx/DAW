@@ -17,6 +17,8 @@ class EvaluacionTutor extends Model
         'tutor_curso_id',
         'nota_final',
         'observaciones_finales',
+        'aspectosPositivos',
+        'aspectosMejorar',
     ];
 
     public function alumno(): BelongsTo

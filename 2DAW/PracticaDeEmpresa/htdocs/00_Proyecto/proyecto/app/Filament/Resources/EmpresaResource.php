@@ -21,6 +21,10 @@ class EmpresaResource extends Resource
 
     protected static ?string $navigationGroup = 'Gestión Académica';
 
+    protected static ?string $modelLabel = 'Empresa';
+
+    protected static ?string $pluralModelLabel = 'Empresas';
+
     /**
      * @brief Configura el formulario para el recurso Empresa.
      * 

@@ -22,6 +22,12 @@ class TutorCurso extends Model
         'email',
         'telefono',
         'departamento',
+        'especialidad',
+        'activo',
+    ];
+
+    protected $casts = [
+        'activo' => 'boolean',
     ];
 
     public function user(): BelongsTo

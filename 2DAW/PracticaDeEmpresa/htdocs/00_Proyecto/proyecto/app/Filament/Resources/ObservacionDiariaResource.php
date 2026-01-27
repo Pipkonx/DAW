@@ -21,6 +21,10 @@ class ObservacionDiariaResource extends Resource
 
     protected static ?string $navigationGroup = 'Gestión Académica';
 
+    protected static ?string $modelLabel = 'Observación Diaria';
+
+    protected static ?string $pluralModelLabel = 'Observaciones Diarias';
+
     public static function form(Form $form): Form
     {
         return $form
@@ -32,13 +36,20 @@ class ObservacionDiariaResource extends Resource
                     ->required(),
                 Forms\Components\DatePicker::make('fecha')
                     ->required(),
-                Forms\Components\TextInput::make('horas')
+                Forms\Components\TextInput::make('horasRealizadas')
+                    ->label('Horas Realizadas')
                     ->required()
                     ->numeric(),
-                Forms\Components\Textarea::make('actividad')
+                Forms\Components\Textarea::make('actividades')
                     ->required()
                     ->columnSpanFull(),
-                Forms\Components\Textarea::make('observaciones')
+                Forms\Components\Textarea::make('explicaciones')
+                    ->columnSpanFull(),
+                Forms\Components\Textarea::make('observacionesAlumno')
+                    ->label('Observaciones Alumno')
+                    ->columnSpanFull(),
+                Forms\Components\Textarea::make('observacionesTutor')
+                    ->label('Observaciones Tutor')
                     ->columnSpanFull(),
             ]);
     }
@@ -54,10 +65,11 @@ class ObservacionDiariaResource extends Resource
                 Tables\Columns\TextColumn::make('fecha')
                     ->date()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('horas')
+                Tables\Columns\TextColumn::make('horasRealizadas')
+                    ->label('Horas')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('actividad')
+                Tables\Columns\TextColumn::make('actividades')
                     ->limit(50)
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')

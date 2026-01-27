@@ -28,48 +28,36 @@ class RolesAndPermissionsSeeder extends Seeder
         ];
 
         foreach ($permissions as $permission) {
-            Permission::create(['name' => $permission]);
+            Permission::firstOrCreate(['name' => $permission]);
         }
 
         // Crear Roles y asignar permisos
-        $admin = Role::create(['name' => 'admin']);
-        $admin->givePermissionTo(Permission::all());
+        $admin = Role::firstOrCreate(['name' => 'admin']);
+        $admin->syncPermissions(Permission::all());
 
-        $tutorCurso = Role::create(['name' => 'tutor_curso']);
-        $tutorCurso->givePermissionTo([
+        $tutorCurso = Role::firstOrCreate(['name' => 'tutor_curso']);
+        $tutorCurso->syncPermissions([
             'gestionar_alumnos',
             'ver_propias_observaciones',
             'evaluar_alumnos',
         ]);
 
-        $tutorEmpresa = Role::create(['name' => 'tutor_empresa']);
-        $tutorEmpresa->givePermissionTo([
+        $tutorPracticas = Role::firstOrCreate(['name' => 'tutor_practicas']);
+        $tutorPracticas->syncPermissions([
             'ver_alumnos_empresa',
             'ver_propias_observaciones',
             'evaluar_alumnos',
         ]);
 
-        $alumno = Role::create(['name' => 'alumno']);
-        $alumno->givePermissionTo([
+        $empresa = Role::firstOrCreate(['name' => 'empresa']);
+        $empresa->syncPermissions([
+            'ver_alumnos_empresa',
+        ]);
+
+        $alumno = Role::firstOrCreate(['name' => 'alumno']);
+        $alumno->syncPermissions([
             'ver_propias_observaciones',
             'crear_observaciones',
         ]);
-
-        // Crear Usuarios de Prueba
-        $this->createUser('Admin User', 'admin@example.com', 'admin', 'admin');
-        $this->createUser('Tutor Curso', 'tutor.curso@example.com', 'tutor_curso', 'password');
-        $this->createUser('Tutor Empresa', 'tutor.empresa@example.com', 'tutor_empresa', 'password');
-        $this->createUser('Alumno Prueba', 'alumno@example.com', 'alumno', 'password');
-    }
-
-    private function createUser($name, $email, $role, $password)
-    {
-        $user = User::factory()->create([
-            'name' => $name,
-            'email' => $email,
-            'password' => Hash::make($password),
-        ]);
-        $user->assignRole($role);
-        return $user;
     }
 }

@@ -20,6 +20,13 @@ class CapacidadEvaluacion extends Model
         'criterio_id',
         'nombre',
         'descripcion',
+        'puntuacion_maxima',
+        'activo',
+    ];
+
+    protected $casts = [
+        'puntuacion_maxima' => 'integer',
+        'activo' => 'boolean',
     ];
 
     /**

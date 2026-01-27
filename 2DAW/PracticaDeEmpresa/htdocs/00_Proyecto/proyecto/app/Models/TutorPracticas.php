@@ -25,6 +25,11 @@ class TutorPracticas extends Model
         'telefono',
         'puesto',
         'horario',
+        'activo',
+    ];
+
+    protected $casts = [
+        'activo' => 'boolean',
     ];
 
     public function user(): BelongsTo

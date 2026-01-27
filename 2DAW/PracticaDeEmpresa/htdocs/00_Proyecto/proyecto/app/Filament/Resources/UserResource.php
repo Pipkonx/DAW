@@ -19,6 +19,10 @@ class UserResource extends Resource
 {
     protected static ?string $model = User::class;
 
+    protected static ?string $modelLabel = 'Usuario';
+
+    protected static ?string $pluralModelLabel = 'Usuarios';
+
     protected static ?string $navigationIcon = 'heroicon-o-users';
 
     public static function shouldRegisterNavigation(): bool
@@ -90,7 +94,7 @@ class UserResource extends Resource
                             ->preload(),
                         Forms\Components\Select::make('datosPerfil.tutor_empresa_id')
                             ->label('Tutor de Empresa')
-                            ->options(User::role('tutor_empresa')->pluck('name', 'id'))
+                            ->options(User::role('tutor_practicas')->pluck('name', 'id'))
                             ->searchable(),
                         Forms\Components\TextInput::make('datosPerfil.duracion_practicas')->label('Duración Prácticas'),
                         Forms\Components\TextInput::make('datosPerfil.horario')->label('Horario'),
@@ -149,6 +153,11 @@ class UserResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\ImageColumn::make('avatar_url')
+                    ->label('Avatar')
+                    ->circular()
+                    ->disk('public')
+                    ->defaultImageUrl(fn ($record) => 'https://ui-avatars.com/api/?name=' . urlencode($record->name) . '&color=FFFFFF&background=111827'),
                 Tables\Columns\TextColumn::make('name')
                     ->label('Nombre')
                     ->searchable()

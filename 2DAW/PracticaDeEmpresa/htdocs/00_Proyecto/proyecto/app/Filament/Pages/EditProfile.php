@@ -18,6 +18,8 @@ use Filament\Pages\Auth\EditProfile as BaseEditProfile;
  */
 class EditProfile extends BaseEditProfile
 {
+    protected static string $layout = 'filament-panels::components.layout.index';
+
     /**
      * @brief Define el formulario de edición de perfil.
      * 
@@ -43,10 +45,11 @@ class EditProfile extends BaseEditProfile
                         FileUpload::make('avatar_url')
                             ->label('Avatar')
                             ->image()
+                            ->disk('public')
                             ->directory('avatars')
                             ->avatar()
                             ->imageEditor()
-                            ->circleHorizontalRule(),
+                            ->circleCropper(),
                     ]),
 
                 Section::make('Información Adicional')

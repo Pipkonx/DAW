@@ -21,6 +21,10 @@ class EvaluacionResource extends Resource
 
     protected static ?string $navigationGroup = 'Gestión Académica';
 
+    protected static ?string $modelLabel = 'Evaluación';
+
+    protected static ?string $pluralModelLabel = 'Evaluaciones';
+
     public static function form(Form $form): Form
     {
         return $form

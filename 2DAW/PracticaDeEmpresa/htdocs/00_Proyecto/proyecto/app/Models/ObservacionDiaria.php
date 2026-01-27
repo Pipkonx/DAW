@@ -15,13 +15,16 @@ class ObservacionDiaria extends Model
     protected $fillable = [
         'alumno_id',
         'fecha',
-        'actividad',
-        'horas',
-        'observaciones',
+        'actividades',
+        'explicaciones',
+        'observacionesAlumno',
+        'observacionesTutor',
+        'horasRealizadas',
     ];
 
     protected $casts = [
         'fecha' => 'date',
+        'horasRealizadas' => 'integer',
     ];
 
     public function alumno(): BelongsTo

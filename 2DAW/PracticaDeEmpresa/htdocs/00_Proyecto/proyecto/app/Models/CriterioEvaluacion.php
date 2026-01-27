@@ -19,6 +19,13 @@ class CriterioEvaluacion extends Model
     protected $fillable = [
         'nombre',
         'descripcion',
+        'peso',
+        'activo',
+    ];
+
+    protected $casts = [
+        'peso' => 'decimal:2',
+        'activo' => 'boolean',
     ];
 
     /**

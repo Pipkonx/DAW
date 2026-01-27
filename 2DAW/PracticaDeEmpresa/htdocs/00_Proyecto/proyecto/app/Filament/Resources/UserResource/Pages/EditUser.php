@@ -52,7 +52,7 @@ class EditUser extends EditRecord
         $data['rol'] = $rol;
 
         // Cargar datos del perfil según el rol y reference_id
-        if ($recordId = $data['reference_id']) {
+        if ($recordId = $this->record->reference_id) {
             $perfil = match ($rol) {
                 'alumno' => \App\Models\Alumno::find($recordId),
                 'tutor_curso' => \App\Models\TutorCurso::find($recordId),

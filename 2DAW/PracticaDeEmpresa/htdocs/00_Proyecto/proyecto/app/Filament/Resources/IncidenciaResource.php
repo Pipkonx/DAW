@@ -21,6 +21,10 @@ class IncidenciaResource extends Resource
 
     protected static ?string $navigationGroup = 'Gestión Académica';
 
+    protected static ?string $modelLabel = 'Incidencia';
+
+    protected static ?string $pluralModelLabel = 'Incidencias';
+
     public static function form(Form $form): Form
     {
         return $form
@@ -30,53 +34,43 @@ class IncidenciaResource extends Resource
                         Forms\Components\Select::make('alumno_id')
                             ->relationship('alumno', 'id')
                             ->getOptionLabelFromRecordUsing(fn ($record) => $record->user->name)
-                            ->options(function () {
-                                $user = auth()->user();
-                                if ($user->isAdmin() || $user->isTutorCurso()) {
-                                    return \App\Models\Alumno::all()->pluck('user.name', 'id');
-                                }
-                                if ($user->isTutorEmpresa()) {
-                                    return \App\Models\Alumno::where('empresa_id', $user->empresa_id)
-                                        ->get()
-                                        ->pluck('user.name', 'id');
-                                }
-                                return [];
-                            })
                             ->searchable()
                             ->required(),
-                        Forms\Components\TextInput::make('titulo')
+                        Forms\Components\Select::make('tutor_practicas_id')
+                            ->relationship('tutorPracticas', 'id')
+                            ->getOptionLabelFromRecordUsing(fn ($record) => $record->user->name)
+                            ->searchable()
+                            ->nullable(),
+                        Forms\Components\DatePicker::make('fecha')
                             ->required()
-                            ->maxLength(255),
+                            ->default(now()),
+                        Forms\Components\Select::make('tipo')
+                            ->options([
+                                'FALTA' => 'Falta',
+                                'RETRASO' => 'Retraso',
+                                'PROBLEMA_ACTITUD' => 'Problema de Actitud',
+                                'OTROS' => 'Otros',
+                            ])
+                            ->required(),
                         Forms\Components\Textarea::make('descripcion')
                             ->required()
                             ->columnSpanFull(),
                         Forms\Components\Select::make('estado')
                             ->options([
-                                'abierta' => 'Abierta',
-                                'en proceso' => 'En Proceso',
-                                'resuelta' => 'Resuelta',
+                                'ABIERTA' => 'Abierta',
+                                'EN_PROCESO' => 'En Proceso',
+                                'RESUELTA' => 'Resuelta',
                             ])
-                            ->default('abierta')
-                            ->required(),
-                        Forms\Components\Select::make('prioridad')
-                            ->options([
-                                'baja' => 'Baja',
-                                'media' => 'Media',
-                                'alta' => 'Alta',
-                            ])
-                            ->default('media')
+                            ->default('ABIERTA')
                             ->required(),
                     ])->columns(2),
 
                 Forms\Components\Section::make('Resolución')
                     ->schema([
-                        Forms\Components\DateTimePicker::make('fecha_resolucion')
-                            ->disabled(),
-                        Forms\Components\Textarea::make('explicacion_resolucion')
-                            ->disabled()
+                        Forms\Components\DateTimePicker::make('fecha_resolucion'),
+                        Forms\Components\Textarea::make('resolucion')
                             ->columnSpanFull(),
-                    ])
-                    ->visible(fn ($record) => $record && $record->estado === 'resuelta'),
+                    ]),
             ]);
     }
 
@@ -88,16 +82,25 @@ class IncidenciaResource extends Resource
                     ->label('Alumno')
                     ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('titulo')
+                Tables\Columns\TextColumn::make('tutorPracticas.user.name')
+                    ->label('Tutor Prácticas')
+                    ->sortable()
                     ->searchable(),
+                Tables\Columns\TextColumn::make('fecha')
+                    ->date()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('tipo')
+                    ->searchable()
+                    ->badge(),
                 Tables\Columns\TextColumn::make('estado')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
-                        'abierta' => 'danger',
-                        'en proceso' => 'warning',
-                        'resuelta' => 'success',
+                        'ABIERTA' => 'danger',
+                        'EN_PROCESO' => 'warning',
+                        'RESUELTA' => 'success',
+                        default => 'gray',
                     }),
-                Tables\Columns\TextColumn::make('prioridad')
+                Tables\Columns\TextColumn::make('created_at')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
                         'baja' => 'info',
@@ -111,9 +114,9 @@ class IncidenciaResource extends Resource
             ->filters([
                 Tables\Filters\SelectFilter::make('estado')
                     ->options([
-                        'abierta' => 'Abierta',
-                        'en proceso' => 'En Proceso',
-                        'resuelta' => 'Resuelta',
+                        'ABIERTA' => 'Abierta',
+                        'EN_PROCESO' => 'En Proceso',
+                        'RESUELTA' => 'Resuelta',
                     ]),
             ])
             ->actions([

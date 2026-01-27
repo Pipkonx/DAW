@@ -31,7 +31,7 @@ class Incidencia extends Model
 
             Notification::make()
                 ->title('Nueva incidencia de ' . $nombreAlumno)
-                ->body('Se ha registrado una nueva incidencia: ' . $incidencia->titulo)
+                ->body('Se ha registrado una nueva incidencia de tipo: ' . $incidencia->tipo)
                 ->danger()
                 ->icon('heroicon-o-exclamation-triangle')
                 ->sendToDatabase($recipients);
@@ -40,16 +40,27 @@ class Incidencia extends Model
 
     protected $fillable = [
         'alumno_id',
-        'titulo',
+        'tutor_practicas_id',
+        'fecha',
+        'tipo',
         'descripcion',
+        'resolucion',
         'estado',
-        'prioridad',
         'fecha_resolucion',
-        'explicacion_resolucion',
+    ];
+
+    protected $casts = [
+        'fecha' => 'date',
+        'fecha_resolucion' => 'datetime',
     ];
 
     public function alumno(): BelongsTo
     {
         return $this->belongsTo(Alumno::class);
+    }
+
+    public function tutorPracticas(): BelongsTo
+    {
+        return $this->belongsTo(TutorPracticas::class);
     }
 }

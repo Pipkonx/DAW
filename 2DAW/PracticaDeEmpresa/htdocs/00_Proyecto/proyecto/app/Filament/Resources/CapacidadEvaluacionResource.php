@@ -21,6 +21,10 @@ class CapacidadEvaluacionResource extends Resource
 
     protected static ?string $navigationGroup = 'Configuración Académica';
 
+    protected static ?string $modelLabel = 'Capacidad';
+
+    protected static ?string $pluralModelLabel = 'Capacidades';
+
     public static function shouldRegisterNavigation(): bool
     {
         return auth()->user()->isAdmin();
@@ -36,6 +40,15 @@ class CapacidadEvaluacionResource extends Resource
                 Forms\Components\TextInput::make('nombre')
                     ->required()
                     ->maxLength(255),
+                Forms\Components\TextInput::make('puntuacion_maxima')
+                    ->label('Puntuación Máxima')
+                    ->numeric()
+                    ->default(10)
+                    ->required(),
+                Forms\Components\Toggle::make('activo')
+                    ->label('Activo')
+                    ->default(true)
+                    ->required(),
                 Forms\Components\Textarea::make('descripcion')
                     ->columnSpanFull(),
             ]);
@@ -49,6 +62,14 @@ class CapacidadEvaluacionResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('nombre')
                     ->searchable(),
+                Tables\Columns\TextColumn::make('puntuacion_maxima')
+                    ->label('Max. Puntos')
+                    ->numeric()
+                    ->sortable(),
+                Tables\Columns\IconColumn::make('activo')
+                    ->label('Activo')
+                    ->boolean()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
