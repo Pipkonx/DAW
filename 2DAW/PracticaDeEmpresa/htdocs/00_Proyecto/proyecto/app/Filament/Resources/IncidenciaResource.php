@@ -35,12 +35,12 @@ class IncidenciaResource extends Resource
                     ->schema([
                         Forms\Components\Select::make('alumno_id')
                             ->relationship('alumno', 'id')
-                            ->getOptionLabelFromRecordUsing(fn ($record) => $record->user->name)
+                            ->getOptionLabelFromRecordUsing(fn ($record) => $record->user?->name ?? 'Alumno sin usuario')
                             ->searchable()
                             ->required(),
                         Forms\Components\Select::make('tutor_practicas_id')
                             ->relationship('tutorPracticas', 'id')
-                            ->getOptionLabelFromRecordUsing(fn ($record) => $record->user->name)
+                            ->getOptionLabelFromRecordUsing(fn ($record) => $record->user?->name ?? 'Tutor sin usuario')
                             ->searchable()
                             ->nullable(),
                         Forms\Components\DatePicker::make('fecha')
@@ -135,14 +135,14 @@ class IncidenciaResource extends Resource
                             'fecha_resolucion' => now(),
                             'resolucion' => $data['resolucion'],
                         ]);
-
+                    })
+                    ->successNotification(fn (Incidencia $record) => 
                         Notification::make()
                             ->success()
                             ->title('Incidencia resuelta')
-                            ->body("La incidencia del alumno {$record->alumno->user->name} ha sido marcada como resuelta.")
+                            ->body("La incidencia del alumno " . ($record->alumno?->user?->name ?? 'desconocido') . " ha sido marcada como resuelta.")
                             ->sendToDatabase(\Filament\Facades\Filament::auth()->user())
-                            ->send();
-                    })
+                    )
                     ->modalHeading('Resolver Incidencia')
                     ->modalDescription('Por favor, indica cómo se ha resuelto la incidencia.')
                     ->modalSubmitActionLabel('Confirmar Resolución'),

@@ -18,20 +18,21 @@ class EditUser extends EditRecord
 {
     protected static string $resource = UserResource::class;
 
+    protected function getSavedNotification(): ?Notification
+    {
+        return Notification::make()
+            ->success()
+            ->title('Usuario actualizado')
+            ->body("Los datos del usuario {$this->record->name} han sido actualizados.")
+            ->sendToDatabase(\Filament\Facades\Filament::auth()->user());
+    }
+
     /**
      * @brief Lógica ejecutada después de guardar el usuario.
      */
     protected function afterSave(): void
     {
-        // 1. Notificación
-        Notification::make()
-            ->success()
-            ->title('Usuario actualizado')
-            ->body("Los datos del usuario {$this->record->name} han sido actualizados.")
-            ->sendToDatabase(\Filament\Facades\Filament::auth()->user())
-            ->send();
-
-        // 2. Actualizar perfil relacionado (lógica original)
+        // Actualizar perfil relacionado (lógica original)
         $data = $this->form->getRawState();
         $usuario = $this->record;
         $rol = $data['rol'] ?? null;

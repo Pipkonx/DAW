@@ -16,14 +16,13 @@ class EditEvaluacion extends EditRecord
 {
     protected static string $resource = EvaluacionResource::class;
 
-    protected function afterSave(): void
+    protected function getSavedNotification(): ?Notification
     {
-        Notification::make()
+        return Notification::make()
             ->success()
             ->title('Evaluación actualizada')
             ->body("Los datos de la evaluación han sido actualizados.")
-            ->sendToDatabase(\Filament\Facades\Filament::auth()->user())
-            ->send();
+            ->sendToDatabase(\Filament\Facades\Filament::auth()->user());
     }
 
     /**

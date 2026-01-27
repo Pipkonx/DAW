@@ -56,7 +56,7 @@ class CalendarioActividades extends Widget
         $observaciones = $queryObservaciones->get();
         foreach ($observaciones as $obs) {
             $eventos[] = [
-                'titulo' => ($rol === 'alumno' ? 'Actividad: ' : 'Alumno ' . $obs->alumno->user->name . ': ') . $obs->actividad,
+                'titulo' => ($rol === 'alumno' ? 'Actividad: ' : 'Alumno ' . ($obs->alumno?->user?->name ?? 'desconocido') . ': ') . $obs->actividad,
                 'fecha' => $obs->fecha->format('Y-m-d'),
                 'tipo' => 'actividad',
                 'color' => 'info',

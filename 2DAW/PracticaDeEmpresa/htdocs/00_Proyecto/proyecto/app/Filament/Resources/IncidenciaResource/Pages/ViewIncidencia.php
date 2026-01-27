@@ -32,14 +32,14 @@ class ViewIncidencia extends ViewRecord
                         'fecha_resolucion' => now(),
                         'resolucion' => $data['resolucion'],
                     ]);
-
+                })
+                ->successNotification(fn (Incidencia $record) => 
                     Notification::make()
                         ->success()
                         ->title('Incidencia resuelta')
-                        ->body("La incidencia del alumno {$record->alumno->user->name} ha sido marcada como resuelta.")
+                        ->body("La incidencia del alumno " . ($record->alumno?->user?->name ?? 'desconocido') . " ha sido marcada como resuelta.")
                         ->sendToDatabase(\Filament\Facades\Filament::auth()->user())
-                        ->send();
-                })
+                )
                 ->modalHeading('Resolver Incidencia')
                 ->modalDescription('Por favor, indica cómo se ha resuelto la incidencia.')
                 ->modalSubmitActionLabel('Confirmar Resolución'),

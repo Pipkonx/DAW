@@ -9,6 +9,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Filament\Notifications\Notification;
 use Illuminate\Support\Facades\Hash;
 
 /**
@@ -214,11 +215,11 @@ class UserResource extends Resource
                     ->before(function (User $record) {
                         self::borrarPerfilRelacionado($record);
                     })
-                    ->successNotification(
+                    ->successNotification(fn (User $record) => 
                         Notification::make()
                             ->success()
                             ->title('Usuario eliminado')
-                            ->body(fn (User $record) => "El usuario {$record->name} ha sido eliminado correctamente.")
+                            ->body("El usuario {$record->name} ha sido eliminado correctamente.")
                             ->sendToDatabase(\Filament\Facades\Filament::auth()->user())
                     ),
             ])

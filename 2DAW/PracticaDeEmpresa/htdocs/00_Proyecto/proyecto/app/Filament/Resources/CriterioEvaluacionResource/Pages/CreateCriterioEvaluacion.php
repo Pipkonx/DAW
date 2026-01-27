@@ -15,14 +15,13 @@ class CreateCriterioEvaluacion extends CreateRecord
 {
     protected static string $resource = CriterioEvaluacionResource::class;
 
-    protected function afterCreate(): void
+    protected function getCreatedNotification(): ?Notification
     {
-        Notification::make()
+        return Notification::make()
             ->success()
             ->title('Criterio registrado')
             ->body("El criterio de evaluación ha sido registrado correctamente.")
-            ->sendToDatabase(\Filament\Facades\Filament::auth()->user())
-            ->send();
+            ->sendToDatabase(\Filament\Facades\Filament::auth()->user());
     }
 
     /**

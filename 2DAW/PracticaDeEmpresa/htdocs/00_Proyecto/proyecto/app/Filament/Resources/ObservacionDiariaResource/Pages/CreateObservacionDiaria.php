@@ -15,14 +15,13 @@ class CreateObservacionDiaria extends CreateRecord
 {
     protected static string $resource = ObservacionDiariaResource::class;
 
-    protected function afterCreate(): void
+    protected function getCreatedNotification(): ?Notification
     {
-        Notification::make()
+        return Notification::make()
             ->success()
             ->title('Observación diaria registrada')
-            ->body("Se ha registrado una nueva observación para el alumno {$this->record->alumno->user->name}.")
-            ->sendToDatabase(\Filament\Facades\Filament::auth()->user())
-            ->send();
+            ->body("Se ha registrado una nueva observación para el alumno " . ($this->record->alumno?->user?->name ?? 'desconocido') . ".")
+            ->sendToDatabase(\Filament\Facades\Filament::auth()->user());
     }
 
     /**

@@ -16,14 +16,13 @@ class EditCapacidadEvaluacion extends EditRecord
 {
     protected static string $resource = CapacidadEvaluacionResource::class;
 
-    protected function afterSave(): void
+    protected function getSavedNotification(): ?Notification
     {
-        Notification::make()
+        return Notification::make()
             ->success()
             ->title('Capacidad actualizada')
             ->body("Los datos de la capacidad han sido actualizados.")
-            ->sendToDatabase(\Filament\Facades\Filament::auth()->user())
-            ->send();
+            ->sendToDatabase(\Filament\Facades\Filament::auth()->user());
     }
 
     /**

@@ -19,19 +19,4 @@ class ListAlumnos extends ListRecords
             Actions\CreateAction::make(),
         ];
     }
-
-    protected function getTableActions(): array
-    {
-        return [
-            Tables\Actions\DeleteAction::make()
-                ->after(function ($record) {
-                    Notification::make()
-                        ->warning()
-                        ->title('Alumno eliminado')
-                        ->body("El alumno {$record->user->name} ha sido eliminado del sistema.")
-                        ->sendToDatabase(\Filament\Facades\Filament::auth()->user())
-                        ->send();
-                }),
-        ];
-    }
 }

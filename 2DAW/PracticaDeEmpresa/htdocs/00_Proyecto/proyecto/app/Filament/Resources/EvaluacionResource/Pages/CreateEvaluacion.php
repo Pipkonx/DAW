@@ -15,14 +15,13 @@ class CreateEvaluacion extends CreateRecord
 {
     protected static string $resource = EvaluacionResource::class;
 
-    protected function afterCreate(): void
+    protected function getCreatedNotification(): ?Notification
     {
-        Notification::make()
+        return Notification::make()
             ->success()
             ->title('Evaluación registrada')
-            ->body("Se ha registrado una nueva evaluación para el alumno {$this->record->alumno->user->name}.")
-            ->sendToDatabase(\Filament\Facades\Filament::auth()->user())
-            ->send();
+            ->body("Se ha registrado una nueva evaluación para el alumno " . ($this->record->alumno?->user?->name ?? 'desconocido') . ".")
+            ->sendToDatabase(\Filament\Facades\Filament::auth()->user());
     }
 
     /**

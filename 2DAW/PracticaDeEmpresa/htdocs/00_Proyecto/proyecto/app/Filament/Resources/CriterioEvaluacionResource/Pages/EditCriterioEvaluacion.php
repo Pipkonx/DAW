@@ -16,14 +16,13 @@ class EditCriterioEvaluacion extends EditRecord
 {
     protected static string $resource = CriterioEvaluacionResource::class;
 
-    protected function afterSave(): void
+    protected function getSavedNotification(): ?Notification
     {
-        Notification::make()
+        return Notification::make()
             ->success()
             ->title('Criterio actualizado')
             ->body("Los datos del criterio han sido actualizados.")
-            ->sendToDatabase(\Filament\Facades\Filament::auth()->user())
-            ->send();
+            ->sendToDatabase(\Filament\Facades\Filament::auth()->user());
     }
 
     /**

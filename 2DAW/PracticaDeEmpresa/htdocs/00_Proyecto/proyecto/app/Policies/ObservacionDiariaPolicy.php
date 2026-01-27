@@ -52,11 +52,11 @@ class ObservacionDiariaPolicy
         }
 
         if ($user->isTutorPracticas()) {
-            return $user->id === $observacion->alumno->tutorPracticas->user_id;
+            return $user->id === ($observacion->alumno?->tutorPracticas?->user_id ?? null);
         }
 
         if ($user->isAlumno()) {
-            return $observacion->alumno->user_id === $user->id;
+            return ($observacion->alumno?->user_id ?? null) === $user->id;
         }
 
         return false;

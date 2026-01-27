@@ -15,14 +15,13 @@ class CreateCurso extends CreateRecord
 {
     protected static string $resource = CursoResource::class;
 
-    protected function afterCreate(): void
+    protected function getCreatedNotification(): ?Notification
     {
-        Notification::make()
+        return Notification::make()
             ->success()
             ->title('Curso creado')
             ->body("El curso {$this->record->nombre} ha sido creado correctamente.")
-            ->sendToDatabase(\Filament\Facades\Filament::auth()->user())
-            ->send();
+            ->sendToDatabase(\Filament\Facades\Filament::auth()->user());
     }
 
     /**

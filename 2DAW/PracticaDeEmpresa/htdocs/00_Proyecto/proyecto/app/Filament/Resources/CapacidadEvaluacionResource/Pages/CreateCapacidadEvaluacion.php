@@ -15,14 +15,13 @@ class CreateCapacidadEvaluacion extends CreateRecord
 {
     protected static string $resource = CapacidadEvaluacionResource::class;
 
-    protected function afterCreate(): void
+    protected function getCreatedNotification(): ?Notification
     {
-        Notification::make()
+        return Notification::make()
             ->success()
             ->title('Capacidad registrada')
             ->body("La capacidad de evaluación ha sido registrada correctamente.")
-            ->sendToDatabase(\Filament\Facades\Filament::auth()->user())
-            ->send();
+            ->sendToDatabase(\Filament\Facades\Filament::auth()->user());
     }
 
     /**

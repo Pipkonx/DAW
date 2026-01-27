@@ -16,14 +16,13 @@ class EditAlumno extends EditRecord
 {
     protected static string $resource = AlumnoResource::class;
 
-    protected function afterSave(): void
+    protected function getSavedNotification(): ?Notification
     {
-        Notification::make()
+        return Notification::make()
             ->success()
             ->title('Alumno actualizado')
-            ->body("Los datos del alumno {$this->record->user->name} han sido actualizados.")
-            ->sendToDatabase(\Filament\Facades\Filament::auth()->user())
-            ->send();
+            ->body("Los datos del alumno " . ($this->record->user?->name ?? 'desconocido') . " han sido actualizados.")
+            ->sendToDatabase(\Filament\Facades\Filament::auth()->user());
     }
 
     /**

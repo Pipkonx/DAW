@@ -16,14 +16,13 @@ class EditCurso extends EditRecord
 {
     protected static string $resource = CursoResource::class;
 
-    protected function afterSave(): void
+    protected function getSavedNotification(): ?Notification
     {
-        Notification::make()
+        return Notification::make()
             ->success()
             ->title('Curso actualizado')
             ->body("Los datos del curso {$this->record->nombre} han sido actualizados.")
-            ->sendToDatabase(\Filament\Facades\Filament::auth()->user())
-            ->send();
+            ->sendToDatabase(\Filament\Facades\Filament::auth()->user());
     }
 
     /**

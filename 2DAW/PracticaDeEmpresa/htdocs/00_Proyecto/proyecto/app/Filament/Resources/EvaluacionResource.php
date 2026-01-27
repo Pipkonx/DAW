@@ -10,6 +10,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Filament\Notifications\Notification;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
@@ -33,7 +34,7 @@ class EvaluacionResource extends Resource
                     ->schema([
                         Forms\Components\Select::make('alumno_id')
                             ->relationship('alumno', 'id')
-                            ->getOptionLabelFromRecordUsing(fn ($record) => $record->user->name)
+                            ->getOptionLabelFromRecordUsing(fn ($record) => $record->user?->name ?? 'Alumno sin usuario')
                             ->options(function () {
                                 $user = auth()->user();
                                 if ($user->isAdmin() || $user->isTutorCurso()) {
@@ -52,7 +53,7 @@ class EvaluacionResource extends Resource
                             ->required(),
                         Forms\Components\Select::make('tutor_practicas_id')
                             ->relationship('tutorPracticas', 'id')
-                            ->getOptionLabelFromRecordUsing(fn ($record) => $record->user->name)
+                            ->getOptionLabelFromRecordUsing(fn ($record) => $record->user?->name ?? 'Tutor sin usuario')
                             ->default(function () {
                                 $user = auth()->user();
                                 if ($user->isTutorPracticas()) {
@@ -121,7 +122,7 @@ class EvaluacionResource extends Resource
             ->filters([
                 Tables\Filters\SelectFilter::make('alumno')
                     ->relationship('alumno', 'id')
-                    ->getOptionLabelFromRecordUsing(fn ($record) => $record->user->name),
+                    ->getOptionLabelFromRecordUsing(fn ($record) => $record->user?->name ?? 'Alumno sin usuario'),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

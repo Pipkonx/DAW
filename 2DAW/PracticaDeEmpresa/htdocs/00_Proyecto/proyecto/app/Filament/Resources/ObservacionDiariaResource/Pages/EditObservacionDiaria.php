@@ -16,14 +16,13 @@ class EditObservacionDiaria extends EditRecord
 {
     protected static string $resource = ObservacionDiariaResource::class;
 
-    protected function afterSave(): void
+    protected function getSavedNotification(): ?Notification
     {
-        Notification::make()
+        return Notification::make()
             ->success()
             ->title('Observación diaria actualizada')
             ->body("Los datos de la observación diaria han sido actualizados.")
-            ->sendToDatabase(\Filament\Facades\Filament::auth()->user())
-            ->send();
+            ->sendToDatabase(\Filament\Facades\Filament::auth()->user());
     }
 
     /**

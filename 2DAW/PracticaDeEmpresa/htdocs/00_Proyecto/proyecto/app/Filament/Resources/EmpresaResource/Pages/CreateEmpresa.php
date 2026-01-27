@@ -15,14 +15,13 @@ class CreateEmpresa extends CreateRecord
 {
     protected static string $resource = EmpresaResource::class;
 
-    protected function afterCreate(): void
+    protected function getCreatedNotification(): ?Notification
     {
-        Notification::make()
+        return Notification::make()
             ->success()
             ->title('Empresa registrada')
             ->body("La empresa {$this->record->nombre} ha sido registrada correctamente.")
-            ->sendToDatabase(\Filament\Facades\Filament::auth()->user())
-            ->send();
+            ->sendToDatabase(\Filament\Facades\Filament::auth()->user());
     }
 
     /**

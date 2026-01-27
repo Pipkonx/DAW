@@ -19,18 +19,4 @@ class ListObservacionDiarias extends ListRecords
             Actions\CreateAction::make(),
         ];
     }
-
-    protected function getTableActions(): array
-    {
-        return [
-            Tables\Actions\DeleteAction::make()
-                ->after(function ($record) {
-                    Notification::make()
-                        ->warning()
-                        ->title('Observación diaria eliminada')
-                        ->body("Se ha eliminado la observación del alumno {$record->alumno->user->name}.")
-                        ->sendToDatabase(auth()->user());
-                }),
-        ];
-    }
 }

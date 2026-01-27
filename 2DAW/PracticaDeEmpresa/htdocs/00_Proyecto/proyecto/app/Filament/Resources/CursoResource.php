@@ -10,6 +10,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Filament\Notifications\Notification;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
@@ -120,11 +121,11 @@ class CursoResource extends Resource
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make()
-                    ->successNotification(
+                    ->successNotification(fn (Curso $record) => 
                         \Filament\Notifications\Notification::make()
                             ->success()
                             ->title('Curso eliminado')
-                            ->body(fn (Curso $record) => "El curso {$record->nombre} ha sido eliminado correctamente.")
+                            ->body("El curso {$record->nombre} ha sido eliminado correctamente.")
                             ->sendToDatabase(\Filament\Facades\Filament::auth()->user())
                     ),
             ])

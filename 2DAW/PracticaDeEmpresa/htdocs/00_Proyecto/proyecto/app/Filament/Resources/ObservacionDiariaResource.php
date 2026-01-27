@@ -10,6 +10,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Filament\Notifications\Notification;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
@@ -31,7 +32,7 @@ class ObservacionDiariaResource extends Resource
             ->schema([
                 Forms\Components\Select::make('alumno_id')
                     ->relationship('alumno', 'id')
-                    ->getOptionLabelFromRecordUsing(fn ($record) => $record->user->name)
+                    ->getOptionLabelFromRecordUsing(fn ($record) => $record->user?->name ?? 'Alumno sin usuario')
                     ->searchable(['user.name'])
                     ->required(),
                 Forms\Components\DatePicker::make('fecha')
@@ -80,7 +81,7 @@ class ObservacionDiariaResource extends Resource
             ->filters([
                 Tables\Filters\SelectFilter::make('alumno')
                     ->relationship('alumno', 'id')
-                    ->getOptionLabelFromRecordUsing(fn ($record) => $record->user->name),
+                    ->getOptionLabelFromRecordUsing(fn ($record) => $record->user?->name ?? 'Alumno sin usuario'),
                 Tables\Filters\Filter::make('fecha')
                     ->form([
                         Forms\Components\DatePicker::make('desde'),

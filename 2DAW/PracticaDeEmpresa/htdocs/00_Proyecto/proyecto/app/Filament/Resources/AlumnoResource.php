@@ -10,6 +10,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Filament\Notifications\Notification;
 use Barryvdh\DomPDF\Facade\Pdf;
 use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
 use pxlrbt\FilamentExcel\Exports\ExcelExport;
@@ -82,7 +83,7 @@ class AlumnoResource extends Resource
                     ->label('Avatar')
                     ->circular()
                     ->disk('public')
-                    ->defaultImageUrl(fn ($record) => 'https://ui-avatars.com/api/?name=' . urlencode($record->user->name) . '&color=FFFFFF&background=111827'),
+                    ->defaultImageUrl(fn ($record) => 'https://ui-avatars.com/api/?name=' . urlencode($record->user?->name ?? 'Usuario') . '&color=FFFFFF&background=111827'),
                 Tables\Columns\TextColumn::make('user.name')
                     ->label('Nombre Alumno')
                     ->searchable()
@@ -120,11 +121,11 @@ class AlumnoResource extends Resource
                     }),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make()
-                    ->successNotification(
+                    ->successNotification(fn (Alumno $record) => 
                         Notification::make()
                             ->success()
                             ->title('Alumno eliminado')
-                            ->body(fn (Alumno $record) => "El registro del alumno {$record->user->name} ha sido eliminado correctamente.")
+                            ->body("El registro del alumno " . ($record->user?->name ?? 'desconocido') . " ha sido eliminado correctamente.")
                             ->sendToDatabase(\Filament\Facades\Filament::auth()->user())
                     ),
             ])

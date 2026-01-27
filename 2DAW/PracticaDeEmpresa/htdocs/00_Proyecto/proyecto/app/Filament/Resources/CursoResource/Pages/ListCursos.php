@@ -19,19 +19,4 @@ class ListCursos extends ListRecords
             Actions\CreateAction::make(),
         ];
     }
-
-    protected function getTableActions(): array
-    {
-        return [
-            Tables\Actions\DeleteAction::make()
-                ->after(function ($record) {
-                    Notification::make()
-                        ->warning()
-                        ->title('Curso eliminado')
-                        ->body("El curso {$record->nombre} ha sido eliminado del sistema.")
-                        ->sendToDatabase(\Filament\Facades\Filament::auth()->user())
-                        ->send();
-                }),
-        ];
-    }
 }

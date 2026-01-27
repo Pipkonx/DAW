@@ -29,12 +29,12 @@ class EvaluacionPolicy
 
         if ($user->isTutorPracticas()) {
             // El tutor solo ve evaluaciones de alumnos donde él es el tutor de prácticas
-            return $user->id === $evaluacion->alumno->tutorPracticas->user_id;
+            return $user->id === ($evaluacion->alumno?->tutorPracticas?->user_id ?? null);
         }
 
         if ($user->isAlumno()) {
             // El alumno solo ve sus propias evaluaciones
-            return $evaluacion->alumno->user_id === $user->id;
+            return ($evaluacion->alumno?->user_id ?? null) === $user->id;
         }
 
         return false;
@@ -52,7 +52,7 @@ class EvaluacionPolicy
         }
 
         if ($user->isTutorPracticas()) {
-            return $user->id === $evaluacion->alumno->tutorPracticas->user_id;
+            return $user->id === ($evaluacion->alumno?->tutorPracticas?->user_id ?? null);
         }
 
         return false;

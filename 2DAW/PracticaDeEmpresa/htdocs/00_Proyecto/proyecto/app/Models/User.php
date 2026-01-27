@@ -88,6 +88,15 @@ class User extends Authenticatable implements HasAvatar, FilamentUser
     }
 
     /**
+     * @brief Comprueba si el usuario tiene el rol de tutor de prácticas (alias para compatibilidad).
+     * @return bool
+     */
+    public function isTutorEmpresa(): bool
+    {
+        return $this->isTutorPracticas();
+    }
+
+    /**
      * @brief Comprueba si el usuario tiene el rol de alumno.
      * @return bool
      */
@@ -99,7 +108,7 @@ class User extends Authenticatable implements HasAvatar, FilamentUser
     /**
      * @brief Define la relación 1:1 con el perfil de Alumno.
      * 
-     * @return HasOne Relación con el modelo Alumno.
+     * @return HasOne
      */
     public function alumno(): HasOne
     {
@@ -107,9 +116,19 @@ class User extends Authenticatable implements HasAvatar, FilamentUser
     }
 
     /**
+     * @brief Define la relación 1:1 con el perfil de Empresa.
+     * 
+     * @return HasOne
+     */
+    public function empresa(): HasOne
+    {
+        return $this->hasOne(Empresa::class);
+    }
+
+    /**
      * @brief Define la relación 1:1 con el perfil de Tutor de Curso.
      * 
-     * @return HasOne Relación con el modelo TutorCurso.
+     * @return HasOne
      */
     public function perfilTutorCurso(): HasOne
     {
@@ -119,21 +138,11 @@ class User extends Authenticatable implements HasAvatar, FilamentUser
     /**
      * @brief Define la relación 1:1 con el perfil de Tutor de Prácticas.
      * 
-     * @return HasOne Relación con el modelo TutorPracticas.
+     * @return HasOne
      */
     public function perfilTutorPracticas(): HasOne
     {
         return $this->hasOne(TutorPracticas::class);
-    }
-
-    /**
-     * @brief Define la relación 1:1 con el perfil de Empresa.
-     * 
-     * @return HasOne Relación con el modelo Empresa.
-     */
-    public function empresa(): HasOne
-    {
-        return $this->hasOne(Empresa::class);
     }
 
     /**

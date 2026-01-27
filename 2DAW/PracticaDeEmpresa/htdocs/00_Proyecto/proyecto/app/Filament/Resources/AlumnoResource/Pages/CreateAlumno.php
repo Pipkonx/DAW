@@ -15,14 +15,13 @@ class CreateAlumno extends CreateRecord
 {
     protected static string $resource = AlumnoResource::class;
 
-    protected function afterCreate(): void
+    protected function getCreatedNotification(): ?Notification
     {
-        Notification::make()
+        return Notification::make()
             ->success()
             ->title('Alumno registrado')
-            ->body("El alumno {$this->record->user->name} ha sido registrado correctamente.")
-            ->sendToDatabase(\Filament\Facades\Filament::auth()->user())
-            ->send();
+            ->body("El alumno " . ($this->record->user?->name ?? 'desconocido') . " ha sido registrado correctamente.")
+            ->sendToDatabase(\Filament\Facades\Filament::auth()->user());
     }
 
     /**

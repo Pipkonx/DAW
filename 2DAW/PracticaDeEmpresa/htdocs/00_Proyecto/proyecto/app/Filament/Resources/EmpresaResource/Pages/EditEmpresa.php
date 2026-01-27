@@ -16,14 +16,13 @@ class EditEmpresa extends EditRecord
 {
     protected static string $resource = EmpresaResource::class;
 
-    protected function afterSave(): void
+    protected function getSavedNotification(): ?Notification
     {
-        Notification::make()
+        return Notification::make()
             ->success()
             ->title('Empresa actualizada')
             ->body("Los datos de la empresa {$this->record->nombre} han sido actualizados.")
-            ->sendToDatabase(\Filament\Facades\Filament::auth()->user())
-            ->send();
+            ->sendToDatabase(\Filament\Facades\Filament::auth()->user());
     }
 
     /**

@@ -10,6 +10,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Filament\Notifications\Notification;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
@@ -138,11 +139,11 @@ class EmpresaResource extends Resource
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make()
-                    ->successNotification(
+                    ->successNotification(fn (Empresa $record) => 
                         \Filament\Notifications\Notification::make()
                             ->success()
                             ->title('Empresa eliminada')
-                            ->body(fn (Empresa $record) => "La empresa {$record->nombre} ha sido eliminada correctamente.")
+                            ->body("La empresa {$record->nombre} ha sido eliminada correctamente.")
                             ->sendToDatabase(\Filament\Facades\Filament::auth()->user())
                     ),
             ])

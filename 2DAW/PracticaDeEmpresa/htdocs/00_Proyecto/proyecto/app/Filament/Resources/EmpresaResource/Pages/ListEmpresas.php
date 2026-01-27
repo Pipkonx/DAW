@@ -19,19 +19,4 @@ class ListEmpresas extends ListRecords
             Actions\CreateAction::make(),
         ];
     }
-
-    protected function getTableActions(): array
-    {
-        return [
-            Tables\Actions\DeleteAction::make()
-                ->after(function ($record) {
-                    Notification::make()
-                        ->warning()
-                        ->title('Empresa eliminada')
-                        ->body("La empresa {$record->nombre} ha sido eliminada del sistema.")
-                        ->sendToDatabase(\Filament\Facades\Filament::auth()->user())
-                        ->send();
-                }),
-        ];
-    }
 }

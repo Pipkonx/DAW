@@ -15,14 +15,13 @@ class CreateIncidencia extends CreateRecord
 {
     protected static string $resource = IncidenciaResource::class;
 
-    protected function afterCreate(): void
+    protected function getCreatedNotification(): ?Notification
     {
-        Notification::make()
+        return Notification::make()
             ->success()
             ->title('Incidencia registrada')
-            ->body("Se ha registrado una nueva incidencia para el alumno {$this->record->alumno->user->name}.")
-            ->sendToDatabase(\Filament\Facades\Filament::auth()->user())
-            ->send();
+            ->body("Se ha registrado una nueva incidencia para el alumno " . ($this->record->alumno?->user?->name ?? 'desconocido') . ".")
+            ->sendToDatabase(\Filament\Facades\Filament::auth()->user());
     }
 
     /**

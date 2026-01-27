@@ -17,14 +17,13 @@ class EditIncidencia extends EditRecord
 {
     protected static string $resource = IncidenciaResource::class;
 
-    protected function afterSave(): void
+    protected function getSavedNotification(): ?Notification
     {
-        Notification::make()
+        return Notification::make()
             ->success()
             ->title('Incidencia actualizada')
             ->body("Los cambios en la incidencia han sido guardados.")
-            ->sendToDatabase(\Filament\Facades\Filament::auth()->user())
-            ->send();
+            ->sendToDatabase(\Filament\Facades\Filament::auth()->user());
     }
 
     /**
@@ -52,15 +51,15 @@ class EditIncidencia extends EditRecord
                         'resolucion' => $data['resolucion'],
                     ]);
 
+                    $this->refreshFormData(['estado', 'fecha_resolucion', 'resolucion']);
+                })
+                ->successNotification(fn (Incidencia $record) => 
                     Notification::make()
                         ->success()
                         ->title('Incidencia resuelta')
-                        ->body("La incidencia del alumno {$record->alumno->user->name} ha sido marcada como resuelta.")
+                        ->body("La incidencia del alumno " . ($record->alumno?->user?->name ?? 'desconocido') . " ha sido marcada como resuelta.")
                         ->sendToDatabase(\Filament\Facades\Filament::auth()->user())
-                        ->send();
-                    
-                    $this->refreshFormData(['estado', 'fecha_resolucion', 'resolucion']);
-                })
+                )
                 ->modalHeading('Resolver Incidencia')
                 ->modalDescription('Por favor, indica cómo se ha resuelto la incidencia.')
                 ->modalSubmitActionLabel('Confirmar Resolución'),
