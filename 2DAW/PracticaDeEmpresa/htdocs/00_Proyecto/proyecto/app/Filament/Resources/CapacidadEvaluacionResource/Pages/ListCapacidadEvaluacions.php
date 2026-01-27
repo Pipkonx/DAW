@@ -19,18 +19,4 @@ class ListCapacidadEvaluacions extends ListRecords
             Actions\CreateAction::make(),
         ];
     }
-
-    protected function getTableActions(): array
-    {
-        return [
-            Tables\Actions\DeleteAction::make()
-                ->after(function ($record) {
-                    Notification::make()
-                        ->warning()
-                        ->title('Capacidad eliminada')
-                        ->body("Se ha eliminado la capacidad de evaluación.")
-                        ->sendToDatabase(auth()->user());
-                }),
-        ];
-    }
 }

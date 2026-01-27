@@ -19,18 +19,4 @@ class ListEvaluacions extends ListRecords
             Actions\CreateAction::make(),
         ];
     }
-
-    protected function getTableActions(): array
-    {
-        return [
-            Tables\Actions\DeleteAction::make()
-                ->after(function ($record) {
-                    Notification::make()
-                        ->warning()
-                        ->title('Evaluación eliminada')
-                        ->body("Se ha eliminado la evaluación del alumno {$record->alumno->user->name}.")
-                        ->sendToDatabase(auth()->user());
-                }),
-        ];
-    }
 }

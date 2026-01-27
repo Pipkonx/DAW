@@ -119,34 +119,30 @@ class IncidenciaResource extends Resource
                     ]),
             ])
             ->actions([
-                Tables\Actions\Action::make('resolver')
+                Tables\Actions\Action::make('marcarComoResuelta')
                     ->label('Resolver')
                     ->icon('heroicon-o-check-circle')
                     ->color('success')
-                    ->hidden(fn (Incidencia $record): bool => $record->estado === 'resuelta')
+                    ->disabled(fn (Incidencia $record): bool => $record->estado === 'RESUELTA')
                     ->form([
-                        Forms\Components\Textarea::make('explicacion_resolucion')
+                        Forms\Components\Textarea::make('resolucion')
                             ->label('Explicación de la resolución')
                             ->required(),
                     ])
                     ->action(function (Incidencia $record, array $data): void {
                         $record->update([
-                            'estado' => 'resuelta',
+                            'estado' => 'RESUELTA',
                             'fecha_resolucion' => now(),
-                            'explicacion_resolucion' => $data['explicacion_resolucion'],
+                            'resolucion' => $data['resolucion'],
                         ]);
-
-                        $user = \Filament\Facades\Filament::auth()->user();
-                        \Illuminate\Support\Facades\Log::info('Enviando notificación a usuario ID: ' . ($user?->id ?? 'NULL'));
 
                         Notification::make()
                             ->success()
                             ->title('Incidencia resuelta')
                             ->body("La incidencia del alumno {$record->alumno->user->name} ha sido marcada como resuelta.")
-                            ->sendToDatabase($user)
+                            ->sendToDatabase(\Filament\Facades\Filament::auth()->user())
                             ->send();
                     })
-                    ->requiresConfirmation()
                     ->modalHeading('Resolver Incidencia')
                     ->modalDescription('Por favor, indica cómo se ha resuelto la incidencia.')
                     ->modalSubmitActionLabel('Confirmar Resolución'),

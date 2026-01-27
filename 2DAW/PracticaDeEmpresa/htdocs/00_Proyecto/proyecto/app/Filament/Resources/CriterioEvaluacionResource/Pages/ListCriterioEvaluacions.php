@@ -19,18 +19,4 @@ class ListCriterioEvaluacions extends ListRecords
             Actions\CreateAction::make(),
         ];
     }
-
-    protected function getTableActions(): array
-    {
-        return [
-            Tables\Actions\DeleteAction::make()
-                ->after(function ($record) {
-                    Notification::make()
-                        ->warning()
-                        ->title('Criterio eliminado')
-                        ->body("Se ha eliminado el criterio de evaluación.")
-                        ->sendToDatabase(auth()->user());
-                }),
-        ];
-    }
 }

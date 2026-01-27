@@ -18,19 +18,4 @@ class ListUsers extends ListRecords
             Actions\CreateAction::make(),
         ];
     }
-
-    protected function getTableActions(): array
-    {
-        return [
-            Tables\Actions\DeleteAction::make()
-                ->after(function ($record) {
-                    Notification::make()
-                        ->warning()
-                        ->title('Usuario eliminado')
-                        ->body("El usuario {$record->name} ha sido eliminado del sistema.")
-                        ->sendToDatabase(\Filament\Facades\Filament::auth()->user())
-                        ->send();
-                }),
-        ];
-    }
 }
