@@ -10,9 +10,21 @@ use Filament\Resources\Pages\EditRecord;
  * @class EditObservacionDiaria
  * @brief Página para la edición de Observaciones Diarias.
  */
+use Filament\Notifications\Notification;
+
 class EditObservacionDiaria extends EditRecord
 {
     protected static string $resource = ObservacionDiariaResource::class;
+
+    protected function afterSave(): void
+    {
+        Notification::make()
+            ->success()
+            ->title('Observación diaria actualizada')
+            ->body("Los datos de la observación diaria han sido actualizados.")
+            ->sendToDatabase(\Filament\Facades\Filament::auth()->user())
+            ->send();
+    }
 
     /**
      * @brief Define las acciones de la cabecera en la página de edición.

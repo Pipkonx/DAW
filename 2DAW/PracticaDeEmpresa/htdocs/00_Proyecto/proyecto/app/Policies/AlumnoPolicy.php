@@ -22,7 +22,7 @@ class AlumnoPolicy
      */
     public function verCualquiera(User $usuario): bool
     {
-        return $usuario->isAdmin() || $usuario->isTutorCurso() || $usuario->isTutorEmpresa() || $usuario->isAlumno();
+        return $usuario->isAdmin() || $usuario->isTutorCurso() || $usuario->isTutorPracticas() || $usuario->isAlumno();
     }
 
     /**
@@ -38,8 +38,8 @@ class AlumnoPolicy
             return true;
         }
 
-        if ($usuario->isTutorEmpresa()) {
-            return $usuario->empresa_id === $alumno->empresa_id;
+        if ($usuario->isTutorPracticas()) {
+            return $usuario->id === $alumno->tutorPracticas?->user_id;
         }
 
         if ($usuario->isAlumno()) {
@@ -73,8 +73,8 @@ class AlumnoPolicy
             return true;
         }
 
-        if ($usuario->isTutorEmpresa()) {
-            return $usuario->empresa_id === $alumno->empresa_id;
+        if ($usuario->isTutorPracticas()) {
+            return $usuario->id === $alumno->tutorPracticas?->user_id;
         }
 
         return false;

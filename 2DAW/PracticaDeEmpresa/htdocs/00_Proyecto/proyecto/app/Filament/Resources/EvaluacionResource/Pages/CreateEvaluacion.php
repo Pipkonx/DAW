@@ -9,9 +9,21 @@ use Filament\Resources\Pages\CreateRecord;
  * @class CreateEvaluacion
  * @brief Página para la creación de Evaluaciones.
  */
+use Filament\Notifications\Notification;
+
 class CreateEvaluacion extends CreateRecord
 {
     protected static string $resource = EvaluacionResource::class;
+
+    protected function afterCreate(): void
+    {
+        Notification::make()
+            ->success()
+            ->title('Evaluación registrada')
+            ->body("Se ha registrado una nueva evaluación para el alumno {$this->record->alumno->user->name}.")
+            ->sendToDatabase(\Filament\Facades\Filament::auth()->user())
+            ->send();
+    }
 
     /**
      * @brief Obtiene la URL de redirección tras crear un registro.

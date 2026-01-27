@@ -20,7 +20,7 @@ use Illuminate\Support\Facades\Storage;
  * Centraliza la autenticación y las relaciones con los diferentes perfiles
  * de usuario. Utiliza el trait Notifiable para la gestión de notificaciones.
  */
-class User extends Authenticatable implements HasAvatar
+class User extends Authenticatable implements HasAvatar, FilamentUser
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     /**
@@ -29,6 +29,14 @@ class User extends Authenticatable implements HasAvatar
      * y mostrarlas en el panel de usuario.
      */
     use HasFactory, Notifiable, HasRoles;
+
+    /**
+     * @brief Determina si el usuario puede acceder al panel de Filament.
+     */
+    public function canAccessPanel(Panel $panel): bool
+    {
+        return true; // O la lógica que prefieras
+    }
 
     /**
      * @brief Obtiene la URL del avatar para Filament.

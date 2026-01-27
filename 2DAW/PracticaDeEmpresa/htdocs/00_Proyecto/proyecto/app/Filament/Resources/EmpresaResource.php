@@ -137,11 +137,25 @@ class EmpresaResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\DeleteAction::make()
+                    ->successNotification(
+                        \Filament\Notifications\Notification::make()
+                            ->success()
+                            ->title('Empresa eliminada')
+                            ->body(fn (Empresa $record) => "La empresa {$record->nombre} ha sido eliminada correctamente.")
+                            ->sendToDatabase(\Filament\Facades\Filament::auth()->user())
+                    ),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\DeleteBulkAction::make()
+                        ->successNotification(
+                            \Filament\Notifications\Notification::make()
+                                ->success()
+                                ->title('Empresas eliminadas')
+                                ->body("Las empresas seleccionadas han sido eliminadas correctamente.")
+                                ->sendToDatabase(\Filament\Facades\Filament::auth()->user())
+                        ),
                 ]),
             ]);
     }
@@ -171,8 +185,8 @@ class EmpresaResource extends Resource
             return $query;
         }
 
-        if ($user->isTutorEmpresa()) {
-            return $query->where('id', $user->empresa_id);
+        if ($user->isTutorPracticas()) {
+            return $query->whereHas('tutoresPracticas', fn($q) => $q->where('user_id', $user->id));
         }
 
         return $query->whereRaw('1 = 0');

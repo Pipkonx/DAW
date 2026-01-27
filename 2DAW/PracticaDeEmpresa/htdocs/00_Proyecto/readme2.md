@@ -212,3 +212,18 @@ resources/
 - Dashboard avanzado con gráficos
 
 ---
+
+
+# 🚀 Stack Tecnológico Definitivo (Full Stack Laravel)
+
+| Capa | Herramienta | ¿Qué hace exactamente en tu proyecto? |
+| :--- | :--- | :--- |
+| **Núcleo (Base)** | Laravel 11 | El framework PHP que sostiene la lógica, rutas y base de datos. |
+| **Autenticación Base** | Laravel Breeze | Gestiona el login/registro inicial y el perfil de usuario fuera del admin. |
+| **Panel de Control** | Filament v3 | Proporciona la interfaz administrativa avanzada (Tablas, Formularios, Recursos). |
+| **Frontend Estilos** | Tailwind CSS | El motor de diseño. Breeze lo usa para tus vistas y Filament para su panel. |
+| **Frontend Lógica** | Livewire 3 | Permite crear componentes dinámicos (como el dashboard) escribiendo solo PHP. |
+| **Interactividad** | Alpine.js | (Incluido en Livewire) Maneja los clics rápidos, modales y animaciones. |
+| **Alertas** | Filament Notifications | Sistema visual para mostrar mensajes de éxito/error al usuario. |
+| **Gráficos** | Chart.js | La librería que dibuja los gráficos dentro de los Widgets de Filament. |
+| **Seguridad** | Spatie Backup | El motor que realiza las copias de seguridad de tu DB y archivos. |

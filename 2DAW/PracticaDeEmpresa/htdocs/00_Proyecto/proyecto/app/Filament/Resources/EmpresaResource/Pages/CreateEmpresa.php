@@ -5,6 +5,8 @@ namespace App\Filament\Resources\EmpresaResource\Pages;
 use App\Filament\Resources\EmpresaResource;
 use Filament\Resources\Pages\CreateRecord;
 
+use Filament\Notifications\Notification;
+
 /**
  * @class CreateEmpresa
  * @brief Página para la creación de registros de Empresas.
@@ -12,6 +14,16 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateEmpresa extends CreateRecord
 {
     protected static string $resource = EmpresaResource::class;
+
+    protected function afterCreate(): void
+    {
+        Notification::make()
+            ->success()
+            ->title('Empresa registrada')
+            ->body("La empresa {$this->record->nombre} ha sido registrada correctamente.")
+            ->sendToDatabase(\Filament\Facades\Filament::auth()->user())
+            ->send();
+    }
 
     /**
      * @brief Obtiene la URL de redirección tras crear un registro.

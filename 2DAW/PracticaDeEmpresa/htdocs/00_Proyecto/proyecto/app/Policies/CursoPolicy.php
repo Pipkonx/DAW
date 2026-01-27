@@ -10,12 +10,12 @@ class CursoPolicy
 {
     public function viewAny(User $user): bool
     {
-        return $user->isAdmin() || $user->isTutorCurso() || $user->isTutorEmpresa();
+        return $user->isAdmin() || $user->isTutorCurso() || $user->isTutorPracticas();
     }
 
     public function view(User $user, Curso $curso): bool
     {
-        return $user->isAdmin() || $user->isTutorCurso() || $user->isTutorEmpresa();
+        return $user->isAdmin() || $user->isTutorCurso() || $user->isTutorPracticas();
     }
 
     public function create(User $user): bool

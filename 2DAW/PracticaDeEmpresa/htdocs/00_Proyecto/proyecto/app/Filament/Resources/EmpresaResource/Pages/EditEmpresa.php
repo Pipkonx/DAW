@@ -6,6 +6,8 @@ use App\Filament\Resources\EmpresaResource;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
 
+use Filament\Notifications\Notification;
+
 /**
  * @class EditEmpresa
  * @brief Página para la edición de registros de Empresas.
@@ -13,6 +15,16 @@ use Filament\Resources\Pages\EditRecord;
 class EditEmpresa extends EditRecord
 {
     protected static string $resource = EmpresaResource::class;
+
+    protected function afterSave(): void
+    {
+        Notification::make()
+            ->success()
+            ->title('Empresa actualizada')
+            ->body("Los datos de la empresa {$this->record->nombre} han sido actualizados.")
+            ->sendToDatabase(\Filament\Facades\Filament::auth()->user())
+            ->send();
+    }
 
     /**
      * @brief Define las acciones de la cabecera en la página de edición.

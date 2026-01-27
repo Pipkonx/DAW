@@ -10,9 +10,21 @@ use Filament\Resources\Pages\EditRecord;
  * @class EditEvaluacion
  * @brief Página para la edición de Evaluaciones.
  */
+use Filament\Notifications\Notification;
+
 class EditEvaluacion extends EditRecord
 {
     protected static string $resource = EvaluacionResource::class;
+
+    protected function afterSave(): void
+    {
+        Notification::make()
+            ->success()
+            ->title('Evaluación actualizada')
+            ->body("Los datos de la evaluación han sido actualizados.")
+            ->sendToDatabase(\Filament\Facades\Filament::auth()->user())
+            ->send();
+    }
 
     /**
      * @brief Define las acciones de la cabecera en la página de edición.

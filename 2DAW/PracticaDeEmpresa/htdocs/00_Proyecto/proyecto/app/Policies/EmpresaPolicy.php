@@ -10,12 +10,12 @@ class EmpresaPolicy
 {
     public function viewAny(User $user): bool
     {
-        return $user->isAdmin() || $user->isTutorCurso() || $user->isTutorEmpresa();
+        return $user->isAdmin() || $user->isTutorCurso() || $user->isTutorPracticas();
     }
 
     public function view(User $user, Empresa $empresa): bool
     {
-        return $user->isAdmin() || $user->isTutorCurso() || ($user->isTutorEmpresa() && $user->empresa_id === $empresa->id);
+        return $user->isAdmin() || $user->isTutorCurso() || ($user->isTutorPracticas() && $user->id === $empresa->tutoresPracticas()->where('user_id', $user->id)->first()?->user_id);
     }
 
     public function create(User $user): bool

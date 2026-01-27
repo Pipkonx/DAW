@@ -6,6 +6,8 @@ use App\Filament\Resources\IncidenciaResource;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
 
+use Filament\Notifications\Notification;
+
 /**
  * @class EditIncidencia
  * @brief Página para la edición de registros de Incidencias.
@@ -13,6 +15,16 @@ use Filament\Resources\Pages\EditRecord;
 class EditIncidencia extends EditRecord
 {
     protected static string $resource = IncidenciaResource::class;
+
+    protected function afterSave(): void
+    {
+        Notification::make()
+            ->success()
+            ->title('Incidencia actualizada')
+            ->body("Los cambios en la incidencia han sido guardados.")
+            ->sendToDatabase(\Filament\Facades\Filament::auth()->user())
+            ->send();
+    }
 
     /**
      * @brief Define las acciones de la cabecera en la página de edición.

@@ -28,9 +28,9 @@ class ObservacionDiariaPolicy
             return true;
         }
 
-        if ($user->isTutorEmpresa()) {
+        if ($user->isTutorPracticas()) {
             // Solo puede gestionar observaciones de sus alumnos asignados
-            return $user->empresa_id === $observacion->alumno->empresa_id;
+            return $user->id === $observacion->alumno->tutorPracticas->user_id;
         }
 
         if ($user->isAlumno()) {
@@ -42,7 +42,7 @@ class ObservacionDiariaPolicy
 
     public function create(User $user): bool
     {
-        return $user->isAlumno() || $user->isTutorCurso() || $user->isTutorEmpresa();
+        return $user->isAlumno() || $user->isTutorCurso() || $user->isTutorPracticas();
     }
 
     public function update(User $user, ObservacionDiaria $observacion): bool
@@ -51,8 +51,8 @@ class ObservacionDiariaPolicy
             return true;
         }
 
-        if ($user->isTutorEmpresa()) {
-            return $user->empresa_id === $observacion->alumno->empresa_id;
+        if ($user->isTutorPracticas()) {
+            return $user->id === $observacion->alumno->tutorPracticas->user_id;
         }
 
         if ($user->isAlumno()) {

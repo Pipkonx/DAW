@@ -119,11 +119,25 @@ class CursoResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\DeleteAction::make()
+                    ->successNotification(
+                        \Filament\Notifications\Notification::make()
+                            ->success()
+                            ->title('Curso eliminado')
+                            ->body(fn (Curso $record) => "El curso {$record->nombre} ha sido eliminado correctamente.")
+                            ->sendToDatabase(\Filament\Facades\Filament::auth()->user())
+                    ),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\DeleteBulkAction::make()
+                        ->successNotification(
+                            \Filament\Notifications\Notification::make()
+                                ->success()
+                                ->title('Cursos eliminados')
+                                ->body("Los cursos seleccionados han sido eliminados correctamente.")
+                                ->sendToDatabase(\Filament\Facades\Filament::auth()->user())
+                        ),
                 ]),
             ]);
     }

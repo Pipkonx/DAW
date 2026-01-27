@@ -39,8 +39,10 @@ class EvaluacionResource extends Resource
                                 if ($user->isAdmin() || $user->isTutorCurso()) {
                                     return \App\Models\Alumno::all()->pluck('user.name', 'id');
                                 }
-                                if ($user->isTutorEmpresa()) {
-                                    return \App\Models\Alumno::where('empresa_id', $user->empresa_id)
+                                if ($user->isTutorPracticas()) {
+                                    return \App\Models\Alumno::whereHas('tutorPracticas', function ($q) use ($user) {
+                                        $q->where('user_id', $user->id);
+                                    })
                                         ->get()
                                         ->pluck('user.name', 'id');
                                 }
@@ -53,7 +55,7 @@ class EvaluacionResource extends Resource
                             ->getOptionLabelFromRecordUsing(fn ($record) => $record->user->name)
                             ->default(function () {
                                 $user = auth()->user();
-                                if ($user->isTutorEmpresa()) {
+                                if ($user->isTutorPracticas()) {
                                     return \App\Models\TutorPracticas::where('user_id', $user->id)->first()?->id;
                                 }
                                 return null;
@@ -123,10 +125,25 @@ class EvaluacionResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make()
+                    ->successNotification(
+                        \Filament\Notifications\Notification::make()
+                            ->success()
+                            ->title('Evaluación eliminada')
+                            ->body("La evaluación ha sido eliminada correctamente.")
+                            ->sendToDatabase(\Filament\Facades\Filament::auth()->user())
+                    ),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\DeleteBulkAction::make()
+                        ->successNotification(
+                            \Filament\Notifications\Notification::make()
+                                ->success()
+                                ->title('Evaluaciones eliminadas')
+                                ->body("Las evaluaciones seleccionadas han sido eliminadas correctamente.")
+                                ->sendToDatabase(\Filament\Facades\Filament::auth()->user())
+                        ),
                 ]),
             ]);
     }

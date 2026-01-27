@@ -10,9 +10,21 @@ use Filament\Resources\Pages\EditRecord;
  * @class EditAlumno
  * @brief Página para la edición de registros de Alumnos.
  */
+use Filament\Notifications\Notification;
+
 class EditAlumno extends EditRecord
 {
     protected static string $resource = AlumnoResource::class;
+
+    protected function afterSave(): void
+    {
+        Notification::make()
+            ->success()
+            ->title('Alumno actualizado')
+            ->body("Los datos del alumno {$this->record->user->name} han sido actualizados.")
+            ->sendToDatabase(\Filament\Facades\Filament::auth()->user())
+            ->send();
+    }
 
     /**
      * @brief Define las acciones de la cabecera en la página de edición.

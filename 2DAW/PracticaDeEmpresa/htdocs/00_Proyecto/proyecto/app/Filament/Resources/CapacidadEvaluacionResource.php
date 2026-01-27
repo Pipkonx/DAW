@@ -90,11 +90,26 @@ class CapacidadEvaluacionResource extends Resource
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make()
+                    ->successNotification(
+                        \Filament\Notifications\Notification::make()
+                            ->success()
+                            ->title('Capacidad eliminada')
+                            ->body("La capacidad de evaluación ha sido eliminada correctamente.")
+                            ->sendToDatabase(\Filament\Facades\Filament::auth()->user())
+                    ),
                 Tables\Actions\RestoreAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\DeleteBulkAction::make()
+                        ->successNotification(
+                            \Filament\Notifications\Notification::make()
+                                ->success()
+                                ->title('Capacidades eliminadas')
+                                ->body("Las capacidades seleccionadas han sido eliminadas correctamente.")
+                                ->sendToDatabase(\Filament\Facades\Filament::auth()->user())
+                        ),
                     Tables\Actions\RestoreBulkAction::make(),
                     Tables\Actions\ForceDeleteBulkAction::make(),
                 ]),

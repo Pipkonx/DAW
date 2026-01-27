@@ -94,7 +94,7 @@ class EditProfile extends BaseEditProfile
                     ->label('Departamento')
                     ->default($user->perfilTutorCurso?->departamento),
             ];
-        } elseif ($user->isTutorEmpresa()) {
+        } elseif ($user->isTutorPracticas()) {
             $fields = [
                 TextInput::make('tutor_empresa_dni')
                     ->label('DNI')
@@ -104,9 +104,6 @@ class EditProfile extends BaseEditProfile
                     ->label('Teléfono')
                     ->default($user->perfilTutorPracticas?->telefono)
                     ->tel(),
-                TextInput::make('tutor_empresa_puesto')
-                    ->label('Puesto')
-                    ->default($user->perfilTutorPracticas?->puesto),
             ];
         }
 

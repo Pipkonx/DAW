@@ -79,11 +79,26 @@ class CriterioEvaluacionResource extends Resource
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make()
+                    ->successNotification(
+                        \Filament\Notifications\Notification::make()
+                            ->success()
+                            ->title('Criterio eliminado')
+                            ->body("El criterio de evaluación ha sido eliminado correctamente.")
+                            ->sendToDatabase(\Filament\Facades\Filament::auth()->user())
+                    ),
                 Tables\Actions\RestoreAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\DeleteBulkAction::make()
+                        ->successNotification(
+                            \Filament\Notifications\Notification::make()
+                                ->success()
+                                ->title('Criterios eliminados')
+                                ->body("Los criterios seleccionados han sido eliminados correctamente.")
+                                ->sendToDatabase(\Filament\Facades\Filament::auth()->user())
+                        ),
                     Tables\Actions\RestoreBulkAction::make(),
                     Tables\Actions\ForceDeleteBulkAction::make(),
                 ]),

@@ -213,14 +213,28 @@ class UserResource extends Resource
                 Tables\Actions\DeleteAction::make()
                     ->before(function (User $record) {
                         self::borrarPerfilRelacionado($record);
-                    }),
+                    })
+                    ->successNotification(
+                        Notification::make()
+                            ->success()
+                            ->title('Usuario eliminado')
+                            ->body(fn (User $record) => "El usuario {$record->name} ha sido eliminado correctamente.")
+                            ->sendToDatabase(\Filament\Facades\Filament::auth()->user())
+                    ),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make()
                         ->before(function (\Illuminate\Database\Eloquent\Collection $records) {
                             $records->each(fn (User $record) => self::borrarPerfilRelacionado($record));
-                        }),
+                        })
+                        ->successNotification(
+                            Notification::make()
+                                ->success()
+                                ->title('Usuarios eliminados')
+                                ->body('Los usuarios seleccionados han sido eliminados correctamente.')
+                                ->sendToDatabase(\Filament\Facades\Filament::auth()->user())
+                        ),
                 ]),
             ]);
     }

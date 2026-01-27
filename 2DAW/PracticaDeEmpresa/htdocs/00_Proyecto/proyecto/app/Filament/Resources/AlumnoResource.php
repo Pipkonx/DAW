@@ -119,10 +119,25 @@ class AlumnoResource extends Resource
                         );
                     }),
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make()
+                    ->successNotification(
+                        Notification::make()
+                            ->success()
+                            ->title('Alumno eliminado')
+                            ->body(fn (Alumno $record) => "El registro del alumno {$record->user->name} ha sido eliminado correctamente.")
+                            ->sendToDatabase(\Filament\Facades\Filament::auth()->user())
+                    ),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\DeleteBulkAction::make()
+                        ->successNotification(
+                            Notification::make()
+                                ->success()
+                                ->title('Alumnos eliminados')
+                                ->body("Los registros de los alumnos seleccionados han sido eliminados correctamente.")
+                                ->sendToDatabase(\Filament\Facades\Filament::auth()->user())
+                        ),
                 ]),
             ]);
     }
@@ -151,8 +166,10 @@ class AlumnoResource extends Resource
             return $query->where('user_id', $user->id);
         }
 
-        if ($user->isTutorEmpresa()) {
-            return $query->where('empresa_id', $user->empresa_id);
+        if ($user->isTutorPracticas()) {
+            return $query->whereHas('tutorPracticas', function ($q) use ($user) {
+                $q->where('user_id', $user->id);
+            });
         }
 
         return $query;

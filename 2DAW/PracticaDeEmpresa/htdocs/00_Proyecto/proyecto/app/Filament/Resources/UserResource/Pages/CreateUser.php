@@ -11,6 +11,8 @@ use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
+use Filament\Notifications\Notification;
+
 /**
  * @class CreateUser
  * @brief Página para la creación de usuarios y sus perfiles relacionados.
@@ -18,6 +20,16 @@ use Illuminate\Support\Facades\DB;
 class CreateUser extends CreateRecord
 {
     protected static string $resource = UserResource::class;
+
+    protected function afterCreate(): void
+    {
+        Notification::make()
+            ->success()
+            ->title('Usuario creado')
+            ->body("El usuario {$this->record->name} ha sido creado correctamente.")
+            ->sendToDatabase(\Filament\Facades\Filament::auth()->user())
+            ->send();
+    }
 
     protected function getRedirectUrl(): string
     {

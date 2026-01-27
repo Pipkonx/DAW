@@ -18,7 +18,7 @@ class EvaluacionPolicy
 
     public function viewAny(User $user): bool
     {
-        return $user->isTutorCurso() || $user->isTutorEmpresa() || $user->isAlumno();
+        return $user->isTutorCurso() || $user->isTutorPracticas() || $user->isAlumno();
     }
 
     public function view(User $user, Evaluacion $evaluacion): bool
@@ -27,9 +27,9 @@ class EvaluacionPolicy
             return true;
         }
 
-        if ($user->isTutorEmpresa()) {
-            // El tutor solo ve evaluaciones de su empresa
-            return $user->empresa_id === $evaluacion->alumno->empresa_id;
+        if ($user->isTutorPracticas()) {
+            // El tutor solo ve evaluaciones de alumnos donde él es el tutor de prácticas
+            return $user->id === $evaluacion->alumno->tutorPracticas->user_id;
         }
 
         if ($user->isAlumno()) {
@@ -42,7 +42,7 @@ class EvaluacionPolicy
 
     public function create(User $user): bool
     {
-        return $user->isTutorEmpresa() || $user->isTutorCurso();
+        return $user->isTutorPracticas() || $user->isTutorCurso();
     }
 
     public function update(User $user, Evaluacion $evaluacion): bool
@@ -51,8 +51,8 @@ class EvaluacionPolicy
             return true;
         }
 
-        if ($user->isTutorEmpresa()) {
-            return $user->empresa_id === $evaluacion->alumno->empresa_id;
+        if ($user->isTutorPracticas()) {
+            return $user->id === $evaluacion->alumno->tutorPracticas->user_id;
         }
 
         return false;

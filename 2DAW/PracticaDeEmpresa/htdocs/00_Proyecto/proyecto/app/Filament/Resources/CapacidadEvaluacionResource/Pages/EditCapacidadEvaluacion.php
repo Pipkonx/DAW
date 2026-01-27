@@ -10,9 +10,21 @@ use Filament\Resources\Pages\EditRecord;
  * @class EditCapacidadEvaluacion
  * @brief Página para la edición de Capacidades de Evaluación.
  */
+use Filament\Notifications\Notification;
+
 class EditCapacidadEvaluacion extends EditRecord
 {
     protected static string $resource = CapacidadEvaluacionResource::class;
+
+    protected function afterSave(): void
+    {
+        Notification::make()
+            ->success()
+            ->title('Capacidad actualizada')
+            ->body("Los datos de la capacidad han sido actualizados.")
+            ->sendToDatabase(\Filament\Facades\Filament::auth()->user())
+            ->send();
+    }
 
     /**
      * @brief Define las acciones de la cabecera en la página de edición.

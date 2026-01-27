@@ -13,6 +13,8 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
+use Filament\Notifications\Notification;
+
 class IncidenciaResource extends Resource
 {
     protected static ?string $model = Incidencia::class;
@@ -101,12 +103,9 @@ class IncidenciaResource extends Resource
                         default => 'gray',
                     }),
                 Tables\Columns\TextColumn::make('created_at')
-                    ->badge()
-                    ->color(fn (string $state): string => match ($state) {
-                        'baja' => 'info',
-                        'media' => 'warning',
-                        'alta' => 'danger',
-                    }),
+                    ->label('Fecha Creación')
+                    ->dateTime('d/m/Y H:i')
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('fecha_resolucion')
                     ->dateTime()
                     ->sortable(),
@@ -136,6 +135,16 @@ class IncidenciaResource extends Resource
                             'fecha_resolucion' => now(),
                             'explicacion_resolucion' => $data['explicacion_resolucion'],
                         ]);
+
+                        $user = \Filament\Facades\Filament::auth()->user();
+                        \Illuminate\Support\Facades\Log::info('Enviando notificación a usuario ID: ' . ($user?->id ?? 'NULL'));
+
+                        Notification::make()
+                            ->success()
+                            ->title('Incidencia resuelta')
+                            ->body("La incidencia del alumno {$record->alumno->user->name} ha sido marcada como resuelta.")
+                            ->sendToDatabase($user)
+                            ->send();
                     })
                     ->requiresConfirmation()
                     ->modalHeading('Resolver Incidencia')
@@ -143,10 +152,25 @@ class IncidenciaResource extends Resource
                     ->modalSubmitActionLabel('Confirmar Resolución'),
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make()
+                    ->successNotification(
+                        Notification::make()
+                            ->success()
+                            ->title('Incidencia eliminada')
+                            ->body("La incidencia ha sido eliminada correctamente.")
+                            ->sendToDatabase(\Filament\Facades\Filament::auth()->user())
+                    ),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\DeleteBulkAction::make()
+                        ->successNotification(
+                            Notification::make()
+                                ->success()
+                                ->title('Incidencias eliminadas')
+                                ->body("Las incidencias seleccionadas han sido eliminadas correctamente.")
+                                ->sendToDatabase(\Filament\Facades\Filament::auth()->user())
+                        ),
                 ]),
             ]);
     }

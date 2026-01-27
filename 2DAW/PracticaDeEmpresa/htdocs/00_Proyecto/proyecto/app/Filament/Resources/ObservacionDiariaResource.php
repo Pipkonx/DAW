@@ -100,10 +100,25 @@ class ObservacionDiariaResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make()
+                    ->successNotification(
+                        \Filament\Notifications\Notification::make()
+                            ->success()
+                            ->title('Observación eliminada')
+                            ->body("La observación diaria ha sido eliminada correctamente.")
+                            ->sendToDatabase(\Filament\Facades\Filament::auth()->user())
+                    ),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\DeleteBulkAction::make()
+                        ->successNotification(
+                            \Filament\Notifications\Notification::make()
+                                ->success()
+                                ->title('Observaciones eliminadas')
+                                ->body("Las observaciones seleccionadas han sido eliminadas correctamente.")
+                                ->sendToDatabase(\Filament\Facades\Filament::auth()->user())
+                        ),
                 ]),
             ]);
     }
@@ -137,8 +152,8 @@ class ObservacionDiariaResource extends Resource
             return $query->whereHas('alumno', fn($q) => $q->where('user_id', $user->id));
         }
 
-        if ($user->isTutorEmpresa()) {
-            return $query->whereHas('alumno', fn($q) => $q->where('empresa_id', $user->empresa_id));
+        if ($user->isTutorPracticas()) {
+            return $query->whereHas('alumno', fn($q) => $q->whereHas('tutorPracticas', fn($sq) => $sq->where('user_id', $user->id)));
         }
 
         return $query->whereRaw('1 = 0'); // No debería ver nada si no cumple lo anterior

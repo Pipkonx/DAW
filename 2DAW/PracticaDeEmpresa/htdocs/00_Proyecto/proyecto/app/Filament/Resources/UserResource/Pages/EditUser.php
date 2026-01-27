@@ -8,6 +8,7 @@ use Filament\Resources\Pages\EditRecord;
 use App\Models\Alumno;
 use App\Models\TutorCurso;
 use App\Models\TutorPracticas;
+use Filament\Notifications\Notification;
 
 /**
  * @class EditUser
@@ -16,6 +17,30 @@ use App\Models\TutorPracticas;
 class EditUser extends EditRecord
 {
     protected static string $resource = UserResource::class;
+
+    /**
+     * @brief Lógica ejecutada después de guardar el usuario.
+     */
+    protected function afterSave(): void
+    {
+        // 1. Notificación
+        Notification::make()
+            ->success()
+            ->title('Usuario actualizado')
+            ->body("Los datos del usuario {$this->record->name} han sido actualizados.")
+            ->sendToDatabase(\Filament\Facades\Filament::auth()->user())
+            ->send();
+
+        // 2. Actualizar perfil relacionado (lógica original)
+        $data = $this->form->getRawState();
+        $usuario = $this->record;
+        $rol = $data['rol'] ?? null;
+        $datosPerfil = $data['datosPerfil'] ?? [];
+
+        if ($rol && $rol !== 'admin' && !empty($datosPerfil)) {
+            $this->actualizarPerfilRelacionado($usuario, $rol, $datosPerfil);
+        }
+    }
 
     /**
      * @brief Define las acciones de la cabecera en la página de edición.
@@ -70,50 +95,22 @@ class EditUser extends EditRecord
     }
 
     /**
-     * @brief Lógica ejecutada después de guardar el usuario para actualizar su perfil.
-     * 
-     * @return void
+     * @brief Actualiza o crea el perfil relacionado según el rol.
      */
-    protected function afterSave(): void
+    private function actualizarPerfilRelacionado($usuario, $rol, $datosPerfil): void
     {
-        $data = $this->form->getRawState();
-        $usuario = $this->record;
-        $rol = $data['rol'] ?? null;
-        $datosPerfil = $data['datosPerfil'] ?? [];
+        $recordId = $usuario->reference_id;
 
-        if ($rol && $rol !== 'admin' && !empty($datosPerfil)) {
-            $this->actualizarPerfilRelacionado($usuario, $rol, $datosPerfil);
-        }
-    }
-
-    /**
-     * @brief Actualiza o crea el perfil relacionado basado en el rol.
-     * 
-     * @param \App\Models\User $usuario
-     * @param string $rol
-     * @param array $datosPerfil
-     * @return void
-     */
-    protected function actualizarPerfilRelacionado($usuario, $rol, $datosPerfil): void
-    {
         $perfil = match ($rol) {
-            'alumno' => \App\Models\Alumno::updateOrCreate(['id' => $usuario->reference_id], $datosPerfil),
-            'tutor_curso' => \App\Models\TutorCurso::updateOrCreate(['id' => $usuario->reference_id], $datosPerfil),
-            'tutor_practicas' => \App\Models\TutorPracticas::updateOrCreate(['id' => $usuario->reference_id], $datosPerfil),
-            'empresa' => \App\Models\Empresa::updateOrCreate(['id' => $usuario->reference_id], $datosPerfil),
+            'alumno' => Alumno::updateOrCreate(['id' => $recordId], $datosPerfil),
+            'tutor_curso' => TutorCurso::updateOrCreate(['id' => $recordId], $datosPerfil),
+            'tutor_practicas' => TutorPracticas::updateOrCreate(['id' => $recordId], $datosPerfil),
             default => null,
         };
 
-        if ($perfil && $perfil->wasRecentlyCreated || $usuario->reference_id !== $perfil->id) {
-            $usuario->update([
-                'reference_id' => $perfil->id,
-            ]);
+        if ($perfil && !$recordId) {
+            $usuario->update(['reference_id' => $perfil->id]);
             $perfil->update(['user_id' => $usuario->id]);
-        }
-
-        // Sincronizar rol si ha cambiado
-        if (!$usuario->hasRole($rol)) {
-            $usuario->syncRoles([$rol]);
         }
     }
 }

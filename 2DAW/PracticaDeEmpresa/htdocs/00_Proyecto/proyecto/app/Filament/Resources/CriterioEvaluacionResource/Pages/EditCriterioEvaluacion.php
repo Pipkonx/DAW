@@ -10,9 +10,21 @@ use Filament\Resources\Pages\EditRecord;
  * @class EditCriterioEvaluacion
  * @brief Página para la edición de Criterios de Evaluación.
  */
+use Filament\Notifications\Notification;
+
 class EditCriterioEvaluacion extends EditRecord
 {
     protected static string $resource = CriterioEvaluacionResource::class;
+
+    protected function afterSave(): void
+    {
+        Notification::make()
+            ->success()
+            ->title('Criterio actualizado')
+            ->body("Los datos del criterio han sido actualizados.")
+            ->sendToDatabase(\Filament\Facades\Filament::auth()->user())
+            ->send();
+    }
 
     /**
      * @brief Define las acciones de la cabecera en la página de edición.
