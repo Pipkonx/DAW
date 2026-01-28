@@ -59,14 +59,16 @@
                 <thead>
                     <tr>
                         <th style="width: 15%;">Fecha</th>
-                        <th>Observación</th>
+                        <th style="width: 10%;">Horas</th>
+                        <th>Actividades</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach($alumno->observacionesDiarias as $obs)
                         <tr>
                             <td>{{ \Carbon\Carbon::parse($obs->fecha)->format('d/m/Y') }}</td>
-                            <td>{{ $obs->observacion }}</td>
+                            <td>{{ $obs->horasRealizadas }}</td>
+                            <td>{{ $obs->actividades }}</td>
                         </tr>
                     @endforeach
                 </tbody>

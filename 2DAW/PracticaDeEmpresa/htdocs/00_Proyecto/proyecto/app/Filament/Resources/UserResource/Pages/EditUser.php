@@ -28,19 +28,47 @@ class EditUser extends EditRecord
     }
 
     /**
+     * @brief Sobrescribe el proceso de actualización para gestionar roles y perfiles.
+     */
+    protected function handleRecordUpdate(\Illuminate\Database\Eloquent\Model $record, array $data): \Illuminate\Database\Eloquent\Model
+    {
+        return \Illuminate\Support\Facades\DB::transaction(function () use ($record, $data) {
+            $rol = $data['rol'] ?? null;
+            $datosPerfil = $data['datosPerfil'] ?? [];
+
+            // 1. Actualizar datos básicos del usuario
+            $userData = [
+                'name' => $data['name'],
+                'email' => $data['email'],
+                'avatar_url' => $data['avatar_url'] ?? $record->avatar_url,
+            ];
+
+            if (!empty($data['password'])) {
+                $userData['password'] = \Illuminate\Support\Facades\Hash::make($data['password']);
+            }
+
+            $record->update($userData);
+
+            // 2. Sincronizar el rol
+            if ($rol) {
+                $record->syncRoles([$rol]);
+            }
+
+            // 3. Gestionar el perfil relacionado
+            if ($rol && $rol !== 'admin') {
+                $this->actualizarPerfilRelacionado($record, $rol, $datosPerfil);
+            }
+
+            return $record;
+        });
+    }
+
+    /**
      * @brief Lógica ejecutada después de guardar el usuario.
      */
     protected function afterSave(): void
     {
-        // Actualizar perfil relacionado (lógica original)
-        $data = $this->form->getRawState();
-        $usuario = $this->record;
-        $rol = $data['rol'] ?? null;
-        $datosPerfil = $data['datosPerfil'] ?? [];
-
-        if ($rol && $rol !== 'admin' && !empty($datosPerfil)) {
-            $this->actualizarPerfilRelacionado($usuario, $rol, $datosPerfil);
-        }
+        // La lógica se ha movido a handleRecordUpdate para mayor consistencia
     }
 
     /**
@@ -77,8 +105,17 @@ class EditUser extends EditRecord
         $rol = $usuario->getRoleNames()->first();
         $data['rol'] = $rol;
 
-        // Cargar datos del perfil según el rol y reference_id
-        if ($recordId = $this->record->reference_id) {
+        // Intentar cargar el perfil usando la relación directa (más fiable que reference_id)
+        $perfil = match ($rol) {
+            'alumno' => $usuario->alumno,
+            'tutor_curso' => $usuario->perfilTutorCurso,
+            'tutor_practicas' => $usuario->perfilTutorPracticas,
+            'empresa' => $usuario->empresa,
+            default => null,
+        };
+
+        // Fallback a reference_id si la relación no devolvió nada
+        if (!$perfil && $recordId = $this->record->reference_id) {
             $perfil = match ($rol) {
                 'alumno' => \App\Models\Alumno::find($recordId),
                 'tutor_curso' => \App\Models\TutorCurso::find($recordId),
@@ -86,10 +123,10 @@ class EditUser extends EditRecord
                 'empresa' => \App\Models\Empresa::find($recordId),
                 default => null,
             };
+        }
 
-            if ($perfil) {
-                $data['datosPerfil'] = $perfil->toArray();
-            }
+        if ($perfil) {
+            $data['datosPerfil'] = $perfil->toArray();
         }
 
         return $data;
@@ -100,18 +137,22 @@ class EditUser extends EditRecord
      */
     private function actualizarPerfilRelacionado($usuario, $rol, $datosPerfil): void
     {
-        $recordId = $usuario->reference_id;
+        // Buscamos primero por reference_id, si no existe, por user_id
+        $search = $usuario->reference_id ? ['id' => $usuario->reference_id] : ['user_id' => $usuario->id];
+        
+        // Aseguramos que el user_id esté presente en los datos del perfil
+        $datosPerfil['user_id'] = $usuario->id;
 
         $perfil = match ($rol) {
-            'alumno' => Alumno::updateOrCreate(['id' => $recordId], $datosPerfil),
-            'tutor_curso' => TutorCurso::updateOrCreate(['id' => $recordId], $datosPerfil),
-            'tutor_practicas' => TutorPracticas::updateOrCreate(['id' => $recordId], $datosPerfil),
+            'alumno' => Alumno::updateOrCreate($search, $datosPerfil),
+            'tutor_curso' => TutorCurso::updateOrCreate($search, $datosPerfil),
+            'tutor_practicas' => TutorPracticas::updateOrCreate($search, $datosPerfil),
+            'empresa' => \App\Models\Empresa::updateOrCreate($search, $datosPerfil),
             default => null,
         };
 
-        if ($perfil && !$recordId) {
+        if ($perfil && $usuario->reference_id !== $perfil->id) {
             $usuario->update(['reference_id' => $perfil->id]);
-            $perfil->update(['user_id' => $usuario->id]);
         }
     }
 }

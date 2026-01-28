@@ -21,7 +21,7 @@ class UserPolicy
      */
     public function verCualquiera(User $usuario): bool
     {
-        return $usuario->isAdmin();
+        return $usuario->isAdmin() || $usuario->isTutorPracticas();
     }
 
     /**
@@ -33,7 +33,15 @@ class UserPolicy
      */
     public function ver(User $usuario, User $modelo): bool
     {
-        return $usuario->isAdmin();
+        if ($usuario->isAdmin()) {
+            return true;
+        }
+
+        if ($usuario->isTutorPracticas()) {
+            return $modelo->hasRole('alumno');
+        }
+
+        return $usuario->id === $modelo->id;
     }
 
     /**
@@ -44,7 +52,7 @@ class UserPolicy
      */
     public function crear(User $usuario): bool
     {
-        return $usuario->isAdmin();
+        return $usuario->isAdmin() || $usuario->isTutorPracticas();
     }
 
     /**
@@ -56,7 +64,15 @@ class UserPolicy
      */
     public function actualizar(User $usuario, User $modelo): bool
     {
-        return $usuario->isAdmin();
+        if ($usuario->isAdmin()) {
+            return true;
+        }
+
+        if ($usuario->isTutorPracticas()) {
+            return $modelo->hasRole('alumno');
+        }
+
+        return $usuario->id === $modelo->id;
     }
 
     /**
@@ -68,6 +84,14 @@ class UserPolicy
      */
     public function eliminar(User $usuario, User $modelo): bool
     {
-        return $usuario->isAdmin();
+        if ($usuario->isAdmin()) {
+            return true;
+        }
+
+        if ($usuario->isTutorPracticas()) {
+            return $modelo->hasRole('alumno');
+        }
+
+        return false;
     }
 }

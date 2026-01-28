@@ -46,7 +46,7 @@ class EstadisticasPersonalizadas extends BaseWidget
         if (!$alumno) return [];
 
         $notaMedia = Evaluacion::where('alumno_id', $alumno->id)->avg('nota_final') ?? 0;
-        $horasTotales = ObservacionDiaria::where('alumno_id', $alumno->id)->sum('horas') ?? 0;
+        $horasTotales = ObservacionDiaria::where('alumno_id', $alumno->id)->sum('horasRealizadas') ?? 0;
         $incidenciasAbiertas = Incidencia::where('alumno_id', $alumno->id)->where('estado', 'abierta')->count();
 
         return [

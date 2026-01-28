@@ -12,6 +12,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Notifications\Notification;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Storage;
 use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
 use pxlrbt\FilamentExcel\Exports\ExcelExport;
 use Illuminate\Database\Eloquent\Builder;
@@ -35,9 +36,25 @@ class AlumnoResource extends Resource
      * 
      * @return bool
      */
+    public static function canViewAny(): bool
+    {
+        return auth()->user()->isAdmin() || auth()->user()->isTutorPracticas();
+    }
+
     public static function canCreate(): bool
     {
-        return false;
+        // La creación se centraliza en UserResource para mantener la integridad de la cuenta
+        return auth()->user()->isAdmin() || auth()->user()->isTutorPracticas();
+    }
+
+    public static function canEdit($record): bool
+    {
+        return auth()->user()->isAdmin() || auth()->user()->isTutorPracticas();
+    }
+
+    public static function canDelete($record): bool
+    {
+        return auth()->user()->isAdmin() || auth()->user()->isTutorPracticas();
     }
 
     public static function form(Form $form): Form
@@ -64,9 +81,24 @@ class AlumnoResource extends Resource
             ]);
     }
 
+    public static function getEloquentQuery(): Builder
+    {
+        $query = parent::getEloquentQuery()
+            ->with(['user', 'curso', 'empresa', 'tutorCurso', 'tutorPracticas']);
+            
+        $user = auth()->user();
+
+        if ($user->isAlumno()) {
+            return $query->where('user_id', $user->id);
+        }
+
+        return $query;
+    }
+
     public static function table(Table $table): Table
     {
         return $table
+            ->deferLoading()
             ->headerActions([
                 ExportAction::make()
                     ->exports([
@@ -82,8 +114,7 @@ class AlumnoResource extends Resource
                 Tables\Columns\ImageColumn::make('user.avatar_url')
                     ->label('Avatar')
                     ->circular()
-                    ->disk('public')
-                    ->defaultImageUrl(fn ($record) => 'https://ui-avatars.com/api/?name=' . urlencode($record->user?->name ?? 'Usuario') . '&color=FFFFFF&background=111827'),
+                    ->state(fn (Alumno $record) => $record->user?->getFilamentAvatarUrl()),
                 Tables\Columns\TextColumn::make('user.name')
                     ->label('Nombre Alumno')
                     ->searchable()
@@ -156,23 +187,5 @@ class AlumnoResource extends Resource
             'index' => Pages\ListAlumnos::route('/'),
             'edit' => Pages\EditAlumno::route('/{record}/edit'),
         ];
-    }
-
-    public static function getEloquentQuery(): Builder
-    {
-        $query = parent::getEloquentQuery();
-        $user = auth()->user();
-
-        if ($user->isAlumno()) {
-            return $query->where('user_id', $user->id);
-        }
-
-        if ($user->isTutorPracticas()) {
-            return $query->whereHas('tutorPracticas', function ($q) use ($user) {
-                $q->where('user_id', $user->id);
-            });
-        }
-
-        return $query;
     }
 }

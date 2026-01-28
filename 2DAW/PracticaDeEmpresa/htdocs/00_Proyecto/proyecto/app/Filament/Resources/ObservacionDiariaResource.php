@@ -55,9 +55,30 @@ class ObservacionDiariaResource extends Resource
             ]);
     }
 
+    public static function getEloquentQuery(): Builder
+    {
+        $query = parent::getEloquentQuery()->with(['alumno.user']);
+        $user = auth()->user();
+
+        if ($user->isAdmin() || $user->isTutorCurso()) {
+            return $query;
+        }
+
+        if ($user->isAlumno()) {
+            return $query->whereHas('alumno', fn($q) => $q->where('user_id', $user->id));
+        }
+
+        if ($user->isTutorPracticas()) {
+            return $query->whereHas('alumno', fn($q) => $q->whereHas('tutorPracticas', fn($sq) => $sq->where('user_id', $user->id)));
+        }
+
+        return $query->whereRaw('1 = 0');
+    }
+
     public static function table(Table $table): Table
     {
         return $table
+            ->deferLoading()
             ->columns([
                 Tables\Columns\TextColumn::make('alumno.user.name')
                     ->label('Alumno')
@@ -138,25 +159,5 @@ class ObservacionDiariaResource extends Resource
             'create' => Pages\CreateObservacionDiaria::route('/create'),
             'edit' => Pages\EditObservacionDiaria::route('/{record}/edit'),
         ];
-    }
-
-    public static function getEloquentQuery(): Builder
-    {
-        $query = parent::getEloquentQuery();
-        $user = auth()->user();
-
-        if ($user->isAdmin() || $user->isTutorCurso()) {
-            return $query;
-        }
-
-        if ($user->isAlumno()) {
-            return $query->whereHas('alumno', fn($q) => $q->where('user_id', $user->id));
-        }
-
-        if ($user->isTutorPracticas()) {
-            return $query->whereHas('alumno', fn($q) => $q->whereHas('tutorPracticas', fn($sq) => $sq->where('user_id', $user->id)));
-        }
-
-        return $query->whereRaw('1 = 0'); // No debería ver nada si no cumple lo anterior
     }
 }

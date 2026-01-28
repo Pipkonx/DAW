@@ -34,12 +34,8 @@ class AlumnoPolicy
      */
     public function ver(User $usuario, Alumno $alumno): bool
     {
-        if ($usuario->isAdmin() || $usuario->isTutorCurso()) {
+        if ($usuario->isAdmin() || $usuario->isTutorCurso() || $usuario->isTutorPracticas()) {
             return true;
-        }
-
-        if ($usuario->isTutorPracticas()) {
-            return $usuario->id === $alumno->tutorPracticas?->user_id;
         }
 
         if ($usuario->isAlumno()) {
@@ -53,11 +49,11 @@ class AlumnoPolicy
      * @brief Determina si el usuario puede registrar nuevos alumnos.
      * 
      * @param User $usuario Instancia del usuario que realiza la acción.
-     * @return bool Verdadero para administradores y tutores de curso.
+     * @return bool Verdadero para administradores, tutores de curso y tutores de prácticas.
      */
     public function crear(User $usuario): bool
     {
-        return $usuario->isAdmin() || $usuario->isTutorCurso();
+        return $usuario->isAdmin() || $usuario->isTutorCurso() || $usuario->isTutorPracticas();
     }
 
     /**
@@ -69,15 +65,7 @@ class AlumnoPolicy
      */
     public function actualizar(User $usuario, Alumno $alumno): bool
     {
-        if ($usuario->isAdmin() || $usuario->isTutorCurso()) {
-            return true;
-        }
-
-        if ($usuario->isTutorPracticas()) {
-            return $usuario->id === $alumno->tutorPracticas?->user_id;
-        }
-
-        return false;
+        return $usuario->isAdmin() || $usuario->isTutorCurso() || $usuario->isTutorPracticas();
     }
 
     /**
@@ -85,10 +73,10 @@ class AlumnoPolicy
      * 
      * @param User $usuario Instancia del usuario que realiza la acción.
      * @param Alumno $alumno Instancia del alumno a eliminar.
-     * @return bool Solo permitido para el administrador.
+     * @return bool Permitido para administradores y tutores de prácticas.
      */
     public function eliminar(User $usuario, Alumno $alumno): bool
     {
-        return $usuario->isAdmin();
+        return $usuario->isAdmin() || $usuario->isTutorPracticas();
     }
 }

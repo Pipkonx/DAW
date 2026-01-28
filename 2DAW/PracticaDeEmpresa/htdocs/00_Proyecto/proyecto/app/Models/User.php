@@ -20,6 +20,8 @@ use Illuminate\Support\Facades\Storage;
  * Centraliza la autenticación y las relaciones con los diferentes perfiles
  * de usuario. Utiliza el trait Notifiable para la gestión de notificaciones.
  */
+use Laravel\Sanctum\HasApiTokens;
+
 class User extends Authenticatable implements HasAvatar, FilamentUser
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
@@ -28,7 +30,7 @@ class User extends Authenticatable implements HasAvatar, FilamentUser
      * Esencial para que Filament pueda enviar notificaciones a la base de datos
      * y mostrarlas en el panel de usuario.
      */
-    use HasFactory, Notifiable, HasRoles;
+    use HasFactory, Notifiable, HasRoles, HasApiTokens;
 
     /**
      * @brief Determina si el usuario puede acceder al panel de Filament.
@@ -45,9 +47,19 @@ class User extends Authenticatable implements HasAvatar, FilamentUser
      */
     public function getFilamentAvatarUrl(): ?string
     {
-        return $this->avatar_url 
-            ? Storage::disk('public')->url($this->avatar_url) 
-            : 'https://ui-avatars.com/api/?name=' . urlencode($this->name) . '&color=FFFFFF&background=111827';
+        if ($this->avatar_url) {
+            // Si la ruta ya es una URL completa (ej. ui-avatars), la devolvemos
+            if (filter_var($this->avatar_url, FILTER_VALIDATE_URL)) {
+                return $this->avatar_url;
+            }
+            
+            // Si el archivo existe en el disco público, devolvemos su URL configurada
+            if (Storage::disk('public')->exists($this->avatar_url)) {
+                return Storage::disk('public')->url($this->avatar_url);
+            }
+        }
+
+        return 'https://ui-avatars.com/api/?name=' . urlencode($this->name) . '&color=FFFFFF&background=111827';
     }
 
     /**
@@ -145,6 +157,44 @@ class User extends Authenticatable implements HasAvatar, FilamentUser
         return $this->hasOne(TutorPracticas::class);
     }
 
+    public function messagesSent()
+    {
+        return $this->hasMany(Message::class, 'sender_id');
+    }
+
+    public function messagesReceived()
+    {
+        return $this->hasMany(Message::class, 'receiver_id');
+    }
+
+    /**
+     * @brief Obtiene el estado de conexión del usuario.
+     */
+    public function isOnline(): bool
+    {
+        return \Illuminate\Support\Facades\DB::table('sessions')
+            ->where('user_id', $this->id)
+            ->where('last_activity', '>=', now()->subMinutes(5)->getTimestamp())
+            ->exists();
+    }
+
+    /**
+     * @brief Obtiene la última vez que el usuario estuvo activo.
+     */
+    public function lastSeen(): ?string
+    {
+        $session = \Illuminate\Support\Facades\DB::table('sessions')
+            ->where('user_id', $this->id)
+            ->orderBy('last_activity', 'desc')
+            ->first();
+
+        if (!$session) {
+            return null;
+        }
+
+        return \Carbon\Carbon::createFromTimestamp($session->last_activity)->diffForHumans();
+    }
+
     /**
      * Los atributos que son asignables masivamente.
      *
@@ -156,6 +206,7 @@ class User extends Authenticatable implements HasAvatar, FilamentUser
         'password',
         'reference_id',
         'avatar_url',
+        'google_id',
     ];
 
     /**

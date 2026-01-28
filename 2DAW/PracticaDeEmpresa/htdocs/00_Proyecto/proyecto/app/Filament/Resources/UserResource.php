@@ -11,6 +11,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Notifications\Notification;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * @class UserResource
@@ -28,7 +29,43 @@ class UserResource extends Resource
 
     public static function shouldRegisterNavigation(): bool
     {
-        return auth()->user()->isAdmin();
+        return auth()->user()->isAdmin() || auth()->user()->isTutorPracticas();
+    }
+
+    public static function canViewAny(): bool
+    {
+        return auth()->user()->isAdmin() || auth()->user()->isTutorPracticas();
+    }
+
+    public static function canCreate(): bool
+    {
+        return auth()->user()->isAdmin() || auth()->user()->isTutorPracticas();
+    }
+
+    public static function canEdit($record): bool
+    {
+        return auth()->user()->isAdmin() || (auth()->user()->isTutorPracticas() && $record->hasRole('alumno'));
+    }
+
+    public static function canDelete($record): bool
+    {
+        return auth()->user()->isAdmin() || (auth()->user()->isTutorPracticas() && $record->hasRole('alumno'));
+    }
+
+    public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
+    {
+        $query = parent::getEloquentQuery();
+        $user = auth()->user();
+
+        if ($user->isAdmin()) {
+            return $query;
+        }
+
+        if ($user->isTutorPracticas()) {
+            return $query->role('alumno');
+        }
+
+        return $query->where('id', $user->id);
     }
 
     /**
@@ -61,13 +98,23 @@ class UserResource extends Resource
                             ->revealable(),
                         Forms\Components\Select::make('rol')
                             ->label('Rol del Usuario')
-                            ->options([
-                                'admin' => 'Administrador',
-                                'alumno' => 'Alumno',
-                                'tutor_practicas' => 'Tutor de Prácticas',
-                                'tutor_curso' => 'Tutor de Curso',
-                                'empresa' => 'Empresa',
-                            ])
+                            ->options(function () {
+                                if (auth()->user()->isAdmin()) {
+                                    return [
+                                        'admin' => 'Administrador',
+                                        'alumno' => 'Alumno',
+                                        'tutor_practicas' => 'Tutor de Prácticas',
+                                        'tutor_curso' => 'Tutor de Curso',
+                                        'empresa' => 'Empresa',
+                                    ];
+                                }
+                                if (auth()->user()->isTutorPracticas()) {
+                                    return [
+                                        'alumno' => 'Alumno',
+                                    ];
+                                }
+                                return [];
+                            })
                             ->required()
                             ->live()
                             ->afterStateHydrated(function (Forms\Components\Select $component, $record) {
@@ -75,6 +122,15 @@ class UserResource extends Resource
                                     $component->state($record->getRoleNames()->first());
                                 }
                             }),
+                        Forms\Components\FileUpload::make('avatar_url')
+                            ->label('Avatar')
+                            ->image()
+                            ->disk('public')
+                            ->directory('avatars')
+                            ->avatar()
+                            ->imageEditor()
+                            ->circleCropper()
+                            ->columnSpanFull(),
                     ])->columns(2),
 
                 // Perfil: Alumno
@@ -93,7 +149,7 @@ class UserResource extends Resource
                             ->relationship('alumno.empresa', 'nombre')
                             ->searchable()
                             ->preload(),
-                        Forms\Components\Select::make('datosPerfil.tutor_empresa_id')
+                        Forms\Components\Select::make('datosPerfil.tutor_practicas_id')
                             ->label('Tutor de Empresa')
                             ->options(User::role('tutor_practicas')->pluck('name', 'id'))
                             ->searchable(),
@@ -114,7 +170,7 @@ class UserResource extends Resource
                             ->label('Empresa')
                             ->relationship('perfilTutorPracticas.empresa', 'nombre')
                             ->required(),
-                        Forms\Components\TextInput::make('datosPerfil.cargo')->label('Cargo'),
+                        Forms\Components\TextInput::make('datosPerfil.puesto')->label('Cargo'),
                         Forms\Components\TextInput::make('datosPerfil.horario')->label('Horario'),
                     ])
                     ->visible(fn (Forms\Get $get) => $get('rol') === 'tutor_practicas')
@@ -156,9 +212,7 @@ class UserResource extends Resource
             ->columns([
                 Tables\Columns\ImageColumn::make('avatar_url')
                     ->label('Avatar')
-                    ->circular()
-                    ->disk('public')
-                    ->defaultImageUrl(fn ($record) => 'https://ui-avatars.com/api/?name=' . urlencode($record->name) . '&color=FFFFFF&background=111827'),
+                    ->circular(),
                 Tables\Columns\TextColumn::make('name')
                     ->label('Nombre')
                     ->searchable()

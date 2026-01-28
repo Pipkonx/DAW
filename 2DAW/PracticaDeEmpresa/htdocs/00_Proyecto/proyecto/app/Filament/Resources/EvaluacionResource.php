@@ -98,9 +98,15 @@ class EvaluacionResource extends Resource
             ]);
     }
 
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->with(['alumno.user', 'tutorPracticas.user']);
+    }
+
     public static function table(Table $table): Table
     {
         return $table
+            ->deferLoading()
             ->columns([
                 Tables\Columns\TextColumn::make('alumno.user.name')
                     ->label('Alumno')

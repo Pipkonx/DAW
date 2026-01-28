@@ -6,6 +6,7 @@ use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Filament\Pages\Auth\EditProfile as BaseEditProfile;
 
 /**
@@ -33,7 +34,8 @@ class EditProfile extends BaseEditProfile
                 Section::make('Información de Usuario')
                     ->description('Datos básicos de acceso y contacto.')
                     ->schema([
-                        $this->getNameFormComponent(),
+                        $this->getNameFormComponent()
+                            ->disabled(!auth()->user()->isAdmin()),
                         $this->getEmailFormComponent(),
                         $this->getPasswordFormComponent(),
                         $this->getPasswordConfirmationFormComponent(),
@@ -139,6 +141,13 @@ class EditProfile extends BaseEditProfile
                 'puesto' => $data['tutor_empresa_puesto'] ?? $user->perfilTutorPracticas?->puesto,
             ]);
         }
+
+        // Enviar notificación a la base de datos
+        Notification::make()
+            ->success()
+            ->title('Perfil actualizado')
+            ->body('Tus cambios han sido guardados correctamente.')
+            ->sendToDatabase($user);
 
         // Limpiar el array de datos para que solo contenga campos del modelo User
         unset(
