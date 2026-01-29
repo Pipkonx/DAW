@@ -24,6 +24,11 @@ class ListUsers extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
+            Actions\Action::make('managePermissions')
+                ->label('Gestionar Permisos (Estilo Discord)')
+                ->icon('heroicon-o-shield-check')
+                ->color('warning')
+                ->url(fn (): string => static::getResource()::getUrl('permissions')),
             Actions\CreateAction::make(),
         ];
     }
