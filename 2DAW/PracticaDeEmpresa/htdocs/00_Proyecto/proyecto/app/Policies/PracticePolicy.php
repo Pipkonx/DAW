@@ -61,7 +61,7 @@ class PracticePolicy
      */
     public function create(User $user): bool
     {
-        return true;
+        return !$user->isAlumno();
     }
 
     /**

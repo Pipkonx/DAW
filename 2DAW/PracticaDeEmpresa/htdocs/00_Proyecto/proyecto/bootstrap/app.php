@@ -12,7 +12,9 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        //
+        $middleware->redirectTo(function ($request) {
+            return $request->expectsJson() ? null : (auth()->check() ? '/admin' : '/admin/login');
+        });
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

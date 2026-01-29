@@ -15,6 +15,10 @@ class Message extends Model
         'receiver_id',
         'content',
         'is_read',
+        'file_path',
+        'file_name',
+        'file_type',
+        'file_size',
     ];
 
     public function sender(): BelongsTo

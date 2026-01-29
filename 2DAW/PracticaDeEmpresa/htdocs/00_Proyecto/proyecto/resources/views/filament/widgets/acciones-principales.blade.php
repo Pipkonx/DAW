@@ -1,15 +1,17 @@
 <x-filament-widgets::widget>
     <x-filament::section>
         <div class="flex flex-wrap gap-4 justify-center">
-            <x-filament::button 
-                wire:click="enviarNotificacionPrueba"
-                icon="heroicon-m-bell"
-                color="warning"
-                size="lg"
-                class="min-w-[200px]"
-            >
-                Probar Notificaciones
-            </x-filament::button>
+            @if(auth()->user()->isAdmin())
+                <x-filament::button 
+                    wire:click="enviarNotificacionPrueba"
+                    icon="heroicon-m-bell"
+                    color="warning"
+                    size="lg"
+                    class="min-w-[200px]"
+                >
+                    Probar Notificaciones
+                </x-filament::button>
+            @endif
 
             @foreach($acciones as $accion)
                 <x-filament::button 

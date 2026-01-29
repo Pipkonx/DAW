@@ -21,6 +21,7 @@ use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\DeleteAction;
 use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\DeleteBulkAction;
+use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
 use Filament\Notifications\Notification;
 use Filament\Facades\Filament;
 use Illuminate\Database\Eloquent\Builder;
@@ -39,7 +40,7 @@ class EvaluacionResource extends Resource
 
     public static function canViewAny(): bool
     {
-        return auth()->user()->isAdmin() || auth()->user()->isTutorCurso();
+        return auth()->user()->isAdmin() || auth()->user()->isTutorCurso() || auth()->user()->isAlumno() || auth()->user()->isTutorPracticas();
     }
 
     /**
@@ -153,7 +154,23 @@ class EvaluacionResource extends Resource
      */
     public static function getEloquentQuery(): Builder
     {
-        return parent::getEloquentQuery()->with(['alumno.user', 'tutorPracticas.user']);
+        $query = parent::getEloquentQuery()->with(['alumno.user', 'alumno.curso', 'alumno.empresa', 'tutorPracticas.user']);
+        
+        if (auth()->user()->isAlumno()) {
+            $query->where('alumno_id', auth()->user()->alumno->id);
+        }
+
+        if (auth()->user()->isTutorPracticas()) {
+            $query->where('tutor_practicas_id', auth()->user()->perfilTutorPracticas?->id);
+        }
+
+        if (auth()->user()->isTutorCurso()) {
+            $query->whereHas('alumno', function ($q) {
+                $q->where('tutor_curso_id', auth()->user()->perfilTutorCurso?->id);
+            });
+        }
+        
+        return $query;
     }
 
     /**
@@ -174,6 +191,14 @@ class EvaluacionResource extends Resource
                 TextColumn::make('tutorPracticas.user.name')
                     ->label('Tutor Empresa')
                     ->sortable(),
+                TextColumn::make('alumno.curso.nombre')
+                    ->label('Curso')
+                    ->sortable()
+                    ->toggleable(),
+                TextColumn::make('alumno.empresa.nombre')
+                    ->label('Empresa')
+                    ->sortable()
+                    ->toggleable(),
                 TextColumn::make('nota_final')
                     ->label('Nota Final')
                     ->numeric()
@@ -188,9 +213,27 @@ class EvaluacionResource extends Resource
             ])
             ->filters([
                 SelectFilter::make('alumno')
-                    ->label('Filtrar por Estudiante')
+                    ->label('Estudiante')
                     ->relationship('alumno', 'id')
-                    ->getOptionLabelFromRecordUsing(fn ($record) => $record->user?->name ?? 'Alumno sin usuario'),
+                    ->getOptionLabelFromRecordUsing(fn ($record) => $record->user?->name ?? 'Alumno sin usuario')
+                    ->searchable()
+                    ->preload(),
+                SelectFilter::make('curso')
+                    ->label('Curso')
+                    ->relationship('alumno.curso', 'nombre')
+                    ->searchable()
+                    ->preload(),
+                SelectFilter::make('empresa')
+                    ->label('Empresa')
+                    ->relationship('alumno.empresa', 'nombre')
+                    ->searchable()
+                    ->preload(),
+                SelectFilter::make('tutor_practicas')
+                    ->label('Tutor Empresa')
+                    ->relationship('tutorPracticas', 'id')
+                    ->getOptionLabelFromRecordUsing(fn ($record) => $record->user?->name ?? 'Tutor sin usuario')
+                    ->searchable()
+                    ->preload(),
             ])
             ->actions([
                 EditAction::make()
@@ -207,6 +250,9 @@ class EvaluacionResource extends Resource
             ])
             ->bulkActions([
                 BulkActionGroup::make([
+                    ExportBulkAction::make()
+                        ->label('Exportar a Excel (Reporte)')
+                        ->icon('heroicon-o-document-arrow-down'),
                     DeleteBulkAction::make()
                         ->label('Eliminar seleccionadas')
                         ->successNotification(

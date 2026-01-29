@@ -12,40 +12,74 @@ use Illuminate\Support\Facades\Cache;
 
 use Livewire\Attributes\Computed;
 
+use Livewire\WithFileUploads;
+
 class InternalChat extends Component
 {
-    public $receiver;
+    use WithFileUploads;
+
+    public $receiverId;
     public $message = '';
     public $search = '';
+    public $attachment;
+    public $uploading = false;
 
-    #[Computed]
-    public function users()
+    public function getUsersProperty()
     {
-        return User::where('id', '!=', Auth::id())
-            ->where('name', 'like', '%' . $this->search . '%')
+        $query = User::where('id', '!=', Auth::id())
             ->withCount(['messagesReceived as unread_messages_count' => function ($query) {
                 $query->where('receiver_id', Auth::id())
                       ->where('is_read', false);
             }])
-            ->orderBy('unread_messages_count', 'desc')
-            ->orderBy('name', 'asc')
-            ->get();
+            ->addSelect([
+                'last_message_at' => Message::select('created_at')
+                    ->where(function ($q) {
+                        $q->whereColumn('sender_id', 'users.id')
+                            ->where('receiver_id', Auth::id());
+                    })
+                    ->orWhere(function ($q) {
+                        $q->where('sender_id', Auth::id())
+                            ->whereColumn('receiver_id', 'users.id');
+                    })
+                    ->latest()
+                    ->take(1)
+            ]);
+
+        if (empty(trim($this->search))) {
+            // Solo usuarios con los que hay mensajes (enviados o recibidos)
+            $query->whereHas('messagesSent', function($sq) {
+                $sq->where('receiver_id', Auth::id());
+            })->orWhereHas('messagesReceived', function($sq) {
+                $sq->where('sender_id', Auth::id());
+            });
+            
+            // Ordenar por el mensaje más reciente
+            $query->orderByDesc('last_message_at');
+        } else {
+            // Si hay búsqueda, buscar entre todos los usuarios
+            $query->where('name', 'like', '%' . $this->search . '%')
+                ->orderBy('name', 'asc');
+        }
+
+        return $query->get();
     }
 
-    #[Computed]
-    public function messages()
+    public function getReceiverProperty()
     {
-        if (!$this->receiver) {
+        return $this->receiverId ? User::find($this->receiverId) : null;
+    }
+
+    public function getMessagesProperty()
+    {
+        if (!$this->receiverId) {
             return [];
         }
 
-        $receiverId = $this->receiver instanceof User ? $this->receiver->id : $this->receiver['id'];
-        
-        return Message::where(function ($query) use ($receiverId) {
+        return Message::where(function ($query) {
             $query->where('sender_id', Auth::id())
-                ->where('receiver_id', $receiverId);
-        })->orWhere(function ($query) use ($receiverId) {
-            $query->where('sender_id', $receiverId)
+                ->where('receiver_id', $this->receiverId);
+        })->orWhere(function ($query) {
+            $query->where('sender_id', $this->receiverId)
                 ->where('receiver_id', Auth::id());
         })
         ->with(['sender', 'receiver'])
@@ -59,7 +93,7 @@ class InternalChat extends Component
 
     public function selectReceiver($userId)
     {
-        $this->receiver = User::find($userId);
+        $this->receiverId = $userId;
         
         // Marcar mensajes como leídos
         Message::where('sender_id', $userId)
@@ -73,27 +107,73 @@ class InternalChat extends Component
         $this->dispatch('receiverSelected');
     }
 
+    protected function rules()
+    {
+        return [
+            'message' => 'required|string|max:1000',
+            'receiverId' => 'required',
+        ];
+    }
+
+    protected function validationAttributes()
+    {
+        return [
+            'message' => 'mensaje',
+            'receiverId' => 'destinatario',
+        ];
+    }
+
     public function sendMessage()
     {
+        if (empty(trim($this->message)) && !$this->attachment) {
+            return;
+        }
+
         $this->validate([
-            'message' => 'required|string|max:1000',
-            'receiver' => 'required',
+            'message' => 'nullable|string|max:1000',
+            'receiverId' => 'required',
+            'attachment' => 'nullable|file|max:10240', // 10MB max
         ]);
 
-        $receiverId = $this->receiver instanceof User ? $this->receiver->id : $this->receiver['id'];
+        $fileData = [];
+        if ($this->attachment) {
+            $path = $this->attachment->store('chat-attachments', 'public');
+            $fileData = [
+                'file_path' => $path,
+                'file_name' => $this->attachment->getClientOriginalName(),
+                'file_type' => $this->attachment->getMimeType(),
+                'file_size' => $this->attachment->getSize(),
+            ];
+        }
 
-        $newMessage = Message::create([
+        $newMessage = Message::create(array_merge([
             'sender_id' => Auth::id(),
-            'receiver_id' => $receiverId,
+            'receiver_id' => $this->receiverId,
             'content' => $this->message,
             'is_read' => false,
-        ]);
+        ], $fileData));
 
         // Limpiar cache del receptor
-        Cache::forget("unread_count_" . $receiverId);
+        Cache::forget("unread_count_" . $this->receiverId);
 
         $this->message = '';
+        $this->attachment = null;
         $this->dispatch('messageSent');
+    }
+
+    public function downloadFile($messageId)
+    {
+        $message = Message::findOrFail($messageId);
+        
+        if ($message->file_path && \Illuminate\Support\Facades\Storage::disk('public')->exists($message->file_path)) {
+            return \Illuminate\Support\Facades\Storage::disk('public')->download($message->file_path, $message->file_name);
+        }
+
+        Notification::make()
+            ->title('Error')
+            ->body('El archivo no existe o ha sido eliminado.')
+            ->danger()
+            ->send();
     }
 
     public function deleteMessage($messageId)

@@ -91,6 +91,11 @@ class ObservacionDiariaResource extends Resource
             ]);
     }
 
+    public static function canViewAny(): bool
+    {
+        return true;
+    }
+
     /**
      * @brief Obtiene la consulta base optimizada para el recurso de Observaciones Diarias.
      * 
@@ -110,7 +115,8 @@ class ObservacionDiariaResource extends Resource
         }
 
         if ($usuarioActual->isAlumno()) {
-            return $consulta->whereHas('alumno', fn($q) => $q->where('user_id', $usuarioActual->id));
+            // El alumno ve sus propias observaciones
+            return $consulta->where('alumno_id', $usuarioActual->alumno->id);
         }
 
         if ($usuarioActual->isTutorPracticas()) {

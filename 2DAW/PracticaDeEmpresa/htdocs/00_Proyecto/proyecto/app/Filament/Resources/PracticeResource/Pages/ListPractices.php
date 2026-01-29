@@ -35,6 +35,10 @@ class ListPractices extends ListRecords
      */
     protected function getHeaderActions(): array
     {
-        return [];
+        return [
+            Actions\CreateAction::make()
+                ->label('Nueva Práctica')
+                ->modal(),
+        ];
     }
 }

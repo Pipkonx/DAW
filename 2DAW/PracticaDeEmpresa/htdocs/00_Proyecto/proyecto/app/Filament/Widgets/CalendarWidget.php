@@ -31,4 +31,9 @@ class CalendarWidget extends FullCalendarWidget
     {
         return true;
     }
+
+    protected function getHeaderActions(): array
+    {
+        return [];
+    }
 }

@@ -29,7 +29,7 @@ class AdminPanelProvider extends PanelProvider
         return $panel
             ->default()
             ->id('admin')
-            ->path('dashboard')
+            ->path('admin')
             ->login()
             ->profile(\App\Filament\Pages\EditProfile::class)
             ->unsavedChangesAlerts()
@@ -59,9 +59,9 @@ class AdminPanelProvider extends PanelProvider
                            class="relative flex items-center justify-center w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-500 hover:text-indigo-600 transition-all hover:scale-110 mr-3 group"
                            title="Tienes {{ $unreadTotal }} mensajes sin leer">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 group-hover:animate-pulse">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3h9m-9 3h3m-6.75 4.125a3 3 0 0 0 3 3h7.5a3 3 0 0 0 3-3V6.75a3 3 0 0 0-3-3h-7.5a3 3 0 0 0-3 3v11.625Z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3h9m-9 3h3m-6.75 4.125a3 3 0 0 0 3 3h7.5a3 3 0 0 0 3-3V6.75a3 3 0 0 0-3-3h-7.5a3 3 0 0 0-3-3h-7.5a3 3 0 0 0-3 3v11.625Z" />
                             </svg>
-                            <span class="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-600 text-[11px] font-black text-white ring-2 ring-white dark:ring-gray-900 shadow-lg animate-bounce group-hover:bg-red-500">
+                            <span class="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-blue-50 text-[11px] font-black text-blue-600 ring-2 ring-blue-600 shadow-lg animate-bounce group-hover:bg-blue-100">
                                 {{ $unreadTotal }}
                             </span>
                         </a>

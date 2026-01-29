@@ -42,7 +42,12 @@ class CapacidadEvaluacionResource extends Resource
 
     public static function shouldRegisterNavigation(): bool
     {
-        return auth()->user()->isAdmin();
+        return auth()->user()->isAdmin() || auth()->user()->isTutorPracticas();
+    }
+
+    public static function canViewAny(): bool
+    {
+        return auth()->user()->isAdmin() || auth()->user()->isTutorPracticas();
     }
 
     /**

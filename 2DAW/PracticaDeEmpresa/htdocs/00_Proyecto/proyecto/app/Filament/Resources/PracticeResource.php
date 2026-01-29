@@ -16,6 +16,7 @@ use Filament\Resources\Resource;
 use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Actions\DeleteAction;
 use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\DeleteBulkAction;
@@ -96,6 +97,8 @@ class PracticeResource extends Resource
                             ->multiple()
                             ->disk('public')
                             ->directory('practices')
+                            ->downloadable()
+                            ->openable()
                             ->columnSpanFull(),
                         Hidden::make('user_id')
                             ->default(fn () => auth()->id()),
@@ -165,6 +168,8 @@ class PracticeResource extends Resource
                     ]),
             ])
             ->actions([
+                ViewAction::make()
+                    ->label('Ver detalles'),
                 DeleteAction::make()
                     ->label('Eliminar')
                     ->hidden(fn () => auth()->user()->isAlumno() || auth()->user()->isTutorPracticas()),
@@ -175,7 +180,8 @@ class PracticeResource extends Resource
                         ->label('Eliminar seleccionados')
                         ->hidden(fn () => auth()->user()->isAlumno() || auth()->user()->isTutorPracticas()),
                 ])->label('Acciones por lote'),
-            ]);
+            ])
+            ->headerActions([]);
     }
 
     /**
@@ -232,12 +238,12 @@ class PracticeResource extends Resource
 
     public static function canCreate(): bool
     {
-        return false;
+        return !auth()->user()->isAlumno();
     }
 
     public static function canEdit($record): bool
     {
-        return false;
+        return auth()->user()->isAdmin() || $record->user_id === auth()->id();
     }
 
     public static function getPages(): array

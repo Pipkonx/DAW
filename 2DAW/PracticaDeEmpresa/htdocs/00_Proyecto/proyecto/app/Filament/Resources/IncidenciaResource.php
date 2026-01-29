@@ -213,6 +213,7 @@ class IncidenciaResource extends Resource
                     ->label('Resolver')
                     ->icon('heroicon-o-check-circle')
                     ->color('success')
+                    ->hidden(fn () => auth()->user()->isAlumno())
                     ->disabled(fn (Incidencia $record): bool => $record->estado === 'RESUELTA')
                     ->form([
                         Textarea::make('resolucion')
@@ -264,6 +265,21 @@ class IncidenciaResource extends Resource
                         ),
                 ])->label('Acciones por lote'),
             ]);
+    }
+
+    public static function canCreate(): bool
+    {
+        return !auth()->user()->isAlumno();
+    }
+
+    public static function canEdit($record): bool
+    {
+        return !auth()->user()->isAlumno();
+    }
+
+    public static function canDelete($record): bool
+    {
+        return auth()->user()->isAdmin() || auth()->user()->isTutorCurso();
     }
 
     public static function getRelations(): array

@@ -4,11 +4,11 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\GoogleController;
 
 Route::get('/', function () {
-    return redirect('/dashboard');
+    return redirect('/admin');
 });
 
 Route::get('/login', function () {
-    return redirect('/dashboard/login');
+    return redirect('/admin/login');
 })->name('login');
 
 // Rutas de autenticación con Google
