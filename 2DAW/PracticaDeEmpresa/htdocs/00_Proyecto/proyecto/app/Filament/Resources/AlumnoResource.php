@@ -52,7 +52,7 @@ class AlumnoResource extends Resource
     public static function canCreate(): bool
     {
         // La creación se centraliza en UserResource para mantener la integridad de la cuenta
-        return auth()->user()->isAdmin() || auth()->user()->isTutorPracticas();
+        return false;
     }
 
     public static function canEdit($record): bool
@@ -79,7 +79,8 @@ class AlumnoResource extends Resource
                     ->label('Usuario')
                     ->placeholder('Selecciona un usuario')
                     ->relationship('user', 'name')
-                    ->required(),
+                    ->required()
+                    ->disabledOn('edit'),
                 Select::make('curso_id')
                     ->label('Curso')
                     ->placeholder('Selecciona un curso')

@@ -11,8 +11,9 @@ use Filament\Notifications\Notification;
 use Illuminate\Support\Facades\Cache;
 
 use Livewire\Attributes\Computed;
-
 use Livewire\WithFileUploads;
+use Intervention\Image\Laravel\Facades\Image;
+use Illuminate\Support\Facades\Storage;
 
 class InternalChat extends Component
 {
@@ -149,13 +150,42 @@ class InternalChat extends Component
 
         $fileData = [];
         if ($this->attachment) {
-            $path = $this->attachment->store('chat-attachments', 'public');
-            $fileData = [
-                'file_path' => $path,
-                'file_name' => $this->attachment->getClientOriginalName(),
-                'file_type' => $this->attachment->getMimeType(),
-                'file_size' => $this->attachment->getSize(),
-            ];
+            $mimeType = $this->attachment->getMimeType();
+            $isImage = str_starts_with($mimeType, 'image/');
+
+            $extension = strtolower($this->attachment->getClientOriginalExtension());
+
+            if ($isImage && in_array($extension, ['jpg', 'jpeg', 'png', 'webp'])) {
+                // Comprimir imagen usando Intervention Image
+                $img = Image::read($this->attachment->getRealPath());
+                
+                // Redimensionar si es muy grande (máximo 1200px de ancho/alto)
+                $img->scaleDown(width: 1200, height: 1200);
+                
+                $filename = time() . '_' . $this->attachment->getClientOriginalName();
+                $path = 'chat-attachments/' . $filename;
+                
+                // Codificar con calidad reducida (60%)
+                $encoded = $img->encodeByExtension($extension, quality: 60);
+                
+                Storage::disk('public')->put($path, (string) $encoded);
+                
+                $fileData = [
+                    'file_path' => $path,
+                    'file_name' => $this->attachment->getClientOriginalName(),
+                    'file_type' => $mimeType,
+                    'file_size' => strlen((string) $encoded),
+                ];
+            } else {
+                // Archivos no imagen o formatos no soportados para compresión simple
+                $path = $this->attachment->store('chat-attachments', 'public');
+                $fileData = [
+                    'file_path' => $path,
+                    'file_name' => $this->attachment->getClientOriginalName(),
+                    'file_type' => $mimeType,
+                    'file_size' => $this->attachment->getSize(),
+                ];
+            }
         }
 
         $newMessage = Message::create(array_merge([

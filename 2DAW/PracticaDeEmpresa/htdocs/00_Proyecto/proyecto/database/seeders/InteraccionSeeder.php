@@ -38,6 +38,16 @@ class InteraccionSeeder extends Seeder
             // 1. Crear un par de observaciones diarias
             ObservacionDiaria::create([
                 'alumno_id' => $alumno->id,
+                'fecha' => now()->subDays(3),
+                'actividades' => 'Investigación sobre el framework y configuración inicial.',
+                'explicaciones' => 'Se configuró el entorno de desarrollo.',
+                'observacionesAlumno' => 'El entorno quedó listo.',
+                'observacionesTutor' => 'Bien por la iniciativa.',
+                'horasRealizadas' => 6,
+            ]);
+
+            ObservacionDiaria::create([
+                'alumno_id' => $alumno->id,
                 'fecha' => now()->subDays(2),
                 'actividades' => 'Análisis de requerimientos y diseño de base de datos.',
                 'explicaciones' => 'Se revisaron los requisitos con el tutor.',
@@ -65,15 +75,47 @@ class InteraccionSeeder extends Seeder
                 'fecha' => now()->subDays(5),
                 'tipo' => 'OTROS',
                 'descripcion' => 'El alumno presenta problemas para configurar el servidor local debido a permisos de administrador.',
+                'estado' => 'CERRADA',
+            ]);
+
+            Incidencia::create([
+                'alumno_id' => $alumno->id,
+                'tutor_practicas_id' => $tutorPracticas ? $tutorPracticas->id : null,
+                'fecha' => now()->subDays(4),
+                'tipo' => 'RETRASO',
+                'descripcion' => 'El alumno llegó 15 minutos tarde por problemas de transporte.',
                 'estado' => 'ABIERTA',
             ]);
 
-            // 3. Crear una evaluación final
+            Incidencia::create([
+                'alumno_id' => $alumno->id,
+                'tutor_practicas_id' => $tutorPracticas ? $tutorPracticas->id : null,
+                'fecha' => now()->subDays(3),
+                'tipo' => 'FALTA_ASISTENCIA',
+                'descripcion' => 'El alumno no asistió por motivos médicos justificados.',
+                'estado' => 'RESUELTA',
+            ]);
+
+            // 3. Crear evaluaciones
             Evaluacion::create([
                 'alumno_id' => $alumno->id,
                 'tutor_practicas_id' => $tutorPracticas ? $tutorPracticas->id : null,
-                'nota_final' => rand(7, 10),
-                'observaciones' => 'Excelente desempeño durante las prácticas.',
+                'nota_final' => rand(5, 7),
+                'observaciones' => 'Primer seguimiento realizado.',
+            ]);
+
+            Evaluacion::create([
+                'alumno_id' => $alumno->id,
+                'tutor_practicas_id' => $tutorPracticas ? $tutorPracticas->id : null,
+                'nota_final' => rand(6, 8),
+                'observaciones' => 'Progreso adecuado en el segundo mes.',
+            ]);
+
+            Evaluacion::create([
+                'alumno_id' => $alumno->id,
+                'tutor_practicas_id' => $tutorPracticas ? $tutorPracticas->id : null,
+                'nota_final' => rand(8, 10),
+                'observaciones' => 'Excelente desempeño final durante las prácticas.',
             ]);
         }
     }

@@ -52,7 +52,7 @@ class UsuarioPerfilSeeder extends Seeder
             ])]);
         }
 
-        for ($i = 1; $i <= 2; $i++) {
+        for ($i = 1; $i <= 3; $i++) {
             $email = "tutorcurso$i@ejemplo.com";
             if (!User::where('email', $email)->exists()) {
                 $user = User::create([
@@ -169,6 +169,10 @@ class UsuarioPerfilSeeder extends Seeder
             );
             \App\Models\CapacidadEvaluacion::firstOrCreate(
                 ['nombre' => "Capacidad 2 de {$c['nombre']}"],
+                ['criterio_id' => $criterio->id, 'puntuacion_maxima' => 10, 'activo' => true]
+            );
+            \App\Models\CapacidadEvaluacion::firstOrCreate(
+                ['nombre' => "Capacidad 3 de {$c['nombre']}"],
                 ['criterio_id' => $criterio->id, 'puntuacion_maxima' => 10, 'activo' => true]
             );
         }

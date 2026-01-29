@@ -23,6 +23,8 @@ use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Notifications\Notification;
 use Illuminate\Database\Eloquent\Builder;
 
+use Filament\Tables\Actions\ActionGroup;
+
 /**
  * @class UserResource
  * @brief Recurso de Filament para la gestión de usuarios y sus perfiles relacionados.
@@ -307,11 +309,11 @@ class UserResource extends Resource
     public static function table(Table $tabla): Table
     {
         return $tabla
-            ->deferLoading()
             ->columns([
                 ImageColumn::make('avatar_url')
                     ->label('Avatar')
-                    ->circular(),
+                    ->circular()
+                    ->toggleable(),
                 TextColumn::make('name')
                     ->label('Nombre')
                     ->searchable()
@@ -349,7 +351,8 @@ class UserResource extends Resource
                             'empresa' => "EMP-{$record->reference_id}",
                             default => 'N/A',
                         };
-                    }),
+                    })
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('informacion_adicional')
                     ->label('Información Adicional')
                     ->getStateUsing(function (User $record) {
@@ -361,7 +364,8 @@ class UserResource extends Resource
                             'tutor_curso' => $record->perfilTutorCurso?->especialidad ?? 'Sin Especialidad',
                             default => '-',
                         };
-                    }),
+                    })
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 SelectFilter::make('roles')
@@ -372,9 +376,14 @@ class UserResource extends Resource
             ])
             ->actions([
                 EditAction::make()
-                    ->label('Editar'),
+                    ->label('Editar')
+                    ->icon('heroicon-m-pencil-square')
+                    ->button(),
                 DeleteAction::make()
                     ->label('Eliminar')
+                    ->icon('heroicon-m-trash')
+                    ->color('danger')
+                    ->button()
                     ->before(function (User $record) {
                         self::borrarPerfilRelacionado($record);
                     })

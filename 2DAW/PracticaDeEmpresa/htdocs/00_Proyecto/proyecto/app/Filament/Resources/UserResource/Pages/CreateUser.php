@@ -56,10 +56,25 @@ class CreateUser extends CreateRecord
         return DB::transaction(function () use ($data) {
             $rol = $data['rol'] ?? null;
             $datosPerfil = $data['datosPerfil'] ?? [];
-            $referenceId = null;
 
-            // 1. Crear el perfil específico primero si no es admin
+            // 1. Crear el usuario primero
+            $usuario = User::create([
+                'name' => $data['name'],
+                'email' => $data['email'],
+                'password' => $data['password'],
+                'avatar_url' => $data['avatar_url'] ?? null,
+            ]);
+
+            // 2. Asignar el rol
+            if ($rol) {
+                $usuario->assignRole($rol);
+            }
+
+            // 3. Crear el perfil específico si no es admin
             if ($rol && $rol !== 'admin') {
+                // Aseguramos que el user_id esté en los datos del perfil
+                $datosPerfil['user_id'] = $usuario->id;
+
                 $perfil = match ($rol) {
                     'alumno' => \App\Models\Alumno::create($datosPerfil),
                     'tutor_curso' => \App\Models\TutorCurso::create($datosPerfil),
@@ -69,26 +84,9 @@ class CreateUser extends CreateRecord
                 };
 
                 if ($perfil) {
-                    $referenceId = $perfil->id;
+                    // 4. Actualizar el usuario con el reference_id (ID del perfil)
+                    $usuario->update(['reference_id' => $perfil->id]);
                 }
-            }
-
-            // 2. Crear el usuario con el reference_id
-            $usuario = User::create([
-                'name' => $data['name'],
-                'email' => $data['email'],
-                'password' => $data['password'],
-                'reference_id' => $referenceId,
-            ]);
-
-            // 3. Asignar el rol
-            if ($rol) {
-                $usuario->assignRole($rol);
-            }
-
-            // 4. Vincular el perfil con el user_id para consistencia
-            if (isset($perfil) && $perfil) {
-                $perfil->update(['user_id' => $usuario->id]);
             }
 
             return $usuario;
