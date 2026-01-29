@@ -52,16 +52,16 @@ class EditEvaluacion extends EditRecord
      * 
      * Calcula la nota final basándose en el promedio de las notas de los detalles.
      * 
-     * @param array $data Datos del formulario.
+     * @param array $datos Datos del formulario.
      * @return array Datos modificados.
      */
-    protected function mutateFormDataBeforeSave(array $data): array
+    protected function mutateFormDataBeforeSave(array $datos): array
     {
-        if (isset($data['detalles']) && count($data['detalles']) > 0) {
-            $sum = collect($data['detalles'])->sum('nota');
-            $data['nota_final'] = $sum / count($data['detalles']);
+        if (isset($datos['detalles']) && count($datos['detalles']) > 0) {
+            $suma = collect($datos['detalles'])->sum('nota');
+            $datos['nota_final'] = $suma / count($datos['detalles']);
         }
 
-        return $data;
+        return $datos;
     }
 }

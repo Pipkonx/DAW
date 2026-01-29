@@ -18,6 +18,11 @@ class EditUser extends EditRecord
 {
     protected static string $resource = UserResource::class;
 
+    /**
+     * @brief Obtiene la notificación de éxito al guardar un usuario.
+     * 
+     * @return Notification|null Objeto de notificación configurado.
+     */
     protected function getSavedNotification(): ?Notification
     {
         return Notification::make()
@@ -29,25 +34,29 @@ class EditUser extends EditRecord
 
     /**
      * @brief Sobrescribe el proceso de actualización para gestionar roles y perfiles.
+     * 
+     * @param \Illuminate\Database\Eloquent\Model $record Instancia del registro a actualizar.
+     * @param array $datos Datos del formulario.
+     * @return \Illuminate\Database\Eloquent\Model Registro actualizado.
      */
-    protected function handleRecordUpdate(\Illuminate\Database\Eloquent\Model $record, array $data): \Illuminate\Database\Eloquent\Model
+    protected function handleRecordUpdate(\Illuminate\Database\Eloquent\Model $record, array $datos): \Illuminate\Database\Eloquent\Model
     {
-        return \Illuminate\Support\Facades\DB::transaction(function () use ($record, $data) {
-            $rol = $data['rol'] ?? null;
-            $datosPerfil = $data['datosPerfil'] ?? [];
+        return \Illuminate\Support\Facades\DB::transaction(function () use ($record, $datos) {
+            $rol = $datos['rol'] ?? null;
+            $datosPerfil = $datos['datosPerfil'] ?? [];
 
             // 1. Actualizar datos básicos del usuario
-            $userData = [
-                'name' => $data['name'],
-                'email' => $data['email'],
-                'avatar_url' => $data['avatar_url'] ?? $record->avatar_url,
+            $datosUsuario = [
+                'name' => $datos['name'],
+                'email' => $datos['email'],
+                'avatar_url' => $datos['avatar_url'] ?? $record->avatar_url,
             ];
 
-            if (!empty($data['password'])) {
-                $userData['password'] = \Illuminate\Support\Facades\Hash::make($data['password']);
+            if (!empty($datos['password'])) {
+                $datosUsuario['password'] = \Illuminate\Support\Facades\Hash::make($datos['password']);
             }
 
-            $record->update($userData);
+            $record->update($datosUsuario);
 
             // 2. Sincronizar el rol
             if ($rol) {
@@ -96,63 +105,51 @@ class EditUser extends EditRecord
     /**
      * @brief Prepara los datos del formulario antes de cargarlos en la página de edición.
      * 
-     * @param array $data Datos del registro.
+     * @param array $datos Datos del registro.
      * @return array Datos formateados para el formulario.
      */
-    protected function mutateFormDataBeforeFill(array $data): array
+    protected function mutateFormDataBeforeFill(array $datos): array
     {
         $usuario = $this->record;
         $rol = $usuario->getRoleNames()->first();
-        $data['rol'] = $rol;
+        $datos['rol'] = $rol;
 
-        // Intentar cargar el perfil usando la relación directa (más fiable que reference_id)
+        // Cargar datos del perfil según el rol
         $perfil = match ($rol) {
             'alumno' => $usuario->alumno,
-            'tutor_curso' => $usuario->perfilTutorCurso,
             'tutor_practicas' => $usuario->perfilTutorPracticas,
+            'tutor_curso' => $usuario->perfilTutorCurso,
             'empresa' => $usuario->empresa,
             default => null,
         };
 
-        // Fallback a reference_id si la relación no devolvió nada
-        if (!$perfil && $recordId = $this->record->reference_id) {
-            $perfil = match ($rol) {
-                'alumno' => \App\Models\Alumno::find($recordId),
-                'tutor_curso' => \App\Models\TutorCurso::find($recordId),
-                'tutor_practicas' => \App\Models\TutorPracticas::find($recordId),
-                'empresa' => \App\Models\Empresa::find($recordId),
-                default => null,
-            };
-        }
-
         if ($perfil) {
-            $data['datosPerfil'] = $perfil->toArray();
+            $datos['datosPerfil'] = $perfil->toArray();
         }
 
-        return $data;
+        return $datos;
     }
 
     /**
-     * @brief Actualiza o crea el perfil relacionado según el rol.
+     * @brief Actualiza o crea el perfil relacionado del usuario.
+     * 
+     * @param \App\Models\User $usuario Instancia del usuario.
+     * @param string $rol Nombre del rol.
+     * @param array $datosPerfil Datos del perfil.
+     * @return void
      */
-    private function actualizarPerfilRelacionado($usuario, $rol, $datosPerfil): void
+    protected function actualizarPerfilRelacionado($usuario, $rol, $datosPerfil): void
     {
-        // Buscamos primero por reference_id, si no existe, por user_id
-        $search = $usuario->reference_id ? ['id' => $usuario->reference_id] : ['user_id' => $usuario->id];
-        
-        // Aseguramos que el user_id esté presente en los datos del perfil
-        $datosPerfil['user_id'] = $usuario->id;
-
         $perfil = match ($rol) {
-            'alumno' => Alumno::updateOrCreate($search, $datosPerfil),
-            'tutor_curso' => TutorCurso::updateOrCreate($search, $datosPerfil),
-            'tutor_practicas' => TutorPracticas::updateOrCreate($search, $datosPerfil),
-            'empresa' => \App\Models\Empresa::updateOrCreate($search, $datosPerfil),
+            'alumno' => $usuario->alumno(),
+            'tutor_practicas' => $usuario->perfilTutorPracticas(),
+            'tutor_curso' => $usuario->perfilTutorCurso(),
+            'empresa' => $usuario->empresa(),
             default => null,
         };
 
-        if ($perfil && $usuario->reference_id !== $perfil->id) {
-            $usuario->update(['reference_id' => $perfil->id]);
+        if ($perfil) {
+            $perfil->updateOrCreate(['user_id' => $usuario->id], $datosPerfil);
         }
     }
 }

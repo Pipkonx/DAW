@@ -7,6 +7,7 @@ use App\Models\Empresa;
 use App\Models\Incidencia;
 use App\Models\Evaluacion;
 use App\Models\ObservacionDiaria;
+use App\Models\Curso;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 
@@ -79,7 +80,7 @@ class EstadisticasPersonalizadas extends BaseWidget
         $totalAlumnos = Alumno::where('tutor_curso_id', $tutorCursoId)->count();
         $incidenciasSinResolver = Incidencia::whereHas('alumno', fn($q) => $q->where('tutor_curso_id', $tutorCursoId))
             ->where('estado', '!=', 'resuelta')->count();
-        $cursosPropios = \App\Models\Curso::where('tutor_curso_id', $tutorCursoId)->count();
+        $cursosPropios = Curso::where('tutor_curso_id', $tutorCursoId)->count();
 
         return [
             Stat::make('Mis Alumnos', $totalAlumnos)

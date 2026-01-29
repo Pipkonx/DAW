@@ -4,14 +4,24 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\UserResource\Pages;
 use App\Models\User;
-use Filament\Forms;
+use Filament\Forms\Components\Section;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Form;
+use Filament\Forms\Get;
 use Filament\Resources\Resource;
-use Filament\Tables;
 use Filament\Tables\Table;
+use Filament\Tables\Columns\ImageColumn;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Actions\DeleteAction;
+use Filament\Tables\Actions\BulkActionGroup;
+use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Notifications\Notification;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Database\Eloquent\Builder;
 
 /**
  * @class UserResource
@@ -27,84 +37,122 @@ class UserResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-users';
 
+    /**
+     * @brief Determina si el recurso debe registrarse en la navegación.
+     * 
+     * @return bool True si el usuario es administrador.
+     */
     public static function shouldRegisterNavigation(): bool
     {
         return auth()->user()->isAdmin();
     }
 
+    /**
+     * @brief Determina si el usuario puede ver cualquier registro.
+     * 
+     * @return bool True si el usuario es administrador.
+     */
     public static function canViewAny(): bool
     {
         return auth()->user()->isAdmin();
     }
 
+    /**
+     * @brief Determina si el usuario puede crear nuevos registros.
+     * 
+     * @return bool True si el usuario es administrador.
+     */
     public static function canCreate(): bool
     {
         return auth()->user()->isAdmin();
     }
 
+    /**
+     * @brief Determina si el usuario puede editar un registro específico.
+     * 
+     * @param \Illuminate\Database\Eloquent\Model $record Instancia del registro a editar.
+     * @return bool True si el usuario es administrador.
+     */
     public static function canEdit($record): bool
     {
         return auth()->user()->isAdmin();
     }
 
+    /**
+     * @brief Determina si el usuario puede eliminar un registro específico.
+     * 
+     * @param \Illuminate\Database\Eloquent\Model $record Instancia del registro a eliminar.
+     * @return bool True si el usuario es administrador.
+     */
     public static function canDelete($record): bool
     {
         return auth()->user()->isAdmin();
     }
 
-    public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
+    /**
+     * @brief Obtiene la consulta base optimizada para el recurso Usuario.
+     * 
+     * @return \Illuminate\Database\Eloquent\Builder Consulta configurada con carga ansiosa y filtros por rol.
+     */
+    public static function getEloquentQuery(): Builder
     {
-        $query = parent::getEloquentQuery();
-        $user = auth()->user();
+        $consulta = parent::getEloquentQuery()
+            ->with(['roles', 'alumno.curso', 'perfilTutorPracticas.empresa', 'empresa', 'perfilTutorCurso']);
+        $usuarioActual = auth()->user();
 
-        if ($user->isAdmin()) {
-            return $query;
+        if ($usuarioActual->isAdmin()) {
+            return $consulta;
         }
 
-        if ($user->isTutorPracticas()) {
-            return $query->role('alumno');
+        if ($usuarioActual->isTutorPracticas()) {
+            return $consulta->role('alumno');
         }
 
-        return $query->where('id', $user->id);
+        return $consulta->where('id', $usuarioActual->id);
     }
 
     /**
-     * @brief Define el formulario dinámico basado en el rol seleccionado.
+     * @brief Obtiene el formulario configurado para el recurso Usuario.
      * 
-     * @param Form $form
-     * @return Form
+     * @param Form $formulario Objeto del formulario.
+     * @return Form Formulario dinámico basado en el rol seleccionado.
      */
-    public static function form(Form $form): Form
+    public static function form(Form $formulario): Form
     {
-        return $form
+        return $formulario
             ->schema([
-                Forms\Components\Section::make('Información Básica')
+                Section::make('Información Básica')
+                    ->description('Datos principales de acceso y perfil.')
                     ->schema([
-                        Forms\Components\TextInput::make('name')
-                            ->label('Nombre de Usuario')
+                        TextInput::make('name')
+                            ->label('Nombre Completo')
+                            ->placeholder('Ej: Juan Pérez')
                             ->required()
                             ->maxLength(255),
-                        Forms\Components\TextInput::make('email')
+                        TextInput::make('email')
                             ->label('Correo Electrónico')
+                            ->placeholder('correo@ejemplo.com')
                             ->email()
                             ->required()
                             ->unique(ignoreRecord: true)
                             ->maxLength(255),
-                        Forms\Components\TextInput::make('password')
+                        TextInput::make('password')
                             ->label('Contraseña')
+                            ->placeholder('Mínimo 8 caracteres')
                             ->password()
                             ->required(fn (string $context): bool => $context === 'create')
                             ->dehydrated(fn ($state) => filled($state))
                             ->revealable(),
-                        Forms\Components\Select::make('rol')
+                        Select::make('rol')
                             ->label('Rol del Usuario')
+                            ->placeholder('Selecciona un rol')
                             ->options(function () {
                                 if (auth()->user()->isAdmin()) {
                                     return [
                                         'admin' => 'Administrador',
                                         'alumno' => 'Alumno',
-                                        'tutor_practicas' => 'Tutor de Prácticas',
-                                        'tutor_curso' => 'Tutor de Curso',
+                                        'tutor_practicas' => 'Tutor de Empresa',
+                                        'tutor_curso' => 'Tutor de Centro',
                                         'empresa' => 'Empresa',
                                     ];
                                 }
@@ -117,13 +165,13 @@ class UserResource extends Resource
                             })
                             ->required()
                             ->live()
-                            ->afterStateHydrated(function (Forms\Components\Select $component, $record) {
+                            ->afterStateHydrated(function (Select $componente, $record) {
                                 if ($record) {
-                                    $component->state($record->getRoleNames()->first());
+                                    $componente->state($record->getRoleNames()->first());
                                 }
                             }),
-                        Forms\Components\FileUpload::make('avatar_url')
-                            ->label('Avatar')
+                        FileUpload::make('avatar_url')
+                            ->label('Foto de Perfil')
                             ->image()
                             ->disk('public')
                             ->directory('avatars')
@@ -134,117 +182,176 @@ class UserResource extends Resource
                     ])->columns(2),
 
                 // Perfil: Alumno
-                Forms\Components\Section::make('Datos de Alumno')
+                Section::make('Datos de Alumno')
+                    ->description('Información académica y de contacto del estudiante.')
                     ->schema([
-                        Forms\Components\TextInput::make('datosPerfil.dni')->label('DNI')->required(),
-                        Forms\Components\DatePicker::make('datosPerfil.fecha_nacimiento')->label('Fecha Nacimiento'),
-                        Forms\Components\TextInput::make('datosPerfil.telefono')->label('Teléfono'),
-                        Forms\Components\Select::make('datosPerfil.curso_id')
-                            ->label('Curso')
+                        TextInput::make('datosPerfil.dni')
+                            ->label('DNI/NIE')
+                            ->placeholder('12345678X')
+                            ->required(),
+                        DatePicker::make('datosPerfil.fecha_nacimiento')
+                            ->label('Fecha de Nacimiento')
+                            ->placeholder('Selecciona fecha'),
+                        TextInput::make('datosPerfil.telefono')
+                            ->label('Teléfono')
+                            ->placeholder('600123456'),
+                        Select::make('datosPerfil.curso_id')
+                            ->label('Curso / Grupo')
+                            ->placeholder('Selecciona curso')
                             ->relationship('alumno.curso', 'nombre')
                             ->searchable()
                             ->preload(),
-                        Forms\Components\Select::make('datosPerfil.empresa_id')
-                            ->label('Empresa')
+                        Select::make('datosPerfil.empresa_id')
+                            ->label('Empresa Asignada')
+                            ->placeholder('Selecciona empresa')
                             ->relationship('alumno.empresa', 'nombre')
                             ->searchable()
                             ->preload(),
-                        Forms\Components\Select::make('datosPerfil.tutor_practicas_id')
+                        Select::make('datosPerfil.tutor_practicas_id')
                             ->label('Tutor de Empresa')
+                            ->placeholder('Selecciona tutor')
                             ->options(User::role('tutor_practicas')->pluck('name', 'id'))
                             ->searchable(),
-                        Forms\Components\TextInput::make('datosPerfil.duracion_practicas')->label('Duración Prácticas'),
-                        Forms\Components\TextInput::make('datosPerfil.horario')->label('Horario'),
-                        Forms\Components\DatePicker::make('datosPerfil.fecha_inicio')->label('Fecha Inicio'),
-                        Forms\Components\DatePicker::make('datosPerfil.fecha_fin')->label('Fecha Fin'),
+                        TextInput::make('datosPerfil.duracion_practicas')
+                            ->label('Duración (horas)')
+                            ->placeholder('Ej: 400'),
+                        TextInput::make('datosPerfil.horario')
+                            ->label('Horario de Prácticas')
+                            ->placeholder('Ej: 08:00 - 14:00'),
+                        DatePicker::make('datosPerfil.fecha_inicio')
+                            ->label('Fecha de Inicio')
+                            ->placeholder('Selecciona fecha'),
+                        DatePicker::make('datosPerfil.fecha_fin')
+                            ->label('Fecha de Finalización')
+                            ->placeholder('Selecciona fecha'),
                     ])
-                    ->visible(fn (Forms\Get $get) => $get('rol') === 'alumno')
+                    ->visible(fn (Get $get) => $get('rol') === 'alumno')
                     ->columns(2),
 
                 // Perfil: Tutor Practicas
-                Forms\Components\Section::make('Datos de Tutor de Prácticas')
+                Section::make('Datos de Tutor de Empresa')
+                    ->description('Información laboral y de contacto del tutor externo.')
                     ->schema([
-                        Forms\Components\TextInput::make('datosPerfil.dni')->label('DNI')->required(),
-                        Forms\Components\TextInput::make('datosPerfil.telefono')->label('Teléfono'),
-                        Forms\Components\Select::make('datosPerfil.empresa_id')
-                            ->label('Empresa')
+                        TextInput::make('datosPerfil.dni')
+                            ->label('DNI/NIE')
+                            ->placeholder('12345678X')
+                            ->required(),
+                        TextInput::make('datosPerfil.telefono')
+                            ->label('Teléfono de Contacto')
+                            ->placeholder('600123456'),
+                        Select::make('datosPerfil.empresa_id')
+                            ->label('Empresa a la que pertenece')
+                            ->placeholder('Selecciona empresa')
                             ->relationship('perfilTutorPracticas.empresa', 'nombre')
                             ->required(),
-                        Forms\Components\TextInput::make('datosPerfil.puesto')->label('Cargo'),
-                        Forms\Components\TextInput::make('datosPerfil.horario')->label('Horario'),
+                        TextInput::make('datosPerfil.puesto')
+                            ->label('Cargo o Puesto')
+                            ->placeholder('Ej: Responsable IT'),
+                        TextInput::make('datosPerfil.horario')
+                            ->label('Horario Laboral')
+                            ->placeholder('Ej: Jornada completa'),
                     ])
-                    ->visible(fn (Forms\Get $get) => $get('rol') === 'tutor_practicas')
+                    ->visible(fn (Get $get) => $get('rol') === 'tutor_practicas')
                     ->columns(2),
 
                 // Perfil: Tutor Curso
-                Forms\Components\Section::make('Datos de Tutor de Curso')
+                Section::make('Datos de Tutor de Centro')
+                    ->description('Información docente del tutor del instituto.')
                     ->schema([
-                        Forms\Components\TextInput::make('datosPerfil.dni')->label('DNI')->required(),
-                        Forms\Components\TextInput::make('datosPerfil.telefono')->label('Teléfono'),
-                        Forms\Components\TextInput::make('datosPerfil.especialidad')->label('Especialidad'),
+                        TextInput::make('datosPerfil.dni')
+                            ->label('DNI/NIE')
+                            ->placeholder('12345678X')
+                            ->required(),
+                        TextInput::make('datosPerfil.telefono')
+                            ->label('Teléfono')
+                            ->placeholder('600123456'),
+                        TextInput::make('datosPerfil.especialidad')
+                            ->label('Especialidad Docente')
+                            ->placeholder('Ej: Informática'),
                     ])
-                    ->visible(fn (Forms\Get $get) => $get('rol') === 'tutor_curso')
+                    ->visible(fn (Get $get) => $get('rol') === 'tutor_curso')
                     ->columns(2),
 
                 // Perfil: Empresa (como perfil de usuario)
-                Forms\Components\Section::make('Datos de Empresa')
+                Section::make('Datos de Empresa')
+                    ->description('Información fiscal y corporativa.')
                     ->schema([
-                        Forms\Components\TextInput::make('datosPerfil.cif')->label('CIF')->required(),
-                        Forms\Components\TextInput::make('datosPerfil.direccion')->label('Dirección'),
-                        Forms\Components\TextInput::make('datosPerfil.telefono')->label('Teléfono'),
-                        Forms\Components\TextInput::make('datosPerfil.persona_contacto')->label('Persona de Contacto'),
-                        Forms\Components\TextInput::make('datosPerfil.sector')->label('Sector'),
+                        TextInput::make('datosPerfil.cif')
+                            ->label('CIF')
+                            ->placeholder('B12345678')
+                            ->required(),
+                        TextInput::make('datosPerfil.direccion')
+                            ->label('Dirección Fiscal')
+                            ->placeholder('Calle...'),
+                        TextInput::make('datosPerfil.telefono')
+                            ->label('Teléfono Corporativo')
+                            ->placeholder('912345678'),
+                        TextInput::make('datosPerfil.persona_contacto')
+                            ->label('Persona de Contacto')
+                            ->placeholder('Nombre del responsable'),
+                        TextInput::make('datosPerfil.sector')
+                            ->label('Sector de Actividad')
+                            ->placeholder('Ej: Desarrollo de software'),
                     ])
-                    ->visible(fn (Forms\Get $get) => $get('rol') === 'empresa')
+                    ->visible(fn (Get $get) => $get('rol') === 'empresa')
                     ->columns(2),
             ]);
     }
 
     /**
-     * @brief Configura la tabla de usuarios con columnas personalizadas.
+     * @brief Obtiene la tabla configurada para el recurso Usuario.
      * 
-     * @param Table $table
-     * @return Table
+     * @param Table $tabla Objeto de la tabla.
+     * @return Table Tabla configurada con columnas dinámicas por rol.
      */
-    public static function table(Table $table): Table
+    public static function table(Table $tabla): Table
     {
-        return $table
+        return $tabla
+            ->deferLoading()
             ->columns([
-                Tables\Columns\ImageColumn::make('avatar_url')
+                ImageColumn::make('avatar_url')
                     ->label('Avatar')
                     ->circular(),
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                     ->label('Nombre')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('email')
+                TextColumn::make('email')
                     ->label('Email')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('roles.name')
+                TextColumn::make('roles.name')
                     ->label('Rol')
                     ->badge()
-                    ->color(fn (string $state): string => match ($state) {
+                    ->color(fn ($state): string => match ($state) {
                         'admin' => 'danger',
                         'alumno' => 'success',
                         'tutor_practicas' => 'warning',
                         'tutor_curso' => 'info',
                         'empresa' => 'gray',
                         default => 'gray',
+                    })
+                    ->formatStateUsing(fn ($state): string => match ($state) {
+                        'admin' => 'Administrador',
+                        'alumno' => 'Alumno',
+                        'tutor_practicas' => 'Tutor Empresa',
+                        'tutor_curso' => 'Tutor Centro',
+                        'empresa' => 'Empresa',
+                        default => $state,
                     }),
-                Tables\Columns\TextColumn::make('perfil_detallado')
-                    ->label('Perfil Detallado')
+                TextColumn::make('perfil_detallado')
+                    ->label('ID Perfil')
                     ->getStateUsing(function (User $record) {
                         $rol = $record->getRoleNames()->first();
                         return match ($rol) {
-                            'alumno' => "Alumno ID: {$record->reference_id}",
-                            'tutor_practicas' => "Tutor Prác. ID: {$record->reference_id}",
-                            'tutor_curso' => "Tutor Curso ID: {$record->reference_id}",
-                            'empresa' => "Empresa ID: {$record->reference_id}",
+                            'alumno' => "ALU-{$record->reference_id}",
+                            'tutor_practicas' => "T EMP-{$record->reference_id}",
+                            'tutor_curso' => "T CEN-{$record->reference_id}",
+                            'empresa' => "EMP-{$record->reference_id}",
                             default => 'N/A',
                         };
                     }),
-                Tables\Columns\TextColumn::make('informacion_adicional')
-                    ->label('Info. Adicional')
+                TextColumn::make('informacion_adicional')
+                    ->label('Información Adicional')
                     ->getStateUsing(function (User $record) {
                         $rol = $record->getRoleNames()->first();
                         return match ($rol) {
@@ -257,15 +364,17 @@ class UserResource extends Resource
                     }),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('roles')
+                SelectFilter::make('roles')
                     ->label('Filtrar por Rol')
                     ->relationship('roles', 'name')
                     ->multiple()
                     ->preload(),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make()
+                EditAction::make()
+                    ->label('Editar'),
+                DeleteAction::make()
+                    ->label('Eliminar')
                     ->before(function (User $record) {
                         self::borrarPerfilRelacionado($record);
                     })
@@ -274,12 +383,13 @@ class UserResource extends Resource
                             ->success()
                             ->title('Usuario eliminado')
                             ->body("El usuario {$record->name} ha sido eliminado correctamente.")
-                            ->sendToDatabase(\Filament\Facades\Filament::auth()->user())
+                            ->sendToDatabase(auth()->user())
                     ),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make()
+                BulkActionGroup::make([
+                    DeleteBulkAction::make()
+                        ->label('Eliminar seleccionados')
                         ->before(function (\Illuminate\Database\Eloquent\Collection $records) {
                             $records->each(fn (User $record) => self::borrarPerfilRelacionado($record));
                         })
@@ -288,9 +398,9 @@ class UserResource extends Resource
                                 ->success()
                                 ->title('Usuarios eliminados')
                                 ->body('Los usuarios seleccionados han sido eliminados correctamente.')
-                                ->sendToDatabase(\Filament\Facades\Filament::auth()->user())
+                                ->sendToDatabase(auth()->user())
                         ),
-                ]),
+                ])->label('Acciones por lote'),
             ]);
     }
 
@@ -313,6 +423,11 @@ class UserResource extends Resource
         };
     }
 
+    /**
+     * @brief Obtiene las páginas definidas para la gestión del recurso.
+     * 
+     * @return array Mapa de rutas y clases de página.
+     */
     public static function getPages(): array
     {
         return [

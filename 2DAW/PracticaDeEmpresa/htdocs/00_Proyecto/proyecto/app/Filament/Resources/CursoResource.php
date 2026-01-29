@@ -3,13 +3,23 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\CursoResource\Pages;
-use App\Filament\Resources\CursoResource\RelationManagers;
 use App\Models\Curso;
-use Filament\Forms;
+use Filament\Forms\Components\Section;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Tables;
 use Filament\Tables\Table;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Filters\TernaryFilter;
+use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Actions\DeleteAction;
+use Filament\Tables\Actions\BulkActionGroup;
+use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Notifications\Notification;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -31,70 +41,84 @@ class CursoResource extends Resource
         return auth()->user()->isAdmin() || auth()->user()->isTutorCurso();
     }
 
+    /**
+     * @brief Obtiene la consulta base optimizada para el recurso Curso.
+     * 
+     * @return Builder Consulta configurada con carga ansiosa y filtros por rol.
+     */
     public static function getEloquentQuery(): Builder
     {
-        $query = parent::getEloquentQuery();
-        $user = auth()->user();
+        $consulta = parent::getEloquentQuery()->with(['tutorCurso']);
+        $usuarioActual = auth()->user();
 
-        if ($user->isAdmin()) {
-            return $query;
+        if ($usuarioActual->isAdmin()) {
+            return $consulta;
         }
 
-        if ($user->isTutorCurso()) {
-            return $query->where('tutor_curso_id', $user->perfilTutorCurso?->id);
+        if ($usuarioActual->isTutorCurso()) {
+            return $consulta->where('tutor_curso_id', $usuarioActual->perfilTutorCurso?->id);
         }
 
-        return $query->whereRaw('1 = 0');
+        return $consulta->whereRaw('1 = 0');
     }
 
     /**
-     * @brief Configura el formulario para el recurso Curso.
+     * @brief Obtiene el formulario configurado para el recurso Curso.
      * 
-     * @param Form $formulario Instancia del formulario.
+     * @param Form $formulario Objeto del formulario.
      * @return Form Formulario configurado con validaciones de fechas y relaciones.
      */
     public static function form(Form $formulario): Form
     {
         return $formulario
             ->schema([
-                Forms\Components\Section::make('Información del Curso')
+                Section::make('Información del Curso')
+                    ->description('Detalles generales del programa académico.')
                     ->schema([
-                        Forms\Components\TextInput::make('nombre')
+                        TextInput::make('nombre')
                             ->label('Nombre del Curso')
+                            ->placeholder('Ej: 2º DAW - Desarrollo de Aplicaciones Web')
                             ->required()
                             ->maxLength(255),
-                        Forms\Components\Textarea::make('descripcion')
+                        Textarea::make('descripcion')
                             ->label('Descripción')
+                            ->placeholder('Breve descripción del curso...')
                             ->rows(3)
                             ->maxLength(65535),
-                        Forms\Components\TextInput::make('duracion')
+                        TextInput::make('duracion')
                             ->label('Duración (Horas)')
+                            ->placeholder('Ej: 400')
                             ->numeric()
                             ->required()
                             ->minValue(1),
-                        Forms\Components\Select::make('tutor_curso_id')
+                        Select::make('tutor_curso_id')
                             ->label('Tutor del Curso')
+                            ->placeholder('Selecciona un tutor')
                             ->relationship('tutorCurso', 'nombre')
                             ->searchable()
                             ->preload()
                             ->required(),
                     ])->columns(2),
 
-                Forms\Components\Section::make('Periodo Académico')
+                Section::make('Periodo Académico')
+                    ->description('Fechas de inicio, fin y estado de activación.')
                     ->schema([
-                        Forms\Components\DatePicker::make('fecha_inicio')
+                        DatePicker::make('fecha_inicio')
                             ->label('Fecha de Inicio')
+                            ->placeholder('Selecciona fecha')
                             ->required()
                             ->live(),
-                        Forms\Components\DatePicker::make('fecha_fin')
+                        DatePicker::make('fecha_fin')
                             ->label('Fecha de Finalización')
+                            ->placeholder('Selecciona fecha')
                             ->required()
                             ->afterOrEqual('fecha_inicio')
                             ->validationMessages([
                                 'after_or_equal' => 'La fecha de fin no puede ser anterior a la fecha de inicio.',
                             ]),
-                        Forms\Components\Toggle::make('activo')
-                            ->label('Activo')
+                        Toggle::make('activo')
+                            ->label('Curso Activo')
+                            ->helperText('Indica si el curso está actualmente en curso.')
                             ->default(true)
                             ->required(),
                     ])->columns(2),
@@ -102,65 +126,70 @@ class CursoResource extends Resource
     }
 
     /**
-     * @brief Configura la tabla para el recurso Curso.
+     * @brief Obtiene la tabla configurada para el recurso Curso.
      * 
-     * @param Table $tabla Instancia de la tabla.
+     * @param Table $tabla Objeto de la tabla.
      * @return Table Tabla configurada con columnas de relación y acciones.
      */
     public static function table(Table $tabla): Table
     {
         return $tabla
+            ->deferLoading()
             ->columns([
-                Tables\Columns\TextColumn::make('nombre')
+                TextColumn::make('nombre')
                     ->label('Curso')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('tutorCurso.nombre')
+                TextColumn::make('tutorCurso.nombre')
                     ->label('Tutor Asignado')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('duracion')
+                TextColumn::make('duracion')
                     ->label('Horas')
                     ->suffix(' h')
                     ->sortable(),
-                Tables\Columns\IconColumn::make('activo')
+                IconColumn::make('activo')
                     ->label('Activo')
                     ->boolean()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('fecha_inicio')
+                TextColumn::make('fecha_inicio')
                     ->label('Inicio')
                     ->date('d/m/Y')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('fecha_fin')
+                TextColumn::make('fecha_fin')
                     ->label('Fin')
                     ->date('d/m/Y')
                     ->sortable(),
             ])
             ->filters([
-                //
+                TernaryFilter::make('activo')
+                    ->label('Solo activos'),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make()
+                EditAction::make()
+                    ->label('Editar'),
+                DeleteAction::make()
+                    ->label('Eliminar')
                     ->successNotification(fn (Curso $record) => 
-                        \Filament\Notifications\Notification::make()
+                        Notification::make()
                             ->success()
                             ->title('Curso eliminado')
                             ->body("El curso {$record->nombre} ha sido eliminado correctamente.")
-                            ->sendToDatabase(\Filament\Facades\Filament::auth()->user())
+                            ->sendToDatabase(auth()->user())
                     ),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make()
+                BulkActionGroup::make([
+                    DeleteBulkAction::make()
+                        ->label('Eliminar seleccionados')
                         ->successNotification(
-                            \Filament\Notifications\Notification::make()
+                            Notification::make()
                                 ->success()
                                 ->title('Cursos eliminados')
                                 ->body("Los cursos seleccionados han sido eliminados correctamente.")
-                                ->sendToDatabase(\Filament\Facades\Filament::auth()->user())
+                                ->sendToDatabase(auth()->user())
                         ),
-                ]),
+                ])->label('Acciones por lote'),
             ]);
     }
 

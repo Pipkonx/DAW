@@ -3,13 +3,22 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\PracticeResource\Pages;
-use App\Filament\Resources\PracticeResource\RelationManagers;
 use App\Models\Practice;
-use Filament\Forms;
+use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Tables;
 use Filament\Tables\Table;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Actions\DeleteAction;
+use Filament\Tables\Actions\BulkActionGroup;
+use Filament\Tables\Actions\DeleteBulkAction;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
@@ -19,16 +28,23 @@ class PracticeResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
-    public static function form(Form $form): Form
+    /**
+     * @brief Obtiene el formulario configurado para el recurso de Prácticas.
+     * 
+     * @param Form $formulario Objeto del formulario.
+     * @return Form Formulario con secciones de asignación y detalles.
+     */
+    public static function form(Form $formulario): Form
     {
-        return $form
+        return $formulario
             ->schema([
-                Forms\Components\Section::make('Asignación de la Práctica')
+                Section::make('Asignación de la Práctica')
                     ->description('Indica quién puede ver esta práctica. Si no seleccionas Alumno, Grupo o Rol, la práctica será privada para ti.')
                     ->visible(fn () => !auth()->user()->isAlumno())
                     ->schema([
-                        Forms\Components\Select::make('alumno_id')
+                        Select::make('alumno_id')
                             ->label('Alumno (Individual)')
+                            ->placeholder('Selecciona un alumno')
                             ->relationship('alumno', 'dni')
                             ->getOptionLabelFromRecordUsing(fn ($record) => $record?->user?->name ?? $record?->dni ?? 'Sin nombre')
                             ->searchable()
@@ -36,15 +52,17 @@ class PracticeResource extends Resource
                             ->hidden(fn () => auth()->user()->isAlumno())
                             ->dehydrated(fn ($state) => filled($state) || auth()->user()->isAlumno()),
 
-                        Forms\Components\Select::make('curso_id')
+                        Select::make('curso_id')
                             ->label('Grupo / Curso (Compartida)')
+                            ->placeholder('Selecciona un curso')
                             ->relationship('curso', 'nombre')
                             ->searchable()
                             ->preload()
                             ->visible(fn () => auth()->user()->isAdmin() || auth()->user()->isTutorCurso()),
 
-                        Forms\Components\Select::make('target_role')
+                        Select::make('target_role')
                             ->label('Rol Destinatario (Compartida)')
+                            ->placeholder('Selecciona un rol')
                             ->options([
                                 'alumno' => 'Todos los Alumnos',
                                 'tutor_practicas' => 'Todos los Tutores de Empresa',
@@ -53,45 +71,56 @@ class PracticeResource extends Resource
                             ->visible(fn () => auth()->user()->isAdmin() || auth()->user()->isTutorCurso()),
                     ])->columns(3),
 
-                Forms\Components\Section::make('Detalles de la Práctica')
+                Section::make('Detalles de la Práctica')
+                    ->description('Información sobre el contenido y fechas de la práctica.')
                     ->schema([
-                        Forms\Components\TextInput::make('title')
+                        TextInput::make('title')
                             ->label('Título')
+                            ->placeholder('Ej: Memoria de actividades semana 1')
                             ->required()
                             ->maxLength(255),
-                        Forms\Components\Textarea::make('description')
+                        Textarea::make('description')
                             ->label('Descripción')
+                            ->placeholder('Describe brevemente el contenido o instrucciones...')
                             ->columnSpanFull(),
-                        Forms\Components\DateTimePicker::make('starts_at')
-                            ->label('Inicio')
+                        DateTimePicker::make('starts_at')
+                            ->label('Fecha de Inicio')
+                            ->placeholder('Selecciona fecha y hora')
                             ->required(),
-                        Forms\Components\DateTimePicker::make('ends_at')
-                            ->label('Fin')
+                        DateTimePicker::make('ends_at')
+                            ->label('Fecha de Fin')
+                            ->placeholder('Selecciona fecha y hora')
                             ->required(),
-                        Forms\Components\FileUpload::make('attachments')
-                            ->label('Adjuntos')
+                        FileUpload::make('attachments')
+                            ->label('Documentos Adjuntos')
                             ->multiple()
                             ->disk('public')
                             ->directory('practices')
                             ->columnSpanFull(),
-                        Forms\Components\Hidden::make('user_id')
+                        Hidden::make('user_id')
                             ->default(fn () => auth()->id()),
                     ])->columns(2),
             ]);
     }
 
-    public static function table(Table $table): Table
+    /**
+     * @brief Obtiene la tabla configurada para el recurso de Prácticas.
+     * 
+     * @param Table $tabla Objeto de la tabla.
+     * @return Table Tabla configurada con columnas de visibilidad y destinatarios.
+     */
+    public static function table(Table $tabla): Table
     {
-        return $table
+        return $tabla
             ->deferLoading()
             ->persistSearchInSession()
             ->persistColumnSearchesInSession()
             ->columns([
-                Tables\Columns\TextColumn::make('title')
+                TextColumn::make('title')
                     ->label('Título')
                     ->searchable(isIndividual: false, isGlobal: true)
                     ->sortable(),
-                Tables\Columns\TextColumn::make('tipo_visibilidad')
+                TextColumn::make('tipo_visibilidad')
                     ->label('Visibilidad')
                     ->badge()
                     ->getStateUsing(function (Practice $record) {
@@ -106,29 +135,29 @@ class PracticeResource extends Resource
                         str_contains($state, 'Rol') => 'success',
                         default => 'gray',
                     }),
-                Tables\Columns\TextColumn::make('alumno.user.name')
+                TextColumn::make('alumno.user.name')
                     ->label('Destinatario')
                     ->placeholder('Compartida / Global')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('starts_at')
+                TextColumn::make('starts_at')
                     ->label('Inicio')
                     ->dateTime()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('ends_at')
+                TextColumn::make('ends_at')
                     ->label('Fin')
                     ->dateTime()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('creator.name')
+                TextColumn::make('creator.name')
                     ->label('Creado por')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('curso_id')
-                    ->label('Por Grupo')
+                SelectFilter::make('curso_id')
+                    ->label('Filtrar por Grupo')
                     ->relationship('curso', 'nombre'),
-                Tables\Filters\SelectFilter::make('target_role')
-                    ->label('Por Rol')
+                SelectFilter::make('target_role')
+                    ->label('Filtrar por Rol')
                     ->options([
                         'alumno' => 'Alumnos',
                         'tutor_practicas' => 'Tutores Empresa',
@@ -136,56 +165,60 @@ class PracticeResource extends Resource
                     ]),
             ])
             ->actions([
-                Tables\Actions\DeleteAction::make()
+                DeleteAction::make()
+                    ->label('Eliminar')
                     ->hidden(fn () => auth()->user()->isAlumno() || auth()->user()->isTutorPracticas()),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make()
+                BulkActionGroup::make([
+                    DeleteBulkAction::make()
+                        ->label('Eliminar seleccionados')
                         ->hidden(fn () => auth()->user()->isAlumno() || auth()->user()->isTutorPracticas()),
-                ]),
+                ])->label('Acciones por lote'),
             ]);
     }
 
+    /**
+     * @brief Obtiene la consulta base optimizada para el recurso de Prácticas.
+     * 
+     * @return Builder Consulta filtrada por visibilidad y pertenencia.
+     */
     public static function getEloquentQuery(): Builder
     {
-        $user = auth()->user();
-        $query = parent::getEloquentQuery()->with(['alumno.user', 'curso', 'creator']);
+        $usuarioActual = auth()->user();
+        $consulta = parent::getEloquentQuery()->with(['alumno.user', 'curso', 'creator']);
 
-        if ($user->isAdmin()) {
-            return $query;
+        if ($usuarioActual->isAdmin()) {
+            return $consulta;
         }
 
-        return $query->where(function (Builder $q) use ($user) {
+        return $consulta->where(function (Builder $subconsulta) use ($usuarioActual) {
             // 1. Lo que yo he creado
-            $q->where('user_id', $user->id);
+            $subconsulta->where('user_id', $usuarioActual->id);
 
             // 2. Si soy Alumno, ver lo asignado a mí, a mi grupo o a todos los alumnos
-            if ($user->isAlumno()) {
-                $alumnoId = $user->alumno?->id;
-                $cursoId = $user->alumno?->curso_id;
+            if ($usuarioActual->isAlumno()) {
+                $alumnoId = $usuarioActual->alumno?->id;
+                $cursoId = $usuarioActual->alumno?->curso_id;
 
-                $q->orWhere('alumno_id', $alumnoId)
+                $subconsulta->orWhere('alumno_id', $alumnoId)
                   ->orWhere('curso_id', $cursoId)
                   ->orWhere('target_role', 'alumno');
             }
 
             // 3. Si soy Tutor de Empresa, ver lo asignado a mis alumnos o a todos los tutores de empresa
-            if ($user->isTutorPracticas()) {
-                $q->orWhereHas('alumno', function ($subQ) use ($user) {
-                    $subQ->whereHas('tutorPracticas', function ($tutorQ) use ($user) {
-                        $tutorQ->where('user_id', $user->id);
+            if ($usuarioActual->isTutorPracticas()) {
+                $subconsulta->orWhereHas('alumno', function ($q) use ($usuarioActual) {
+                    $q->whereHas('tutorPracticas', function ($tutorQ) use ($usuarioActual) {
+                        $tutorQ->where('user_id', $usuarioActual->id);
                     });
                 })
                 ->orWhere('target_role', 'tutor_practicas');
             }
 
             // 4. Si soy Tutor de Curso, ver lo de mis grupos o a todos los tutores de curso
-            if ($user->isTutorCurso()) {
-                // Asumimos que ven todo lo de su rol o lo que ellos crean (ya cubierto por user_id)
-                $q->orWhere('target_role', 'tutor_curso');
-                
-                // Si tienen cursos asignados (habría que ver la relación, por ahora permitimos ver lo que sea para 'tutor_curso')
+            if ($usuarioActual->isTutorCurso()) {
+                $subconsulta->orWhere('target_role', 'tutor_curso');
             }
         });
     }

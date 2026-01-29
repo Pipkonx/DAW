@@ -44,11 +44,11 @@ class EditIncidencia extends EditRecord
                         ->label('Explicación de la resolución')
                         ->required(),
                 ])
-                ->action(function (Incidencia $record, array $data): void {
+                ->action(function (Incidencia $record, array $datos): void {
                     $record->update([
                         'estado' => 'RESUELTA',
                         'fecha_resolucion' => now(),
-                        'resolucion' => $data['resolucion'],
+                        'resolucion' => $datos['resolucion'],
                     ]);
 
                     $this->refreshFormData(['estado', 'fecha_resolucion', 'resolucion']);

@@ -3,13 +3,25 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\CriterioEvaluacionResource\Pages;
-use App\Filament\Resources\CriterioEvaluacionResource\RelationManagers;
 use App\Models\CriterioEvaluacion;
-use Filament\Forms;
+use Filament\Forms\Components\Section;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Tables;
 use Filament\Tables\Table;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Filters\TrashedFilter;
+use Filament\Tables\Filters\TernaryFilter;
+use Filament\Tables\Actions\ViewAction;
+use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Actions\DeleteAction;
+use Filament\Tables\Actions\RestoreBulkAction;
+use Filament\Tables\Actions\ForceDeleteBulkAction;
+use Filament\Tables\Actions\BulkActionGroup;
+use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Notifications\Notification;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -31,86 +43,120 @@ class CriterioEvaluacionResource extends Resource
         return auth()->user()->isAdmin();
     }
 
-    public static function form(Form $form): Form
+    /**
+     * @brief Obtiene el formulario configurado para el recurso Criterio de Evaluación.
+     * 
+     * @param Form $formulario Objeto del formulario.
+     * @return Form Formulario configurado con nombre, peso y estado.
+     */
+    public static function form(Form $formulario): Form
     {
-        return $form
+        return $formulario
             ->schema([
-                Forms\Components\TextInput::make('nombre')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('peso')
-                    ->label('Peso (%)')
-                    ->numeric()
-                    ->step(0.01)
-                    ->minValue(0)
-                    ->maxValue(100)
-                    ->suffix('%')
-                    ->nullable(),
-                Forms\Components\Toggle::make('activo')
-                    ->label('Activo')
-                    ->default(true)
-                    ->required(),
-                Forms\Components\Textarea::make('descripcion')
-                    ->columnSpanFull(),
+                Section::make('Detalles del Criterio')
+                    ->description('Configuración del criterio de evaluación y su importancia relativa.')
+                    ->schema([
+                        TextInput::make('nombre')
+                            ->label('Nombre del Criterio')
+                            ->placeholder('Ej: Actitud y puntualidad')
+                            ->required()
+                            ->maxLength(255),
+                        TextInput::make('peso')
+                            ->label('Peso en la Evaluación (%)')
+                            ->placeholder('Ej: 20')
+                            ->numeric()
+                            ->step(0.01)
+                            ->minValue(0)
+                            ->maxValue(100)
+                            ->suffix('%')
+                            ->nullable(),
+                        Toggle::make('activo')
+                            ->label('Criterio Activo')
+                            ->helperText('Indica si este criterio se utiliza en las nuevas evaluaciones.')
+                            ->default(true)
+                            ->required(),
+                        Textarea::make('descripcion')
+                            ->label('Descripción Detallada')
+                            ->placeholder('Explica qué se evalúa en este criterio...')
+                            ->columnSpanFull(),
+                    ])->columns(2),
             ]);
     }
 
-    public static function table(Table $table): Table
+    /**
+     * @brief Obtiene la tabla configurada para el recurso Criterio de Evaluación.
+     * 
+     * @param Table $tabla Objeto de la tabla.
+     * @return Table Tabla configurada con columnas de nombre, peso y estado activo.
+     */
+    public static function table(Table $tabla): Table
     {
-        return $table
+        return $tabla
+            ->deferLoading()
             ->columns([
-                Tables\Columns\TextColumn::make('nombre')
+                TextColumn::make('nombre')
+                    ->label('Nombre')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('peso')
-                    ->label('Peso')
+                TextColumn::make('peso')
+                    ->label('Peso (%)')
                     ->suffix('%')
                     ->sortable(),
-                Tables\Columns\IconColumn::make('activo')
+                IconColumn::make('activo')
                     ->label('Activo')
                     ->boolean()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('deleted_at')
-                    ->dateTime()
+                TextColumn::make('created_at')
+                    ->label('Creado el')
+                    ->dateTime('d/m/Y')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                Tables\Filters\TrashedFilter::make()
+                TrashedFilter::make()
+                    ->label('Ver eliminados')
                     ->visible(fn() => auth()->user()->hasRole('admin')),
+                TernaryFilter::make('activo')
+                    ->label('Solo activos'),
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make()
-                    ->successNotification(
-                        \Filament\Notifications\Notification::make()
+                ViewAction::make()
+                    ->label('Ver'),
+                EditAction::make()
+                    ->label('Editar'),
+                DeleteAction::make()
+                    ->label('Eliminar')
+                    ->successNotification(fn (CriterioEvaluacion $record) => 
+                        Notification::make()
                             ->success()
                             ->title('Criterio eliminado')
-                            ->body("El criterio de evaluación ha sido eliminado correctamente.")
-                            ->sendToDatabase(\Filament\Facades\Filament::auth()->user())
+                            ->body("El criterio {$record->nombre} ha sido eliminado correctamente.")
+                            ->sendToDatabase(auth()->user())
                     ),
-                Tables\Actions\RestoreAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make()
+                BulkActionGroup::make([
+                    DeleteBulkAction::make()
+                        ->label('Eliminar seleccionados')
                         ->successNotification(
-                            \Filament\Notifications\Notification::make()
+                            Notification::make()
                                 ->success()
                                 ->title('Criterios eliminados')
                                 ->body("Los criterios seleccionados han sido eliminados correctamente.")
-                                ->sendToDatabase(\Filament\Facades\Filament::auth()->user())
+                                ->sendToDatabase(auth()->user())
                         ),
-                    Tables\Actions\RestoreBulkAction::make(),
-                    Tables\Actions\ForceDeleteBulkAction::make(),
-                ]),
+                    RestoreBulkAction::make()
+                        ->label('Restaurar seleccionados'),
+                    ForceDeleteBulkAction::make()
+                        ->label('Borrado permanente'),
+                ])->label('Acciones por lote'),
             ]);
     }
 
+    /**
+     * @brief Obtiene la consulta base para el recurso Criterio de Evaluación.
+     * 
+     * @return Builder Consulta configurada sin filtros globales de soft delete.
+     */
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()

@@ -3,13 +3,19 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\AlumnoResource\Pages;
-use App\Filament\Resources\AlumnoResource\RelationManagers;
 use App\Models\Alumno;
-use Filament\Forms;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Tables;
 use Filament\Tables\Table;
+use Filament\Tables\Columns\ImageColumn;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Actions\Action;
+use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Actions\DeleteAction;
+use Filament\Tables\Actions\BulkActionGroup;
+use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Notifications\Notification;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Storage;
@@ -57,59 +63,84 @@ class AlumnoResource extends Resource
         return auth()->user()->isAdmin() || auth()->user()->isTutorPracticas();
     }
 
-    public static function form(Form $form): Form
+    /**
+     * @brief Obtiene el formulario configurado para el recurso Alumno.
+     * 
+     * @param Form $formulario Objeto del formulario.
+     * @return Form Formulario configurado con campos de usuario, curso, empresa y tutores.
+     */
+    public static function form(Form $formulario): Form
     {
-        return $form
+        return $formulario
             ->schema([
-                Forms\Components\Select::make('user_id')
+                Select::make('user_id')
+                    ->label('Usuario')
+                    ->placeholder('Selecciona un usuario')
                     ->relationship('user', 'name')
                     ->required(),
-                Forms\Components\Select::make('curso_id')
+                Select::make('curso_id')
+                    ->label('Curso')
+                    ->placeholder('Selecciona un curso')
                     ->relationship('curso', 'nombre')
                     ->required(),
-                Forms\Components\Select::make('empresa_id')
+                Select::make('empresa_id')
+                    ->label('Empresa')
+                    ->placeholder('Selecciona una empresa')
                     ->relationship('empresa', 'nombre')
                     ->default(null),
-                Forms\Components\Select::make('tutor_curso_id')
+                Select::make('tutor_curso_id')
                     ->relationship('tutorCurso', 'nombre')
                     ->label('Tutor de Curso')
+                    ->placeholder('Asigna un tutor de curso')
                     ->default(null),
-                Forms\Components\Select::make('tutor_practicas_id')
+                Select::make('tutor_practicas_id')
                     ->relationship('tutorPracticas', 'nombre')
                     ->label('Tutor de Prácticas')
+                    ->placeholder('Asigna un tutor de prácticas')
                     ->default(null),
             ]);
     }
 
+    /**
+     * @brief Obtiene la consulta base optimizada para el recurso Alumno.
+     * 
+     * @return Builder Consulta configurada con carga ansiosa y filtros por rol.
+     */
     public static function getEloquentQuery(): Builder
     {
-        $query = parent::getEloquentQuery()
+        $consulta = parent::getEloquentQuery()
             ->with(['user', 'curso', 'empresa', 'tutorCurso', 'tutorPracticas']);
             
-        $user = auth()->user();
+        $usuarioActual = auth()->user();
 
-        if ($user->isAdmin()) {
-            return $query;
+        if ($usuarioActual->isAdmin()) {
+            return $consulta;
         }
 
-        if ($user->isTutorCurso()) {
-            return $query->where('tutor_curso_id', $user->perfilTutorCurso?->id);
+        if ($usuarioActual->isTutorCurso()) {
+            return $consulta->where('tutor_curso_id', $usuarioActual->perfilTutorCurso?->id);
         }
 
-        if ($user->isAlumno()) {
-            return $query->where('user_id', $user->id);
+        if ($usuarioActual->isAlumno()) {
+            return $consulta->where('user_id', $usuarioActual->id);
         }
 
-        if ($user->isTutorPracticas()) {
-            return $query->whereHas('tutorPracticas', fn($q) => $q->where('user_id', $user->id));
+        if ($usuarioActual->isTutorPracticas()) {
+            return $consulta->whereHas('tutorPracticas', fn($q) => $q->where('user_id', $usuarioActual->id));
         }
 
-        return $query->whereRaw('1 = 0');
+        return $consulta->whereRaw('1 = 0');
     }
 
-    public static function table(Table $table): Table
+    /**
+     * @brief Obtiene la tabla configurada para el recurso Alumno.
+     * 
+     * @param Table $tabla Objeto de la tabla.
+     * @return Table Tabla configurada con columnas, filtros y acciones.
+     */
+    public static function table(Table $tabla): Table
     {
-        return $table
+        return $tabla
             ->deferLoading()
             ->headerActions([
                 ExportAction::make()
@@ -123,35 +154,38 @@ class AlumnoResource extends Resource
                     ->visible(fn () => auth()->user()->isAdmin()),
             ])
             ->columns([
-                Tables\Columns\ImageColumn::make('user.avatar_url')
+                ImageColumn::make('user.avatar_url')
                     ->label('Avatar')
                     ->circular()
                     ->state(fn (Alumno $record) => $record->user?->getFilamentAvatarUrl()),
-                Tables\Columns\TextColumn::make('user.name')
+                TextColumn::make('user.name')
                     ->label('Nombre Alumno')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('curso.nombre')
+                TextColumn::make('curso.nombre')
                     ->label('Curso')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('empresa.nombre')
+                TextColumn::make('empresa.nombre')
                     ->label('Empresa')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
+                    ->label('Fecha de Registro')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('curso')
+                SelectFilter::make('curso')
+                    ->label('Filtrar por Curso')
                     ->relationship('curso', 'nombre'),
-                Tables\Filters\SelectFilter::make('empresa')
+                SelectFilter::make('empresa')
+                    ->label('Filtrar por Empresa')
                     ->relationship('empresa', 'nombre'),
             ])
             ->actions([
-                Tables\Actions\Action::make('descargarInforme')
+                Action::make('descargarInforme')
                     ->label('Descargar Informe')
                     ->icon('heroicon-o-document-arrow-down')
                     ->color('success')
@@ -162,27 +196,30 @@ class AlumnoResource extends Resource
                             "informe_{$record->dni}.pdf"
                         );
                     }),
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make()
+                EditAction::make()
+                    ->label('Editar'),
+                DeleteAction::make()
+                    ->label('Eliminar')
                     ->successNotification(fn (Alumno $record) => 
                         Notification::make()
                             ->success()
                             ->title('Alumno eliminado')
                             ->body("El registro del alumno " . ($record->user?->name ?? 'desconocido') . " ha sido eliminado correctamente.")
-                            ->sendToDatabase(\Filament\Facades\Filament::auth()->user())
+                            ->sendToDatabase(auth()->user())
                     ),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make()
+                BulkActionGroup::make([
+                    DeleteBulkAction::make()
+                        ->label('Eliminar seleccionados')
                         ->successNotification(
                             Notification::make()
                                 ->success()
                                 ->title('Alumnos eliminados')
                                 ->body("Los registros de los alumnos seleccionados han sido eliminados correctamente.")
-                                ->sendToDatabase(\Filament\Facades\Filament::auth()->user())
+                                ->sendToDatabase(auth()->user())
                         ),
-                ]),
+                ])->label('Acciones por lote'),
             ]);
     }
 

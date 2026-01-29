@@ -29,7 +29,7 @@ class AdminPanelProvider extends PanelProvider
         return $panel
             ->default()
             ->id('admin')
-            ->path('admin')
+            ->path('dashboard')
             ->login()
             ->profile(\App\Filament\Pages\EditProfile::class)
             ->unsavedChangesAlerts()

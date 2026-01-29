@@ -21,6 +21,11 @@ class CreateUser extends CreateRecord
 {
     protected static string $resource = UserResource::class;
 
+    /**
+     * @brief Obtiene la notificación de éxito al crear un usuario.
+     * 
+     * @return Notification|null Objeto de notificación configurado.
+     */
     protected function getCreatedNotification(): ?Notification
     {
         return Notification::make()
@@ -30,6 +35,11 @@ class CreateUser extends CreateRecord
             ->sendToDatabase(\Filament\Facades\Filament::auth()->user());
     }
 
+    /**
+     * @brief Obtiene la URL de redirección tras crear un registro.
+     * 
+     * @return string URL de la página de listado (Index).
+     */
     protected function getRedirectUrl(): string
     {
         return $this->getResource()::getUrl('index');

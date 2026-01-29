@@ -3,16 +3,27 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\EvaluacionResource\Pages;
-use App\Filament\Resources\EvaluacionResource\RelationManagers;
 use App\Models\Evaluacion;
-use Filament\Forms;
+use App\Models\Alumno;
+use App\Models\TutorPracticas;
+use App\Models\CapacidadEvaluacion;
+use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Tables;
 use Filament\Tables\Table;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Actions\DeleteAction;
+use Filament\Tables\Actions\BulkActionGroup;
+use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Notifications\Notification;
+use Filament\Facades\Filament;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class EvaluacionResource extends Resource
 {
@@ -31,59 +42,80 @@ class EvaluacionResource extends Resource
         return auth()->user()->isAdmin() || auth()->user()->isTutorCurso();
     }
 
-    public static function form(Form $form): Form
+    /**
+     * @brief Obtiene el formulario configurado para el recurso Evaluación.
+     * 
+     * @param Form $formulario Objeto del formulario.
+     * @return Form Formulario configurado con campos de alumno, tutor y criterios.
+     */
+    public static function form(Form $formulario): Form
     {
-        return $form
+        return $formulario
             ->schema([
-                Forms\Components\Section::make('Información General')
+                Section::make('Información General')
+                    ->description('Datos del alumno y tutor responsables de la evaluación.')
                     ->schema([
-                        Forms\Components\Select::make('alumno_id')
+                        Select::make('alumno_id')
+                            ->label('Alumno a evaluar')
+                            ->placeholder('Selecciona un alumno')
                             ->relationship('alumno', 'id')
                             ->getOptionLabelFromRecordUsing(fn ($record) => $record->user?->name ?? 'Alumno sin usuario')
                             ->options(function () {
-                                $user = auth()->user();
-                                if ($user->isAdmin() || $user->isTutorCurso()) {
-                                    return \App\Models\Alumno::all()->pluck('user.name', 'id');
+                                $usuarioActual = auth()->user();
+                                if ($usuarioActual->isAdmin() || $usuarioActual->isTutorCurso()) {
+                                    return Alumno::with('user')->get()->pluck('user.name', 'id');
                                 }
-                                if ($user->isTutorPracticas()) {
-                                    return \App\Models\Alumno::whereHas('tutorPracticas', function ($q) use ($user) {
-                                        $q->where('user_id', $user->id);
+                                if ($usuarioActual->isTutorPracticas()) {
+                                    return Alumno::with('user')->whereHas('tutorPracticas', function ($subconsulta) use ($usuarioActual) {
+                                        $subconsulta->where('user_id', $usuarioActual->id);
                                     })
                                         ->get()
                                         ->pluck('user.name', 'id');
                                 }
+
                                 return [];
                             })
                             ->searchable()
                             ->required(),
-                        Forms\Components\Select::make('tutor_practicas_id')
+                        Select::make('tutor_practicas_id')
+                            ->label('Tutor de Empresa')
+                            ->placeholder('Selecciona tutor')
                             ->relationship('tutorPracticas', 'id')
                             ->getOptionLabelFromRecordUsing(fn ($record) => $record->user?->name ?? 'Tutor sin usuario')
                             ->default(function () {
-                                $user = auth()->user();
-                                if ($user->isTutorPracticas()) {
-                                    return \App\Models\TutorPracticas::where('user_id', $user->id)->first()?->id;
+                                $usuarioActual = auth()->user();
+                                if ($usuarioActual->isTutorPracticas()) {
+                                    return TutorPracticas::where('user_id', $usuarioActual->id)->first()?->id;
                                 }
+
                                 return null;
                             })
                             ->required(),
-                        Forms\Components\TextInput::make('nota_final')
+                        TextInput::make('nota_final')
+                            ->label('Calificación Final')
+                            ->placeholder('Cálculo automático')
                             ->numeric()
                             ->disabled()
                             ->dehydrated(true)
-                            ->label('Nota Final (Autocalculada)'),
+                            ->helperText('Esta nota se calcula automáticamente en base a los criterios.'),
                     ])->columns(2),
 
-                Forms\Components\Section::make('Criterios de Evaluación')
+                Section::make('Criterios de Evaluación')
+                    ->description('Calificaciones detalladas por capacidad o competencia.')
                     ->schema([
-                        Forms\Components\Repeater::make('detalles')
+                        Repeater::make('detalles')
+                            ->label('Capacidades Evaluadas')
                             ->relationship()
                             ->schema([
-                                Forms\Components\Select::make('capacidad_id')
+                                Select::make('capacidad_id')
+                                    ->label('Capacidad / Competencia')
+                                    ->placeholder('Selecciona capacidad')
                                     ->relationship('capacidad', 'nombre')
                                     ->required()
                                     ->columnSpan(2),
-                                Forms\Components\TextInput::make('nota')
+                                TextInput::make('nota')
+                                    ->label('Calificación (0-10)')
+                                    ->placeholder('Ej: 8.5')
                                     ->numeric()
                                     ->minValue(0)
                                     ->maxValue(10)
@@ -91,72 +123,100 @@ class EvaluacionResource extends Resource
                                     ->columnSpan(1),
                             ])
                             ->columns(3)
-                            ->itemLabel(fn (array $state): ?string => \App\Models\CapacidadEvaluacion::find($state['capacidad_id'])?->nombre ?? 'Nuevo Criterio')
-                            ->defaultItems(1),
+                            ->itemLabel(function (array $state): ?string {
+                                static $capacidades = null;
+                                if ($capacidades === null) {
+                                    $capacidades = CapacidadEvaluacion::pluck('nombre', 'id');
+                                }
+
+                                return $capacidades[$state['capacidad_id']] ?? 'Nuevo Criterio';
+                            })
+                            ->defaultItems(1)
+                            ->addActionLabel('Añadir Criterio'),
                     ]),
 
-                Forms\Components\Section::make('Observaciones')
+                Section::make('Observaciones')
+                    ->description('Comentarios adicionales sobre el desempeño del alumno.')
                     ->schema([
-                        Forms\Components\Textarea::make('observaciones')
+                        Textarea::make('observaciones')
+                            ->label('Comentarios del Tutor')
+                            ->placeholder('Escribe aquí cualquier observación relevante...')
                             ->columnSpanFull(),
                     ]),
             ]);
     }
 
+    /**
+     * @brief Obtiene la consulta base optimizada para el recurso Evaluación.
+     * 
+     * @return Builder Consulta configurada con carga ansiosa de relaciones.
+     */
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()->with(['alumno.user', 'tutorPracticas.user']);
     }
 
-    public static function table(Table $table): Table
+    /**
+     * @brief Obtiene la tabla configurada para el recurso Evaluación.
+     * 
+     * @param Table $tabla Objeto de la tabla.
+     * @return Table Tabla configurada con columnas de alumno, tutor y nota final.
+     */
+    public static function table(Table $tabla): Table
     {
-        return $table
+        return $tabla
             ->deferLoading()
             ->columns([
-                Tables\Columns\TextColumn::make('alumno.user.name')
-                    ->label('Alumno')
+                TextColumn::make('alumno.user.name')
+                    ->label('Estudiante')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('tutorPracticas.user.name')
-                    ->label('Tutor')
+                TextColumn::make('tutorPracticas.user.name')
+                    ->label('Tutor Empresa')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('nota_final')
+                TextColumn::make('nota_final')
+                    ->label('Nota Final')
                     ->numeric()
                     ->sortable()
                     ->badge()
                     ->color(fn ($state) => $state >= 5 ? 'success' : 'danger'),
-                Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
+                TextColumn::make('created_at')
+                    ->label('Evaluado el')
+                    ->dateTime('d/m/Y')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('alumno')
+                SelectFilter::make('alumno')
+                    ->label('Filtrar por Estudiante')
                     ->relationship('alumno', 'id')
                     ->getOptionLabelFromRecordUsing(fn ($record) => $record->user?->name ?? 'Alumno sin usuario'),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make()
+                EditAction::make()
+                    ->label('Editar'),
+                DeleteAction::make()
+                    ->label('Eliminar')
                     ->successNotification(
-                        \Filament\Notifications\Notification::make()
+                        Notification::make()
                             ->success()
                             ->title('Evaluación eliminada')
-                            ->body("La evaluación ha sido eliminada correctamente.")
-                            ->sendToDatabase(\Filament\Facades\Filament::auth()->user())
+                            ->body('La evaluación ha sido eliminada correctamente.')
+                            ->sendToDatabase(Filament::auth()->user())
                     ),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make()
+                BulkActionGroup::make([
+                    DeleteBulkAction::make()
+                        ->label('Eliminar seleccionadas')
                         ->successNotification(
-                            \Filament\Notifications\Notification::make()
+                            Notification::make()
                                 ->success()
                                 ->title('Evaluaciones eliminadas')
-                                ->body("Las evaluaciones seleccionadas han sido eliminadas correctamente.")
-                                ->sendToDatabase(\Filament\Facades\Filament::auth()->user())
+                                ->body('Las evaluaciones seleccionadas han sido eliminadas correctamente.')
+                                ->sendToDatabase(Filament::auth()->user())
                         ),
-                ]),
+                ])->label('Acciones por lote'),
             ]);
     }
 

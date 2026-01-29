@@ -3,16 +3,25 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\IncidenciaResource\Pages;
-use App\Filament\Resources\IncidenciaResource\RelationManagers;
 use App\Models\Incidencia;
-use Filament\Forms;
+use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Tables;
 use Filament\Tables\Table;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Actions\Action;
+use Filament\Tables\Actions\ViewAction;
+use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Actions\DeleteAction;
+use Filament\Tables\Actions\BulkActionGroup;
+use Filament\Tables\Actions\DeleteBulkAction;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-
 use Filament\Notifications\Notification;
 
 class IncidenciaResource extends Resource
@@ -27,37 +36,56 @@ class IncidenciaResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Incidencias';
 
-    public static function form(Form $form): Form
+    /**
+     * @brief Obtiene el formulario configurado para el recurso Incidencia.
+     * 
+     * @param Form $formulario Objeto del formulario.
+     * @return Form Formulario configurado con detalles de la incidencia y resolución.
+     */
+    public static function form(Form $formulario): Form
     {
-        return $form
+        return $formulario
             ->schema([
-                Forms\Components\Section::make('Detalles de la Incidencia')
+                Section::make('Detalles de la Incidencia')
+                    ->description('Información sobre el alumno, tipo de incidencia y descripción.')
                     ->schema([
-                        Forms\Components\Select::make('alumno_id')
+                        Select::make('alumno_id')
+                            ->label('Alumno')
+                            ->placeholder('Selecciona un alumno')
                             ->relationship('alumno', 'id')
                             ->getOptionLabelFromRecordUsing(fn ($record) => $record->user?->name ?? 'Alumno sin usuario')
                             ->searchable()
                             ->required(),
-                        Forms\Components\Select::make('tutor_practicas_id')
+                        Select::make('tutor_practicas_id')
+                            ->label('Tutor de Empresa')
+                            ->placeholder('Selecciona un tutor (opcional)')
                             ->relationship('tutorPracticas', 'id')
                             ->getOptionLabelFromRecordUsing(fn ($record) => $record->user?->name ?? 'Tutor sin usuario')
                             ->searchable()
                             ->nullable(),
-                        Forms\Components\DatePicker::make('fecha')
+                        DatePicker::make('fecha')
+                            ->label('Fecha de la Incidencia')
+                            ->placeholder('Selecciona fecha')
                             ->required()
                             ->default(now()),
-                        Forms\Components\Select::make('tipo')
+                        Select::make('tipo')
+                            ->label('Tipo de Incidencia')
+                            ->placeholder('Selecciona tipo')
                             ->options([
-                                'FALTA' => 'Falta',
+                                'FALTA' => 'Falta de asistencia',
                                 'RETRASO' => 'Retraso',
                                 'PROBLEMA_ACTITUD' => 'Problema de Actitud',
                                 'OTROS' => 'Otros',
                             ])
                             ->required(),
-                        Forms\Components\Textarea::make('descripcion')
+                        Textarea::make('descripcion')
+                            ->label('Descripción Detallada')
+                            ->placeholder('Describe lo sucedido...')
                             ->required()
                             ->columnSpanFull(),
-                        Forms\Components\Select::make('estado')
+                        Select::make('estado')
+                            ->label('Estado Inicial')
+                            ->placeholder('Selecciona estado')
                             ->options([
                                 'ABIERTA' => 'Abierta',
                                 'EN_PROCESO' => 'En Proceso',
@@ -67,98 +95,136 @@ class IncidenciaResource extends Resource
                             ->required(),
                     ])->columns(2),
 
-                Forms\Components\Section::make('Resolución')
+                Section::make('Resolución')
+                    ->description('Datos sobre cómo y cuándo se resolvió la incidencia.')
                     ->schema([
-                        Forms\Components\DateTimePicker::make('fecha_resolucion'),
-                        Forms\Components\Textarea::make('resolucion')
+                        DateTimePicker::make('fecha_resolucion')
+                            ->label('Fecha de Resolución')
+                            ->placeholder('Selecciona fecha y hora'),
+                        Textarea::make('resolucion')
+                            ->label('Explicación de la Resolución')
+                            ->placeholder('Detalla cómo se ha resuelto...')
                             ->columnSpanFull(),
                     ]),
             ]);
     }
 
+    /**
+     * @brief Obtiene la consulta base optimizada para el recurso Incidencia.
+     * 
+     * @return Builder Consulta configurada con carga ansiosa y filtros por rol.
+     */
     public static function getEloquentQuery(): Builder
     {
-        $query = parent::getEloquentQuery()->with(['alumno.user', 'tutorPracticas.user']);
-        $user = auth()->user();
+        $consulta = parent::getEloquentQuery()->with(['alumno.user', 'tutorPracticas.user']);
+        $usuarioActual = auth()->user();
 
-        if ($user->isAdmin()) {
-            return $query;
+        if ($usuarioActual->isAdmin()) {
+            return $consulta;
         }
 
-        if ($user->isTutorCurso()) {
-            return $query->whereHas('alumno', fn($q) => $q->where('tutor_curso_id', $user->perfilTutorCurso?->id));
+        if ($usuarioActual->isTutorCurso()) {
+            return $consulta->whereHas('alumno', fn($subconsulta) => $subconsulta->where('tutor_curso_id', $usuarioActual->perfilTutorCurso?->id));
         }
 
-        if ($user->isAlumno()) {
-            return $query->whereHas('alumno', fn($q) => $q->where('user_id', $user->id));
+        if ($usuarioActual->isAlumno()) {
+            return $consulta->whereHas('alumno', fn($subconsulta) => $subconsulta->where('user_id', $usuarioActual->id));
         }
 
-        if ($user->isTutorPracticas()) {
-            return $query->whereHas('alumno', fn($q) => $q->whereHas('tutorPracticas', fn($sq) => $sq->where('user_id', $user->id)));
+        if ($usuarioActual->isTutorPracticas()) {
+            return $consulta->whereHas('alumno', fn($subconsulta) => $subconsulta->whereHas('tutorPracticas', fn($sq) => $sq->where('user_id', $usuarioActual->id)));
         }
 
-        return $query->whereRaw('1 = 0');
+        return $consulta->whereRaw('1 = 0');
     }
 
-    public static function table(Table $table): Table
+    /**
+     * @brief Obtiene la tabla configurada para el recurso Incidencia.
+     * 
+     * @param Table $tabla Objeto de la tabla.
+     * @return Table Tabla configurada con columnas de estado, tipo y acciones de resolución.
+     */
+    public static function table(Table $tabla): Table
     {
-        return $table
+        return $tabla
             ->deferLoading()
             ->columns([
-                Tables\Columns\TextColumn::make('alumno.user.name')
+                TextColumn::make('alumno.user.name')
                     ->label('Alumno')
                     ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('tutorPracticas.user.name')
-                    ->label('Tutor Prácticas')
+                TextColumn::make('tutorPracticas.user.name')
+                    ->label('Tutor Empresa')
                     ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('fecha')
-                    ->date()
+                TextColumn::make('fecha')
+                    ->label('Fecha')
+                    ->date('d/m/Y')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('tipo')
+                TextColumn::make('tipo')
+                    ->label('Tipo')
+                    ->formatStateUsing(fn ($state): string => match ($state) {
+                        'FALTA' => 'Falta',
+                        'RETRASO' => 'Retraso',
+                        'PROBLEMA_ACTITUD' => 'Actitud',
+                        'OTROS' => 'Otros',
+                        default => $state,
+                    })
                     ->searchable()
                     ->badge(),
-                Tables\Columns\TextColumn::make('estado')
+                TextColumn::make('estado')
+                    ->label('Estado')
                     ->badge()
-                    ->color(fn (string $state): string => match ($state) {
+                    ->color(fn ($state): string => match ($state) {
                         'ABIERTA' => 'danger',
                         'EN_PROCESO' => 'warning',
                         'RESUELTA' => 'success',
                         default => 'gray',
                     }),
-                Tables\Columns\TextColumn::make('created_at')
-                    ->label('Fecha Creación')
+                TextColumn::make('created_at')
+                    ->label('Creada el')
                     ->dateTime('d/m/Y H:i')
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('fecha_resolucion')
-                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('fecha_resolucion')
+                    ->label('Resuelta el')
+                    ->dateTime('d/m/Y H:i')
                     ->sortable(),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('estado')
+                SelectFilter::make('estado')
+                    ->label('Filtrar por Estado')
                     ->options([
                         'ABIERTA' => 'Abierta',
                         'EN_PROCESO' => 'En Proceso',
                         'RESUELTA' => 'Resuelta',
                     ]),
+                SelectFilter::make('tipo')
+                    ->label('Filtrar por Tipo')
+                    ->options([
+                        'FALTA' => 'Falta',
+                        'RETRASO' => 'Retraso',
+                        'PROBLEMA_ACTITUD' => 'Actitud',
+                        'OTROS' => 'Otros',
+                    ]),
             ])
             ->actions([
-                Tables\Actions\Action::make('marcarComoResuelta')
+                Action::make('marcarComoResuelta')
                     ->label('Resolver')
                     ->icon('heroicon-o-check-circle')
                     ->color('success')
                     ->disabled(fn (Incidencia $record): bool => $record->estado === 'RESUELTA')
                     ->form([
-                        Forms\Components\Textarea::make('resolucion')
+                        Textarea::make('resolucion')
                             ->label('Explicación de la resolución')
+                            ->placeholder('Describe cómo se ha solucionado...')
                             ->required(),
                     ])
-                    ->action(function (Incidencia $record, array $data): void {
+                    ->action(function (Incidencia $record, array $datos): void {
                         $record->update([
                             'estado' => 'RESUELTA',
                             'fecha_resolucion' => now(),
-                            'resolucion' => $data['resolucion'],
+                            'resolucion' => $datos['resolucion'],
                         ]);
                     })
                     ->successNotification(fn (Incidencia $record) => 
@@ -166,33 +232,37 @@ class IncidenciaResource extends Resource
                             ->success()
                             ->title('Incidencia resuelta')
                             ->body("La incidencia del alumno " . ($record->alumno?->user?->name ?? 'desconocido') . " ha sido marcada como resuelta.")
-                            ->sendToDatabase(\Filament\Facades\Filament::auth()->user())
+                            ->sendToDatabase(auth()->user())
                     )
                     ->modalHeading('Resolver Incidencia')
                     ->modalDescription('Por favor, indica cómo se ha resuelto la incidencia.')
                     ->modalSubmitActionLabel('Confirmar Resolución'),
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make()
+                ViewAction::make()
+                    ->label('Ver'),
+                EditAction::make()
+                    ->label('Editar'),
+                DeleteAction::make()
+                    ->label('Eliminar')
                     ->successNotification(
                         Notification::make()
                             ->success()
                             ->title('Incidencia eliminada')
                             ->body("La incidencia ha sido eliminada correctamente.")
-                            ->sendToDatabase(\Filament\Facades\Filament::auth()->user())
+                            ->sendToDatabase(auth()->user())
                     ),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make()
+                BulkActionGroup::make([
+                    DeleteBulkAction::make()
+                        ->label('Eliminar seleccionadas')
                         ->successNotification(
                             Notification::make()
                                 ->success()
                                 ->title('Incidencias eliminadas')
                                 ->body("Las incidencias seleccionadas han sido eliminadas correctamente.")
-                                ->sendToDatabase(\Filament\Facades\Filament::auth()->user())
+                                ->sendToDatabase(auth()->user())
                         ),
-                ]),
+                ])->label('Acciones por lote'),
             ]);
     }
 

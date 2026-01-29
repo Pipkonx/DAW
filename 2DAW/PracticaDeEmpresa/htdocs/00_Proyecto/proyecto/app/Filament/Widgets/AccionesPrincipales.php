@@ -48,13 +48,13 @@ class AccionesPrincipales extends Widget
                 [
                     'etiqueta' => 'Registrar Jornada Diaria',
                     'icono' => 'heroicon-m-plus-circle',
-                    'url' => '/admin/observacion-diarias/create',
+                    'url' => '/dashboard/observacion-diarias/create',
                     'color' => 'primary',
                 ],
                 [
                     'etiqueta' => 'Informar Incidencia',
                     'icono' => 'heroicon-m-exclamation-triangle',
-                    'url' => '/admin/incidencias/create',
+                    'url' => '/dashboard/incidencias/create',
                     'color' => 'danger',
                 ],
             ],
@@ -62,7 +62,7 @@ class AccionesPrincipales extends Widget
                 [
                     'etiqueta' => 'Evaluar Alumno',
                     'icono' => 'heroicon-m-clipboard-document-check',
-                    'url' => '/admin/evaluacions/create',
+                    'url' => '/dashboard/evaluacions/create',
                     'color' => 'success',
                 ],
                 [
@@ -76,13 +76,13 @@ class AccionesPrincipales extends Widget
                 [
                     'etiqueta' => 'Crear Nuevo Usuario',
                     'icono' => 'heroicon-m-user-plus',
-                    'url' => '/admin/users/create',
+                    'url' => '/dashboard/users/create',
                     'color' => 'primary',
                 ],
                 [
                     'etiqueta' => 'Configurar Curso',
                     'icono' => 'heroicon-m-cog-6-tooth',
-                    'url' => '/admin/cursos',
+                    'url' => '/dashboard/cursos',
                     'color' => 'gray',
                 ],
             ],

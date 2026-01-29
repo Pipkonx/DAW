@@ -36,7 +36,7 @@ class GoogleController extends Controller
             $user = User::where('email', $googleUser->getEmail())->first();
 
             if (!$user) {
-                return redirect('/admin/login')->with('error', 'No se ha encontrado ninguna cuenta con este correo electrónico.');
+                return redirect('/dashboard/login')->with('error', 'No se ha encontrado ninguna cuenta con este correo electrónico.');
             }
 
             // Actualizar el google_id y el avatar si han cambiado o no existen
@@ -47,9 +47,9 @@ class GoogleController extends Controller
 
             Auth::login($user);
 
-            return redirect()->intended('/admin');
+            return redirect()->intended('/dashboard');
         } catch (Exception $e) {
-            return redirect('/admin/login')->with('error', 'Error al iniciar sesión con Google: ' . $e->getMessage());
+            return redirect('/dashboard/login')->with('error', 'Error al iniciar sesión con Google: ' . $e->getMessage());
         }
     }
 }

@@ -9,10 +9,19 @@ use App\Models\Incidencia;
 use Filament\Forms;
 use Filament\Notifications\Notification;
 
+/**
+ * @class ViewIncidencia
+ * @brief Página para visualizar una Incidencia.
+ */
 class ViewIncidencia extends ViewRecord
 {
     protected static string $resource = IncidenciaResource::class;
 
+    /**
+     * @brief Define las acciones de la cabecera en la página de visualización.
+     * 
+     * @return array Lista de acciones disponibles.
+     */
     protected function getHeaderActions(): array
     {
         return [
@@ -26,11 +35,11 @@ class ViewIncidencia extends ViewRecord
                         ->label('Explicación de la resolución')
                         ->required(),
                 ])
-                ->action(function (Incidencia $record, array $data): void {
+                ->action(function (Incidencia $record, array $datos): void {
                     $record->update([
                         'estado' => 'RESUELTA',
                         'fecha_resolucion' => now(),
-                        'resolucion' => $data['resolucion'],
+                        'resolucion' => $datos['resolucion'],
                     ]);
                 })
                 ->successNotification(fn (Incidencia $record) => 

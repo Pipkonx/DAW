@@ -3,13 +3,21 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\ObservacionDiariaResource\Pages;
-use App\Filament\Resources\ObservacionDiariaResource\RelationManagers;
 use App\Models\ObservacionDiaria;
-use Filament\Forms;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Tables;
 use Filament\Tables\Table;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Actions\DeleteAction;
+use Filament\Tables\Actions\BulkActionGroup;
+use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Notifications\Notification;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -26,34 +34,56 @@ class ObservacionDiariaResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Observaciones Diarias';
 
-    public static function form(Form $form): Form
+    public static function canCreate(): bool
     {
-        return $form
+        return !auth()->user()->isTutorCurso() && !auth()->user()->isTutorPracticas();
+    }
+
+    /**
+     * @brief Obtiene el formulario configurado para el recurso de Observaciones Diarias.
+     * 
+     * @param Form $formulario Objeto del formulario.
+     * @return Form Formulario configurado con campos de alumno, fecha, horas y textos.
+     */
+    public static function form(Form $formulario): Form
+    {
+        return $formulario
             ->schema([
-                Forms\Components\Select::make('alumno_id')
+                Select::make('alumno_id')
+                    ->label('Alumno')
+                    ->placeholder('Selecciona un alumno')
                     ->relationship('alumno', 'id')
                     ->getOptionLabelFromRecordUsing(fn ($record) => $record->user?->name ?? 'Alumno sin usuario')
                     ->searchable(['user.name'])
                     ->default(fn () => auth()->user()->isAlumno() ? auth()->user()->alumno?->id : null)
                     ->hidden(fn () => auth()->user()->isAlumno())
                     ->required(),
-                Forms\Components\DatePicker::make('fecha')
+                DatePicker::make('fecha')
+                    ->label('Fecha de la Observación')
+                    ->placeholder('Selecciona una fecha')
                     ->default(now())
                     ->required(),
-                Forms\Components\TextInput::make('horasRealizadas')
+                TextInput::make('horasRealizadas')
                     ->label('Horas Realizadas')
+                    ->placeholder('Ej: 8')
                     ->required()
                     ->numeric(),
-                Forms\Components\Textarea::make('actividades')
+                Textarea::make('actividades')
+                    ->label('Actividades Realizadas')
+                    ->placeholder('Describe las tareas completadas hoy...')
                     ->required()
                     ->columnSpanFull(),
-                Forms\Components\Textarea::make('explicaciones')
+                Textarea::make('explicaciones')
+                    ->label('Explicaciones Adicionales')
+                    ->placeholder('Cualquier detalle relevante...')
                     ->columnSpanFull(),
-                Forms\Components\Textarea::make('observacionesAlumno')
-                    ->label('Observaciones Alumno')
+                Textarea::make('observacionesAlumno')
+                    ->label('Observaciones del Alumno')
+                    ->placeholder('Comentarios del alumno sobre la jornada...')
                     ->columnSpanFull(),
-                Forms\Components\Textarea::make('observacionesTutor')
-                    ->label('Observaciones Tutor')
+                Textarea::make('observacionesTutor')
+                    ->label('Observaciones del Tutor')
+                    ->placeholder('Comentarios del tutor de empresa o centro...')
                     ->columnSpanFull()
                     ->disabled(fn () => auth()->user()->isAlumno() || auth()->user()->isTutorCurso())
                     ->dehydrated(fn () => !auth()->user()->isAlumno() && !auth()->user()->isTutorCurso())
@@ -61,97 +91,118 @@ class ObservacionDiariaResource extends Resource
             ]);
     }
 
+    /**
+     * @brief Obtiene la consulta base optimizada para el recurso de Observaciones Diarias.
+     * 
+     * @return Builder Consulta filtrada por el rol del usuario actual.
+     */
     public static function getEloquentQuery(): Builder
     {
-        $query = parent::getEloquentQuery()->with(['alumno.user']);
-        $user = auth()->user();
+        $consulta = parent::getEloquentQuery()->with(['alumno.user']);
+        $usuarioActual = auth()->user();
 
-        if ($user->isAdmin()) {
-            return $query;
+        if ($usuarioActual->isAdmin()) {
+            return $consulta;
         }
 
-        if ($user->isTutorCurso()) {
-            return $query->whereHas('alumno', fn($q) => $q->where('tutor_curso_id', $user->perfilTutorCurso?->id));
+        if ($usuarioActual->isTutorCurso()) {
+            return $consulta->whereHas('alumno', fn($q) => $q->where('tutor_curso_id', $usuarioActual->perfilTutorCurso?->id));
         }
 
-        if ($user->isAlumno()) {
-            return $query->whereHas('alumno', fn($q) => $q->where('user_id', $user->id));
+        if ($usuarioActual->isAlumno()) {
+            return $consulta->whereHas('alumno', fn($q) => $q->where('user_id', $usuarioActual->id));
         }
 
-        if ($user->isTutorPracticas()) {
-            return $query->whereHas('alumno', fn($q) => $q->whereHas('tutorPracticas', fn($sq) => $sq->where('user_id', $user->id)));
+        if ($usuarioActual->isTutorPracticas()) {
+            return $consulta->whereHas('alumno', fn($q) => $q->whereHas('tutorPracticas', fn($sq) => $sq->where('user_id', $usuarioActual->id)));
         }
 
-        return $query->whereRaw('1 = 0');
+        return $consulta->whereRaw('1 = 0');
     }
 
-    public static function table(Table $table): Table
+    /**
+     * @brief Obtiene la tabla configurada para el recurso de Observaciones Diarias.
+     * 
+     * @param Table $tabla Objeto de la tabla.
+     * @return Table Tabla configurada con columnas, filtros y acciones.
+     */
+    public static function table(Table $tabla): Table
     {
-        return $table
+        return $tabla
             ->deferLoading()
             ->columns([
-                Tables\Columns\TextColumn::make('alumno.user.name')
+                TextColumn::make('alumno.user.name')
                     ->label('Alumno')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('fecha')
+                TextColumn::make('fecha')
+                    ->label('Fecha')
                     ->date()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('horasRealizadas')
+                TextColumn::make('horasRealizadas')
                     ->label('Horas')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('actividades')
+                TextColumn::make('actividades')
+                    ->label('Actividades')
                     ->limit(50)
                     ->searchable(),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
+                    ->label('Creado el')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('alumno')
+                SelectFilter::make('alumno')
+                    ->label('Filtrar por Alumno')
                     ->relationship('alumno', 'id')
                     ->getOptionLabelFromRecordUsing(fn ($record) => $record->user?->name ?? 'Alumno sin usuario'),
-                Tables\Filters\Filter::make('fecha')
+                Filter::make('fecha')
+                    ->label('Filtrar por Fecha')
                     ->form([
-                        Forms\Components\DatePicker::make('desde'),
-                        Forms\Components\DatePicker::make('hasta'),
+                        DatePicker::make('desde')
+                            ->label('Desde'),
+                        DatePicker::make('hasta')
+                            ->label('Hasta'),
                     ])
-                    ->query(function (Builder $query, array $data): Builder {
-                        return $query
+                    ->query(function (Builder $consulta, array $datos): Builder {
+                        return $consulta
                             ->when(
-                                $data['desde'],
-                                fn (Builder $query, $date): Builder => $query->whereDate('fecha', '>=', $date),
+                                $datos['desde'],
+                                fn (Builder $q, $fecha): Builder => $q->whereDate('fecha', '>=', $fecha),
                             )
                             ->when(
-                                $data['hasta'],
-                                fn (Builder $query, $date): Builder => $query->whereDate('fecha', '<=', $date),
+                                $datos['hasta'],
+                                fn (Builder $q, $fecha): Builder => $q->whereDate('fecha', '<=', $fecha),
                             );
                     })
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make()
+                EditAction::make()
+                    ->label('Editar'),
+                DeleteAction::make()
+                    ->label('Eliminar')
                     ->successNotification(
-                        \Filament\Notifications\Notification::make()
+                        Notification::make()
                             ->success()
                             ->title('Observación eliminada')
                             ->body("La observación diaria ha sido eliminada correctamente.")
-                            ->sendToDatabase(\Filament\Facades\Filament::auth()->user())
+                            ->sendToDatabase(auth()->user())
                     ),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make()
+                BulkActionGroup::make([
+                    DeleteBulkAction::make()
+                        ->label('Eliminar seleccionados')
                         ->successNotification(
-                            \Filament\Notifications\Notification::make()
+                            Notification::make()
                                 ->success()
                                 ->title('Observaciones eliminadas')
                                 ->body("Las observaciones seleccionadas han sido eliminadas correctamente.")
-                                ->sendToDatabase(\Filament\Facades\Filament::auth()->user())
+                                ->sendToDatabase(auth()->user())
                         ),
-                ]),
+                ])->label('Acciones por lote'),
             ]);
     }
 
