@@ -166,14 +166,14 @@ class ObservacionDiariaResource extends Resource
                         DatePicker::make('hasta')
                             ->label('Hasta'),
                     ])
-                    ->query(function (Builder $consulta, array $datos): Builder {
+                    ->query(function (Builder $consulta, array $data): Builder {
                         return $consulta
                             ->when(
-                                $datos['desde'],
+                                $data['desde'],
                                 fn (Builder $q, $fecha): Builder => $q->whereDate('fecha', '>=', $fecha),
                             )
                             ->when(
-                                $datos['hasta'],
+                                $data['hasta'],
                                 fn (Builder $q, $fecha): Builder => $q->whereDate('fecha', '<=', $fecha),
                             );
                     })

@@ -27,16 +27,16 @@ class CreateObservacionDiaria extends CreateRecord
     /**
      * @brief Modifica los datos del formulario antes de la creación.
      * 
-     * @param array $datos Datos del formulario.
+     * @param array $data Datos del formulario.
      * @return array Datos modificados.
      */
-    protected function mutateFormDataBeforeCreate(array $datos): array
+    protected function mutateFormDataBeforeCreate(array $data): array
     {
         if (auth()->user()->isAlumno()) {
-            $datos['alumno_id'] = auth()->user()->alumno?->id;
+            $data['alumno_id'] = auth()->user()->alumno?->id;
         }
 
-        return $datos;
+        return $data;
     }
 
     /**

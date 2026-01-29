@@ -38,12 +38,12 @@ class CreateEmpresa extends CreateRecord
      * @brief Modifica los datos del formulario antes de la creación del registro.
      * Asigna automáticamente la fecha de creación actual.
      * 
-     * @param array $datos Datos provenientes del formulario.
+     * @param array $data Datos provenientes del formulario.
      * @return array Datos modificados con la fecha de creación.
      */
-    protected function mutateFormDataBeforeCreate(array $datos): array
+    protected function mutateFormDataBeforeCreate(array $data): array
     {
-        $datos['fecha_creacion'] = now();
-        return $datos;
+        $data['fecha_creacion'] = now();
+        return $data;
     }
 }

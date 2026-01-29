@@ -39,16 +39,16 @@ class CreateEvaluacion extends CreateRecord
      * 
      * Calcula la nota final basándose en el promedio de las notas de los detalles.
      * 
-     * @param array $datos Datos del formulario.
+     * @param array $data Datos del formulario.
      * @return array Datos modificados.
      */
-    protected function mutateFormDataBeforeCreate(array $datos): array
+    protected function mutateFormDataBeforeCreate(array $data): array
     {
-        if (isset($datos['detalles']) && count($datos['detalles']) > 0) {
-            $suma = collect($datos['detalles'])->sum('nota');
-            $datos['nota_final'] = $suma / count($datos['detalles']);
+        if (isset($data['detalles']) && count($data['detalles']) > 0) {
+            $suma = collect($data['detalles'])->sum('nota');
+            $data['nota_final'] = $suma / count($data['detalles']);
         }
 
-        return $datos;
+        return $data;
     }
 }

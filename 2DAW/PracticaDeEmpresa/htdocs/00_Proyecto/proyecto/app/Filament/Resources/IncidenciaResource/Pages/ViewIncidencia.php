@@ -35,11 +35,11 @@ class ViewIncidencia extends ViewRecord
                         ->label('Explicación de la resolución')
                         ->required(),
                 ])
-                ->action(function (Incidencia $record, array $datos): void {
+                ->action(function (Incidencia $record, array $data): void {
                     $record->update([
                         'estado' => 'RESUELTA',
                         'fecha_resolucion' => now(),
-                        'resolucion' => $datos['resolucion'],
+                        'resolucion' => $data['resolucion'],
                     ]);
                 })
                 ->successNotification(fn (Incidencia $record) => 

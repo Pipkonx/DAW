@@ -36,24 +36,24 @@ class EditUser extends EditRecord
      * @brief Sobrescribe el proceso de actualización para gestionar roles y perfiles.
      * 
      * @param \Illuminate\Database\Eloquent\Model $record Instancia del registro a actualizar.
-     * @param array $datos Datos del formulario.
+     * @param array $data Datos del formulario.
      * @return \Illuminate\Database\Eloquent\Model Registro actualizado.
      */
-    protected function handleRecordUpdate(\Illuminate\Database\Eloquent\Model $record, array $datos): \Illuminate\Database\Eloquent\Model
+    protected function handleRecordUpdate(\Illuminate\Database\Eloquent\Model $record, array $data): \Illuminate\Database\Eloquent\Model
     {
-        return \Illuminate\Support\Facades\DB::transaction(function () use ($record, $datos) {
-            $rol = $datos['rol'] ?? null;
-            $datosPerfil = $datos['datosPerfil'] ?? [];
+        return \Illuminate\Support\Facades\DB::transaction(function () use ($record, $data) {
+            $rol = $data['rol'] ?? null;
+            $datosPerfil = $data['datosPerfil'] ?? [];
 
             // 1. Actualizar datos básicos del usuario
             $datosUsuario = [
-                'name' => $datos['name'],
-                'email' => $datos['email'],
-                'avatar_url' => $datos['avatar_url'] ?? $record->avatar_url,
+                'name' => $data['name'],
+                'email' => $data['email'],
+                'avatar_url' => $data['avatar_url'] ?? $record->avatar_url,
             ];
 
-            if (!empty($datos['password'])) {
-                $datosUsuario['password'] = \Illuminate\Support\Facades\Hash::make($datos['password']);
+            if (!empty($data['password'])) {
+                $datosUsuario['password'] = \Illuminate\Support\Facades\Hash::make($data['password']);
             }
 
             $record->update($datosUsuario);
@@ -105,14 +105,14 @@ class EditUser extends EditRecord
     /**
      * @brief Prepara los datos del formulario antes de cargarlos en la página de edición.
      * 
-     * @param array $datos Datos del registro.
+     * @param array $data Datos del registro.
      * @return array Datos formateados para el formulario.
      */
-    protected function mutateFormDataBeforeFill(array $datos): array
+    protected function mutateFormDataBeforeFill(array $data): array
     {
         $usuario = $this->record;
         $rol = $usuario->getRoleNames()->first();
-        $datos['rol'] = $rol;
+        $data['rol'] = $rol;
 
         // Cargar datos del perfil según el rol
         $perfil = match ($rol) {
@@ -124,10 +124,10 @@ class EditUser extends EditRecord
         };
 
         if ($perfil) {
-            $datos['datosPerfil'] = $perfil->toArray();
+            $data['datosPerfil'] = $perfil->toArray();
         }
 
-        return $datos;
+        return $data;
     }
 
     /**
