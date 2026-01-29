@@ -88,21 +88,31 @@
     <div class="flex-1 flex flex-col bg-white dark:bg-gray-900 min-w-0 min-h-0 h-full overflow-hidden">
         @if($this->receiver)
             <!-- Cabecera del Chat -->
-            <div class="p-4 border-b border-gray-200 dark:border-gray-800 flex items-center gap-3 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md sticky top-0 z-10 flex-shrink-0">
-                <img src="{{ $this->receiver->getFilamentAvatarUrl() }}" class="w-10 h-10 rounded-full border border-gray-200 dark:border-gray-700 object-cover">
-                <div class="flex-1 min-w-0">
-                    <h3 class="font-bold text-gray-900 dark:text-white truncate">{{ $this->receiver->name }}</h3>
-                    <div class="flex items-center gap-1.5">
-                        @if($this->receiver->isOnline())
-                            <span class="w-2.5 h-2.5 bg-green-500 rounded-full animate-pulse border-2 border-white dark:border-gray-900"></span>
-                            <span class="text-[11px] font-bold text-green-600 dark:text-green-500 uppercase tracking-wider">Activo ahora</span>
-                        @else
-                            <span class="w-2.5 h-2.5 bg-gray-400 rounded-full border-2 border-white dark:border-gray-900"></span>
-                            <span class="text-[11px] font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                {{ $this->receiver->lastSeen() ? 'Visto ' . $this->receiver->lastSeen() : 'Desconectado' }}
-                            </span>
-                        @endif
+            <div class="p-4 border-b border-gray-200 dark:border-gray-800 flex flex-col gap-2 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md sticky top-0 z-10 flex-shrink-0">
+                <div class="flex items-center gap-3">
+                    <img src="{{ $this->receiver->getFilamentAvatarUrl() }}" class="w-10 h-10 rounded-full border border-gray-200 dark:border-gray-700 object-cover">
+                    <div class="flex-1 min-w-0">
+                        <h3 class="font-bold text-gray-900 dark:text-white truncate">{{ $this->receiver->name }}</h3>
+                        <div class="flex items-center gap-1.5">
+                            @if($this->receiver->isOnline())
+                                <span class="w-2.5 h-2.5 bg-green-500 rounded-full animate-pulse border-2 border-white dark:border-gray-900"></span>
+                                <span class="text-[11px] font-bold text-green-600 dark:text-green-500 uppercase tracking-wider">Activo ahora</span>
+                            @else
+                                <span class="w-2.5 h-2.5 bg-gray-400 rounded-full border-2 border-white dark:border-gray-900"></span>
+                                <span class="text-[11px] font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                    {{ $this->receiver->lastSeen() ? 'Visto ' . $this->receiver->lastSeen() : 'Desconectado' }}
+                                </span>
+                            @endif
+                        </div>
                     </div>
+                </div>
+                <div class="flex items-center gap-1.5 px-2 py-1 bg-amber-50 dark:bg-amber-900/20 border border-amber-100 dark:border-amber-800/50 rounded-md">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 text-amber-600 dark:text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                    <p class="text-[10px] font-medium text-amber-700 dark:text-amber-400">
+                        Los mensajes y archivos se eliminarán automáticamente después de 90 días.
+                    </p>
                 </div>
             </div>
 
@@ -144,14 +154,14 @@
                     @php $lastDate = $messageDate; @endphp
                 @endif
 
-                <div class="flex {{ $msg->sender_id == auth()->id() ? 'justify-end' : 'justify-start' }} group" wire:key="msg-{{ $msg->id }}">
+                <div class="flex {{ $msg->sender_id == auth()->id() ? 'justify-end' : 'justify-start' }} group mb-2" wire:key="msg-{{ $msg->id }}">
                     <div class="flex flex-col {{ $msg->sender_id == auth()->id() ? 'items-end' : 'items-start' }} max-w-[85%]">
-                        <div class="relative flex items-center gap-2">
+                        <div class="relative flex items-end gap-2">
                             @if($msg->sender_id == auth()->id())
                                 <button 
                                     wire:click="deleteMessage({{ $msg->id }})"
                                     wire:confirm="¿Borrar este mensaje?"
-                                    class="p-1 text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity focus:opacity-100"
+                                    class="p-1 text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity focus:opacity-100 self-center"
                                     title="Eliminar mensaje"
                                 >
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -160,16 +170,16 @@
                                 </button>
                             @endif
 
-                            <div class="rounded-[20px] px-4 py-2.5 shadow-md border {{ $msg->sender_id == auth()->id() ? 'bg-indigo-600 border-indigo-500 text-white rounded-tr-none' : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100 rounded-tl-none' }}" style="{{ $msg->sender_id == auth()->id() ? 'background-color: #4f46e5;' : '' }}">
+                            <div class="relative px-3 pt-2 pb-1.5 shadow-sm border {{ $msg->sender_id == auth()->id() ? 'bg-[#d9fdd3] dark:bg-[#005c4b] border-[#d9fdd3] dark:border-[#005c4b] text-gray-900 dark:text-gray-100 rounded-[18px] rounded-tr-[4px]' : 'bg-white dark:bg-[#202c33] border-white dark:border-[#202c33] text-gray-900 dark:text-gray-100 rounded-[18px] rounded-tl-[4px]' }}">
                                 @if($msg->content)
-                                    <p class="text-[14px] leading-relaxed whitespace-pre-wrap break-words {{ $msg->sender_id == auth()->id() ? 'text-white' : 'text-gray-900 dark:text-gray-100' }}">{{ $msg->content }}</p>
+                                    <p class="text-[14.2px] leading-snug whitespace-pre-wrap break-words min-w-[60px]">{{ $msg->content }}</p>
                                 @endif
 
                                 @if($msg->file_path)
-                                    <div class="mt-2 flex flex-col gap-2">
+                                    <div class="mt-1.5 flex flex-col gap-2 mb-1">
                                         @if(str_starts_with($msg->file_type, 'image/'))
-                                            <div class="relative group/img max-w-[200px]">
-                                                <img src="{{ asset('storage/' . $msg->file_path) }}" class="rounded-lg shadow-sm border border-white/20 max-h-40 object-cover cursor-pointer hover:opacity-90 transition-opacity" wire:click="downloadFile({{ $msg->id }})">
+                                            <div class="relative group/img max-w-[150px]">
+                                                <img src="{{ asset('storage/' . $msg->file_path) }}" class="rounded-lg shadow-sm border border-white/20 max-h-32 object-cover cursor-pointer hover:opacity-90 transition-opacity" wire:click="downloadFile({{ $msg->id }})">
                                                 <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover/img:opacity-100 transition-opacity bg-black/20 rounded-lg pointer-events-none">
                                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
@@ -178,50 +188,53 @@
                                             </div>
                                         @endif
                                         
-                                        <div class="flex items-center gap-3 p-3 rounded-lg {{ $msg->sender_id == auth()->id() ? 'bg-indigo-500/50' : 'bg-gray-100 dark:bg-gray-700' }} border border-white/10 shadow-inner group/file">
+                                        <div class="flex items-center gap-3 p-2 rounded-lg {{ $msg->sender_id == auth()->id() ? 'bg-black/5 dark:bg-black/20' : 'bg-gray-100 dark:bg-gray-700/50' }} border border-transparent group/file">
                                             <div class="p-2 bg-white/20 rounded-md">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 {{ $msg->sender_id == auth()->id() ? 'text-white' : 'text-indigo-600 dark:text-indigo-400' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 {{ $msg->sender_id == auth()->id() ? 'text-green-700 dark:text-green-400' : 'text-indigo-600 dark:text-indigo-400' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                                 </svg>
                                             </div>
                                             <div class="flex-1 min-w-0">
-                                                <p class="text-xs font-bold truncate {{ $msg->sender_id == auth()->id() ? 'text-white' : 'text-gray-900 dark:text-white' }}">{{ $msg->file_name }}</p>
-                                                <p class="text-[10px] {{ $msg->sender_id == auth()->id() ? 'text-indigo-100' : 'text-gray-500 dark:text-gray-400' }}">{{ number_format($msg->file_size / 1024, 1) }} KB</p>
+                                                <p class="text-[11px] font-bold truncate">{{ $msg->file_name }}</p>
+                                                <p class="text-[9px] opacity-70">{{ number_format($msg->file_size / 1024, 1) }} KB</p>
                                             </div>
                                             <button 
                                                 wire:click="downloadFile({{ $msg->id }})"
-                                                class="p-2 bg-white/10 hover:bg-white/30 rounded-full transition-colors"
+                                                class="p-1.5 bg-black/5 hover:bg-black/10 rounded-full transition-colors"
                                                 title="Descargar archivo"
                                             >
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                                                 </svg>
                                             </button>
                                         </div>
                                     </div>
                                 @endif
-                            </div>
-                        </div>
-                        <span class="text-[10px] font-medium text-gray-500 dark:text-gray-500 mt-1.5 px-1 flex items-center gap-1">
-                            {{ $msg->created_at->format('H:i') }}
-                            @if($msg->sender_id == auth()->id())
-                                <div class="flex items-center">
-                                    @if($msg->is_read)
-                                        {{-- Doble check azul (Leído) --}}
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 text-blue-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                            <path d="M18 6L7 17l-5-5"></path>
-                                            <path d="M22 10L13.5 18.5l-2-2"></path>
-                                        </svg>
-                                    @else
-                                        {{-- Doble check gris (Recibido) --}}
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                            <path d="M18 6L7 17l-5-5"></path>
-                                            <path d="M22 10L13.5 18.5l-2-2"></path>
-                                        </svg>
+
+                                <div class="flex justify-end items-center gap-1 -mt-1">
+                                    <span class="text-[9px] opacity-60 font-medium leading-none">
+                                        {{ $msg->created_at->format('H:i') }}
+                                    </span>
+                                    @if($msg->sender_id == auth()->id())
+                                        <div class="flex items-center">
+                                            @if($msg->is_read)
+                                                {{-- Doble check azul (Leído) --}}
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-blue-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                                                    <path d="M18 6L7 17l-5-5"></path>
+                                                    <path d="M22 10L13.5 18.5l-2-2"></path>
+                                                </svg>
+                                            @else
+                                                {{-- Doble check gris (Recibido) --}}
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                                                    <path d="M18 6L7 17l-5-5"></path>
+                                                    <path d="M22 10L13.5 18.5l-2-2"></path>
+                                                </svg>
+                                            @endif
+                                        </div>
                                     @endif
                                 </div>
-                            @endif
-                        </span>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 @empty
