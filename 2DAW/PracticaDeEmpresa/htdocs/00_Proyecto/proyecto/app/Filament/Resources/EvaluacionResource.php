@@ -26,6 +26,11 @@ class EvaluacionResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Evaluaciones';
 
+    public static function canViewAny(): bool
+    {
+        return auth()->user()->isAdmin() || auth()->user()->isTutorCurso();
+    }
+
     public static function form(Form $form): Form
     {
         return $form

@@ -26,6 +26,27 @@ class CursoResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Cursos';
 
+    public static function canViewAny(): bool
+    {
+        return auth()->user()->isAdmin() || auth()->user()->isTutorCurso();
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        $query = parent::getEloquentQuery();
+        $user = auth()->user();
+
+        if ($user->isAdmin()) {
+            return $query;
+        }
+
+        if ($user->isTutorCurso()) {
+            return $query->where('tutor_curso_id', $user->perfilTutorCurso?->id);
+        }
+
+        return $query->whereRaw('1 = 0');
+    }
+
     /**
      * @brief Configura el formulario para el recurso Curso.
      * 

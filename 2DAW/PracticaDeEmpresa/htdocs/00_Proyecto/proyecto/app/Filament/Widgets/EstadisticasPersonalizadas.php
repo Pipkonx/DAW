@@ -28,7 +28,8 @@ class EstadisticasPersonalizadas extends BaseWidget
 
         return match ($rol) {
             'alumno' => $this->obtenerEstadisticasAlumno($usuario),
-            'admin', 'tutor_curso' => $this->obtenerEstadisticasTutoresAdmin($usuario),
+            'admin' => $this->obtenerEstadisticasTutoresAdmin($usuario),
+            'tutor_curso' => $this->obtenerEstadisticasTutorCurso($usuario),
             'tutor_practicas' => $this->obtenerEstadisticasTutorEmpresa($usuario),
             default => [],
         };
@@ -66,7 +67,38 @@ class EstadisticasPersonalizadas extends BaseWidget
     }
 
     /**
-     * @brief Obtiene estadísticas globales para Admin y Tutor de Curso.
+     * @brief Obtiene estadísticas específicas para el Tutor de Curso.
+     * 
+     * @param \App\Models\User $usuario Usuario autenticado.
+     * @return array Estadísticas de alumnos de sus cursos e incidencias relacionadas.
+     */
+    protected function obtenerEstadisticasTutorCurso($usuario): array
+    {
+        $tutorCursoId = $usuario->perfilTutorCurso?->id;
+        
+        $totalAlumnos = Alumno::where('tutor_curso_id', $tutorCursoId)->count();
+        $incidenciasSinResolver = Incidencia::whereHas('alumno', fn($q) => $q->where('tutor_curso_id', $tutorCursoId))
+            ->where('estado', '!=', 'resuelta')->count();
+        $cursosPropios = \App\Models\Curso::where('tutor_curso_id', $tutorCursoId)->count();
+
+        return [
+            Stat::make('Mis Alumnos', $totalAlumnos)
+                ->description('Asignados a tus cursos')
+                ->descriptionIcon('heroicon-m-users')
+                ->color('primary'),
+            Stat::make('Mis Cursos', $cursosPropios)
+                ->description('Ciclos bajo tu tutoría')
+                ->descriptionIcon('heroicon-m-book-open')
+                ->color('success'),
+            Stat::make('Alertas de Incidencias', $incidenciasSinResolver)
+                ->description('Sin resolver en tus cursos')
+                ->descriptionIcon('heroicon-m-bell-alert')
+                ->color($incidenciasSinResolver > 0 ? 'danger' : 'success'),
+        ];
+    }
+
+    /**
+     * @brief Obtiene estadísticas globales para Admin.
      * 
      * @param \App\Models\User $usuario Usuario autenticado.
      * @return array Estadísticas de alumnos, empresas e incidencias.

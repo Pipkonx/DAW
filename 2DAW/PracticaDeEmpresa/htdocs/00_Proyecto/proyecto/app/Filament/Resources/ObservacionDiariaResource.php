@@ -34,8 +34,11 @@ class ObservacionDiariaResource extends Resource
                     ->relationship('alumno', 'id')
                     ->getOptionLabelFromRecordUsing(fn ($record) => $record->user?->name ?? 'Alumno sin usuario')
                     ->searchable(['user.name'])
+                    ->default(fn () => auth()->user()->isAlumno() ? auth()->user()->alumno?->id : null)
+                    ->hidden(fn () => auth()->user()->isAlumno())
                     ->required(),
                 Forms\Components\DatePicker::make('fecha')
+                    ->default(now())
                     ->required(),
                 Forms\Components\TextInput::make('horasRealizadas')
                     ->label('Horas Realizadas')
@@ -51,7 +54,10 @@ class ObservacionDiariaResource extends Resource
                     ->columnSpanFull(),
                 Forms\Components\Textarea::make('observacionesTutor')
                     ->label('Observaciones Tutor')
-                    ->columnSpanFull(),
+                    ->columnSpanFull()
+                    ->disabled(fn () => auth()->user()->isAlumno() || auth()->user()->isTutorCurso())
+                    ->dehydrated(fn () => !auth()->user()->isAlumno() && !auth()->user()->isTutorCurso())
+                    ->visible(fn ($record) => !auth()->user()->isAlumno() || ($record && filled($record->observacionesTutor))),
             ]);
     }
 
@@ -60,8 +66,12 @@ class ObservacionDiariaResource extends Resource
         $query = parent::getEloquentQuery()->with(['alumno.user']);
         $user = auth()->user();
 
-        if ($user->isAdmin() || $user->isTutorCurso()) {
+        if ($user->isAdmin()) {
             return $query;
+        }
+
+        if ($user->isTutorCurso()) {
+            return $query->whereHas('alumno', fn($q) => $q->where('tutor_curso_id', $user->perfilTutorCurso?->id));
         }
 
         if ($user->isAlumno()) {

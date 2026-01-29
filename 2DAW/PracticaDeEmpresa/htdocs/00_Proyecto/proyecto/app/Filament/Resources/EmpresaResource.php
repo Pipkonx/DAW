@@ -26,6 +26,11 @@ class EmpresaResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Empresas';
 
+    public static function canViewAny(): bool
+    {
+        return auth()->user()->isAdmin() || auth()->user()->isTutorCurso();
+    }
+
     /**
      * @brief Configura el formulario para el recurso Empresa.
      * 

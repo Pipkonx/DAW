@@ -78,7 +78,26 @@ class IncidenciaResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-        return parent::getEloquentQuery()->with(['alumno.user', 'tutorPracticas.user']);
+        $query = parent::getEloquentQuery()->with(['alumno.user', 'tutorPracticas.user']);
+        $user = auth()->user();
+
+        if ($user->isAdmin()) {
+            return $query;
+        }
+
+        if ($user->isTutorCurso()) {
+            return $query->whereHas('alumno', fn($q) => $q->where('tutor_curso_id', $user->perfilTutorCurso?->id));
+        }
+
+        if ($user->isAlumno()) {
+            return $query->whereHas('alumno', fn($q) => $q->where('user_id', $user->id));
+        }
+
+        if ($user->isTutorPracticas()) {
+            return $query->whereHas('alumno', fn($q) => $q->whereHas('tutorPracticas', fn($sq) => $sq->where('user_id', $user->id)));
+        }
+
+        return $query->whereRaw('1 = 0');
     }
 
     public static function table(Table $table): Table

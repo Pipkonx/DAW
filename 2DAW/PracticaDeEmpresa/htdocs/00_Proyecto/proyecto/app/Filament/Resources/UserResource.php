@@ -29,27 +29,27 @@ class UserResource extends Resource
 
     public static function shouldRegisterNavigation(): bool
     {
-        return auth()->user()->isAdmin() || auth()->user()->isTutorPracticas();
+        return auth()->user()->isAdmin();
     }
 
     public static function canViewAny(): bool
     {
-        return auth()->user()->isAdmin() || auth()->user()->isTutorPracticas();
+        return auth()->user()->isAdmin();
     }
 
     public static function canCreate(): bool
     {
-        return auth()->user()->isAdmin() || auth()->user()->isTutorPracticas();
+        return auth()->user()->isAdmin();
     }
 
     public static function canEdit($record): bool
     {
-        return auth()->user()->isAdmin() || (auth()->user()->isTutorPracticas() && $record->hasRole('alumno'));
+        return auth()->user()->isAdmin();
     }
 
     public static function canDelete($record): bool
     {
-        return auth()->user()->isAdmin() || (auth()->user()->isTutorPracticas() && $record->hasRole('alumno'));
+        return auth()->user()->isAdmin();
     }
 
     public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder

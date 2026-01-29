@@ -25,6 +25,21 @@ class CreateObservacionDiaria extends CreateRecord
     }
 
     /**
+     * @brief Modifica los datos del formulario antes de la creación.
+     * 
+     * @param array $data Datos del formulario.
+     * @return array Datos modificados.
+     */
+    protected function mutateFormDataBeforeCreate(array $data): array
+    {
+        if (auth()->user()->isAlumno()) {
+            $data['alumno_id'] = auth()->user()->alumno?->id;
+        }
+
+        return $data;
+    }
+
+    /**
      * @brief Obtiene la URL de redirección tras crear un registro.
      * 
      * @return string URL de la página de listado (Index).

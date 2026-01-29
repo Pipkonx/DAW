@@ -88,11 +88,23 @@ class AlumnoResource extends Resource
             
         $user = auth()->user();
 
+        if ($user->isAdmin()) {
+            return $query;
+        }
+
+        if ($user->isTutorCurso()) {
+            return $query->where('tutor_curso_id', $user->perfilTutorCurso?->id);
+        }
+
         if ($user->isAlumno()) {
             return $query->where('user_id', $user->id);
         }
 
-        return $query;
+        if ($user->isTutorPracticas()) {
+            return $query->whereHas('tutorPracticas', fn($q) => $q->where('user_id', $user->id));
+        }
+
+        return $query->whereRaw('1 = 0');
     }
 
     public static function table(Table $table): Table
