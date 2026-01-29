@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Filament\Resources\UserResource\Pages;
+namespace App\Filament\Pages;
 
 use App\Filament\Resources\UserResource;
-use Filament\Resources\Pages\Page;
+use Filament\Pages\Page;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 use Filament\Notifications\Notification;
@@ -11,11 +11,20 @@ use Illuminate\Support\Collection;
 
 class PermissionMatrix extends Page
 {
-    protected static string $resource = UserResource::class;
-
     protected static string $view = 'filament.resources.user-resource.pages.permission-matrix';
 
-    protected static ?string $title = 'Matriz de Permisos (Estilo Discord)';
+    protected static ?string $title = 'Matriz de Permisos';
+    
+    protected static ?string $navigationIcon = 'heroicon-o-shield-check';
+
+    protected static ?string $navigationLabel = 'Permisos';
+
+    protected static ?int $navigationSort = -100;
+
+    public static function canAccess(array $parameters = []): bool
+    {
+        return auth()->check() && auth()->user()->isAdmin();
+    }
 
     public Collection $roles;
     public Collection $permissions;
@@ -65,25 +74,35 @@ class PermissionMatrix extends Page
         }
     }
 
-    public function togglePermission($roleId, $permissionId): void
+    public function togglePermission(int $roleId, int $permissionId): void
     {
-        $role = Role::find($roleId);
-        $permission = Permission::find($permissionId);
+        // Esta función ya no es necesaria con @entangle
+    }
 
-        if (!$role || !$permission) return;
+    public function saveChanges(): void
+    {
+        foreach ($this->matrix as $roleId => $permissions) {
+            $role = Role::find($roleId);
+            if (!$role) continue;
 
-        if ($role->hasPermissionTo($permission->name)) {
-            $role->revokePermissionTo($permission->name);
-            $this->matrix[$roleId][$permissionId] = false;
-        } else {
-            $role->givePermissionTo($permission->name);
-            $this->matrix[$roleId][$permissionId] = true;
+            $permissionNames = [];
+            foreach ($permissions as $permissionId => $value) {
+                if ($value) {
+                    $permission = Permission::find($permissionId);
+                    if ($permission) {
+                        $permissionNames[] = $permission->name;
+                    }
+                }
+            }
+            
+            // Sincronizamos todos los permisos del rol de una vez
+            $role->syncPermissions($permissionNames);
         }
 
         Notification::make()
             ->success()
-            ->title('Permiso actualizado')
-            ->body("Se ha actualizado el permiso '{$permission->name}' para el rol '{$role->name}'.")
+            ->title('Cambios guardados')
+            ->body('Se han actualizado todos los permisos correctamente.')
             ->send();
     }
 }

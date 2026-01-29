@@ -1,4 +1,4 @@
-<div class="flex h-[600px] bg-white dark:bg-gray-900 rounded-xl shadow-2xl overflow-hidden border border-gray-200 dark:border-gray-800 transition-colors duration-300">
+<div class="flex h-[400px] bg-white dark:bg-gray-900 rounded-xl shadow-2xl overflow-hidden border border-gray-200 dark:border-gray-800 transition-colors duration-300">
     <style>
         .custom-scrollbar::-webkit-scrollbar {
             width: 5px;
@@ -107,8 +107,9 @@
             </div>
 
             <!-- Mensajes -->
-            <div class="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50 dark:bg-gray-950/50 custom-scrollbar min-h-0 relative" 
+            <div class="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50 dark:bg-gray-950/50 custom-scrollbar relative" 
                  id="chat-container" 
+                 style="max-height: calc(100% - 130px); min-height: 200px;"
                  wire:poll.5s
                  x-data="{ 
                     scrollToBottom() { 
@@ -204,9 +205,21 @@
                         <span class="text-[10px] font-medium text-gray-500 dark:text-gray-500 mt-1.5 px-1 flex items-center gap-1">
                             {{ $msg->created_at->format('H:i') }}
                             @if($msg->sender_id == auth()->id())
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 {{ $msg->is_read ? 'text-indigo-500' : 'text-gray-400' }}" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                                </svg>
+                                <div class="flex items-center">
+                                    @if($msg->is_read)
+                                        {{-- Doble check azul (Leído) --}}
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 text-blue-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M18 6L7 17l-5-5"></path>
+                                            <path d="M22 10L13.5 18.5l-2-2"></path>
+                                        </svg>
+                                    @else
+                                        {{-- Doble check gris (Recibido) --}}
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M18 6L7 17l-5-5"></path>
+                                            <path d="M22 10L13.5 18.5l-2-2"></path>
+                                        </svg>
+                                    @endif
+                                </div>
                             @endif
                         </span>
                     </div>

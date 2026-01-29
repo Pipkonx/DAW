@@ -75,7 +75,7 @@ class InternalChat extends Component
             return [];
         }
 
-        return Message::where(function ($query) {
+        $messages = Message::where(function ($query) {
             $query->where('sender_id', Auth::id())
                 ->where('receiver_id', $this->receiverId);
         })->orWhere(function ($query) {
@@ -84,6 +84,18 @@ class InternalChat extends Component
         })
         ->with(['sender', 'receiver'])
         ->get();
+
+        // Si hay mensajes nuevos del receptor, marcarlos como leídos
+        $unreadFromReceiver = Message::where('sender_id', $this->receiverId)
+            ->where('receiver_id', Auth::id())
+            ->where('is_read', false);
+
+        if ($unreadFromReceiver->exists()) {
+            $unreadFromReceiver->update(['is_read' => true]);
+            Cache::forget("unread_count_" . Auth::id());
+        }
+
+        return $messages;
     }
 
     public function mount()

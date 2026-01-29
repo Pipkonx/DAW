@@ -28,7 +28,8 @@ class ListUsers extends ListRecords
                 ->label('Gestionar Permisos (Estilo Discord)')
                 ->icon('heroicon-o-shield-check')
                 ->color('warning')
-                ->url(fn (): string => static::getResource()::getUrl('permissions')),
+                ->url(fn (): string => \App\Filament\Pages\PermissionMatrix::getUrl())
+                ->visible(fn () => auth()->user()->isAdmin()),
             Actions\CreateAction::make(),
         ];
     }
