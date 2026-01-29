@@ -38,7 +38,9 @@ class CursoResource extends Resource
 
     public static function canViewAny(): bool
     {
-        return auth()->user()->isAdmin() || auth()->user()->isTutorCurso();
+        return auth()->user()->isAdmin() || 
+               auth()->user()->isTutorCurso() || 
+               auth()->user()->hasPermissionTo('gestionar_cursos');
     }
 
     /**

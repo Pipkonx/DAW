@@ -40,7 +40,9 @@ class EmpresaResource extends Resource
      */
     public static function puedeVerTodo(): bool
     {
-        return auth()->user()->isAdmin() || auth()->user()->isTutorCurso();
+        return auth()->user()->isAdmin() || 
+               auth()->user()->isTutorCurso() || 
+               auth()->user()->hasPermissionTo('gestionar_empresas');
     }
 
     public static function canViewAny(): bool

@@ -1,4 +1,4 @@
-<div class="flex h-[400px] bg-white dark:bg-gray-900 rounded-xl shadow-2xl overflow-hidden border border-gray-200 dark:border-gray-800 transition-colors duration-300">
+<div class="flex bg-white dark:bg-gray-900 rounded-xl shadow-2xl overflow-hidden border border-gray-200 dark:border-gray-800 transition-colors duration-300" style="height: 600px !important; max-height: 600px !important;">
     <style>
         .custom-scrollbar::-webkit-scrollbar {
             width: 5px;
@@ -85,7 +85,7 @@
     </div>
 
     <!-- Área de Chat -->
-    <div class="flex-1 flex flex-col bg-white dark:bg-gray-900 min-w-0 h-full overflow-hidden">
+    <div class="flex-1 flex flex-col bg-white dark:bg-gray-900 min-w-0 min-h-0 h-full overflow-hidden">
         @if($this->receiver)
             <!-- Cabecera del Chat -->
             <div class="p-4 border-b border-gray-200 dark:border-gray-800 flex items-center gap-3 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md sticky top-0 z-10 flex-shrink-0">
@@ -109,7 +109,7 @@
             <!-- Mensajes -->
             <div class="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50 dark:bg-gray-950/50 custom-scrollbar relative" 
                  id="chat-container" 
-                 style="max-height: calc(100% - 130px); min-height: 200px;"
+                 style="min-height: 0;"
                  wire:poll.5s
                  x-data="{ 
                     scrollToBottom() { 

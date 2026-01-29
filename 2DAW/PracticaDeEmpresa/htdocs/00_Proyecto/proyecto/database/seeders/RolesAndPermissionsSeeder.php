@@ -18,18 +18,28 @@ class RolesAndPermissionsSeeder extends Seeder
         // Crear Permisos
         $permissions = [
             'gestionar_todo',
-            'ver_propias_observaciones',
-            'crear_observaciones',
-            'evaluar_alumnos',
-            'ver_alumnos_empresa',
-            'gestionar_alumnos',
+            'gestionar_usuarios',
             'gestionar_empresas',
             'gestionar_cursos',
+            'gestionar_alumnos',
+            'ver_evaluaciones',
+            'crear_evaluaciones',
+            'ver_observaciones',
+            'crear_observaciones',
+            'ver_incidencias',
+            'crear_incidencias',
+            'resolver_incidencias',
+            'gestionar_backups',
+            'gestionar_capacidades',
+            'ver_alumnos_empresa',
         ];
 
         foreach ($permissions as $permission) {
             Permission::firstOrCreate(['name' => $permission]);
         }
+
+        // Eliminar permisos antiguos que ya no se usan
+        Permission::whereNotIn('name', $permissions)->delete();
 
         // Crear Roles y asignar permisos
         $admin = Role::firstOrCreate(['name' => 'admin']);
@@ -38,15 +48,24 @@ class RolesAndPermissionsSeeder extends Seeder
         $tutorCurso = Role::firstOrCreate(['name' => 'tutor_curso']);
         $tutorCurso->syncPermissions([
             'gestionar_alumnos',
-            'ver_propias_observaciones',
-            'evaluar_alumnos',
+            'gestionar_cursos',
+            'ver_evaluaciones',
+            'crear_evaluaciones',
+            'ver_observaciones',
+            'crear_observaciones',
+            'ver_incidencias',
+            'crear_incidencias',
+            'resolver_incidencias',
         ]);
 
         $tutorPracticas = Role::firstOrCreate(['name' => 'tutor_practicas']);
         $tutorPracticas->syncPermissions([
             'ver_alumnos_empresa',
-            'ver_propias_observaciones',
-            'evaluar_alumnos',
+            'ver_evaluaciones',
+            'crear_evaluaciones',
+            'ver_observaciones',
+            'crear_observaciones',
+            'gestionar_capacidades',
         ]);
 
         $empresa = Role::firstOrCreate(['name' => 'empresa']);
@@ -56,8 +75,11 @@ class RolesAndPermissionsSeeder extends Seeder
 
         $alumno = Role::firstOrCreate(['name' => 'alumno']);
         $alumno->syncPermissions([
-            'ver_propias_observaciones',
+            'ver_evaluaciones',
+            'ver_observaciones',
             'crear_observaciones',
+            'ver_incidencias',
+            'crear_incidencias',
         ]);
     }
 }

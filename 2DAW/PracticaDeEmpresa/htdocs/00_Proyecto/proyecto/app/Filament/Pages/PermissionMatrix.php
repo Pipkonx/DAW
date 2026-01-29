@@ -37,17 +37,14 @@ class PermissionMatrix extends Page
 
     public function loadData(): void
     {
-        // Cargamos roles (excluyendo admin para seguridad, o incluyéndolo si prefieres)
+        // Forzamos la creación de permisos base si no existen
+        $this->createDefaultPermissions();
+
+        // Cargamos roles (excluyendo admin para seguridad)
         $this->roles = Role::where('name', '!=', 'admin')->get();
         
-        // Obtenemos todos los permisos actuales o definimos una lista base
+        // Obtenemos todos los permisos
         $this->permissions = Permission::all();
-
-        // Si no hay permisos en la DB, podríamos querer crearlos o mostrar vacíos
-        if ($this->permissions->isEmpty()) {
-            $this->createDefaultPermissions();
-            $this->permissions = Permission::all();
-        }
 
         foreach ($this->roles as $role) {
             foreach ($this->permissions as $permission) {
@@ -59,19 +56,29 @@ class PermissionMatrix extends Page
     protected function createDefaultPermissions(): void
     {
         $basePermissions = [
-            'view_incidencias' => 'Ver Incidencias',
-            'create_incidencias' => 'Crear Incidencias',
-            'resolve_incidencias' => 'Resolver Incidencias',
-            'view_practices' => 'Ver Prácticas',
-            'create_practices' => 'Crear Prácticas',
-            'view_evaluations' => 'Ver Evaluaciones',
-            'create_evaluations' => 'Crear Evaluaciones',
-            'manage_users' => 'Gestionar Usuarios',
+            'gestionar_todo' => 'Gestionar Todo (Acceso Total)',
+            'gestionar_usuarios' => 'Gestionar Usuarios',
+            'gestionar_empresas' => 'Gestionar Empresas',
+            'gestionar_cursos' => 'Gestionar Cursos',
+            'gestionar_alumnos' => 'Gestionar Alumnos',
+            'ver_evaluaciones' => 'Ver Evaluaciones',
+            'crear_evaluaciones' => 'Crear Evaluaciones',
+            'ver_observaciones' => 'Ver Observaciones',
+            'crear_observaciones' => 'Crear Observaciones',
+            'ver_incidencias' => 'Ver Incidencias',
+            'crear_incidencias' => 'Crear Incidencias',
+            'resolver_incidencias' => 'Resolver Incidencias',
+            'gestionar_backups' => 'Gestionar Backups',
+            'gestionar_capacidades' => 'Gestionar Capacidades/Criterios',
+            'ver_alumnos_empresa' => 'Ver Alumnos de Empresa',
         ];
 
         foreach ($basePermissions as $name => $label) {
             Permission::firstOrCreate(['name' => $name, 'guard_name' => 'web']);
         }
+
+        // Limpiar permisos antiguos que ya no están en la lista base
+        Permission::whereNotIn('name', array_keys($basePermissions))->delete();
     }
 
     public function togglePermission(int $roleId, int $permissionId): void

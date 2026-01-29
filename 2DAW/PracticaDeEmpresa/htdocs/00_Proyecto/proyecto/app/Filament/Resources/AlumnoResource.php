@@ -44,7 +44,9 @@ class AlumnoResource extends Resource
      */
     public static function canViewAny(): bool
     {
-        return auth()->user()->isAdmin() || auth()->user()->isTutorPracticas();
+        return auth()->user()->isAdmin() || 
+               auth()->user()->isTutorPracticas() || 
+               auth()->user()->hasPermissionTo('gestionar_alumnos');
     }
 
     public static function canCreate(): bool

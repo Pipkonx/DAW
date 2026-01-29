@@ -78,7 +78,7 @@ class User extends Authenticatable implements HasAvatar, FilamentUser
      */
     public function isAdmin(): bool
     {
-        return $this->hasRole('admin');
+        return $this->hasRole('admin') || $this->hasPermissionTo('gestionar_todo');
     }
 
     /**

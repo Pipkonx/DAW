@@ -108,7 +108,7 @@ class AdminPanelProvider extends PanelProvider
                 FilamentSpatieLaravelBackupPlugin::make()
                     ->usingPage(\ShuvroRoy\FilamentSpatieLaravelBackup\Pages\Backups::class)
                     ->usingQueue('default')
-                    ->authorize(fn () => auth()->user()->isAdmin()),
+                    ->authorize(fn () => auth()->user()->isAdmin() || auth()->user()->hasPermissionTo('gestionar_backups')),
                 FilamentFullCalendarPlugin::make()
                     ->schedulerLicenseKey('GPL-My-Project-Is-Open-Source')
                     ->selectable()

@@ -42,12 +42,16 @@ class CapacidadEvaluacionResource extends Resource
 
     public static function shouldRegisterNavigation(): bool
     {
-        return auth()->user()->isAdmin() || auth()->user()->isTutorPracticas();
+        return auth()->user()->isAdmin() || 
+               auth()->user()->isTutorPracticas() || 
+               auth()->user()->hasPermissionTo('gestionar_capacidades');
     }
 
     public static function canViewAny(): bool
     {
-        return auth()->user()->isAdmin() || auth()->user()->isTutorPracticas();
+        return auth()->user()->isAdmin() || 
+               auth()->user()->isTutorPracticas() || 
+               auth()->user()->hasPermissionTo('gestionar_capacidades');
     }
 
     /**
@@ -142,7 +146,7 @@ class CapacidadEvaluacionResource extends Resource
             ->filters([
                 TrashedFilter::make()
                     ->label('Ver eliminadas')
-                    ->visible(fn() => auth()->user()->hasRole('admin')),
+                    ->visible(fn() => auth()->user()->isAdmin()),
                 SelectFilter::make('criterio_id')
                     ->label('Filtrar por Criterio')
                     ->relationship('perteneceACriterio', 'nombre'),

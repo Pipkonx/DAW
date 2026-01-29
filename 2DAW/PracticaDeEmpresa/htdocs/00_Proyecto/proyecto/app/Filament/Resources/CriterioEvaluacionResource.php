@@ -38,9 +38,18 @@ class CriterioEvaluacionResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Criterios';
 
+    public static function shouldRegisterNavigation(): bool
+    {
+        return auth()->user()->isAdmin() || 
+               auth()->user()->isTutorPracticas() || 
+               auth()->user()->hasPermissionTo('gestionar_capacidades');
+    }
+
     public static function canViewAny(): bool
     {
-        return auth()->user()->isAdmin() || auth()->user()->isTutorPracticas();
+        return auth()->user()->isAdmin() || 
+               auth()->user()->isTutorPracticas() || 
+               auth()->user()->hasPermissionTo('gestionar_capacidades');
     }
 
     /**
@@ -114,7 +123,7 @@ class CriterioEvaluacionResource extends Resource
             ->filters([
                 TrashedFilter::make()
                     ->label('Ver eliminados')
-                    ->visible(fn() => auth()->user()->hasRole('admin')),
+                    ->visible(fn() => auth()->user()->isAdmin()),
                 TernaryFilter::make('activo')
                     ->label('Solo activos'),
             ])

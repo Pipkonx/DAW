@@ -44,7 +44,7 @@ class UserResource extends Resource
      */
     public static function shouldRegisterNavigation(): bool
     {
-        return auth()->user()->isAdmin();
+        return auth()->user()->isAdmin() || auth()->user()->hasPermissionTo('gestionar_usuarios');
     }
 
     /**
@@ -54,7 +54,7 @@ class UserResource extends Resource
      */
     public static function canViewAny(): bool
     {
-        return auth()->user()->isAdmin();
+        return auth()->user()->isAdmin() || auth()->user()->hasPermissionTo('gestionar_usuarios');
     }
 
     /**
