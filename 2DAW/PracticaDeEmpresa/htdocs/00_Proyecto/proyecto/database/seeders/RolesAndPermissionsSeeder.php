@@ -32,6 +32,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'gestionar_backups',
             'gestionar_capacidades',
             'ver_alumnos_empresa',
+            'gestionar_practicas',
         ];
 
         foreach ($permissions as $permission) {
@@ -49,6 +50,7 @@ class RolesAndPermissionsSeeder extends Seeder
         $tutorCurso->syncPermissions([
             'gestionar_alumnos',
             'gestionar_cursos',
+            'gestionar_practicas',
             'ver_evaluaciones',
             'crear_evaluaciones',
             'ver_observaciones',
@@ -61,6 +63,7 @@ class RolesAndPermissionsSeeder extends Seeder
         $tutorPracticas = Role::firstOrCreate(['name' => 'tutor_practicas']);
         $tutorPracticas->syncPermissions([
             'ver_alumnos_empresa',
+            'gestionar_practicas',
             'ver_evaluaciones',
             'crear_evaluaciones',
             'ver_observaciones',

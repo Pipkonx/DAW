@@ -29,6 +29,24 @@ class PracticeResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    protected static ?string $modelLabel = 'Tarea / Práctica';
+
+    protected static ?string $pluralModelLabel = 'Tareas y Prácticas';
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        return auth()->user()->isAdmin() || 
+               auth()->user()->hasPermissionTo('gestionar_practicas') ||
+               auth()->user()->hasRole('alumno');
+    }
+
+    public static function canViewAny(): bool
+    {
+        return auth()->user()->isAdmin() || 
+               auth()->user()->hasPermissionTo('gestionar_practicas') ||
+               auth()->user()->hasRole('alumno');
+    }
+
     /**
      * @brief Obtiene el formulario configurado para el recurso de Prácticas.
      * 

@@ -29,6 +29,7 @@ class PermissionMatrix extends Page
     public Collection $roles;
     public Collection $permissions;
     public array $matrix = [];
+    public array $permissionSections = [];
 
     public function mount(): void
     {
@@ -43,8 +44,39 @@ class PermissionMatrix extends Page
         // Cargamos roles (excluyendo admin para seguridad)
         $this->roles = Role::where('name', '!=', 'admin')->get();
         
-        // Obtenemos todos los permisos
+        // Obtenemos todos los permisos y los agrupamos por secciones
         $this->permissions = Permission::all();
+        
+        $this->permissionSections = [
+            'Administración' => [
+                'gestionar_todo' => 'Acceso Total (Admin)',
+                'gestionar_backups' => 'Gestionar Backups',
+                'gestionar_usuarios' => 'Gestionar Usuarios',
+            ],
+            'Académico' => [
+                'gestionar_cursos' => 'Gestionar Cursos',
+                'gestionar_alumnos' => 'Gestionar Alumnos',
+                'gestionar_capacidades' => 'Gestionar Capacidades y Criterios',
+            ],
+            'Empresas' => [
+                'gestionar_empresas' => 'Gestionar Empresas',
+                'ver_alumnos_empresa' => 'Ver Alumnos de su Empresa',
+            ],
+            'Seguimiento y Prácticas' => [
+                'gestionar_practicas' => 'Gestionar Tareas de Prácticas',
+                'ver_observaciones' => 'Ver Observaciones Diarias',
+                'crear_observaciones' => 'Crear Observaciones Diarias',
+            ],
+            'Evaluación' => [
+                'ver_evaluaciones' => 'Ver Evaluaciones',
+                'crear_evaluaciones' => 'Crear Evaluaciones',
+            ],
+            'Incidencias' => [
+                'ver_incidencias' => 'Ver Incidencias',
+                'crear_incidencias' => 'Crear Incidencias',
+                'resolver_incidencias' => 'Resolver Incidencias',
+            ],
+        ];
 
         foreach ($this->roles as $role) {
             foreach ($this->permissions as $permission) {
@@ -71,6 +103,7 @@ class PermissionMatrix extends Page
             'gestionar_backups' => 'Gestionar Backups',
             'gestionar_capacidades' => 'Gestionar Capacidades/Criterios',
             'ver_alumnos_empresa' => 'Ver Alumnos de Empresa',
+            'gestionar_practicas' => 'Gestionar Prácticas',
         ];
 
         foreach ($basePermissions as $name => $label) {
