@@ -19,7 +19,10 @@ class GoogleController extends Controller
      */
     public function redirectToGoogle()
     {
-        return Socialite::driver('google')->redirect();
+        return Socialite::driver('google')
+            ->scopes(['https://www.googleapis.com/auth/calendar.events'])
+            ->with(['access_type' => 'offline', 'prompt' => 'consent'])
+            ->redirect();
     }
 
     /**
@@ -39,10 +42,12 @@ class GoogleController extends Controller
                 return redirect('/admin/login')->with('error', 'No se ha encontrado ninguna cuenta con este correo electrónico.');
             }
 
-            // Actualizar el google_id y el avatar si han cambiado o no existen
+            // Actualizar el google_id, avatar y tokens
             $user->update([
                 'google_id' => $googleUser->getId(),
                 'avatar_url' => $user->avatar_url ?: $googleUser->getAvatar(),
+                'google_token' => $googleUser->token,
+                'google_refresh_token' => $googleUser->refreshToken ?: $user->google_refresh_token,
             ]);
 
             Auth::login($user);

@@ -52,6 +52,9 @@ class PermissionMatrix extends Page
                 'gestionar_todo' => 'Acceso Total (Admin)',
                 'gestionar_backups' => 'Gestionar Backups',
                 'gestionar_usuarios' => 'Gestionar Usuarios',
+                'gestionar_configuracion' => 'Configuración del Sistema',
+                'ver_estadisticas_globales' => 'Ver Estadísticas Globales',
+                'exportar_datos' => 'Exportar Datos (Excel/PDF)',
             ],
             'Académico' => [
                 'gestionar_cursos' => 'Gestionar Cursos',
@@ -66,6 +69,7 @@ class PermissionMatrix extends Page
                 'gestionar_practicas' => 'Gestionar Tareas de Prácticas',
                 'ver_observaciones' => 'Ver Observaciones Diarias',
                 'crear_observaciones' => 'Crear Observaciones Diarias',
+                'gestionar_mensajes' => 'Usar Chat Interno',
             ],
             'Evaluación' => [
                 'ver_evaluaciones' => 'Ver Evaluaciones',
@@ -104,6 +108,10 @@ class PermissionMatrix extends Page
             'gestionar_capacidades' => 'Gestionar Capacidades/Criterios',
             'ver_alumnos_empresa' => 'Ver Alumnos de Empresa',
             'gestionar_practicas' => 'Gestionar Prácticas',
+            'gestionar_mensajes' => 'Gestionar Mensajes/Chat',
+            'gestionar_configuracion' => 'Configuración Sistema',
+            'ver_estadisticas_globales' => 'Ver Estadísticas',
+            'exportar_datos' => 'Exportar Datos',
         ];
 
         foreach ($basePermissions as $name => $label) {

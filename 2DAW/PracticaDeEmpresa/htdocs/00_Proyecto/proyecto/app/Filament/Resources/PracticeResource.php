@@ -16,7 +16,7 @@ use Filament\Resources\Resource;
 use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
-use Filament\Tables\Actions\ViewAction;
+use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\DeleteAction;
 use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\DeleteBulkAction;
@@ -26,6 +26,10 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 class PracticeResource extends Resource
 {
     protected static ?string $model = Practice::class;
+
+    protected static bool $shouldPersistSearchInSession = false;
+
+    protected static bool $shouldPersistColumnSearchesInSession = false;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
@@ -69,7 +73,9 @@ class PracticeResource extends Resource
                             ->searchable()
                             ->preload()
                             ->hidden(fn () => auth()->user()->isAlumno())
-                            ->dehydrated(fn ($state) => filled($state) || auth()->user()->isAlumno()),
+                            ->dehydrated(fn ($state) => filled($state) || auth()->user()->isAlumno())
+                            ->reactive()
+                            ->afterStateUpdated(fn ($set) => $set('curso_id', null) && $set('target_role', null)),
 
                         Select::make('curso_id')
                             ->label('Grupo / Curso (Compartida)')
@@ -77,7 +83,9 @@ class PracticeResource extends Resource
                             ->relationship('curso', 'nombre')
                             ->searchable()
                             ->preload()
-                            ->visible(fn () => auth()->user()->isAdmin() || auth()->user()->isTutorCurso()),
+                            ->visible(fn () => auth()->user()->isAdmin() || auth()->user()->isTutorCurso())
+                            ->reactive()
+                            ->afterStateUpdated(fn ($set) => $set('alumno_id', null) && $set('target_role', null)),
 
                         Select::make('target_role')
                             ->label('Rol Destinatario (Compartida)')
@@ -87,7 +95,9 @@ class PracticeResource extends Resource
                                 'tutor_practicas' => 'Todos los Tutores de Empresa',
                                 'tutor_curso' => 'Todos los Tutores de Prácticas (Centro)',
                             ])
-                            ->visible(fn () => auth()->user()->isAdmin() || auth()->user()->isTutorCurso()),
+                            ->visible(fn () => auth()->user()->isAdmin() || auth()->user()->isTutorCurso())
+                            ->reactive()
+                            ->afterStateUpdated(fn ($set) => $set('alumno_id', null) && $set('curso_id', null)),
                     ])->columns(3),
 
                 Section::make('Detalles de la Práctica')
@@ -105,11 +115,11 @@ class PracticeResource extends Resource
                         DateTimePicker::make('starts_at')
                             ->label('Fecha de Inicio')
                             ->placeholder('Selecciona fecha y hora')
+                            ->default(now())
                             ->required(),
                         DateTimePicker::make('ends_at')
                             ->label('Fecha de Fin')
-                            ->placeholder('Selecciona fecha y hora')
-                            ->required(),
+                            ->placeholder('Selecciona fecha y hora'),
                         FileUpload::make('attachments')
                             ->label('Documentos Adjuntos')
                             ->multiple()
@@ -118,8 +128,6 @@ class PracticeResource extends Resource
                             ->downloadable()
                             ->openable()
                             ->columnSpanFull(),
-                        Hidden::make('user_id')
-                            ->default(fn () => auth()->id()),
                     ])->columns(2),
             ]);
     }
@@ -130,12 +138,9 @@ class PracticeResource extends Resource
      * @param Table $tabla Objeto de la tabla.
      * @return Table Tabla configurada con columnas de visibilidad y destinatarios.
      */
-    public static function table(Table $tabla): Table
+    public static function table(Table $table): Table
     {
-        return $tabla
-            ->deferLoading()
-            ->persistSearchInSession()
-            ->persistColumnSearchesInSession()
+        return $table
             ->columns([
                 TextColumn::make('title')
                     ->label('Título')
@@ -186,16 +191,18 @@ class PracticeResource extends Resource
                     ]),
             ])
             ->actions([
-                ViewAction::make()
-                    ->label('Ver detalles'),
+                EditAction::make()
+                    ->label('Ver/Editar'),
                 DeleteAction::make()
                     ->label('Eliminar')
+                    ->requiresConfirmation(false)
                     ->hidden(fn () => auth()->user()->isAlumno() || auth()->user()->isTutorPracticas()),
             ])
             ->bulkActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make()
                         ->label('Eliminar seleccionados')
+                        ->requiresConfirmation(false)
                         ->hidden(fn () => auth()->user()->isAlumno() || auth()->user()->isTutorPracticas()),
                 ])->label('Acciones por lote'),
             ])
@@ -268,6 +275,8 @@ class PracticeResource extends Resource
     {
         return [
             'index' => Pages\ListPractices::route('/'),
+            'create' => Pages\CreatePractice::route('/create'),
+            'edit' => Pages\EditPractice::route('/{record}/edit'),
         ];
     }
 }

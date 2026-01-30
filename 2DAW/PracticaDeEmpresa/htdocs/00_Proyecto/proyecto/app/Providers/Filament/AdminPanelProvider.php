@@ -71,7 +71,22 @@ class AdminPanelProvider extends PanelProvider
             ->renderHook(
                 'panels::auth.login.form.after',
                 fn (): string => Blade::render('
-                    <div class="mt-4">
+                    <div class="mt-4 space-y-4">
+                        @if(session(\'error\'))
+                            <div class="relative overflow-hidden rounded-xl border border-red-200 bg-white/50 p-4 shadow-sm backdrop-blur-sm transition-all dark:border-red-900/50 dark:bg-gray-900/50" role="alert">
+                                <div class="flex items-center gap-3">
+                                    <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/30">
+                                        <svg class="h-5 w-5 text-red-600 dark:text-red-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+                                        </svg>
+                                    </div>
+                                    <p class="text-sm font-medium text-gray-700 dark:text-gray-300 leading-tight">
+                                        {{ session(\'error\') }}
+                                    </p>
+                                </div>
+                                <div class="absolute inset-y-0 left-0 w-1 bg-red-500"></div>
+                            </div>
+                        @endif
                         <div class="relative flex items-center justify-center py-2">
                             <div class="flex-grow border-t border-gray-300 dark:border-gray-700"></div>
                             <span class="flex-shrink mx-4 text-sm text-gray-400">O bien</span>
@@ -97,6 +112,7 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
+                \App\Filament\Widgets\BackupStatusWidget::class,
                 \App\Filament\Widgets\EstadisticasPersonalizadas::class,
                 \App\Filament\Widgets\AccionesPrincipales::class,
                 \App\Filament\Widgets\CalendarWidget::class,
@@ -110,9 +126,10 @@ class AdminPanelProvider extends PanelProvider
                     ->usingQueue('default')
                     ->authorize(fn () => auth()->user()->isAdmin() || auth()->user()->hasPermissionTo('gestionar_backups')),
                 FilamentFullCalendarPlugin::make()
-                    ->schedulerLicenseKey('GPL-My-Project-Is-Open-Source')
-                    ->selectable()
-                    ->editable(),
+                    ->schedulerLicenseKey('CC-Attribution-NonCommercial-NoDerivatives')
+                    ->selectable(false)
+                    ->editable(false)
+                    ->plugins(['dayGrid', 'timeGrid', 'interaction']),
             ])
             ->middleware([
                 EncryptCookies::class,

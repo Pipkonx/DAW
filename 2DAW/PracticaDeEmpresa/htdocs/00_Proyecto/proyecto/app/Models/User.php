@@ -207,6 +207,8 @@ class User extends Authenticatable implements HasAvatar, FilamentUser
         'reference_id',
         'avatar_url',
         'google_id',
+        'google_token',
+        'google_refresh_token',
     ];
 
     /**

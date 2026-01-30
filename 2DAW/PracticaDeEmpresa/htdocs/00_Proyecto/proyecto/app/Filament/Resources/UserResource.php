@@ -130,7 +130,8 @@ class UserResource extends Resource
                             ->label('Nombre Completo')
                             ->placeholder('Ej: Juan Pérez')
                             ->required()
-                            ->maxLength(255),
+                            ->maxLength(255)
+                            ->unique(ignoreRecord: true),
                         TextInput::make('email')
                             ->label('Correo Electrónico')
                             ->placeholder('correo@ejemplo.com')
@@ -190,7 +191,46 @@ class UserResource extends Resource
                         TextInput::make('datosPerfil.dni')
                             ->label('DNI/NIE')
                             ->placeholder('12345678X')
-                            ->required(),
+                            ->required()
+                            ->rules([
+                                'required',
+                                function (Get $get, $component) {
+                                    return function (string $attribute, $value, $fail) use ($get, $component) {
+                                        if ($get('rol') !== 'alumno') return;
+                                        
+                                        // Validación de formato y letra DNI/NIE
+                                        $value = strtoupper($value);
+                                        if (!preg_match('/^[XYZ\d]\d{7}[A-Z]$/', $value)) {
+                                            $fail('El formato del DNI/NIE no es válido.');
+                                            return;
+                                        }
+
+                                        $niePrefix = ['X' => 0, 'Y' => 1, 'Z' => 2];
+                                        $dniNumber = $value;
+                                        if (isset($niePrefix[$value[0]])) {
+                                            $dniNumber = $niePrefix[$value[0]] . substr($value, 1);
+                                        }
+
+                                        $number = substr($dniNumber, 0, -1);
+                                        $letter = substr($value, -1);
+                                        $validLetters = "TRWAGMYFPDXBNJZSQVHLCKE";
+                                        if ($validLetters[$number % 23] !== $letter) {
+                                            $fail('La letra del DNI/NIE no es correcta.');
+                                        }
+
+                                        // Validación de unicidad manual para perfiles
+                                        $livewire = $component->getLivewire();
+                                        $recordId = (method_exists($livewire, 'getRecord') && $livewire->getRecord()) ? $livewire->getRecord()->id : null;
+                                        
+                                        $exists = \App\Models\Alumno::where('dni', $value)
+                                            ->when($recordId, fn($q) => $q->where('user_id', '!=', $recordId))
+                                            ->exists();
+                                        if ($exists) {
+                                            $fail('Este DNI ya está registrado en otro alumno.');
+                                        }
+                                    };
+                                },
+                            ]),
                         DatePicker::make('datosPerfil.fecha_nacimiento')
                             ->label('Fecha de Nacimiento')
                             ->placeholder('Selecciona fecha'),
@@ -237,7 +277,44 @@ class UserResource extends Resource
                         TextInput::make('datosPerfil.dni')
                             ->label('DNI/NIE')
                             ->placeholder('12345678X')
-                            ->required(),
+                            ->required()
+                            ->rules([
+                                'required',
+                                function (Get $get, $component) {
+                                    return function (string $attribute, $value, $fail) use ($get, $component) {
+                                        if ($get('rol') !== 'tutor_practicas') return;
+                                        
+                                        $value = strtoupper($value);
+                                        if (!preg_match('/^[XYZ\d]\d{7}[A-Z]$/', $value)) {
+                                            $fail('El formato del DNI/NIE no es válido.');
+                                            return;
+                                        }
+
+                                        $niePrefix = ['X' => 0, 'Y' => 1, 'Z' => 2];
+                                        $dniNumber = $value;
+                                        if (isset($niePrefix[$value[0]])) {
+                                            $dniNumber = $niePrefix[$value[0]] . substr($value, 1);
+                                        }
+
+                                        $number = substr($dniNumber, 0, -1);
+                                        $letter = substr($value, -1);
+                                        $validLetters = "TRWAGMYFPDXBNJZSQVHLCKE";
+                                        if ($validLetters[$number % 23] !== $letter) {
+                                            $fail('La letra del DNI/NIE no es correcta.');
+                                        }
+
+                                        $livewire = $component->getLivewire();
+                                        $recordId = (method_exists($livewire, 'getRecord') && $livewire->getRecord()) ? $livewire->getRecord()->id : null;
+                                        
+                                        $exists = \App\Models\TutorPracticas::where('dni', $value)
+                                            ->when($recordId, fn($q) => $q->where('user_id', '!=', $recordId))
+                                            ->exists();
+                                        if ($exists) {
+                                            $fail('Este DNI ya está registrado en otro tutor de empresa.');
+                                        }
+                                    };
+                                },
+                            ]),
                         TextInput::make('datosPerfil.telefono')
                             ->label('Teléfono de Contacto')
                             ->placeholder('600123456'),
@@ -263,7 +340,44 @@ class UserResource extends Resource
                         TextInput::make('datosPerfil.dni')
                             ->label('DNI/NIE')
                             ->placeholder('12345678X')
-                            ->required(),
+                            ->required()
+                            ->rules([
+                                'required',
+                                function (Get $get, $component) {
+                                    return function (string $attribute, $value, $fail) use ($get, $component) {
+                                        if ($get('rol') !== 'tutor_curso') return;
+                                        
+                                        $value = strtoupper($value);
+                                        if (!preg_match('/^[XYZ\d]\d{7}[A-Z]$/', $value)) {
+                                            $fail('El formato del DNI/NIE no es válido.');
+                                            return;
+                                        }
+
+                                        $niePrefix = ['X' => 0, 'Y' => 1, 'Z' => 2];
+                                        $dniNumber = $value;
+                                        if (isset($niePrefix[$value[0]])) {
+                                            $dniNumber = $niePrefix[$value[0]] . substr($value, 1);
+                                        }
+
+                                        $number = substr($dniNumber, 0, -1);
+                                        $letter = substr($value, -1);
+                                        $validLetters = "TRWAGMYFPDXBNJZSQVHLCKE";
+                                        if ($validLetters[$number % 23] !== $letter) {
+                                            $fail('La letra del DNI/NIE no es correcta.');
+                                        }
+
+                                        $livewire = $component->getLivewire();
+                                        $recordId = (method_exists($livewire, 'getRecord') && $livewire->getRecord()) ? $livewire->getRecord()->id : null;
+                                        
+                                        $exists = \App\Models\TutorCurso::where('dni', $value)
+                                            ->when($recordId, fn($q) => $q->where('user_id', '!=', $recordId))
+                                            ->exists();
+                                        if ($exists) {
+                                            $fail('Este DNI ya está registrado en otro tutor.');
+                                        }
+                                    };
+                                },
+                            ]),
                         TextInput::make('datosPerfil.telefono')
                             ->label('Teléfono')
                             ->placeholder('600123456'),
@@ -281,7 +395,31 @@ class UserResource extends Resource
                         TextInput::make('datosPerfil.cif')
                             ->label('CIF')
                             ->placeholder('B12345678')
-                            ->required(),
+                            ->required()
+                            ->rules([
+                                'required',
+                                function (Get $get, $component) {
+                                    return function (string $attribute, $value, $fail) use ($get, $component) {
+                                        if ($get('rol') !== 'empresa') return;
+                                        
+                                        $value = strtoupper($value);
+                                        if (!preg_match('/^[ABCDEFGHJNPQRSUVW]\d{7}[0-9A-J]$/', $value)) {
+                                            $fail('El formato del CIF no es válido.');
+                                            return;
+                                        }
+
+                                        $livewire = $component->getLivewire();
+                                        $recordId = (method_exists($livewire, 'getRecord') && $livewire->getRecord()) ? $livewire->getRecord()->id : null;
+                                        
+                                        $exists = \App\Models\Empresa::where('cif', $value)
+                                            ->when($recordId, fn($q) => $q->where('user_id', '!=', $recordId))
+                                            ->exists();
+                                        if ($exists) {
+                                            $fail('Este CIF ya está registrado en otra empresa.');
+                                        }
+                                    };
+                                },
+                            ]),
                         TextInput::make('datosPerfil.direccion')
                             ->label('Dirección Fiscal')
                             ->placeholder('Calle...'),

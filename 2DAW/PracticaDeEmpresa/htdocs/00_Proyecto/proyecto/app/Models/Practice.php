@@ -21,6 +21,7 @@ class Practice extends Model
         'starts_at',
         'ends_at',
         'attachments',
+        'google_event_id',
     ];
 
     protected $casts = [
@@ -42,5 +43,10 @@ class Practice extends Model
     public function curso(): BelongsTo
     {
         return $this->belongsTo(Curso::class);
+    }
+
+    public function googleEvents()
+    {
+        return $this->hasMany(PracticeGoogleEvent::class);
     }
 }

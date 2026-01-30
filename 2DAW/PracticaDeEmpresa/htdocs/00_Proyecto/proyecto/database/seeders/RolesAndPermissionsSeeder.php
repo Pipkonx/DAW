@@ -33,6 +33,10 @@ class RolesAndPermissionsSeeder extends Seeder
             'gestionar_capacidades',
             'ver_alumnos_empresa',
             'gestionar_practicas',
+            'gestionar_mensajes',
+            'gestionar_configuracion',
+            'ver_estadisticas_globales',
+            'exportar_datos',
         ];
 
         foreach ($permissions as $permission) {
@@ -58,6 +62,8 @@ class RolesAndPermissionsSeeder extends Seeder
             'ver_incidencias',
             'crear_incidencias',
             'resolver_incidencias',
+            'gestionar_mensajes',
+            'ver_estadisticas_globales',
         ]);
 
         $tutorPracticas = Role::firstOrCreate(['name' => 'tutor_practicas']);
@@ -69,11 +75,13 @@ class RolesAndPermissionsSeeder extends Seeder
             'ver_observaciones',
             'crear_observaciones',
             'gestionar_capacidades',
+            'gestionar_mensajes',
         ]);
 
         $empresa = Role::firstOrCreate(['name' => 'empresa']);
         $empresa->syncPermissions([
             'ver_alumnos_empresa',
+            'gestionar_mensajes',
         ]);
 
         $alumno = Role::firstOrCreate(['name' => 'alumno']);
@@ -83,6 +91,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'crear_observaciones',
             'ver_incidencias',
             'crear_incidencias',
+            'gestionar_mensajes',
         ]);
     }
 }

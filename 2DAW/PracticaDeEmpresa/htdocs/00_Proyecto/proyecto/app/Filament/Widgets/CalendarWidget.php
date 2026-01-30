@@ -5,10 +5,20 @@ namespace App\Filament\Widgets;
 use App\Models\Practice;
 use Saade\FilamentFullCalendar\Widgets\FullCalendarWidget;
 use Illuminate\Database\Eloquent\Model;
+use Filament\Actions\CreateAction;
+use Filament\Actions\EditAction;
+use App\Filament\Resources\PracticeResource;
+use Filament\Forms\Form;
 
 class CalendarWidget extends FullCalendarWidget
 {
-    public Model | string | null $model = Practice::class;
+    /**
+     * Se elimina la propiedad $model para que el plugin no genere automáticamente
+     * ninguna acción de creación (New Practice) ni permita interactuar con los eventos.
+     */
+    public Model | string | null $model = null;
+
+    public Model | string | int | null $record = null;
 
     public function fetchEvents(array $fetchInfo): array
     {
@@ -34,6 +44,15 @@ class CalendarWidget extends FullCalendarWidget
 
     protected function getHeaderActions(): array
     {
-        return [];
+        return [
+            // Se ha eliminado la opción de crear prácticas desde el Dashboard por petición del usuario
+        ];
+    }
+
+    protected function getModalActions(): array
+    {
+        return [
+            // Se eliminan todas las acciones de modal para que el calendario sea solo lectura
+        ];
     }
 }

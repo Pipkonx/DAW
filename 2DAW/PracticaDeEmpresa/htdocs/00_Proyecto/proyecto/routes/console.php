@@ -15,6 +15,10 @@ Artisan::command('inspire', function () {
 
 Schedule::command('chat:cleanup')->daily();
 
+// Backup mensual automático el día 1 de cada mes a las 00:00
+Schedule::command('backup:run')->monthlyOn(1, '00:00');
+Schedule::command('backup:clean')->monthlyOn(1, '01:00');
+
 Artisan::command('send-mail', function (MailtrapService $mailtrapService) {
     $result = $mailtrapService->sendEmail(
         'pipkon.proyectos@gmail.com',
