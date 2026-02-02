@@ -3,39 +3,26 @@
 namespace App\Observers;
 
 use App\Models\Incidencia;
-use App\Services\MailtrapService;
+use App\Mail\IncidenciaRegistrada;
+use Illuminate\Support\Facades\Mail;
 
 class IncidenciaObserver
 {
-    protected $mailtrapService;
-
-    public function __construct(MailtrapService $mailtrapService)
-    {
-        $this->mailtrapService = $mailtrapService;
-    }
-
     /**
      * Handle the Incidencia "created" event.
      */
     public function created(Incidencia $incidencia): void
     {
         $alumno = $incidencia->alumno;
+        if (!$alumno) return;
+
+        // Notificar al Tutor de Curso
         $tutorCurso = $alumno->tutorCurso;
-
         if ($tutorCurso && $tutorCurso->email) {
-            $subject = "Nueva Incidencia: " . $incidencia->tipo;
-            $content = "Se ha registrado una nueva incidencia para el alumno " . $alumno->user->name . ".\n\n" .
-                       "Tipo: " . $incidencia->tipo . "\n" .
-                       "Fecha: " . $incidencia->fecha . "\n" .
-                       "Descripción: " . $incidencia->descripcion;
-
-            $this->mailtrapService->sendEmail(
-                $tutorCurso->email,
-                $subject,
-                $content,
-                'Incidencia'
-            );
+            Mail::to($tutorCurso->email)->send(new IncidenciaRegistrada($incidencia));
         }
+
+        // También podrías notificar al Admin o al creador si es necesario
     }
 
     /**

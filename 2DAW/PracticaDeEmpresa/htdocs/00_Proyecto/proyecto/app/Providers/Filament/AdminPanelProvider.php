@@ -31,6 +31,7 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
+            ->passwordReset()
             ->profile(\App\Filament\Pages\EditProfile::class)
             ->unsavedChangesAlerts()
             ->sidebarCollapsibleOnDesktop()

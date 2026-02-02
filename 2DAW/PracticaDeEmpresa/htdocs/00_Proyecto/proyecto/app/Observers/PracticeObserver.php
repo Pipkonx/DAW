@@ -6,6 +6,8 @@ use App\Models\Practice;
 use App\Models\User;
 use App\Models\Alumno;
 use App\Models\PracticeGoogleEvent;
+use App\Mail\PracticeNotification;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
 use Google\Client;
 use Google\Service\Calendar;
@@ -20,7 +22,7 @@ class PracticeObserver
     public function created(Practice $practice): void
     {
         $this->syncWithGoogleCalendar($practice);
-        $this->sendNotificationViaResend($practice, 'Nueva Práctica Asignada');
+        $this->sendEmailNotifications($practice, 'creada');
     }
 
     /**
@@ -29,7 +31,7 @@ class PracticeObserver
     public function updated(Practice $practice): void
     {
         $this->syncWithGoogleCalendar($practice);
-        $this->sendNotificationViaResend($practice, 'Práctica Actualizada');
+        $this->sendEmailNotifications($practice, 'actualizada');
     }
 
     /**
@@ -249,22 +251,20 @@ class PracticeObserver
     }
 
     /**
-     * Envía una notificación vía Resend.
+     * Envía notificaciones por email a los usuarios afectados.
      */
-    protected function sendNotificationViaResend(Practice $practice, string $subject): void
+    protected function sendEmailNotifications(Practice $practice, string $type): void
     {
         try {
-            $user = $practice->alumno?->user;
-            if ($user && $user->email && class_exists('Resend\Laravel\Facades\Resend')) {
-                \Resend\Laravel\Facades\Resend::emails()->send([
-                    'from' => 'onboarding@resend.dev',
-                    'to' => $user->email,
-                    'subject' => $subject,
-                    'html' => "<strong>Hola {$user->name},</strong><p>Se ha registrado una actividad en tu calendario de prácticas: <strong>{$practice->title}</strong></p>",
-                ]);
+            $targetUsers = $this->getTargetUsers($practice);
+            
+            foreach ($targetUsers as $user) {
+                if ($user->email) {
+                    Mail::to($user->email)->send(new PracticeNotification($practice, $type));
+                }
             }
         } catch (\Exception $e) {
-            Log::error('Error enviando notificación via Resend: ' . $e->getMessage());
+            Log::error('Error enviando notificaciones de práctica: ' . $e->getMessage());
         }
     }
 }

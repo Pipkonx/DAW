@@ -253,20 +253,33 @@ En esta sección se detallan las librerías clave utilizadas, su propósito téc
 
 ## 8. COMANDOS FRECUENTES Y UTILIDAD
 
-| Comando | Utilidad |
+En esta sección se detallan los comandos de Artisan y NPM más utilizados durante el desarrollo y mantenimiento del sistema.
+
+### 🛠️ Comandos de Desarrollo (Artisan)
+
+| Comando | Descripción |
 | :--- | :--- |
-| `php artisan migrate:fresh --seed` | Limpia la DB y carga datos de prueba actualizados. |
-| `php artisan make:filament-resource` | Crea un nuevo módulo (CRUD) en el panel. |
-| `npm run dev` | Inicia el compilador de activos para cambios en tiempo real. |
-| `composer update` | Actualiza las librerías del proyecto. |
-| `php artisan cache:clear` | Limpia la caché si hay problemas con cambios recientes. |
+| `php artisan migrate:fresh --seed` | **Reinicio Total**: Borra todas las tablas, aplica las migraciones y carga los datos de prueba definidos en los Seeders. |
+| `php artisan optimize:clear` | **Limpieza Profunda**: Limpia la caché de rutas, configuración, vistas y eventos. Útil ante errores inesperados de interfaz. |
+| `php artisan make:filament-resource Nombre` | **Nuevo Módulo**: Genera automáticamente los archivos necesarios para un nuevo CRUD en Filament. |
+| `php artisan make:mail NombreMail` | **Nuevo Correo**: Crea una clase Mailable para configurar nuevos tipos de notificaciones por email. |
+| `php artisan make:observer NombreObserver --model=Modelo` | **Nuevo Observador**: Crea un Observer para ejecutar lógica automática al crear/editar/borrar registros. |
+| `php artisan backup:run` | **Backup Manual**: Ejecuta una copia de seguridad inmediata de la base de datos y archivos. |
+| `php artisan schedule:work` | **Simulador de Tareas**: En desarrollo, permite ejecutar las tareas programadas (como los backups mensuales) sin configurar un CRON real. |
 
----
+### 🌐 Comandos de Frontend (NPM)
 
-## 9. ROADMAP (Próximas Mejoras)
-- [x] Implementar copias de seguridad desde el panel.
-- [x] Automatización de backups mensuales y widget de estado.
-- [x] Sincronización multi-usuario con Google Calendar.
-- [ ] Generación masiva de certificados de prácticas en PDF.
-- [ ] Integración con un sistema de firma digital para documentos oficiales.
-- [x] Panel de estadísticas avanzado con gráficos de rendimiento por curso.
+| Comando | Descripción |
+| :--- | :--- |
+| `npm run dev` | Inicia el servidor de desarrollo de Vite para reflejar cambios en CSS/JS al instante. |
+| `npm run build` | Compila y optimiza los activos para producción (minificación de archivos). |
+
+### 🔧 Utilidades de Configuración
+
+- **Configuración de Email (Resend)**: El sistema utiliza **Resend** para el envío de correos reales. Se ha preferido Resend sobre Mailtrap para la fase de desarrollo/demo porque permite que los correos lleguen directamente a la bandeja de entrada real del desarrollador (la cuenta con la que se registró en Resend) sin necesidad de configurar un dominio propio desde el primer momento.
+  - Para que funcione, el remitente (`MAIL_FROM_ADDRESS`) debe ser `onboarding@resend.dev` si no se tiene un dominio verificado.
+  - Los correos de recuperación de contraseña, notificaciones de incidencias y tareas se enviarán de forma real a los destinatarios autorizados.
+- **Sincronización de Calendario**: Para que la sincronización con Google Calendar funcione, los usuarios deben iniciar sesión mediante **OAuth (Google Login)**. El sistema detectará automáticamente si el usuario tiene un token válido para sincronizar sus prácticas.
+- **Gestión de Backups**: Las copias de seguridad se realizan automáticamente el día 1 de cada mes. El administrador puede ver el estado y los días restantes desde el **Widget de Backup** en el Dashboard principal.
+- **Limpieza Automática**: Se ha implementado un comando de limpieza de chat para mantener la base de datos optimizada, eliminando mensajes antiguos según la política de retención configurada.
+- **Seguridad de Archivos**: Todas las subidas (avatares, documentos de prácticas, fotos del chat) se gestionan a través del disco `public` de Laravel, asegurando que los archivos sean accesibles solo bajo las rutas autorizadas.
