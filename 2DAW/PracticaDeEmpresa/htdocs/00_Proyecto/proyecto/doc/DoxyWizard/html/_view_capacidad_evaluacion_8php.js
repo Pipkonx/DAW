@@ -1,0 +1,4 @@
+var _view_capacidad_evaluacion_8php =
+[
+    [ "ViewCapacidadEvaluacion", "class_app_1_1_filament_1_1_resources_1_1_capacidad_evaluacion_resource_1_1_pages_1_1_view_capacidad_evaluacion.html", "class_app_1_1_filament_1_1_resources_1_1_capacidad_evaluacion_resource_1_1_pages_1_1_view_capacidad_evaluacion" ]
+];

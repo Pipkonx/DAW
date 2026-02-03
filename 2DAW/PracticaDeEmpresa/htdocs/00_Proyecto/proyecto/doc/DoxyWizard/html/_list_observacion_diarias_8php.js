@@ -1,0 +1,4 @@
+var _list_observacion_diarias_8php =
+[
+    [ "ListObservacionDiarias", "class_app_1_1_filament_1_1_resources_1_1_observacion_diaria_resource_1_1_pages_1_1_list_observacion_diarias.html", "class_app_1_1_filament_1_1_resources_1_1_observacion_diaria_resource_1_1_pages_1_1_list_observacion_diarias" ]
+];

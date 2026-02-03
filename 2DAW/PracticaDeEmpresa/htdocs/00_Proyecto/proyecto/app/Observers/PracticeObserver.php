@@ -30,6 +30,12 @@ class PracticeObserver
      */
     public function updated(Practice $practice): void
     {
+        // Si la práctica acaba de ser creada, el evento created ya se encargó de las notificaciones
+        // Esto evita duplicados cuando Filament realiza actualizaciones inmediatamente después de la creación
+        if ($practice->wasRecentlyCreated) {
+            return;
+        }
+
         $this->syncWithGoogleCalendar($practice);
         $this->sendEmailNotifications($practice, 'actualizada');
     }

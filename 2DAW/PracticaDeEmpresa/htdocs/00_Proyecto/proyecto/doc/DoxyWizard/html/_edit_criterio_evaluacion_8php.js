@@ -1,0 +1,4 @@
+var _edit_criterio_evaluacion_8php =
+[
+    [ "EditCriterioEvaluacion", "class_app_1_1_filament_1_1_resources_1_1_criterio_evaluacion_resource_1_1_pages_1_1_edit_criterio_evaluacion.html", "class_app_1_1_filament_1_1_resources_1_1_criterio_evaluacion_resource_1_1_pages_1_1_edit_criterio_evaluacion" ]
+];

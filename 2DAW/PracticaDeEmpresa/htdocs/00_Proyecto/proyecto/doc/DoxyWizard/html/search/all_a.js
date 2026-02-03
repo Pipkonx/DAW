@@ -1,0 +1,21 @@
+var searchData=
+[
+  ['incidencia_0',['Incidencia',['../class_app_1_1_models_1_1_incidencia.html',1,'App::Models']]],
+  ['incidencia_2ephp_1',['Incidencia.php',['../_incidencia_8php.html',1,'']]],
+  ['incidenciaobserver_2',['IncidenciaObserver',['../class_app_1_1_observers_1_1_incidencia_observer.html',1,'App::Observers']]],
+  ['incidenciaobserver_2ephp_3',['IncidenciaObserver.php',['../_incidencia_observer_8php.html',1,'']]],
+  ['incidenciaregistrada_4',['IncidenciaRegistrada',['../class_app_1_1_mail_1_1_incidencia_registrada.html',1,'App::Mail']]],
+  ['incidenciaregistrada_2ephp_5',['IncidenciaRegistrada.php',['../_incidencia_registrada_8php.html',1,'']]],
+  ['incidenciaresource_6',['IncidenciaResource',['../class_app_1_1_filament_1_1_resources_1_1_incidencia_resource.html',1,'App::Filament::Resources']]],
+  ['incidenciaresource_2ephp_7',['IncidenciaResource.php',['../_incidencia_resource_8php.html',1,'']]],
+  ['incidencias_8',['incidencias',['../class_app_1_1_models_1_1_alumno.html#a4692fbdd6bebbfcf6827d0e742b4be81',1,'App::Models::Alumno']]],
+  ['index_9',['index',['../class_app_1_1_http_1_1_controllers_1_1_api_1_1_practice_controller.html#a149eb92716c1084a935e04a8d95f7347',1,'App::Http::Controllers::Api::PracticeController']]],
+  ['internalchat_10',['InternalChat',['../class_app_1_1_livewire_1_1_internal_chat.html',1,'App::Livewire']]],
+  ['internalchat_2ephp_11',['InternalChat.php',['../_internal_chat_8php.html',1,'']]],
+  ['isadmin_12',['isAdmin',['../class_app_1_1_models_1_1_user.html#aabf23b66cd362adaa508de5bfb22706a',1,'App::Models::User']]],
+  ['isalumno_13',['isAlumno',['../class_app_1_1_models_1_1_user.html#a01f500566ce903d39d4aaff7028a5832',1,'App::Models::User']]],
+  ['isonline_14',['isOnline',['../class_app_1_1_models_1_1_user.html#a193c594324688a11dec078db0fee8cb2',1,'App::Models::User']]],
+  ['istutorcurso_15',['isTutorCurso',['../class_app_1_1_models_1_1_user.html#a78ca1e43bdd218fa5803c0b550d6938d',1,'App::Models::User']]],
+  ['istutorempresa_16',['isTutorEmpresa',['../class_app_1_1_models_1_1_user.html#a31f1b7aa62b70f30fd8c9b3fac901bf4',1,'App::Models::User']]],
+  ['istutorpracticas_17',['isTutorPracticas',['../class_app_1_1_models_1_1_user.html#a1d8a72d778d897299700dcbd2ac9644e',1,'App::Models::User']]]
+];

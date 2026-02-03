@@ -1,0 +1,6 @@
+var namespace_app_1_1_filament_1_1_resources_1_1_evaluacion_resource_1_1_pages =
+[
+    [ "CreateEvaluacion", "class_app_1_1_filament_1_1_resources_1_1_evaluacion_resource_1_1_pages_1_1_create_evaluacion.html", "class_app_1_1_filament_1_1_resources_1_1_evaluacion_resource_1_1_pages_1_1_create_evaluacion" ],
+    [ "EditEvaluacion", "class_app_1_1_filament_1_1_resources_1_1_evaluacion_resource_1_1_pages_1_1_edit_evaluacion.html", "class_app_1_1_filament_1_1_resources_1_1_evaluacion_resource_1_1_pages_1_1_edit_evaluacion" ],
+    [ "ListEvaluacions", "class_app_1_1_filament_1_1_resources_1_1_evaluacion_resource_1_1_pages_1_1_list_evaluacions.html", "class_app_1_1_filament_1_1_resources_1_1_evaluacion_resource_1_1_pages_1_1_list_evaluacions" ]
+];

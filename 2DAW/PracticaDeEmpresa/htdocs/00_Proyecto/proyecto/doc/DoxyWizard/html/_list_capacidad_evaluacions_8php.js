@@ -1,0 +1,4 @@
+var _list_capacidad_evaluacions_8php =
+[
+    [ "ListCapacidadEvaluacions", "class_app_1_1_filament_1_1_resources_1_1_capacidad_evaluacion_resource_1_1_pages_1_1_list_capacidad_evaluacions.html", "class_app_1_1_filament_1_1_resources_1_1_capacidad_evaluacion_resource_1_1_pages_1_1_list_capacidad_evaluacions" ]
+];

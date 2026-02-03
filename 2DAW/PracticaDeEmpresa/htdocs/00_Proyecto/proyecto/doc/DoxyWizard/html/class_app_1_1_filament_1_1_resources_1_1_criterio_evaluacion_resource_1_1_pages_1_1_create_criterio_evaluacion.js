@@ -1,0 +1,5 @@
+var class_app_1_1_filament_1_1_resources_1_1_criterio_evaluacion_resource_1_1_pages_1_1_create_criterio_evaluacion =
+[
+    [ "getCreatedNotification", "class_app_1_1_filament_1_1_resources_1_1_criterio_evaluacion_resource_1_1_pages_1_1_create_criterio_evaluacion.html#a0ebe78f6ff26a21829366fbe92dfb571", null ],
+    [ "getRedirectUrl", "class_app_1_1_filament_1_1_resources_1_1_criterio_evaluacion_resource_1_1_pages_1_1_create_criterio_evaluacion.html#a320f8cf6bf704c301b24f83e4d0c3a22", null ]
+];

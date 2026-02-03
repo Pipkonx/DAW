@@ -1,0 +1,9 @@
+var searchData=
+[
+  ['actualizar_0',['actualizar',['../class_app_1_1_policies_1_1_alumno_policy.html#afc42487ba879d8eb816c150779265681',1,'App\\Policies\\AlumnoPolicy\\actualizar()'],['../class_app_1_1_policies_1_1_user_policy.html#a256585d672e634f97ad30501f2d34ebb',1,'App\\Policies\\UserPolicy\\actualizar()']]],
+  ['actualizarperfilrelacionado_1',['actualizarPerfilRelacionado',['../class_app_1_1_filament_1_1_resources_1_1_user_resource_1_1_pages_1_1_edit_user.html#adabfe2a90f36c193abc6a71872696373',1,'App::Filament::Resources::UserResource::Pages::EditUser']]],
+  ['aftersave_2',['afterSave',['../class_app_1_1_filament_1_1_resources_1_1_user_resource_1_1_pages_1_1_edit_user.html#a6b689626b548ccad8dd118f5f9d085b4',1,'App::Filament::Resources::UserResource::Pages::EditUser']]],
+  ['alumno_3',['alumno',['../class_app_1_1_models_1_1_evaluacion.html#a17f0f5c3b59015f65e445a25ab320b91',1,'App\\Models\\Evaluacion\\alumno()'],['../class_app_1_1_models_1_1_evaluacion_tutor.html#a17f0f5c3b59015f65e445a25ab320b91',1,'App\\Models\\EvaluacionTutor\\alumno()'],['../class_app_1_1_models_1_1_incidencia.html#a17f0f5c3b59015f65e445a25ab320b91',1,'App\\Models\\Incidencia\\alumno()'],['../class_app_1_1_models_1_1_observacion_diaria.html#a17f0f5c3b59015f65e445a25ab320b91',1,'App\\Models\\ObservacionDiaria\\alumno()'],['../class_app_1_1_models_1_1_practice.html#a17f0f5c3b59015f65e445a25ab320b91',1,'App\\Models\\Practice\\alumno()'],['../class_app_1_1_models_1_1_user.html#a17f0f5c3b59015f65e445a25ab320b91',1,'App\\Models\\User\\alumno()']]],
+  ['alumnos_4',['alumnos',['../class_app_1_1_models_1_1_curso.html#a6e73062c116dc9b505aaf66326fa0871',1,'App\\Models\\Curso\\alumnos()'],['../class_app_1_1_models_1_1_empresa.html#a6e73062c116dc9b505aaf66326fa0871',1,'App\\Models\\Empresa\\alumnos()']]],
+  ['attachments_5',['attachments',['../class_app_1_1_mail_1_1_incidencia_registrada.html#a5fc550edbf0cd33362468cbc036349e9',1,'App::Mail::IncidenciaRegistrada']]]
+];

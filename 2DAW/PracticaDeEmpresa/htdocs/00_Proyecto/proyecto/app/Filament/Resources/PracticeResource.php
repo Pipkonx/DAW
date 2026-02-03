@@ -17,6 +17,7 @@ use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Actions\DeleteAction;
 use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\DeleteBulkAction;
@@ -141,6 +142,7 @@ class PracticeResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->recordAction(ViewAction::class)
             ->columns([
                 TextColumn::make('title')
                     ->label('Título')
@@ -191,8 +193,11 @@ class PracticeResource extends Resource
                     ]),
             ])
             ->actions([
+                ViewAction::make()
+                    ->label('Ver Detalles'),
                 EditAction::make()
-                    ->label('Ver/Editar'),
+                    ->label('Editar')
+                    ->hidden(fn (Practice $record) => !auth()->user()->isAdmin() && $record->user_id !== auth()->id()),
                 DeleteAction::make()
                     ->label('Eliminar')
                     ->requiresConfirmation(false)
@@ -276,6 +281,7 @@ class PracticeResource extends Resource
         return [
             'index' => Pages\ListPractices::route('/'),
             'create' => Pages\CreatePractice::route('/create'),
+            'view' => Pages\ViewPractice::route('/{record}'),
             'edit' => Pages\EditPractice::route('/{record}/edit'),
         ];
     }

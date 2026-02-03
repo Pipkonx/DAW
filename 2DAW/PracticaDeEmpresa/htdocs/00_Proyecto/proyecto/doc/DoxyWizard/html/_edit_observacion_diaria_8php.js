@@ -1,0 +1,4 @@
+var _edit_observacion_diaria_8php =
+[
+    [ "EditObservacionDiaria", "class_app_1_1_filament_1_1_resources_1_1_observacion_diaria_resource_1_1_pages_1_1_edit_observacion_diaria.html", "class_app_1_1_filament_1_1_resources_1_1_observacion_diaria_resource_1_1_pages_1_1_edit_observacion_diaria" ]
+];

@@ -1,0 +1,7 @@
+var namespace_app_1_1_filament_1_1_resources_1_1_incidencia_resource_1_1_pages =
+[
+    [ "CreateIncidencia", "class_app_1_1_filament_1_1_resources_1_1_incidencia_resource_1_1_pages_1_1_create_incidencia.html", "class_app_1_1_filament_1_1_resources_1_1_incidencia_resource_1_1_pages_1_1_create_incidencia" ],
+    [ "EditIncidencia", "class_app_1_1_filament_1_1_resources_1_1_incidencia_resource_1_1_pages_1_1_edit_incidencia.html", "class_app_1_1_filament_1_1_resources_1_1_incidencia_resource_1_1_pages_1_1_edit_incidencia" ],
+    [ "ListIncidencias", "class_app_1_1_filament_1_1_resources_1_1_incidencia_resource_1_1_pages_1_1_list_incidencias.html", "class_app_1_1_filament_1_1_resources_1_1_incidencia_resource_1_1_pages_1_1_list_incidencias" ],
+    [ "ViewIncidencia", "class_app_1_1_filament_1_1_resources_1_1_incidencia_resource_1_1_pages_1_1_view_incidencia.html", "class_app_1_1_filament_1_1_resources_1_1_incidencia_resource_1_1_pages_1_1_view_incidencia" ]
+];
