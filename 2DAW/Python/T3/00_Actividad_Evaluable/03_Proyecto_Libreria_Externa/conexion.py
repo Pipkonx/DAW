@@ -11,14 +11,21 @@ def obtener_precio_actual(simbolo):
         activo = yf.Ticker(simbolo)
         
         # Pedimos el historial del último día
-        datos = activo.history(period="1d")
+        # datos = activo.history(period="1d")
+        datos = activo.fast_info
         
         # Si no hay datos o el tinker no existe devolvemos nad apara el error
-        if datos.empty:
-            return None
+        # if datos.empty:
+            # return None
         
         # Cogemos el último precio de cierre disponible
-        precio_actual = datos['Close'].values[-1]
+        # precio_actual = datos['Close'].values[-1]
+
+        # Si el tincker no existe last price 
+        precio_actual = datos['last_price']
+
+        if precio_actual is None or str(precio_actual) == 'nan':
+            return None
         
         # Lo devolvemos redondeado a 2 decimales para que sea más legible
         return round(precio_actual, 2)

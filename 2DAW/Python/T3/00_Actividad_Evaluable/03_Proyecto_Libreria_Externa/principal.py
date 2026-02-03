@@ -12,8 +12,13 @@ def iniciar_vigilante():
     # 1 Pedimos datos al usuario
     # el strip es el trim de js
     # Y EL UPPER es para que no importe las mayos o las minusculas
-    simbolo = input("\nQue moneda o accion quieres vigilar? (ej: BTC-USD, XRP): ").strip().upper()
-    
+    simbolo = ''
+    while not simbolo:
+        simbolo = input("\nQue moneda o accion quieres vigilar? (ej: BTC-USD, XRP): ").strip().upper()
+        if not simbolo:
+            print("Errror: Tienes que introducir un Tinker válido.")
+
+
     try:
         umbral = float(input("A que precio quieres poner la alerta?: "))
     except Exception:
