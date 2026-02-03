@@ -40,6 +40,7 @@ class PracticeObserver
     public function deleted(Practice $practice): void
     {
         $this->removeFromGoogleCalendar($practice);
+        $this->sendEmailNotifications($practice, 'eliminada');
     }
 
     /**

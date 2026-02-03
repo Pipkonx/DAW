@@ -33,6 +33,15 @@ class User extends Authenticatable implements HasAvatar, FilamentUser
     use HasFactory, Notifiable, HasRoles, HasApiTokens;
 
     /**
+     * @brief Sobrescribe el método de envío de notificación de restablecimiento de contraseña.
+     * Esto asegura que el enlace use la ruta correcta de Filament.
+     */
+    public function sendPasswordResetNotification($token): void
+    {
+        $this->notify(new \Filament\Notifications\Auth\ResetPassword($token));
+    }
+
+    /**
      * @brief Determina si el usuario puede acceder al panel de Filament.
      */
     public function canAccessPanel(Panel $panel): bool

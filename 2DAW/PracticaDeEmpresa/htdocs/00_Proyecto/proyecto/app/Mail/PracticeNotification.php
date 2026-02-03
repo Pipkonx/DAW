@@ -20,9 +20,12 @@ class PracticeNotification extends Mailable
 
     public function envelope(): Envelope
     {
-        $subject = $this->type === 'creada' 
-            ? '📅 Nueva Tarea de Prácticas: ' . $this->practice->title
-            : '🔄 Tarea Actualizada: ' . $this->practice->title;
+        $subject = match($this->type) {
+            'creada' => '📅 Nueva Tarea de Prácticas: ' . $this->practice->title,
+            'actualizada' => '🔄 Tarea Actualizada: ' . $this->practice->title,
+            'eliminada' => '❌ Tarea Eliminada: ' . $this->practice->title,
+            default => 'Notificación de Práctica: ' . $this->practice->title,
+        };
 
         return new Envelope(
             subject: $subject,

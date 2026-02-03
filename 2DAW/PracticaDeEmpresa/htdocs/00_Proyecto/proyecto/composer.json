@@ -17,8 +17,6 @@
         "laravel/socialite": "^5.24",
         "laravel/tinker": "^2.10.1",
         "pxlrbt/filament-excel": "^2.5",
-        "railsware/mailtrap-php": "^3.10",
-        "resend/resend-php": "^1.1",
         "saade/filament-fullcalendar": "^3.2",
         "shuvroroy/filament-spatie-laravel-backup": "^2.2",
         "spatie/laravel-google-calendar": "^3.8",
@@ -27,7 +25,6 @@
     "require-dev": {
         "barryvdh/laravel-debugbar": "^4.0",
         "fakerphp/faker": "^1.23",
-        "laravel-lang/common": "^6.7",
         "laravel/breeze": "^2.3",
         "laravel/pail": "^1.2.2",
         "laravel/pint": "^1.13",

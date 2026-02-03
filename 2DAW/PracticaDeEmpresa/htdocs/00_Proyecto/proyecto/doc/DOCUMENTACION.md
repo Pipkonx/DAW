@@ -94,9 +94,20 @@ En esta sección se detallan las librerías clave utilizadas, su propósito téc
 - **¿Por qué?**: Facilita la autenticación mediante proveedores externos (OAuth).
 - **Implementación**: Integrado en la pantalla de login para permitir el acceso con cuentas de Google, mejorando la comodidad del usuario.
 
-#### **resend/resend-php & railsware/mailtrap-php**
-- **¿Por qué?**: Gestión profesional de envío de correos electrónicos (transaccionales y de prueba).
-- **Implementación**: Resend se utiliza para notificaciones en producción, mientras que Mailtrap se usa como entorno de pruebas (sandbox) para capturar correos durante el desarrollo.
+### ✉️ Comunicación y Notificaciones
+
+#### **Notificaciones Automáticas de Prácticas**
+- **¿Por qué?**: Es fundamental que los alumnos estén informados en tiempo real sobre cualquier cambio en su calendario de prácticas.
+- **Funcionamiento**: El sistema utiliza **Observers** de Laravel (`PracticeObserver`) para detectar cambios en el modelo de Prácticas.
+- **Flujo de Notificación**:
+    - **Creación**: Cuando un profesor crea una nueva práctica/tarea, todos los alumnos afectados (individuales, por curso o por rol) reciben un correo de bienvenida a la tarea.
+    - **Edición**: Si se modifican fechas o descripciones, se envía un aviso de "Tarea Actualizada".
+    - **Eliminación**: Si se cancela una práctica, los alumnos reciben un aviso de "Tarea Eliminada" para que sepan que ya no deben asistir o realizarla.
+- **Sincronización con Google Calendar**: Además del correo, el sistema sincroniza automáticamente estos eventos con el Google Calendar del alumno si este ha iniciado sesión con Google.
+
+#### **Configuración de Email (Gmail SMTP)**
+- **Implementación**: Se utiliza el driver SMTP nativo de Laravel configurado para Gmail.
+- **Seguridad**: Se requiere el uso de **Contraseñas de Aplicación** de Google y cifrado TLS/SSL para garantizar que los correos no sean marcados como spam y se envíen de forma segura.
 
 ---
 
@@ -155,9 +166,9 @@ En esta sección se detallan las librerías clave utilizadas, su propósito téc
 
 ### 🔔 Sistema de Notificaciones y Sincronización
 - **Notificaciones en Base de Datos**: Los alumnos reciben avisos inmediatos en su panel cuando se publica una evaluación o se asigna una tarea.
-- **Alertas por Email (Resend & Mailtrap)**: 
-    - **Incidencias**: Envío automático de correos a los tutores de curso cuando se registra una incidencia mediante Mailtrap.
-    - **Tareas**: Notificación vía Resend cuando se crea o actualiza una práctica.
+- **Alertas por Email (Gmail SMTP)**: 
+    - **Incidencias**: Envío automático de correos a los tutores de curso cuando se registra una incidencia.
+    - **Tareas**: Notificación automática cuando se crea, actualiza o elimina una práctica.
 - **Sincronización Avanzada con Google Calendar**: 
     - **Multi-usuario**: Las prácticas creadas se sincronizan automáticamente con el calendario de Google de **todos** los usuarios implicados (alumno específico, alumnos de un curso o usuarios con un rol determinado).
     - **Persistencia**: Se utiliza una tabla de pivote (`practice_google_events`) para rastrear los IDs de eventos de Google de forma individual por cada usuario, permitiendo actualizaciones y eliminaciones precisas.
@@ -251,35 +262,55 @@ En esta sección se detallan las librerías clave utilizadas, su propósito téc
 
 ---
 
-## 8. COMANDOS FRECUENTES Y UTILIDAD
+## 8. GUÍA DE COMANDOS ESENCIALES
 
-En esta sección se detallan los comandos de Artisan y NPM más utilizados durante el desarrollo y mantenimiento del sistema.
+Esta sección recopila los comandos más utilizados para el desarrollo, depuración y mantenimiento del sistema, organizados por su ámbito de aplicación.
 
-### 🛠️ Comandos de Desarrollo (Artisan)
+### 🛠️ Desarrollo de Lógica (Artisan Core)
 
-| Comando | Descripción |
+| Comando | Propósito |
 | :--- | :--- |
-| `php artisan migrate:fresh --seed` | **Reinicio Total**: Borra todas las tablas, aplica las migraciones y carga los datos de prueba definidos en los Seeders. |
-| `php artisan optimize:clear` | **Limpieza Profunda**: Limpia la caché de rutas, configuración, vistas y eventos. Útil ante errores inesperados de interfaz. |
-| `php artisan make:filament-resource Nombre` | **Nuevo Módulo**: Genera automáticamente los archivos necesarios para un nuevo CRUD en Filament. |
-| `php artisan make:mail NombreMail` | **Nuevo Correo**: Crea una clase Mailable para configurar nuevos tipos de notificaciones por email. |
-| `php artisan make:observer NombreObserver --model=Modelo` | **Nuevo Observador**: Crea un Observer para ejecutar lógica automática al crear/editar/borrar registros. |
-| `php artisan backup:run` | **Backup Manual**: Ejecuta una copia de seguridad inmediata de la base de datos y archivos. |
-| `php artisan schedule:work` | **Simulador de Tareas**: En desarrollo, permite ejecutar las tareas programadas (como los backups mensuales) sin configurar un CRON real. |
+| `php artisan tinker` | **Consola Interactiva**: Permite ejecutar código PHP en tiempo real con acceso a todos los modelos y lógica del proyecto. |
+| `php artisan pail` | **Streaming de Logs**: Visualiza los logs de la aplicación en tiempo real directamente en la terminal (ideal para depurar errores de backend). |
+| `php artisan pint` | **Corrector de Estilo**: Formatea automáticamente el código siguiendo los estándares de Laravel (PSR-12). |
+| `php artisan optimize:clear` | **Limpieza Total**: Borra la caché de rutas, configuración, vistas y eventos. Imprescindible si los cambios no se reflejan. |
+| `php artisan make:model Nombre -mfs` | **Generación Triple**: Crea el Modelo, la Migración, la Factoría y el Seeder de una sola vez. |
 
-### 🌐 Comandos de Frontend (NPM)
+### 💎 Ecosistema Filament (Panel Administrativo)
 
-| Comando | Descripción |
+| Comando | Propósito |
 | :--- | :--- |
-| `npm run dev` | Inicia el servidor de desarrollo de Vite para reflejar cambios en CSS/JS al instante. |
-| `npm run build` | Compila y optimiza los activos para producción (minificación de archivos). |
+| `php artisan make:filament-resource Nombre` | **Nuevo CRUD**: Genera el recurso, las páginas de lista, creación, edición y visualización para un modelo. |
+| `php artisan make:filament-relation-manager ResourceNombre Relacion Atributo` | **Gestión de Relaciones**: Crea una tabla subordinada dentro de un formulario (ej: gestionar Incidencias dentro de un Alumno). |
+| `php artisan make:filament-widget Nombre` | **Dashboard / Estadísticas**: Crea un widget de gráfico o tabla para el panel principal. |
+| `php artisan make:filament-page Nombre` | **Página Personalizada**: Crea una vista en blanco dentro del panel para funcionalidades que no son CRUD. |
+| `php artisan filament:optimize` | **Rendimiento**: Cachea los componentes y recursos de Filament para acelerar la carga en producción. |
 
-### 🔧 Utilidades de Configuración
+### ⚙️ Procesos y Mantenimiento
 
-- **Configuración de Email (Resend)**: El sistema utiliza **Resend** para el envío de correos reales. Se ha preferido Resend sobre Mailtrap para la fase de desarrollo/demo porque permite que los correos lleguen directamente a la bandeja de entrada real del desarrollador (la cuenta con la que se registró en Resend) sin necesidad de configurar un dominio propio desde el primer momento.
-  - Para que funcione, el remitente (`MAIL_FROM_ADDRESS`) debe ser `onboarding@resend.dev` si no se tiene un dominio verificado.
-  - Los correos de recuperación de contraseña, notificaciones de incidencias y tareas se enviarán de forma real a los destinatarios autorizados.
-- **Sincronización de Calendario**: Para que la sincronización con Google Calendar funcione, los usuarios deben iniciar sesión mediante **OAuth (Google Login)**. El sistema detectará automáticamente si el usuario tiene un token válido para sincronizar sus prácticas.
-- **Gestión de Backups**: Las copias de seguridad se realizan automáticamente el día 1 de cada mes. El administrador puede ver el estado y los días restantes desde el **Widget de Backup** en el Dashboard principal.
-- **Limpieza Automática**: Se ha implementado un comando de limpieza de chat para mantener la base de datos optimizada, eliminando mensajes antiguos según la política de retención configurada.
+| Comando | Propósito |
+| :--- | :--- |
+| `php artisan queue:work` | **Procesador de Colas**: Ejecuta los trabajos en segundo plano (como el envío de correos si no se usa `sync`). |
+| `php artisan schedule:work` | **Simulador de Cron**: Ejecuta las tareas programadas (Backups, limpiezas) sin necesidad de configurar el sistema operativo. |
+| `php artisan backup:run` | **Copia de Seguridad**: Crea un respaldo inmediato de la base de datos y la carpeta `storage/app/public`. |
+| `php artisan migrate:fresh --seed` | **Reinicio de Entorno**: Borra todo, aplica migraciones desde cero y carga datos de prueba. **(USAR CON PRECAUCIÓN)**. |
+
+### 🧪 Testing y Calidad
+
+| Comando | Propósito |
+| :--- | :--- |
+| `php artisan test` | **Ejecutar Pruebas**: Lanza toda la suite de tests automatizados (PHPUnit) para asegurar que nada se ha roto. |
+| `php artisan test --filter NombreTest` | **Test Específico**: Ejecuta solo una prueba o clase de prueba concreta. |
+| `php artisan scribe:generate` | **Documentación de API**: Genera automáticamente la documentación técnica de los endpoints (si aplica). |
+
+### 🌐 Frontend y Assets (NPM)
+
+| Comando | Propósito |
+| :--- | :--- |
+| `npm run dev` | **Modo Desarrollo**: Compilación en tiempo real (Hot Module Replacement) para cambios en CSS y JS. |
+| `npm run build` | **Producción**: Minifica y optimiza los archivos para que la web cargue lo más rápido posible. |
+
+---
+
+## 9. NOTAS ADICIONALES DE CONFIGURACIÓN
 - **Seguridad de Archivos**: Todas las subidas (avatares, documentos de prácticas, fotos del chat) se gestionan a través del disco `public` de Laravel, asegurando que los archivos sean accesibles solo bajo las rutas autorizadas.
