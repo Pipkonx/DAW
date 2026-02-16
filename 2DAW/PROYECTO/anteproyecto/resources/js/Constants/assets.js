@@ -1,0 +1,17 @@
+export const popularAssets = [
+    { symbol: 'AAPL', name: 'Apple Inc.', type: 'stock', logo: 'https://logo.clearbit.com/apple.com' },
+    { symbol: 'MSFT', name: 'Microsoft Corporation', type: 'stock', logo: 'https://logo.clearbit.com/microsoft.com' },
+    { symbol: 'GOOGL', name: 'Alphabet Inc.', type: 'stock', logo: 'https://logo.clearbit.com/abc.xyz' },
+    { symbol: 'AMZN', name: 'Amazon.com Inc.', type: 'stock', logo: 'https://logo.clearbit.com/amazon.com' },
+    { symbol: 'TSLA', name: 'Tesla Inc.', type: 'stock', logo: 'https://logo.clearbit.com/tesla.com' },
+    { symbol: 'META', name: 'Meta Platforms Inc.', type: 'stock', logo: 'https://logo.clearbit.com/meta.com' },
+    { symbol: 'NVDA', name: 'NVIDIA Corporation', type: 'stock', logo: 'https://logo.clearbit.com/nvidia.com' },
+    { symbol: 'BTC', name: 'Bitcoin', type: 'crypto', logo: 'https://cryptologos.cc/logos/bitcoin-btc-logo.png' },
+    { symbol: 'ETH', name: 'Ethereum', type: 'crypto', logo: 'https://cryptologos.cc/logos/ethereum-eth-logo.png' },
+    { symbol: 'SOL', name: 'Solana', type: 'crypto', logo: 'https://cryptologos.cc/logos/solana-sol-logo.png' },
+    { symbol: 'SPY', name: 'SPDR S&P 500 ETF Trust', type: 'etf', logo: 'https://logo.clearbit.com/ssga.com' },
+    { symbol: 'VTI', name: 'Vanguard Total Stock Market ETF', type: 'etf', logo: 'https://logo.clearbit.com/vanguard.com' },
+    { symbol: 'QQQ', name: 'Invesco QQQ Trust', type: 'etf', logo: 'https://logo.clearbit.com/invesco.com' },
+    { symbol: 'US10Y', name: 'US Treasury 10Y', type: 'bond', logo: null },
+    { symbol: 'GOLD', name: 'Gold', type: 'other', logo: null },
+];

@@ -1,0 +1,55 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 
+    ========================================
+    🎨 ESTILOS GLOBALES FINTECH PRO
+    ========================================
+    Aquí definimos los componentes reutilizables para mantener 
+    la consistencia visual en toda la aplicación.
+    
+    Usamos @apply de Tailwind para agrupar utilidades.
+*/
+
+@layer components {
+    /* BOTONES */
+    .btn-primary {
+        @apply inline-flex justify-center items-center px-6 py-3 bg-blue-600 text-white font-semibold rounded-xl shadow-lg shadow-blue-500/30 hover:bg-blue-700 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed;
+    }
+
+    .btn-secondary {
+        @apply inline-flex justify-center items-center px-6 py-3 bg-white text-slate-700 font-semibold border border-slate-200 rounded-xl hover:bg-slate-50 hover:border-slate-300 transition-all duration-300;
+    }
+
+    /* TARJETAS (CARDS) */
+    .card {
+        @apply bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition-shadow duration-300;
+    }
+
+    /* TIPOGRAFÍA */
+    .heading-hero {
+        @apply text-5xl lg:text-7xl font-extrabold tracking-tight text-slate-900 leading-tight;
+    }
+
+    .heading-section {
+        @apply text-3xl font-bold text-slate-900 mb-4;
+    }
+
+    .text-body-lg {
+        @apply text-lg text-slate-600 leading-relaxed;
+    }
+
+    .text-body {
+        @apply text-base text-slate-600 leading-relaxed;
+    }
+
+    /* FORMULARIOS */
+    .input-field {
+        @apply w-full border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-lg shadow-sm transition-colors;
+    }
+
+    .label {
+        @apply block font-medium text-sm text-slate-700 mb-1;
+    }
+}
