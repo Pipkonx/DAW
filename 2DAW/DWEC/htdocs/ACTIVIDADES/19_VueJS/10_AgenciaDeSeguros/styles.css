@@ -1,0 +1,104 @@
+body {
+    font-family: var(--font-family);
+    margin: 0;
+    background-color: #f8f9fa;
+}
+
+.p-component {
+    font-size: 14px;
+}
+
+.status-cobrada {
+    background-color: #c8e6c9 !important;
+    color: #256029 !important;
+}
+
+.status-acuenta {
+    background-color: #feedaf !important;
+    color: #8a5340 !important;
+}
+
+.status-liquidada {
+    background-color: #ffdada !important;
+    color: #c63737 !important;
+}
+
+.status-anulada {
+    background-color: #eccfff !important;
+    color: #694382 !important;
+}
+
+.status-preanulada {
+    background-color: #ffd8b2 !important;
+    color: #805b39 !important;
+}
+
+.report-liquidada {
+    color: #c63737;
+    font-weight: bold;
+}
+
+.legend-container {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+}
+
+.legend-color {
+    width: 15px;
+    height: 15px;
+    border-radius: 3px;
+    border: 1px solid #ddd;
+}
+
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.p-datatable .p-datatable-tbody>tr.row-liquidada {
+    background-color: #ffdada !important;
+}
+
+/* Custom Dialog Styles */
+.p-dialog {
+    box-shadow: 0 11px 15px -7px rgba(0,0,0,.2), 0 24px 38px 3px rgba(0,0,0,.14), 0 9px 46px 8px rgba(0,0,0,.12);
+    border: 1px solid #c8c8c8; /* Darker border for visibility */
+    border-radius: 8px; /* Slightly more rounded */
+}
+
+/* Button Icon Spacing Fix */
+.p-button.p-button-icon-only {
+    padding: 0.5rem !important; /* Ensure icon-only buttons are square-ish/centered */
+}
+
+.p-button .p-button-icon-left {
+    margin-right: 0.5rem !important; /* Standard spacing, 0.75 might be too wide */
+}
+.p-button .p-button-icon-right {
+    margin-left: 0.5rem !important;
+}
+
+/* Center Dialog Content */
+.payments-dialog-content {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    text-align: center; /* Center text inside dialog if requested */
+}
+
+.payments-dialog-content .p-d-flex {
+    /* But keep flex containers (like rows) behaving normally unless specific */
+}
+
+

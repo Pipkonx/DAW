@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Agencia de Seguros</title>
+    
+    <!-- PrimeVue 3 Styles -->
+    <link href="https://unpkg.com/primevue@3.49.1/resources/themes/saga-blue/theme.css" rel="stylesheet">
+    <link href="https://unpkg.com/primevue@3.49.1/resources/primevue.min.css" rel="stylesheet">
+    <link href="https://unpkg.com/primeicons@6.0.1/primeicons.css" rel="stylesheet">
+    <link href="https://unpkg.com/primeflex@2.0.0/primeflex.min.css" rel="stylesheet">
+    
+    <!-- Custom Styles -->
+    <link href="styles.css" rel="stylesheet">
+</head>
+
+<body>
+    <div id="app">
+        <!-- Barra de navegación (solo si está logueado) -->
+        <p-menubar v-if="isLoggedIn" :model="menuItems">
+            <template #end>
+                <p-button label="Cerrar Sesión" icon="pi pi-power-off" class="p-button-text" @click="logout"></p-button>
+            </template>
+        </p-menubar>
+
+        <div class="p-m-4">
+            <!-- Login -->
+            <div v-if="!isLoggedIn" class="login-container">
+                <p-card style="width: 25rem">
+                    <template #title>
+                        Acceso al Sistema
+                    </template>
+                    <template #content>
+                        <div class="p-fluid">
+                            <div class="p-field p-mb-3">
+                                <label for="username" class="p-d-block p-mb-2">Usuario</label>
+                                <p-inputtext id="username" v-model="loginForm.username" @keyup.enter="login"></p-inputtext>
+                            </div>
+                            <div class="p-field p-mb-3">
+                                <label for="password" class="p-d-block p-mb-2">Contraseña</label>
+                                <p-inputtext id="password" v-model="loginForm.password" type="password" @keyup.enter="login"></p-inputtext>
+                            </div>
+                            <p-button label="Entrar" icon="pi pi-user" @click="login"></p-button>
+                            <p v-if="loginError" style="color: red; margin-top: 1rem;">{{ loginError }}</p>
+                        </div>
+                    </template>
+                </p-card>
+            </div>
+
+            <!-- Dashboard / Pantallas Principales -->
+            <div v-else>
+                <component :is="currentView" 
+                    :clients="clients" 
+                    :policies="policies"
+                    :payments="payments"
+                    :selected-client="selectedClient"
+                    @view-client="viewClient"
+                    @refresh-data="fetchAllData"
+                    @back-to-list="currentView = 'dashboard'"
+                    @go-to-reports="currentView = 'reports'">
+                </component>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dependencies -->
+    <script src="https://unpkg.com/vue@3.4.19/dist/vue.global.prod.js"></script>
+    <script src="https://unpkg.com/primevue@3.49.1/core/core.min.js"></script>
+    
+    <!-- PrimeVue Components -->
+    <script src="https://unpkg.com/primevue@3.49.1/menubar/menubar.min.js"></script>
+    <script src="https://unpkg.com/primevue@3.49.1/card/card.min.js"></script>
+    <script src="https://unpkg.com/primevue@3.49.1/inputtext/inputtext.min.js"></script>
+    <script src="https://unpkg.com/primevue@3.49.1/button/button.min.js"></script>
+    <script src="https://unpkg.com/primevue@3.49.1/datatable/datatable.min.js"></script>
+    <script src="https://unpkg.com/primevue@3.49.1/column/column.min.js"></script>
+    <script src="https://unpkg.com/primevue@3.49.1/dialog/dialog.min.js"></script>
+    <script src="https://unpkg.com/primevue@3.49.1/dropdown/dropdown.min.js"></script>
+    <script src="https://unpkg.com/primevue@3.49.1/calendar/calendar.min.js"></script>
+    <script src="https://unpkg.com/primevue@3.49.1/inputnumber/inputnumber.min.js"></script>
+    <script src="https://unpkg.com/primevue@3.49.1/tag/tag.min.js"></script>
+    <script src="https://unpkg.com/primevue@3.49.1/message/message.min.js"></script>
+    <script src="https://unpkg.com/primevue@3.49.1/ripple/ripple.min.js"></script>
+
+    <script src="app.js"></script>
+</body>
+
+</html>

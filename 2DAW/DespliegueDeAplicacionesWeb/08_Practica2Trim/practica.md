@@ -166,7 +166,7 @@ Ahora usamos el comando de phpmyadmin bind9 proftpd openssh-server python 3 -y p
 pero me sale command not found entonces vamos a activar el repositorio de universe para esto hacemos lo siguiente
 
 ```bash
-sudo asdd-apt-repository universe
+sudo add-apt-repository universe
 sudo apt update
 ```
 
@@ -189,6 +189,9 @@ como me estaba dando muchos problemas he decidido acceder por ssh desde mi termi
 Cogemos la ip publica de la maquina y al copiamos y ahora hacemos el ssh
 ![0.2 Crear una instancia EC2](./images/20.png)
 
+
+Tras loguearnos hacemos lo mismo y ya si nos permite
+
 ---
 
 ## 2️⃣ Configuración de Apache
@@ -198,6 +201,9 @@ Cogemos la ip publica de la maquina y al copiamos y ahora hacemos el ssh
 ```bash
 /var/www/html/
 ```
+
+![0.2 Entramos al directorio](./images/21.png)
+
 
 Cada cliente tendrá su propio **VirtualHost** y su propio `DocumentRoot`.
 
@@ -211,31 +217,149 @@ Asegurar MySQL:
 mysql_secure_installation
 ```
 
+![0.2 Configuramos MySQL](./images/22.png)
+
+
 Acceder a MySQL:
 
 ```bash
 mysql -u root -p
 ```
 
-phpMyAdmin quedará accesible desde:
+![0.2 ](./images/23.png)
+
+
+### ⚠️ Solución a error 404 Not Found en phpMyAdmin
+
+Si al intentar acceder recibes un mensaje de **Not Found**, sigue estos pasos para asegurar que Apache cargue la configuración de phpMyAdmin.
+
+**Paso 1: Verificar instalación**
+
+Primero comprueba que el archivo de configuración existe:
+
+```bash
+ls -l /etc/phpmyadmin/apache.conf
+```
+
+> **Nota:** Si dice "No such file or directory", reinstala phpMyAdmin con `sudo apt install --reinstall phpmyadmin` y asegúrate de marcar **apache2** con la barra espaciadora (aparecerá un asterisco `*`) antes de pulsar Enter.
+
+**Paso 2: Activar configuración (Método recomendado)**
+
+```bash
+# Forzamos el enlace simbólico por si existiera uno incorrecto
+sudo ln -sf /etc/phpmyadmin/apache.conf /etc/apache2/conf-available/phpmyadmin.conf
+
+# Activamos la configuración
+sudo a2enconf phpmyadmin
+
+# Recargamos Apache
+sudo systemctl reload apache2
+```
+
+**Paso 3: Método alternativo (si el anterior falla)**
+
+Si obtienes errores como `ERROR: Conf phpmyadmin does not exist!`, usa este método infalible:
+
+```bash
+# Añade la configuración directamente al final de apache2.conf
+echo "Include /etc/phpmyadmin/apache.conf" | sudo tee -a /etc/apache2/apache2.conf
+
+# Reinicia Apache
+sudo systemctl restart apache2
+```
+
+Ahora sí, **phpMyAdmin** quedará accesible desde:
 
 ```
 http://IP_SERVIDOR/phpmyadmin
 ```
 
+### 🔐 Crear usuario administrador para phpMyAdmin
+
+Por defecto, **MySQL** en Ubuntu no permite el acceso remoto al usuario `root` ni el inicio de sesión con contraseña en phpMyAdmin (usa `auth_socket`).
+
+Para poder acceder, debes crear un usuario administrador manualmente:
+
+```bash
+sudo mysql -u root
+```
+
+Dentro de la consola de MySQL, ejecuta:
+
+```sql
+CREATE USER 'admin'@'localhost' IDENTIFIED BY 'admin123';
+GRANT ALL PRIVILEGES ON *.* TO 'admin'@'localhost' WITH GRANT OPTION;
+FLUSH PRIVILEGES;
+EXIT;
+```
+
+![0.2 ](./images/24.png)
+
+
+Ahora podrás entrar en phpMyAdmin con:
+- **Usuario:** `admin`
+- **Contraseña:** `admin123`
+
+![phpmyadmin](./images/25.png)
+
+
 ---
 
 ## 4️⃣ Configuración del servidor DNS (Bind9)
 
-### Zona principal
+### ⚠️ Verificación previa (Importante)
 
-Archivo de zona:
+Es posible que **Bind9** no se haya instalado correctamente. Antes de continuar, verifica que la carpeta de configuración existe:
 
 ```bash
-/etc/bind/db.marisma.local
+ls -d /etc/bind
 ```
 
-Ejemplo:
+Si recibes un error como `ls: cannot access '/etc/bind': No such file or directory`, **debes instalarlo manualmente**:
+
+```bash
+sudo apt update
+sudo apt install bind9 bind9utils bind9-doc -y
+```
+
+### Añadir zona en `named.conf.local`
+
+Vamos a editar el archivo de configuración local de Bind9. **Nota:** No uses `cd` para abrir archivos, usa un editor de texto como `nano`.
+
+Ejecuta el siguiente comando:
+
+```bash
+sudo nano /etc/bind/named.conf.local
+```
+
+Añade el siguiente contenido al final del archivo:
+
+```bash
+zone "marisma.local" {
+    type master;
+    file "/etc/bind/db.marisma.local";
+};
+```
+
+![archivo etc/bind/named.conf.local](./images/26.png)
+
+
+> **Para guardar y salir en nano:**
+> 1. Pulsa `Ctrl + O` y luego `Enter` (para guardar).
+> 2. Pulsa `Ctrl + X` (para salir).
+
+### Zona principal
+
+Ahora vamos a crear el archivo de zona donde se definen los registros DNS.
+
+Ejecuta:
+
+```bash
+sudo cp /etc/bind/db.local /etc/bind/db.marisma.local
+sudo nano /etc/bind/db.marisma.local
+```
+
+Borra el contenido y pega lo siguiente (sustituyendo `IP_DE_TU_SERVIDOR` por la IP privada de tu EC2, ej: `172.31.xx.xx`):
 
 ```dns
 $TTL    604800
@@ -247,7 +371,23 @@ $TTL    604800
                          604800 )       ; Negative Cache TTL
 ;
 @       IN      NS      ns.marisma.local.
-ns      IN      A       192.168.1.10
+@       IN      A       IP_DE_TU_SERVIDOR
+ns      IN      A       IP_DE_TU_SERVIDOR
+www     IN      A       IP_DE_TU_SERVIDOR
+```
+
+
+![archivo etc/bind/db.marisma.local](./images/27.png)
+
+
+> **Para guardar y salir en nano:**
+> 1. Pulsa `Ctrl + O` y luego `Enter` (para guardar).
+> 2. Pulsa `Ctrl + X` (para salir).
+
+Reiniciar el servicio para aplicar cambios:
+
+```bash
+sudo systemctl restart bind9
 ```
 
 ---
@@ -278,12 +418,24 @@ Toda la gestión de clientes se realizará mediante **scripts en Bash**.
 
 ## 7️⃣ Script: Creación de subdominio DNS
 
+Este script automatiza la creación de subdominios en el archivo de zona de Bind9.
+
+**Pasos para crearlo:**
+
+1. Crear el archivo:
+   ```bash
+   nano crear_subdominio.sh
+   ```
+
+2. Pegar el siguiente contenido:
+
 ```bash
 #!/bin/bash
 # crear_subdominio.sh usuario ip
 
 if [ $# -le 1 ]; then
   echo "Error. Introduce subdominio e IP"
+  echo "Uso: ./crear_subdominio.sh <nombre_cliente> <ip>"
   exit 1
 fi
 
@@ -292,25 +444,61 @@ IP=$2
 SUB_DOMAIN="${USER}.marisma.local"
 ZONE_FILE="/etc/bind/db.marisma.local"
 
-mkdir -p /var/www/html/$USER
+# Crear directorio web si no existe
+if [ ! -d "/var/www/html/$USER" ]; then
+    mkdir -p /var/www/html/$USER
+    chown -R www-data:www-data /var/www/html/$USER
+    chmod -R 755 /var/www/html/$USER
+    echo "<h1>Bienvenido a $SUB_DOMAIN</h1>" > /var/www/html/$USER/index.html
+fi
 
+# Añadir registro DNS
 cat <<EOF >> $ZONE_FILE
-$ORIGIN ${SUB_DOMAIN}.
+\$ORIGIN ${SUB_DOMAIN}.
 @   IN  A   ${IP}
 www IN  A   ${IP}
 EOF
 
+# Reiniciar servicios
 systemctl reload bind9
 systemctl reload apache2
+
+echo "✅ Subdominio $SUB_DOMAIN creado y apuntando a $IP"
 ```
+
+3. Guardar y dar permisos de ejecución:
+   ```bash
+   chmod +x crear_subdominio.sh
+   ```
+
+4. **Ejecutar el script:**
+   ```bash
+   sudo ./crear_subdominio.sh cliente1 172.31.XX.XX
+   ```
 
 ---
 
 ## 8️⃣ Script: Creación de VirtualHost Apache
 
+Este script crea la configuración de Apache para que el subdominio cargue su propia carpeta.
+
+**Pasos para crearlo:**
+
+1. Crear el archivo:
+   ```bash
+   nano crear_vhost.sh
+   ```
+
+2. Pegar el siguiente contenido:
+
 ```bash
 #!/bin/bash
 # crear_vhost.sh usuario
+
+if [ -z "$1" ]; then
+    echo "Error: Debes indicar el nombre del usuario/cliente."
+    exit 1
+fi
 
 USER=$1
 CONF="${USER}.marisma.conf"
@@ -320,6 +508,7 @@ SUBDOMAIN="${USER}.marisma.local"
 cat <<EOF > /etc/apache2/sites-available/$CONF
 <VirtualHost *:80>
     ServerName www.$SUBDOMAIN
+    ServerAlias $SUBDOMAIN
     DocumentRoot $DOCROOT
 
     <Directory $DOCROOT>
@@ -332,29 +521,79 @@ cat <<EOF > /etc/apache2/sites-available/$CONF
 </VirtualHost>
 EOF
 
+# Habilitar sitio y recargar
 a2ensite $CONF
 systemctl reload apache2
+
+echo "✅ VirtualHost creado para $SUBDOMAIN en $DOCROOT"
 ```
+
+3. Guardar y dar permisos:
+   ```bash
+   chmod +x crear_vhost.sh
+   ```
+
+4. **Ejecutar el script:**
+   ```bash
+   sudo ./crear_vhost.sh cliente1
+   ```
+
+![script crear_vhost.sh](./images/28.png)
+
 
 ---
 
 ## 9️⃣ Script: Creación de base de datos MySQL
 
+Este script crea una base de datos y un usuario específico para el cliente.
+
+**Pasos para crearlo:**
+
+1. Crear el archivo:
+   ```bash
+   nano crear_bd.sh
+   ```
+
+2. Pegar el siguiente contenido:
+
 ```bash
 #!/bin/bash
 # crear_bd.sh usuario password
+
+if [ $# -le 1 ]; then
+  echo "Error. Introduce usuario y contraseña"
+  exit 1
+fi
 
 USER=$1
 PASS=$2
 DB="db_${USER}"
 
-mysql -u root -p <<EOF
-CREATE DATABASE $DB;
-CREATE USER '$USER'@'localhost' IDENTIFIED BY '$PASS';
+mysql -u root <<EOF
+CREATE DATABASE IF NOT EXISTS $DB;
+CREATE USER IF NOT EXISTS '$USER'@'localhost' IDENTIFIED BY '$PASS';
 GRANT ALL PRIVILEGES ON $DB.* TO '$USER'@'localhost';
 FLUSH PRIVILEGES;
 EOF
+
+echo "✅ Base de datos '$DB' y usuario '$USER' creados correctamente."
 ```
+
+> **Nota:** Si tu usuario root de MySQL tiene contraseña, cambia la línea `mysql -u root` por `mysql -u root -pTuContraseña`.
+
+3. Guardar y dar permisos:
+   ```bash
+   chmod +x crear_bd.sh
+   ```
+
+4. **Ejecutar el script:**
+   ```bash
+   sudo ./crear_bd.sh cliente1 Secreto123
+   ```
+
+![script crear_bd.sh](./images/29.png)
+
+
 
 ---
 
@@ -374,41 +613,125 @@ Permite ejecutar aplicaciones Python desde Apache.
 
 ## 🐳 (Opcional) Docker – Hasta +10% nota
 
-- Contenedor DNS (Bind9)
-- Contenedor Web (Apache + PHP)
-- Contenedor MySQL
+En esta sección desplegaremos una pila de servicios similar (Apache + PHP + MySQL + phpMyAdmin) utilizando **Docker y Docker Compose**.
 
-Configuración mediante:
+### 1️⃣ Instalación de Docker en Ubuntu
 
-- `docker-compose.yml`
-- Volúmenes persistentes
-- Scripts de inicialización
+Ejecuta los siguientes comandos para instalar Docker y Docker Compose:
 
----
+```bash
+# Actualizar repositorios
+sudo apt update
+sudo apt install apt-transport-https ca-certificates curl software-properties-common -y
 
-## 📂 Entrega del trabajo
+# Añadir clave GPG de Docker
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
 
-El repositorio debe incluir:
+# Añadir repositorio oficial
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 
-- README.md (este documento)
-- Scripts Bash
-- Presentación
+# Instalar Docker
+sudo apt update
+sudo apt install docker-ce docker-ce-cli containerd.io docker-compose-plugin -y
 
-Añadir como colaborador a:
-👉 https://github.com/jpritin
+# Añadir usuario actual al grupo docker (para no usar sudo siempre)
+sudo usermod -aG docker $USER
+newgrp docker
+```
 
-📅 **Fecha límite:** 30 de abril
+### 2️⃣ Estructura del proyecto
 
----
+Vamos a crear una carpeta para nuestro proyecto Docker:
 
-## 🎤 Exposición
+```bash
+mkdir -p ~/proyecto-docker/html
+cd ~/proyecto-docker
+```
 
-Durante la exposición se explicará:
+Crea un archivo `index.php` de prueba:
 
-- Arquitectura del sistema
-- Scripts utilizados
-- Configuración de servicios
-- Flujo completo de creación de un cliente
+```bash
+echo "<?php phpinfo(); ?>" > html/index.php
+```
+
+### 3️⃣ Fichero `docker-compose.yml`
+
+Crea el archivo de configuración:
+
+```bash
+nano docker-compose.yml
+```
+
+Pega el siguiente contenido:
+
+```yaml
+version: '3.8'
+
+services:
+  # Servidor Web (Apache + PHP)
+  web:
+    image: php:8.2-apache
+    container_name: mi_servidor_web
+    ports:
+      - "8080:80"
+    volumes:
+      - ./html:/var/www/html
+    depends_on:
+      - db
+    networks:
+      - lamp-network
+
+  # Base de Datos (MySQL)
+  db:
+    image: mysql:8.0
+    container_name: mi_base_datos
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: mi_base_datos
+      MYSQL_USER: usuario
+      MYSQL_PASSWORD: password
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - lamp-network
+
+  # phpMyAdmin (Gestión de BD)
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: mi_phpmyadmin
+    ports:
+      - "8081:80"
+    environment:
+      PMA_HOST: db
+      MYSQL_ROOT_PASSWORD: rootpassword
+    depends_on:
+      - db
+    networks:
+      - lamp-network
+
+volumes:
+  db_data:
+
+networks:
+  lamp-network:
+    driver: bridge
+```
+
+### 4️⃣ Despliegue de los contenedores
+
+Para iniciar todos los servicios en segundo plano:
+
+```bash
+docker compose up -d
+```
+
+![docker compose up -d](./images/30.png)
+
+Verifica que están corriendo:
+
+```bash
+docker compose ps
+```
 
 ---
 
