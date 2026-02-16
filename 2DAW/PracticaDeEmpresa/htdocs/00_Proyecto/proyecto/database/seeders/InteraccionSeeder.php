@@ -75,7 +75,7 @@ class InteraccionSeeder extends Seeder
                 'fecha' => now()->subDays(5),
                 'tipo' => 'OTROS',
                 'descripcion' => 'El alumno presenta problemas para configurar el servidor local debido a permisos de administrador.',
-                'estado' => 'CERRADA',
+                'estado' => 'RESUELTA',
             ]);
 
             Incidencia::create([
@@ -91,7 +91,7 @@ class InteraccionSeeder extends Seeder
                 'alumno_id' => $alumno->id,
                 'tutor_practicas_id' => $tutorPracticas ? $tutorPracticas->id : null,
                 'fecha' => now()->subDays(3),
-                'tipo' => 'FALTA_ASISTENCIA',
+                'tipo' => 'FALTA',
                 'descripcion' => 'El alumno no asistió por motivos médicos justificados.',
                 'estado' => 'RESUELTA',
             ]);
