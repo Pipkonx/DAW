@@ -80,6 +80,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     // Rutas de Carteras
+    Route::post('/portfolios/preview-import', [PortfolioController::class, 'previewImport'])->name('portfolios.preview-import');
     Route::post('/portfolios', [PortfolioController::class, 'store'])->name('portfolios.store');
     Route::put('/portfolios/{portfolio}', [PortfolioController::class, 'update'])->name('portfolios.update');
     Route::delete('/portfolios/{portfolio}', [PortfolioController::class, 'destroy'])->name('portfolios.destroy');
