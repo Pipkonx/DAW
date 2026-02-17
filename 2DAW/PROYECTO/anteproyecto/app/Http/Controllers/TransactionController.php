@@ -37,6 +37,10 @@ class TransactionController extends Controller
         $assetId = $request->input('asset_id'); // Filtro por activo
         $timeframe = $request->input('timeframe', '1M'); // 1D, 1M, 1Y, YTD, MAX
 
+        // Obtener fecha de la primera transacción para el filtro de exportación
+        $firstTransaction = Transaction::where('user_id', $user->id)->orderBy('date', 'asc')->first();
+        $minDate = $firstTransaction ? $firstTransaction->date->format('Y-m-d') : Carbon::now()->format('Y-m-d');
+
         // 1. Obtener Carteras
         $portfolios = Portfolio::where('user_id', $user->id)->get();
 
@@ -117,6 +121,7 @@ class TransactionController extends Controller
             'filters' => [
                 'timeframe' => $timeframe,
             ],
+            'minDate' => $minDate,
         ]);
     }
 
@@ -140,7 +145,17 @@ class TransactionController extends Controller
         }
         $assetIds = $assetsQuery->pluck('id');
 
-        $transactions = $this->getTransactionsQuery($user, $portfolioId, $assetId, $assetIds)->get();
+        $query = $this->getTransactionsQuery($user, $portfolioId, $assetId, $assetIds);
+
+        if ($request->filled('start_date')) {
+            $query->whereDate('date', '>=', $request->start_date);
+        }
+        
+        if ($request->filled('end_date')) {
+            $query->whereDate('date', '<=', $request->end_date);
+        }
+
+        $transactions = $query->get();
 
         if ($format === 'pdf') {
             $pdf = Pdf::loadView('exports.transactions', ['transactions' => $transactions, 'user' => $user]);

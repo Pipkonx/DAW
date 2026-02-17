@@ -24,7 +24,8 @@ const props = defineProps({
     transactions: Object,
     chart: Object,
     allocations: Object,
-    filters: Object
+    filters: Object,
+    minDate: String
 });
 
 // --- Estado Global ---
@@ -47,6 +48,12 @@ const showAssetModal = ref(false);
 const editingAsset = ref(null);
 const chartMode = ref('value'); // 'value' | 'performance'
 const assetFilter = ref(''); // Filtro para Posiciones Activas
+
+// Export Modal State
+const showExportModal = ref(false);
+const exportFormat = ref('pdf');
+const exportStartDate = ref('');
+const exportEndDate = ref('');
 
 const openCreatePortfolioModal = () => {
     editingPortfolio.value = null;
@@ -106,15 +113,24 @@ const groupedTransactions = computed(() => {
 });
 
 const exportHistory = (format) => {
-    // Redirigir a la ruta de exportación con los filtros actuales
+    exportFormat.value = format;
+    // Set default range: From first transaction (minDate) to Today
+    exportStartDate.value = props.minDate || new Date().toISOString().split('T')[0];
+    exportEndDate.value = new Date().toISOString().split('T')[0];
+    showExportModal.value = true;
+};
+
+const confirmExport = () => {
     const params = new URLSearchParams({
-        format: format,
+        format: exportFormat.value,
         portfolio_id: props.selectedPortfolioId !== 'aggregated' ? props.selectedPortfolioId : 'aggregated',
         asset_id: props.selectedAssetId || '',
-        timeframe: props.filters.timeframe || '1M'
+        start_date: exportStartDate.value,
+        end_date: exportEndDate.value
     });
     
     window.location.href = `${route('transactions.export')}?${params.toString()}`;
+    showExportModal.value = false;
 };
 
 
@@ -658,5 +674,50 @@ const openNewTransaction = () => {
             :asset="editingAsset"
             @close="showAssetModal = false"
         />
+
+        <!-- Modal de Exportación PDF/Excel -->
+        <Modal :show="showExportModal" @close="showExportModal = false">
+            <div class="p-6">
+                <h2 class="text-lg font-medium text-slate-900 dark:text-white mb-4">
+                    Exportar Historial ({{ exportFormat === 'pdf' ? 'PDF' : 'Excel' }})
+                </h2>
+                
+                <p class="text-sm text-slate-500 dark:text-slate-400 mb-6">
+                    Selecciona el rango de fechas para el reporte.
+                </p>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                    <div>
+                        <InputLabel for="start_date" value="Fecha Inicio" />
+                        <TextInput
+                            id="start_date"
+                            type="date"
+                            class="mt-1 block w-full"
+                            v-model="exportStartDate"
+                            required
+                        />
+                    </div>
+                    <div>
+                        <InputLabel for="end_date" value="Fecha Fin" />
+                        <TextInput
+                            id="end_date"
+                            type="date"
+                            class="mt-1 block w-full"
+                            v-model="exportEndDate"
+                            required
+                        />
+                    </div>
+                </div>
+
+                <div class="flex justify-end gap-3">
+                    <SecondaryButton @click="showExportModal = false">
+                        Cancelar
+                    </SecondaryButton>
+                    <PrimaryButton @click="confirmExport" :class="exportFormat === 'pdf' ? 'bg-red-600 hover:bg-red-700 focus:ring-red-500' : 'bg-emerald-600 hover:bg-emerald-700 focus:ring-emerald-500'">
+                        Descargar {{ exportFormat === 'pdf' ? 'PDF' : 'Excel' }}
+                    </PrimaryButton>
+                </div>
+            </div>
+        </Modal>
     </AuthenticatedLayout>
 </template>

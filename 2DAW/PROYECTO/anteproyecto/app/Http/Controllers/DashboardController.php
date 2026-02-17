@@ -155,7 +155,13 @@ class DashboardController extends Controller
             ->select('categories.name as category_name', DB::raw('SUM(transactions.amount) as total'))
             ->groupBy('categories.name')
             ->orderByDesc('total')
-            ->get();
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'category' => $item->category_name ?? 'Sin categoría',
+                    'total' => (float)$item->total,
+                ];
+            });
 
         // ---------------------------------------------------------
         // 3. PATRIMONIO TOTAL (NET WORTH)
@@ -272,10 +278,7 @@ class DashboardController extends Controller
             'expenses' => [
                 'monthlyTotal' => $monthlyExpense,
                 'monthlyIncome' => $monthlyIncome,
-                'byCategory' => [
-                    'labels' => $expensesByCategory->pluck('category_name'),
-                    'data' => $expensesByCategory->pluck('total'),
-                ],
+                'byCategory' => $expensesByCategory,
             ],
             'charts' => [
                 'netWorthLabels' => $chartLabels,
