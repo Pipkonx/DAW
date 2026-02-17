@@ -367,88 +367,66 @@ const openNewTransaction = () => {
         <div class="py-8 bg-slate-50 dark:bg-slate-900 min-h-screen">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
                 
-                <!-- 1. RESUMEN DE PATRIMONIO -->
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-                    <!-- Valor Total -->
-                    <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 flex flex-col justify-between h-32 relative overflow-hidden dark:bg-slate-800 dark:border-slate-700">
-                        <div class="absolute right-0 top-0 p-4 opacity-10">
-                            <svg class="w-24 h-24 text-blue-600 dark:text-blue-400" fill="currentColor" viewBox="0 0 20 20"><path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z"></path><path fill-rule="evenodd" d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z" clip-rule="evenodd"></path></svg>
-                        </div>
-                        <p class="text-sm font-medium text-slate-500 dark:text-slate-400 z-10">Valor Total</p>
-                        <h3 class="text-3xl font-bold text-slate-900 dark:text-white z-10">{{ formatCurrency(summary.current_value) }}</h3>
-                    </div>
-
-                    <!-- Retorno Total -->
-                    <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 flex flex-col justify-between h-32 dark:bg-slate-800 dark:border-slate-700">
-                        <p class="text-sm font-medium text-slate-500 dark:text-slate-400">Retorno Total</p>
-                        <div class="flex items-end gap-2">
-                            <h3 class="text-3xl font-bold" :class="summary.total_pl >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'">
-                                {{ summary.total_pl >= 0 ? '+' : '' }}{{ formatPercent(summary.total_pl_percent) }}
-                            </h3>
-                            <span class="text-sm font-medium mb-1" :class="summary.total_pl >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'">
-                                ({{ summary.total_pl >= 0 ? '+' : '' }}{{ formatCurrency(summary.total_pl) }})
-                            </span>
-                        </div>
-                    </div>
-
-                    <!-- Period PL (Rendimiento del Periodo) -->
-                    <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 flex flex-col justify-between h-32 dark:bg-slate-800 dark:border-slate-700">
-                        <p class="text-sm font-medium text-slate-500 dark:text-slate-400">Rendimiento ({{ filters.timeframe }})</p>
-                        <div class="flex items-end gap-2">
-                            <h3 class="text-3xl font-bold" :class="chart.period_pl_value >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'">
-                                {{ chart.period_pl_value >= 0 ? '+' : '' }}{{ formatPercent(chart.period_pl_percent) }}
-                            </h3>
-                             <span class="text-sm font-medium mb-1" :class="chart.period_pl_value >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'">
-                                ({{ chart.period_pl_value >= 0 ? '+' : '' }}{{ formatCurrency(chart.period_pl_value) }})
-                            </span>
-                        </div>
-                    </div>
-
-                     <!-- Capital Invertido -->
-                    <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 flex flex-col justify-between h-32 dark:bg-slate-800 dark:border-slate-700">
-                        <p class="text-sm font-medium text-slate-500 dark:text-slate-400">Capital Invertido</p>
-                        <h3 class="text-3xl font-bold text-slate-900 dark:text-white">{{ formatCurrency(summary.total_invested) }}</h3>
-                    </div>
-                </div>
+                <!-- 1. RESUMEN DE PATRIMONIO (Eliminado por solicitud de consolidación) -->
 
                 <!-- 2. GRÁFICOS PRINCIPALES -->
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     
                     <!-- Gráfico de Rendimiento (2/3) -->
                     <div class="lg:col-span-2 bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex flex-col h-[450px] dark:bg-slate-800 dark:border-slate-700">
-                        <div class="flex justify-between items-center mb-6">
-                            <h3 class="text-lg font-bold text-slate-800 dark:text-white">Evolución de Cartera</h3>
-                            
-                            <div class="flex items-center space-x-4">
-                                <!-- Chart Mode Toggle -->
-                                <div class="flex bg-slate-100 p-1 rounded-lg dark:bg-slate-700">
-                                    <button 
-                                        @click="chartMode = 'value'"
-                                        :class="chartMode === 'value' ? 'bg-white text-slate-900 shadow-sm dark:bg-slate-600 dark:text-white' : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200'"
-                                        class="px-3 py-1 text-xs font-medium rounded-md transition-all"
-                                    >
-                                        Valor
-                                    </button>
-                                    <button 
-                                        @click="chartMode = 'performance'"
-                                        :class="chartMode === 'performance' ? 'bg-white text-slate-900 shadow-sm dark:bg-slate-600 dark:text-white' : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200'"
-                                        class="px-3 py-1 text-xs font-medium rounded-md transition-all"
-                                    >
-                                        %
-                                    </button>
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+                            <!-- Left: Header & Value -->
+                            <div class="flex flex-col">
+                                <h3 class="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-1 dark:text-slate-400">Evolución de Cartera</h3>
+                                <div class="flex items-baseline gap-3 flex-wrap">
+                                    <h2 class="text-3xl font-bold text-slate-900 dark:text-white leading-none">
+                                        {{ formatCurrency(summary.current_value) }}
+                                    </h2>
+                                    <div class="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-opacity-10 dark:bg-opacity-20" 
+                                         :class="chart.period_pl_value >= 0 ? 'bg-emerald-50 text-emerald-600 dark:text-emerald-400 dark:bg-emerald-900' : 'bg-rose-50 text-rose-600 dark:text-rose-400 dark:bg-rose-900'">
+                                        <span class="text-sm font-bold">
+                                            {{ chart.period_pl_value >= 0 ? '+' : '' }}{{ formatPercent(chart.period_pl_percent) }}
+                                        </span>
+                                        <span class="text-xs font-medium opacity-90">
+                                            ({{ chart.period_pl_value >= 0 ? '+' : '' }}{{ formatCurrency(chart.period_pl_value) }})
+                                        </span>
+                                    </div>
                                 </div>
+                            </div>
+                            
+                            <!-- Right: Controls -->
+                            <div class="flex flex-col items-end gap-2">
+                                <div class="flex items-center gap-3">
+                                    <!-- Chart Mode Toggle -->
+                                    <div class="flex bg-slate-100 p-1 rounded-lg dark:bg-slate-700">
+                                        <button 
+                                            @click="chartMode = 'value'"
+                                            :class="chartMode === 'value' ? 'bg-white text-slate-900 shadow-sm dark:bg-slate-600 dark:text-white' : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200'"
+                                            class="px-3 py-1 text-xs font-medium rounded-md transition-all"
+                                        >
+                                            Valor
+                                        </button>
+                                        <button 
+                                            @click="chartMode = 'performance'"
+                                            :class="chartMode === 'performance' ? 'bg-white text-slate-900 shadow-sm dark:bg-slate-600 dark:text-white' : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200'"
+                                            class="px-3 py-1 text-xs font-medium rounded-md transition-all"
+                                        >
+                                            %
+                                        </button>
+                                    </div>
 
-                                <!-- Timeframe Toggles -->
-                                <div class="flex bg-slate-100 p-1 rounded-lg dark:bg-slate-700">
-                                    <button 
-                                        v-for="tf in ['1D', '1W', '1M', '3M', 'YTD', '1Y', 'MAX']" 
-                                        :key="tf"
-                                        @click="switchTimeframe(tf)"
-                                        :class="filters.timeframe === tf ? 'bg-white text-slate-900 shadow-sm dark:bg-slate-600 dark:text-white' : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200'"
-                                        class="px-3 py-1 text-xs font-medium rounded-md transition-all"
-                                    >
-                                        {{ tf }}
-                                    </button>
+                                    <!-- Timeframe Toggles -->
+                                    <div class="flex bg-slate-100 p-1 rounded-lg dark:bg-slate-700">
+                                        <button 
+                                            v-for="tf in ['1D', '1W', '1M', '3M', 'YTD', '1Y', 'MAX']" 
+                                            :key="tf"
+                                            @click="switchTimeframe(tf)"
+                                            :class="filters.timeframe === tf ? 'bg-white text-slate-900 shadow-sm dark:bg-slate-600 dark:text-white' : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200'"
+                                            class="px-3 py-1 text-xs font-medium rounded-md transition-all"
+                                        >
+                                            {{ tf }}
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
