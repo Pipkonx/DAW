@@ -35,7 +35,7 @@ class TransactionController extends Controller
         $user = Auth::user();
         $portfolioId = $request->input('portfolio_id', 'aggregated');
         $assetId = $request->input('asset_id'); // Filtro por activo
-        $timeframe = $request->input('timeframe', '1M'); // 1D, 1M, 1Y, YTD, MAX
+        $timeframe = $request->input('timeframe', 'MAX'); // 1D, 1M, 1Y, YTD, MAX
 
         // Obtener fecha de la primera transacción para el filtro de exportación
         $firstTransaction = Transaction::where('user_id', $user->id)->orderBy('date', 'asc')->first();
@@ -64,6 +64,16 @@ class TransactionController extends Controller
         }
         
         $assets = $assetsQuery->get();
+        
+        // Self-healing: Recalcular métricas si detectamos inconsistencias (ej: importaciones sin precio medio)
+        $assets->each(function ($asset) {
+            if ($asset->quantity > 0 && $asset->avg_buy_price == 0) {
+                 if ($asset->transactions()->exists()) {
+                     $asset->recalculateMetrics();
+                 }
+            }
+        });
+
         $assetIds = $assets->pluck('id');
 
         // 3. Calcular Totales (KPIs Principales)
@@ -270,16 +280,26 @@ class TransactionController extends Controller
     {
         // Definir rango de fechas
         $endDate = Carbon::now();
-        $startDate = match($timeframe) {
-            '1D' => Carbon::now()->subDay(),
-            '1W' => Carbon::now()->subWeek(),
-            '1M' => Carbon::now()->subMonth(),
-            '3M' => Carbon::now()->subMonths(3),
-            '1Y' => Carbon::now()->subYear(),
-            'YTD' => Carbon::now()->startOfYear(),
-            'MAX' => Carbon::create(2000, 1, 1),
-            default => Carbon::now()->subMonth(),
-        };
+        
+        if ($timeframe === 'MAX') {
+            // Find the earliest transaction for these assets
+            $firstTx = Transaction::where('user_id', $userId)
+                ->whereIn('asset_id', $assetIds)
+                ->orderBy('date', 'asc')
+                ->first();
+            
+            $startDate = $firstTx ? Carbon::parse($firstTx->date) : Carbon::now()->subMonth();
+        } else {
+            $startDate = match($timeframe) {
+                '1D' => Carbon::now()->subDay(),
+                '1W' => Carbon::now()->subWeek(),
+                '1M' => Carbon::now()->subMonth(),
+                '3M' => Carbon::now()->subMonths(3),
+                '1Y' => Carbon::now()->subYear(),
+                'YTD' => Carbon::now()->startOfYear(),
+                default => Carbon::now()->subMonth(),
+            };
+        }
 
         // Obtener transacciones en el rango para calcular flujo
         $allTransactions = Transaction::where('user_id', $userId)
@@ -737,30 +757,21 @@ class TransactionController extends Controller
         DB::beginTransaction();
 
         try {
-            // Revertir impacto en el activo si existe
-            if ($transaction->asset_id && $transaction->asset) {
-                $asset = $transaction->asset;
-                
-                if ($transaction->type === 'buy') {
-                    // Si era compra, restamos la cantidad
-                    $asset->quantity = max(0, $asset->quantity - $transaction->quantity);
-                    // No podemos recalcular avg_buy_price fácilmente sin historial completo
-                } elseif ($transaction->type === 'sell') {
-                    // Si era venta, devolvemos la cantidad
-                    $asset->quantity += $transaction->quantity;
-                }
-                
-                $asset->save();
-            }
-
             $assetId = $transaction->asset_id;
+            
+            // Eliminar la transacción primero
             $transaction->delete();
 
-            // Verificar si el activo quedó sin transacciones y eliminarlo si es así
+            // Si el activo existe, recalcular sus métricas
             if ($assetId) {
-                $remainingTransactions = Transaction::where('asset_id', $assetId)->count();
-                if ($remainingTransactions === 0) {
-                    Asset::where('id', $assetId)->delete();
+                $asset = Asset::find($assetId);
+                if ($asset) {
+                    // Verificar si quedan transacciones
+                    if ($asset->transactions()->count() === 0) {
+                        $asset->delete(); // Si no quedan, eliminar el activo (huérfano)
+                    } else {
+                        $asset->recalculateMetrics(); // Si quedan, recalcular precio medio y cantidad
+                    }
                 }
             }
 
@@ -793,28 +804,23 @@ class TransactionController extends Controller
             $assetIdsToCheck = [];
 
             foreach ($transactions as $transaction) {
-                // Revertir impacto en el activo
-                if ($transaction->asset_id && $transaction->asset) {
-                    $asset = $transaction->asset;
-                    
-                    if ($transaction->type === 'buy') {
-                        $asset->quantity = max(0, $asset->quantity - $transaction->quantity);
-                    } elseif ($transaction->type === 'sell') {
-                        $asset->quantity += $transaction->quantity;
-                    }
-                    
-                    $asset->save();
+                if ($transaction->asset_id) {
                     $assetIdsToCheck[] = $transaction->asset_id;
                 }
-                
                 $transaction->delete();
             }
 
-            // Verificar activos huérfanos
+            // Verificar activos huérfanos y recalcular métricas de los restantes
             $assetIdsToCheck = array_unique($assetIdsToCheck);
+            
             foreach ($assetIdsToCheck as $assetId) {
-                if (Transaction::where('asset_id', $assetId)->count() === 0) {
-                    Asset::where('id', $assetId)->delete();
+                $asset = Asset::find($assetId);
+                if ($asset) {
+                    if ($asset->transactions()->count() === 0) {
+                        $asset->delete();
+                    } else {
+                        $asset->recalculateMetrics();
+                    }
                 }
             }
 

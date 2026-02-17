@@ -159,21 +159,9 @@ class PortfolioController extends Controller
                     'description' => 'Importación automática' . (isset($txData['original_text']) ? ' | OCR' : ''),
                 ]);
 
-                // Update Asset Averages (simplified, would normally use a service)
-                // For now, we assume the user will recalculate or the next load will handle it
-                // Actually, we should probably update the asset's quantity/price here
-                // But let's keep it simple: just create transactions. 
-                // The Asset model doesn't auto-update on transaction create in this codebase yet?
-                // Let's check Asset model or Transaction observer. 
-                // Based on previous edits, I don't see observers.
-                // So I should probably update asset quantity manually here.
-                
-                if (in_array($txData['type'], ['buy', 'transfer_in', 'gift', 'reward'])) {
-                    $asset->quantity += $txData['quantity'];
-                } elseif (in_array($txData['type'], ['sell', 'transfer_out'])) {
-                    $asset->quantity -= $txData['quantity'];
-                }
-                $asset->save();
+                // Update Asset Averages using the new robust recalculation method
+                // This ensures avg_buy_price is correctly set even after bulk import
+                $asset->recalculateMetrics();
             }
         }
 

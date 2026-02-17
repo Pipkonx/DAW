@@ -112,7 +112,8 @@ const selectAsset = (asset) => {
 
 // Fetch Historical Price
 const fetchPrice = async () => {
-    if (!isTrade.value || (!form.asset_name && !form.market_asset_id) || !form.date) return;
+    // Remove strict isTrade check to allow fetching if user has selected asset/date
+    if ((!form.asset_name && !form.market_asset_id) || !form.date) return;
     
     isFetchingPrice.value = true;
     priceError.value = null;
@@ -156,6 +157,18 @@ const fetchPrice = async () => {
 // Watch for Date changes to re-fetch price
 watch(() => form.date, () => {
     if (form.asset_name) fetchPrice();
+});
+
+// Watch for Market Asset ID changes (selection)
+watch(() => form.market_asset_id, (val) => {
+    if (val) fetchPrice();
+});
+
+// Watch for Type changes (if switching to buy/sell)
+watch(() => form.type, (newType) => {
+    if (['buy', 'sell'].includes(newType) && form.asset_name && form.date) {
+        fetchPrice();
+    }
 });
 
 // Auto-calculation logic
@@ -500,6 +513,7 @@ const getTypeLabel = (type) => {
                                     v-model="form.asset_name"
                                     @input="showSuggestions = true"
                                     @focus="showSuggestions = true"
+                                    @blur="() => { setTimeout(() => showSuggestions = false, 200); fetchPrice(); }"
                                     placeholder="Ej: AAPL, Bitcoin, ES01..."
                                     autocomplete="off"
                                     :disabled="!!transaction?.id"

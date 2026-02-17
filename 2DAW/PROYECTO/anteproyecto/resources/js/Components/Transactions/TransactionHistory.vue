@@ -140,7 +140,7 @@ const onExport = (format) => {
                                     {{ tx.type === 'buy' ? 'Compra' : (tx.type === 'sell' ? 'Venta' : tx.type) }}
                                 </span>
                             </td>
-                            <td class="px-6 py-4 font-medium text-slate-900 dark:text-white">{{ tx.asset ? tx.asset.ticker : '-' }}</td>
+                            <td class="px-6 py-4 font-medium text-slate-900 dark:text-white">{{ tx.asset ? tx.asset.name : (tx.description || '-') }}</td>
                             <td class="px-6 py-4 text-right dark:text-slate-300">{{ parseFloat(tx.quantity) }}</td>
                             <td class="px-6 py-4 text-right dark:text-slate-300">{{ formatCurrency(tx.price_per_unit) }}</td>
                             <td class="px-6 py-4 text-right font-bold text-slate-800 dark:text-white">{{ formatCurrency(tx.amount) }}</td>

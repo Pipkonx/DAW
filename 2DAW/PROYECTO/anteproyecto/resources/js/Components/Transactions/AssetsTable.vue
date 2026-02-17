@@ -130,8 +130,7 @@ const onAddTransaction = () => {
                             />
                         </th>
                         <th class="px-6 py-4">Activo</th>
-                        <th class="px-6 py-4 text-right">Precio Actual</th>
-                        <th class="px-6 py-4 text-right">Valor Total</th>
+                        <th class="px-6 py-4 text-right">Precio / Valor</th>
                         <th class="px-6 py-4 text-right">Retorno</th>
                         <th class="px-6 py-4 text-right">Acciones</th>
                     </tr>
@@ -152,25 +151,26 @@ const onAddTransaction = () => {
                                     {{ asset.ticker ? asset.ticker.substring(0,2) : asset.name.substring(0,2) }}
                                 </div>
                                 <div>
-                                    <div class="font-bold text-slate-900 text-base dark:text-white">{{ asset.ticker }}</div>
-                                    <div class="text-sm text-slate-500 dark:text-slate-400">{{ asset.name }}</div>
+                                    <div class="font-bold text-slate-900 text-base dark:text-white">{{ asset.name }}</div>
+                                    <div class="text-sm text-slate-500 dark:text-slate-400 flex items-center gap-2">
+                                        <span v-if="asset.ticker && asset.ticker !== asset.isin" class="font-medium text-slate-700 dark:text-slate-300">{{ asset.ticker }}</span>
+                                        <span v-if="asset.isin" class="text-xs text-slate-400">{{ asset.isin }}</span>
+                                        <span class="text-xs bg-slate-100 dark:bg-slate-700 px-1.5 py-0.5 rounded text-slate-600 dark:text-slate-300">x{{ parseFloat(asset.quantity).toLocaleString('es-ES') }}</span>
+                                    </div>
                                 </div>
                             </div>
                         </td>
                         <td class="px-6 py-4 text-right">
                             <div class="font-medium text-slate-900 dark:text-white">{{ formatCurrency(asset.current_price) }}</div>
-                            <div class="text-xs text-slate-500 dark:text-slate-400">{{ parseFloat(asset.quantity) }} un.</div>
-                        </td>
-                        <td class="px-6 py-4 text-right">
-                            <span class="font-bold text-slate-900 text-base dark:text-white">{{ formatCurrency(asset.current_value) }}</span>
+                            <div class="text-sm text-slate-500 dark:text-slate-400 mt-0.5">{{ formatCurrency(asset.current_value) }}</div>
                         </td>
                         <td class="px-6 py-4 text-right">
                             <div class="flex flex-col items-end">
                                 <span :class="asset.profit_loss >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'" class="font-bold">
-                                    {{ asset.profit_loss >= 0 ? '+' : '' }}{{ formatPercent(asset.profit_loss_percentage) }}
+                                    {{ asset.profit_loss >= 0 ? '+' : '' }}{{ formatCurrency(asset.profit_loss) }}
                                 </span>
                                 <span :class="asset.profit_loss >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'" class="text-xs">
-                                    {{ asset.profit_loss >= 0 ? '+' : '' }}{{ formatCurrency(asset.profit_loss) }}
+                                    {{ asset.profit_loss >= 0 ? '+' : '' }}{{ formatPercent(asset.profit_loss_percentage) }}
                                 </span>
                             </div>
                         </td>
