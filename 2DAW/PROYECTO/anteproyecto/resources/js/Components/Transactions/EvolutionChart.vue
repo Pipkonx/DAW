@@ -23,8 +23,22 @@ const emit = defineEmits(['update:timeframe']);
 const chartMode = ref('value'); // 'value' | 'performance'
 const timeframes = ['1D', '1W', '1M', '3M', 'YTD', '1Y', 'MAX'];
 
+// Reactive state for hovering
+const hoveredValue = ref(null);
+const hoveredLabel = ref(null);
+const hoveredChange = ref(null);
+const hoveredChangePercent = ref(null);
+
 const switchTimeframe = (tf) => {
     emit('update:timeframe', tf);
+};
+
+// Reset hover state when mouse leaves chart area
+const resetHover = () => {
+    hoveredValue.value = null;
+    hoveredLabel.value = null;
+    hoveredChange.value = null;
+    hoveredChangePercent.value = null;
 };
 
 const performanceChartData = computed(() => {
@@ -32,12 +46,20 @@ const performanceChartData = computed(() => {
     let label = '';
     let color = '';
     let bgColor = '';
+    let borderColor = '';
 
     if (chartMode.value === 'value') {
         dataPoints = props.chart.data;
-        label = 'Valor de Cartera (Estimado)';
+        label = 'Valor de Cartera';
         color = '#3b82f6'; // Blue
-        bgColor = 'rgba(59, 130, 246, 0.1)';
+        bgColor = (ctx) => {
+            const canvas = ctx.chart.ctx;
+            const gradient = canvas.createLinearGradient(0, 0, 0, 400);
+            gradient.addColorStop(0, 'rgba(59, 130, 246, 0.2)');
+            gradient.addColorStop(1, 'rgba(59, 130, 246, 0)');
+            return gradient;
+        };
+        borderColor = '#3b82f6';
     } else {
         // Calculate Performance %: (Value - Invested) / Invested * 100
         dataPoints = props.chart.data.map((val, i) => {
@@ -47,7 +69,14 @@ const performanceChartData = computed(() => {
         });
         label = 'Rendimiento (%)';
         color = '#10b981'; // Emerald
-        bgColor = 'rgba(16, 185, 129, 0.1)';
+        bgColor = (ctx) => {
+            const canvas = ctx.chart.ctx;
+            const gradient = canvas.createLinearGradient(0, 0, 0, 400);
+            gradient.addColorStop(0, 'rgba(16, 185, 129, 0.2)');
+            gradient.addColorStop(1, 'rgba(16, 185, 129, 0)');
+            return gradient;
+        };
+        borderColor = '#10b981';
     }
 
     return {
@@ -55,12 +84,15 @@ const performanceChartData = computed(() => {
         datasets: [{
             label: label,
             data: dataPoints,
-            borderColor: color,
+            borderColor: borderColor,
             backgroundColor: bgColor,
+            borderWidth: 2,
             tension: 0.4,
             fill: true,
             pointRadius: 0,
-            pointHoverRadius: 6
+            pointHoverRadius: 6,
+            pointHoverBackgroundColor: '#ffffff',
+            pointHoverBorderWidth: 2,
         }]
     };
 });
@@ -71,15 +103,23 @@ const performanceChartOptions = computed(() => ({
     plugins: {
         legend: { display: false },
         tooltip: {
+            enabled: true,
             mode: 'index',
             intersect: false,
+            backgroundColor: 'rgba(255, 255, 255, 0.9)',
+            titleColor: '#1e293b',
+            titleFont: { size: 13, weight: '600' },
+            bodyColor: 'transparent',
+            borderColor: '#e2e8f0',
+            borderWidth: 1,
+            displayColors: false,
+            padding: 10,
             callbacks: {
-                label: (context) => {
-                    if (chartMode.value === 'value') {
-                        return formatCurrency(context.parsed.y);
-                    } else {
-                        return context.parsed.y.toFixed(2) + '%';
-                    }
+                title: (context) => {
+                    return context[0].label;
+                },
+                label: () => {
+                    return null; // Return null to completely remove the label line
                 }
             }
         }
@@ -104,31 +144,77 @@ const performanceChartOptions = computed(() => ({
         }
     },
     interaction: {
-        mode: 'nearest',
-        axis: 'x',
-        intersect: false
+        mode: 'index',
+        intersect: false,
+    },
+    onHover: (event, elements) => {
+        if (elements && elements.length > 0) {
+            const index = elements[0].index;
+            const label = props.chart.labels[index];
+            const value = props.chart.data[index]; // Use raw data for consistency
+            const invested = props.chart.invested ? props.chart.invested[index] : 0;
+            
+            hoveredLabel.value = label;
+            hoveredValue.value = value;
+            
+            // Calculate Total Profit/Loss at this point (Value - Invested)
+            // This shows the accumulated gain up to that moment
+            const profit = value - invested;
+            const profitPercent = invested !== 0 ? (profit / invested) * 100 : 0;
+            
+            hoveredChange.value = profit;
+            hoveredChangePercent.value = profitPercent;
+        } else {
+            // Optional: reset on mouse out of points, but keeping last value is often better UX
+            // resetHover(); 
+        }
     }
 }));
 </script>
 
 <template>
-    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex flex-col h-[450px] dark:bg-slate-800 dark:border-slate-700">
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex flex-col h-[450px] dark:bg-slate-800 dark:border-slate-700 overflow-hidden" @mouseleave="resetHover">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4 shrink-0">
             <!-- Left: Header & Value -->
-            <div class="flex flex-col">
-                <h3 class="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-1 dark:text-slate-400">Evolución de Cartera</h3>
-                <div class="flex items-baseline gap-3 flex-wrap">
-                    <h2 class="text-3xl font-bold text-slate-900 dark:text-white leading-none">
-                        {{ formatCurrency(summary.current_value) }}
-                    </h2>
-                    <div class="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-opacity-10 dark:bg-opacity-20" 
-                            :class="chart.period_pl_value >= 0 ? 'bg-emerald-50 text-emerald-600 dark:text-emerald-400 dark:bg-emerald-900' : 'bg-rose-50 text-rose-600 dark:text-rose-400 dark:bg-rose-900'">
-                        <span class="text-sm font-bold">
-                            {{ chart.period_pl_value >= 0 ? '+' : '' }}{{ formatPercent(chart.period_pl_percent) }}
-                        </span>
-                        <span class="text-xs font-medium opacity-90">
-                            ({{ chart.period_pl_value >= 0 ? '+' : '' }}{{ formatCurrency(chart.period_pl_value) }})
-                        </span>
+            <div class="flex flex-col justify-center">
+                <h3 class="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-2 dark:text-slate-400">
+                    Evolución de Cartera
+                </h3>
+                <div class="flex items-center gap-4 h-12">
+                    <div class="min-w-[200px]">
+                        <h2 class="text-3xl font-bold text-slate-900 dark:text-white leading-none">
+                            <span v-if="hoveredValue !== null">
+                                {{ chartMode === 'value' ? formatCurrency(hoveredValue) : formatPercent(hoveredValue) }}
+                            </span>
+                            <span v-else>
+                                {{ formatCurrency(summary.current_value) }}
+                            </span>
+                        </h2>
+                    </div>
+                    
+                    <!-- Change Indicator (Vertical Stack) -->
+                    <div class="flex flex-col justify-center leading-none">
+                         <!-- Hover State -->
+                         <template v-if="hoveredValue !== null">
+                            <span class="text-sm font-bold mb-1" 
+                                :class="hoveredChange >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'">
+                                {{ hoveredChange >= 0 ? '+' : '' }}{{ formatCurrency(hoveredChange) }}
+                            </span>
+                            <span class="text-xs font-medium text-slate-500 dark:text-slate-400">
+                                {{ hoveredChange >= 0 ? '+' : '' }}{{ formatPercent(hoveredChangePercent) }}
+                            </span>
+                         </template>
+
+                         <!-- Default State -->
+                         <template v-else>
+                            <span class="text-sm font-bold mb-1"
+                                :class="chart.period_pl_value >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'">
+                                {{ chart.period_pl_value >= 0 ? '+' : '' }}{{ formatCurrency(chart.period_pl_value) }}
+                            </span>
+                            <span class="text-xs font-medium text-slate-500 dark:text-slate-400">
+                                {{ chart.period_pl_value >= 0 ? '+' : '' }}{{ formatPercent(chart.period_pl_percent) }}
+                            </span>
+                         </template>
                     </div>
                 </div>
             </div>
@@ -170,7 +256,7 @@ const performanceChartOptions = computed(() => ({
             </div>
         </div>
 
-        <div class="flex-grow relative w-full">
+        <div class="flex-grow relative w-full min-h-0">
             <LineChart :data="performanceChartData" :options="performanceChartOptions" />
         </div>
     </div>
