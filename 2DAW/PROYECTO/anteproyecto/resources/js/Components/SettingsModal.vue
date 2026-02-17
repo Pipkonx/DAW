@@ -4,6 +4,7 @@ import SecondaryButton from '@/Components/SecondaryButton.vue';
 import DangerButton from '@/Components/DangerButton.vue';
 import { useForm, router } from '@inertiajs/vue3';
 import { ref } from 'vue';
+import { formatCurrency } from '@/Utils/formatting';
 
 const props = defineProps({
     show: Boolean,
@@ -78,7 +79,11 @@ const close = () => {
                         <div v-for="portfolio in portfolios" :key="portfolio.id" class="flex justify-between items-center p-3 bg-white dark:bg-slate-700/50 border border-slate-200 dark:border-slate-700 rounded-lg shadow-sm hover:border-blue-300 dark:hover:border-blue-500 transition-colors">
                             <div>
                                 <h4 class="font-medium text-slate-800 dark:text-slate-200">{{ portfolio.name }}</h4>
-                                <p class="text-xs text-slate-500 dark:text-slate-400">{{ portfolio.assets_count || 0 }} activos</p>
+                                <div class="flex items-center space-x-2 text-xs text-slate-500 dark:text-slate-400">
+                                    <span>{{ portfolio.assets_count || 0 }} activos</span>
+                                    <span>•</span>
+                                    <span class="font-medium text-slate-700 dark:text-slate-300">{{ formatCurrency(portfolio.total_value || 0) }}</span>
+                                </div>
                             </div>
                             <div class="flex items-center space-x-2">
                                 <DangerButton @click="deletePortfolio(portfolio)" class="px-3 py-1 text-xs">

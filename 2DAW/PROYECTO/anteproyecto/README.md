@@ -34,6 +34,7 @@
 - **Interfaz Limpia:** Estilo minimalista con Tailwind CSS, sombras suaves y tipografía clara.
 - **Modo Educativo:** Tooltips explicativos (`InfoTooltip`) en cada métrica para ayudar a entender conceptos financieros.
 - **Responsive:** Funciona perfectamente en escritorio, tablet y móvil.
+- **Modo Oscuro:** Soporte completo para tema oscuro en toda la aplicación.
 
 ---
 
@@ -46,6 +47,32 @@
 - **Base de Datos:** MySQL / PostgreSQL
 - **Gráficos:** [Chart.js](https://www.chartjs.org) (vía vue-chartjs)
 - **Autenticación:** Laravel Breeze + Socialite
+
+---
+
+## 🏗️ Arquitectura y Refactorización
+
+El proyecto ha sido refactorizado siguiendo principios de **Clean Code** y **Arquitectura de Componentes** para asegurar escalabilidad y mantenibilidad.
+
+### Estructura de Componentes
+Se ha adoptado una estrategia de "Componentes Atómicos" y "Separación de Responsabilidades":
+
+- **Orquestadores (Pages):** Las vistas principales (ej: `Transactions/Index.vue`) actúan solo como orquestadores, gestionando el estado global y la comunicación entre componentes hijos, sin contener lógica de presentación compleja.
+- **Componentes de Dominio:** Se han creado componentes específicos por funcionalidad en directorios organizados (ej: `Components/Transactions/`).
+  - `PortfolioHeader`: Gestión de carteras.
+  - `EvolutionChart` y `AllocationChart`: Lógica de visualización de datos.
+  - `AssetsTable`: Listado y filtrado de activos.
+  - `TransactionHistory`: Historial de operaciones con paginación.
+  - `ExportModal`: Lógica reutilizable de exportación.
+
+### Utilidades Compartidas
+- **Formatting Utils:** Se ha centralizado la lógica de formato (moneda, porcentajes, fechas) en `Utils/formatting.js` para garantizar consistencia en toda la app y facilitar la localización.
+
+### Buenas Prácticas Aplicadas
+- **Single Responsibility Principle:** Cada componente tiene una única responsabilidad.
+- **DRY (Don't Repeat Yourself):** Eliminación de código duplicado mediante extracción de componentes y utilidades.
+- **Composition API:** Uso moderno de Vue 3 con `<script setup>` para una lógica más limpia.
+- **Prop Validation:** Definición estricta de `props` para asegurar la integridad de los datos.
 
 ---
 
@@ -99,41 +126,22 @@ Ejecuta las migraciones y carga datos de prueba (muy recomendado para ver todas 
 php artisan migrate --seed
 ```
 
-### 5. Ejecutar
-Inicia los servidores de desarrollo:
+### 5. Compilar Assets y Servir
+En dos terminales separadas:
 ```bash
 # Terminal 1: Servidor Laravel
 php artisan serve
 
-# Terminal 2: Compilador Vite (Frontend)
+# Terminal 2: Compilación de Assets (Vite)
 npm run dev
 ```
-Accede a `http://localhost:8000`.
 
 ---
 
-## 🎨 Personalización de Estilos
+## 🤝 Contribución
 
-Los estilos están centralizados en `resources/css/app.css` usando capas de Tailwind.
-
-- **Colores:** Se usa la paleta `slate` (grises), `blue` (primario), `emerald` (positivo) y `rose` (negativo). Puedes cambiarlos en `tailwind.config.js`.
-- **Componentes:** Clases como `.btn-primary`, `.card`, `.input-field` están definidas en `app.css` para fácil reutilización.
-
----
-
-## 📂 Estructura del Proyecto
-
-- `app/Models`: Modelos `Transaction` (ingresos/gastos) y `Asset` (inversiones).
-- `app/Http/Controllers/DashboardController`: Lógica principal de cálculo de KPIs y gráficos.
-- `resources/js/Pages`: Vistas Vue (Dashboard, Auth, Legal).
-- `resources/js/Components`: Componentes reutilizables (`TransactionModal`, `InfoTooltip`, `Charts/*`).
-
----
-
-## 📄 Licencia
-
-Este proyecto es de código abierto bajo la licencia [MIT](https://opensource.org/licenses/MIT).
-
----
-
-*Desarrollado con ❤️ para ayudarte a dominar tus finanzas.*
+1. Haz un Fork del proyecto
+2. Crea una rama para tu Feature (`git checkout -b feature/AmazingFeature`)
+3. Haz Commit de tus cambios (`git commit -m 'Add some AmazingFeature'`)
+4. Haz Push a la rama (`git push origin feature/AmazingFeature`)
+5. Abre un Pull Request

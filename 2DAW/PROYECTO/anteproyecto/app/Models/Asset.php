@@ -28,6 +28,13 @@ class Asset extends Model
         'color',
     ];
 
+    protected $appends = [
+        'current_value',
+        'total_invested',
+        'profit_loss',
+        'profit_loss_percentage',
+    ];
+
     public function user()
     {
         return $this->belongsTo(User::class);

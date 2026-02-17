@@ -7,6 +7,7 @@ import TextInput from '@/Components/TextInput.vue';
 import InputError from '@/Components/InputError.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
+import DangerButton from '@/Components/DangerButton.vue';
 import axios from 'axios';
 import _ from 'lodash'; // Lodash for debounce
 
@@ -51,6 +52,7 @@ const showSuggestions = ref(false);
 const isFetchingPrice = ref(false);
 const priceError = ref(null);
 const priceSource = ref(null);
+const lastEditedField = ref(null);
 
 // Debounced Search Function
 const performSearch = _.debounce(async (query) => {
@@ -124,6 +126,12 @@ const fetchPrice = async () => {
             if (response.data.currency) {
                 form.currency_code = response.data.currency;
             }
+            // Recalculate based on new price if we have quantity or amount
+            if (form.quantity && lastEditedField.value !== 'amount') {
+                 form.amount = parseFloat((form.quantity * form.price_per_unit).toFixed(2));
+            } else if (form.amount && lastEditedField.value !== 'quantity') {
+                 form.quantity = parseFloat((form.amount / form.price_per_unit).toFixed(8));
+            }
         }
     } catch (error) {
         console.error('Price fetch error:', error);
@@ -136,6 +144,60 @@ const fetchPrice = async () => {
 // Watch for Date changes to re-fetch price
 watch(() => form.date, () => {
     if (form.asset_name) fetchPrice();
+});
+
+// Auto-calculation logic
+const calculateFromAmount = () => {
+    if (!form.price_per_unit || form.price_per_unit <= 0) return;
+    if (!form.amount) {
+        form.quantity = '';
+        return;
+    }
+    // Amount / Price = Quantity
+    // Use more precision for crypto/stocks
+    form.quantity = parseFloat((form.amount / form.price_per_unit).toFixed(8));
+};
+
+const calculateFromQuantity = () => {
+    if (!form.price_per_unit || form.price_per_unit <= 0) return;
+    if (!form.quantity) {
+        form.amount = '';
+        return;
+    }
+    // Quantity * Price = Amount
+    // Standard currency rounding
+    form.amount = parseFloat((form.quantity * form.price_per_unit).toFixed(2));
+};
+
+const calculateFromPrice = () => {
+    // If price changes manually, update the field that wasn't last edited by user
+    if (!form.price_per_unit) return;
+    
+    if (lastEditedField.value === 'quantity' && form.quantity) {
+        calculateFromQuantity();
+    } else if (lastEditedField.value === 'amount' && form.amount) {
+        calculateFromAmount();
+    } else if (form.quantity) {
+        // Default to updating amount if no clear preference
+        calculateFromQuantity();
+    }
+};
+
+// Watchers for auto-calculation
+watch(() => form.amount, (val) => {
+    if (lastEditedField.value === 'amount') {
+        calculateFromAmount();
+    }
+});
+
+watch(() => form.quantity, (val) => {
+    if (lastEditedField.value === 'quantity') {
+        calculateFromQuantity();
+    }
+});
+
+watch(() => form.price_per_unit, (val) => {
+    calculateFromPrice();
 });
 
 // Category Logic (Existing)
@@ -215,6 +277,18 @@ const submit = () => {
     form[method](route(routeName, routeParams), {
         onSuccess: () => {
             form.reset();
+            emit('close');
+        },
+    });
+};
+
+const deleteTransaction = () => {
+    if (!confirm('¿Estás seguro de que deseas eliminar esta transacción? Esta acción afectará a los saldos y no se puede deshacer.')) {
+        return;
+    }
+
+    form.delete(route('transactions.destroy', props.transaction.id), {
+        onSuccess: () => {
             emit('close');
         },
     });
@@ -338,6 +412,8 @@ watch(() => props.allowedTypes, (newTypes) => {
                             v-model="form.amount"
                             required
                             placeholder="0.00"
+                            @focus="lastEditedField = 'amount'"
+                            @input="lastEditedField = 'amount'"
                         />
                         <InputError :message="form.errors.amount" class="mt-2" />
                     </div>
@@ -437,6 +513,8 @@ watch(() => props.allowedTypes, (newTypes) => {
                                 step="any"
                                 class="mt-1 block w-full dark:bg-slate-700 dark:border-slate-600 dark:text-white"
                                 v-model="form.quantity"
+                                @focus="lastEditedField = 'quantity'"
+                                @input="lastEditedField = 'quantity'"
                             />
                         </div>
                         <div>
@@ -541,6 +619,16 @@ watch(() => props.allowedTypes, (newTypes) => {
 
                 <!-- Botones de Acción -->
                 <div class="flex justify-end space-x-3 border-t dark:border-gray-700 pt-4 mt-6">
+                    <DangerButton 
+                        v-if="transaction?.id" 
+                        type="button" 
+                        @click="deleteTransaction" 
+                        class="mr-auto"
+                        :disabled="form.processing"
+                    >
+                        Eliminar
+                    </DangerButton>
+
                     <SecondaryButton @click="close" class="dark:bg-gray-700 dark:text-white dark:border-gray-600 dark:hover:bg-gray-600">
                         Cancelar
                     </SecondaryButton>

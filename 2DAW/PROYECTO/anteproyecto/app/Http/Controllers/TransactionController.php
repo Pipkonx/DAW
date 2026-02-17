@@ -42,7 +42,19 @@ class TransactionController extends Controller
         $minDate = $firstTransaction ? $firstTransaction->date->format('Y-m-d') : Carbon::now()->format('Y-m-d');
 
         // 1. Obtener Carteras
-        $portfolios = Portfolio::where('user_id', $user->id)->get();
+        $portfolios = Portfolio::where('user_id', $user->id)
+            ->withCount('assets')
+            ->with(['assets']) // Cargar activos para calcular el valor total
+            ->get();
+            
+        // Calcular valor total de cada cartera
+        $portfolios->each(function ($portfolio) {
+            $portfolio->total_value = $portfolio->assets->sum(function ($asset) {
+                return $asset->quantity * ($asset->current_price ?? $asset->avg_buy_price);
+            });
+            // Ocultar la relación assets para no enviar datos innecesarios
+            $portfolio->unsetRelation('assets');
+        });
 
         // 2. Filtrar Activos según Cartera Seleccionada
         $assetsQuery = Asset::where('user_id', $user->id);
@@ -627,6 +639,45 @@ class TransactionController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             return redirect()->back()->withErrors(['error' => 'Error al actualizar: ' . $e->getMessage()]);
+        }
+    }
+
+    /**
+     * Elimina una transacción.
+     */
+    public function destroy(Transaction $transaction)
+    {
+        if ($transaction->user_id !== Auth::id()) {
+            abort(403);
+        }
+
+        DB::beginTransaction();
+
+        try {
+            // Revertir impacto en el activo si existe
+            if ($transaction->asset_id && $transaction->asset) {
+                $asset = $transaction->asset;
+                
+                if ($transaction->type === 'buy') {
+                    // Si era compra, restamos la cantidad
+                    $asset->quantity = max(0, $asset->quantity - $transaction->quantity);
+                    // No podemos recalcular avg_buy_price fácilmente sin historial completo
+                } elseif ($transaction->type === 'sell') {
+                    // Si era venta, devolvemos la cantidad
+                    $asset->quantity += $transaction->quantity;
+                }
+                
+                $asset->save();
+            }
+
+            $transaction->delete();
+
+            DB::commit();
+            return redirect()->back()->with('success', 'Transacción eliminada.');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->withErrors(['error' => 'Error al eliminar: ' . $e->getMessage()]);
         }
     }
 }

@@ -58,6 +58,10 @@ Route::put('/transactions/{transaction}', [TransactionController::class, 'update
     ->middleware(['auth'])
     ->name('transactions.update');
 
+Route::delete('/transactions/{transaction}', [TransactionController::class, 'destroy'])
+    ->middleware(['auth'])
+    ->name('transactions.destroy');
+
 // Análisis de Gastos
 Route::get('/expenses', [ExpenseController::class, 'index'])
     ->middleware(['auth', 'verified'])

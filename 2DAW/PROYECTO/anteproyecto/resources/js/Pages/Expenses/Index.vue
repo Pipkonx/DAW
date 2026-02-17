@@ -9,6 +9,7 @@ import DoughnutChart from '@/Components/Charts/DoughnutChart.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
 import InfoTooltip from '@/Components/InfoTooltip.vue';
+import { formatCurrency } from '@/Utils/formatting';
 
 const props = defineProps({
     filters: Object,
@@ -28,11 +29,6 @@ const dateFilters = ref({
 // Estado para Modal
 const showModal = ref(false);
 const editingTransaction = ref(null);
-
-// Formateo de Moneda
-const formatCurrency = (value) => {
-    return new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(value);
-};
 
 // Aplicar filtros automáticamente al cambiar fechas
 const applyFilters = () => {
