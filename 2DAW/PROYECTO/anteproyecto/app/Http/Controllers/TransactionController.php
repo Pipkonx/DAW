@@ -10,9 +10,21 @@ use App\Models\BankAccount;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Inertia\Inertia;
+
+use App\Models\MarketAsset;
+use App\Services\MarketDataService;
 
 class TransactionController extends Controller
 {
+    protected $marketDataService;
+
+    public function __construct(MarketDataService $marketDataService)
+    {
+        $this->marketDataService = $marketDataService;
+    }
+
     /**
      * Muestra la vista de Patrimonio Neto (Antes Transacciones).
      *
@@ -34,12 +46,6 @@ class TransactionController extends Controller
         if ($portfolioId !== 'aggregated') {
             $assetsQuery->where('portfolio_id', $portfolioId);
         }
-        
-        // Si hay filtro de activo, solo mostramos ese activo en la lista (o todos si queremos ver el contexto, pero filtramos historia)
-        // El usuario dijo "si le da que el historial de operaciones se filtre solo por ese activo".
-        // Mantengamos la lista de activos visible según la cartera, para que pueda cambiar de activo.
-        // PERO si el usuario quiere editar, tal vez quiera ver solo ese.
-        // Vamos a mantener la lista de activos completa de la cartera, y solo filtrar transacciones.
         
         $assets = $assetsQuery->get();
         $assetIds = $assets->pluck('id');
@@ -68,31 +74,9 @@ class TransactionController extends Controller
         ];
 
         // 4. Obtener Transacciones de Inversión (Historial)
-        // Incluimos transacciones vinculadas a carteras (ej: depósitos/retiros/comisiones) 
-        // y transacciones de activos (compra/venta).
-        $transactionsQuery = Transaction::where('user_id', $user->id)
-            ->with('asset');
+        $transactionsQuery = $this->getTransactionsQuery($user, $portfolioId, $assetId, $assetIds);
 
-        // Aplicar filtro de activo si existe
-        if ($assetId) {
-            $transactionsQuery->where('asset_id', $assetId);
-        } elseif ($portfolioId !== 'aggregated') {
-            $transactionsQuery->where(function($q) use ($portfolioId, $assetIds) {
-                $q->where('portfolio_id', $portfolioId)
-                  ->orWhereIn('asset_id', $assetIds);
-            });
-        } else {
-            // En vista agregada, mostramos todo lo relacionado con inversiones/carteras
-            $transactionsQuery->where(function($q) use ($assetIds) {
-                $q->whereNotNull('portfolio_id')
-                  ->orWhereIn('asset_id', $assetIds)
-                  ->orWhereIn('type', ['buy', 'sell', 'dividend', 'reward', 'gift']);
-            });
-        }
-
-        $transactions = $transactionsQuery->orderBy('date', 'desc')
-            ->orderBy('created_at', 'desc')
-            ->paginate(15)
+        $transactions = $transactionsQuery->paginate(15)
             ->withQueryString();
 
         // 5. Generar Datos para Gráfica de Rendimiento (Simulada basada en flujos de caja)
@@ -115,17 +99,8 @@ class TransactionController extends Controller
             'asset' => $assets->map(fn($a) => ['label' => $a->ticker ?? $a->name, 'value' => $a->current_value, 'color' => $a->color]),
         ];
 
-        // 7. Obtener Categorías para el Modal
-        $categories = \App\Models\Category::where('user_id', $user->id)
-            ->with(['children' => function($q) {
-                $q->orderBy('usage_count', 'desc');
-            }])
-            ->orderBy('usage_count', 'desc')
-            ->get();
-
-        return inertia('Transactions/Index', [
+        return Inertia::render('Transactions/Index', [
             'portfolios' => $portfolios,
-            'categories' => $categories,
             'selectedPortfolioId' => $portfolioId,
             'selectedAssetId' => $assetId,
             'summary' => $summary,
@@ -143,6 +118,107 @@ class TransactionController extends Controller
                 'timeframe' => $timeframe,
             ],
         ]);
+    }
+
+    /**
+     * Exporta el historial de transacciones.
+     *
+     * @param Request $request
+     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse|\Illuminate\Http\Response
+     */
+    public function export(Request $request)
+    {
+        $user = Auth::user();
+        $format = $request->input('format', 'csv');
+        $portfolioId = $request->input('portfolio_id', 'aggregated');
+        $assetId = $request->input('asset_id');
+
+        // Reconstruir assetIds necesario para el filtro
+        $assetsQuery = Asset::where('user_id', $user->id);
+        if ($portfolioId !== 'aggregated') {
+            $assetsQuery->where('portfolio_id', $portfolioId);
+        }
+        $assetIds = $assetsQuery->pluck('id');
+
+        $transactions = $this->getTransactionsQuery($user, $portfolioId, $assetId, $assetIds)->get();
+
+        if ($format === 'pdf') {
+            $pdf = Pdf::loadView('exports.transactions', ['transactions' => $transactions, 'user' => $user]);
+            return $pdf->download('historial-transacciones.pdf');
+        } else {
+            // CSV Export
+            $headers = [
+                "Content-type" => "text/csv",
+                "Content-Disposition" => "attachment; filename=historial-transacciones.csv",
+                "Pragma" => "no-cache",
+                "Cache-Control" => "must-revalidate, post-check=0, pre-check=0",
+                "Expires" => "0"
+            ];
+
+            $callback = function() use ($transactions) {
+                $file = fopen('php://output', 'w');
+                
+                // BOM para Excel (UTF-8)
+                fputs($file, "\xEF\xBB\xBF");
+                
+                // Cabeceras (usando punto y coma para Excel español)
+                fputcsv($file, ['Fecha', 'Tipo', 'Activo / Concepto', 'Cantidad', 'Precio', 'Total', 'Descripción'], ';');
+
+                foreach ($transactions as $tx) {
+                    $assetName = $tx->asset ? ($tx->asset->ticker . ' - ' . $tx->asset->name) : $tx->description;
+                    
+                    // Mapeo de tipos
+                    $typeName = match($tx->type) {
+                        'buy' => 'Compra',
+                        'sell' => 'Venta',
+                        'dividend' => 'Dividendo',
+                        'reward' => 'Recompensa',
+                        'gift' => 'Regalo',
+                        'income' => 'Ingreso',
+                        'expense' => 'Gasto',
+                        default => ucfirst($tx->type)
+                    };
+
+                    fputcsv($file, [
+                        $tx->date->format('d/m/Y'),
+                        $typeName,
+                        $assetName,
+                        number_format($tx->quantity, 8, ',', ''), // Formato español
+                        number_format($tx->price_per_unit, 4, ',', ''),
+                        number_format($tx->amount, 2, ',', ''),
+                        $tx->description
+                    ], ';');
+                }
+                fclose($file);
+            };
+
+            return response()->stream($callback, 200, $headers);
+        }
+    }
+
+    /**
+     * Construye la consulta de transacciones reutilizable.
+     */
+    private function getTransactionsQuery($user, $portfolioId, $assetId, $assetIds)
+    {
+        $query = Transaction::where('user_id', $user->id)->with(['asset', 'portfolio']);
+
+        if ($assetId) {
+            $query->where('asset_id', $assetId);
+        } elseif ($portfolioId !== 'aggregated') {
+            $query->where(function($q) use ($portfolioId, $assetIds) {
+                $q->where('portfolio_id', $portfolioId)
+                  ->orWhereIn('asset_id', $assetIds);
+            });
+        } else {
+            $query->where(function($q) use ($assetIds) {
+                $q->whereNotNull('portfolio_id')
+                  ->orWhereIn('asset_id', $assetIds)
+                  ->orWhereIn('type', ['buy', 'sell', 'dividend', 'reward', 'gift']);
+            });
+        }
+
+        return $query->orderBy('date', 'desc')->orderBy('created_at', 'desc');
     }
 
     private function getAllocation($assets, $field)
@@ -294,7 +370,10 @@ class TransactionController extends Controller
             'description' => 'nullable|string',
             // Campos específicos para Inversiones
             'asset_name' => 'nullable|string',
+            'asset_full_name' => 'nullable|string',
             'asset_type' => 'nullable|string|in:stock,crypto,fund,etf,bond,real_estate,other',
+            'market_asset_id' => 'nullable|exists:market_assets,id',
+            'isin' => 'nullable|string',
             'quantity' => 'nullable|numeric|min:0',
             'price_per_unit' => 'nullable|numeric|min:0',
             'portfolio_id' => 'nullable|exists:portfolios,id',
@@ -323,23 +402,68 @@ class TransactionController extends Controller
                     throw new \Exception("El nombre del activo es obligatorio para inversiones.");
                 }
 
+                // Sincronizar o encontrar MarketAsset global si no viene ID
+                $marketAssetId = $validated['market_asset_id'] ?? null;
+                
+                if (empty($marketAssetId)) {
+                    try {
+                        $marketAsset = $this->marketDataService->syncAsset(
+                            $validated['asset_name'], 
+                            $validated['asset_type'] ?? 'stock', 
+                            $validated['asset_full_name'] ?? $validated['asset_name'],
+                            $validated['currency_code'] ?? 'USD'
+                        );
+                        if ($marketAsset) {
+                            $marketAssetId = $marketAsset->id;
+                        }
+                    } catch (\Exception $e) {
+                        // Si falla la sincronización, continuamos sin market_asset_id
+                        \Illuminate\Support\Facades\Log::warning("No se pudo sincronizar MarketAsset: " . $e->getMessage());
+                    }
+                }
+
                 // Buscamos si el usuario ya tiene este activo en la cartera especificada
                 // Si permitimos el mismo activo en diferentes carteras, incluimos portfolio_id en la búsqueda
-                $asset = Asset::firstOrCreate(
-                    [
+                // Intentamos buscar por market_asset_id si existe, o por nombre/ticker
+                
+                $query = Asset::where('user_id', $user->id)
+                    ->where('portfolio_id', $validated['portfolio_id'] ?? null);
+
+                if (!empty($marketAssetId)) {
+                    $query->where('market_asset_id', $marketAssetId);
+                } else {
+                    $query->where('name', $validated['asset_name']);
+                }
+
+                $asset = $query->first();
+
+                if (!$asset) {
+                    $asset = Asset::create([
                         'user_id' => $user->id,
-                        'name' => $validated['asset_name'],
-                        'portfolio_id' => $validated['portfolio_id'] ?? null
-                    ],
-                    [
+                        'portfolio_id' => $validated['portfolio_id'] ?? null,
+                        'name' => $validated['asset_full_name'] ?? $validated['asset_name'],
+                        'ticker' => strtoupper($validated['asset_name']),
                         'type' => $validated['asset_type'] ?? 'stock',
-                        'ticker' => strtoupper(substr($validated['asset_name'], 0, 4)), // Generamos un ticker falso basado en el nombre
+                        'market_asset_id' => $marketAssetId,
+                        'isin' => $validated['isin'] ?? null,
                         'quantity' => 0,
                         'avg_buy_price' => 0,
                         'current_price' => $validated['price_per_unit'] ?? 0,
-                        'color' => '#' . str_pad(dechex(mt_rand(0, 0xFFFFFF)), 6, '0', STR_PAD_LEFT), // Color aleatorio para gráficas
-                    ]
-                );
+                        'color' => '#' . str_pad(dechex(mt_rand(0, 0xFFFFFF)), 6, '0', STR_PAD_LEFT),
+                    ]);
+                }
+                
+                // Si encontramos el activo pero no tenía market_asset_id y ahora sí lo tenemos, actualizarlo
+                if (!empty($marketAssetId) && !$asset->market_asset_id) {
+                    $asset->market_asset_id = $marketAssetId;
+                }
+                
+                // Actualizar ISIN si no lo tiene
+                if (!empty($validated['isin']) && !$asset->isin) {
+                    $asset->isin = $validated['isin'];
+                }
+
+                $asset->save();
 
                 // Update metadata if provided (allows enriching asset data)
                 $asset->update([
@@ -355,8 +479,7 @@ class TransactionController extends Controller
                 // Actualizamos la cantidad y precio promedio del activo
                 if ($validated['type'] === 'buy') {
                     // Cálculo de Precio Promedio Ponderado (Weighted Average Price)
-                    // Nuevo Precio Promedio = (Valor Total Actual + Valor Compra Nueva) / Nueva Cantidad Total
-                    // Nota: Si es la primera compra, currentTotalVal es 0.
+                    // Nuevo Precio Promedio = ((QtyActual * PrecioPromedioActual) + (QtyNueva * PrecioCompra)) / (QtyActual + QtyNueva)
                     $quantityToAdd = $validated['quantity'] ?? 0;
                     $pricePerUnit = $validated['price_per_unit'] ?? 0;
                     
@@ -381,14 +504,19 @@ class TransactionController extends Controller
                     $quantityToSell = $validated['quantity'] ?? 0;
                     $pricePerUnit = $validated['price_per_unit'] ?? 0;
                     
-                    $asset->quantity -= $quantityToSell;
+                    // Validar que no vendamos más de lo que tenemos (opcional, pero recomendado)
+                    // if ($asset->quantity < $quantityToSell) { throw new \Exception("No tienes suficiente cantidad para vender."); }
+
+                    $asset->quantity = max(0, $asset->quantity - $quantityToSell);
                     
                     // Actualizamos precio de mercado
-                    if (isset($validated['price_per_unit'])) {
-                        $asset->current_price = $validated['price_per_unit'];
+                    if ($pricePerUnit > 0) {
+                        $asset->current_price = $pricePerUnit;
                     }
                     $asset->save();
                 }
+            } else {
+                 // Si no es buy/sell/dividend, assetId es null por defecto
             }
 
             // 4. Crear la Transacción

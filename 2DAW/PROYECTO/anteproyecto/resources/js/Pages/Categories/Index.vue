@@ -1,5 +1,5 @@
 <script setup>
-import AppLayout from '@/Layouts/AppLayout.vue';
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { ref, computed } from 'vue';
 import { useForm, router } from '@inertiajs/vue3';
 import Modal from '@/Components/Modal.vue';
@@ -95,7 +95,7 @@ const filteredCategories = computed(() => {
 </script>
 
 <template>
-    <AppLayout title="Gestionar Categorías">
+    <AuthenticatedLayout title="Gestionar Categorías">
         <template #header>
             <h2 class="font-semibold text-xl text-slate-800 dark:text-slate-200 leading-tight">
                 Gestionar Categorías
@@ -212,7 +212,7 @@ const filteredCategories = computed(() => {
                             id="name"
                             v-model="form.name"
                             type="text"
-                            class="mt-1 block w-full dark:bg-slate-900 dark:border-slate-700 dark:text-slate-300 dark:focus:border-blue-600 dark:focus:ring-blue-600"
+                            class="mt-1 block w-full dark:bg-slate-700 dark:border-slate-600 dark:text-white dark:focus:border-blue-500 dark:focus:ring-blue-500"
                             placeholder="Nombre de la categoría"
                         />
                         <div v-if="form.errors.name" class="text-red-600 dark:text-red-400 text-xs mt-1">{{ form.errors.name }}</div>
@@ -223,7 +223,7 @@ const filteredCategories = computed(() => {
                         <select
                             id="parent"
                             v-model="form.parent_id"
-                            class="mt-1 block w-full border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-300 focus:border-blue-500 dark:focus:border-blue-600 focus:ring-blue-500 dark:focus:ring-blue-600 rounded-md shadow-sm"
+                            class="mt-1 block w-full border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:border-blue-500 dark:focus:border-blue-500 focus:ring-blue-500 dark:focus:ring-blue-500 rounded-md shadow-sm"
                         >
                             <option :value="null">Ninguna (Categoría Principal)</option>
                             <option v-for="parent in parentOptions" :key="parent.id" :value="parent.id">
@@ -239,7 +239,7 @@ const filteredCategories = computed(() => {
                                 id="color"
                                 v-model="form.color"
                                 type="color"
-                                class="h-10 w-10 border border-slate-300 dark:border-slate-700 rounded cursor-pointer bg-white dark:bg-slate-900 p-1"
+                                class="h-10 w-10 border border-slate-300 dark:border-slate-600 rounded cursor-pointer bg-white dark:bg-slate-700 p-1"
                             />
                             <span class="text-sm text-slate-500 dark:text-slate-400 font-mono">{{ form.color }}</span>
                         </div>
@@ -259,5 +259,5 @@ const filteredCategories = computed(() => {
                 </div>
             </div>
         </Modal>
-    </AppLayout>
+    </AuthenticatedLayout>
 </template>

@@ -11,6 +11,7 @@ class Transaction extends Model
 
     protected $fillable = [
         'user_id',
+        'portfolio_id',
         'asset_id',
         'type',
         'amount',
@@ -31,6 +32,11 @@ class Transaction extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function portfolio()
+    {
+        return $this->belongsTo(Portfolio::class);
     }
 
     public function asset()

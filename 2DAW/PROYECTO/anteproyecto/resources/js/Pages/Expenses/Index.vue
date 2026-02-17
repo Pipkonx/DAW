@@ -308,7 +308,13 @@ const getTypeLabel = (type) => {
                         <InfoTooltip text="Comparativa mensual de tus ingresos, gastos y ahorro resultante." />
                     </div>
                     <div class="absolute inset-x-6 bottom-6 top-16">
-                        <BarChart :data="monthlyChartData" :options="monthlyChartOptions" />
+                        <div v-if="summary.total_income > 0 || summary.total_expense > 0" class="w-full h-full relative">
+                            <BarChart :data="monthlyChartData" :options="monthlyChartOptions" />
+                        </div>
+                        <div v-else class="h-full flex flex-col items-center justify-center text-slate-400">
+                            <svg class="w-12 h-12 mb-2 opacity-20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                            <span class="text-sm italic">No hay datos suficientes para mostrar el balance mensual</span>
+                        </div>
                     </div>
                 </div>
 
@@ -320,7 +326,13 @@ const getTypeLabel = (type) => {
                         <InfoTooltip text="Compara tus entradas y salidas de dinero día a día." />
                     </div>
                     <div class="absolute inset-x-6 bottom-6 top-16">
-                        <LineChart :data="trendChartData" :options="trendChartOptions" />
+                        <div v-if="summary.total_income > 0 || summary.total_expense > 0" class="w-full h-full relative">
+                            <LineChart :data="trendChartData" :options="trendChartOptions" />
+                        </div>
+                        <div v-else class="h-full flex flex-col items-center justify-center text-slate-400">
+                            <svg class="w-12 h-12 mb-2 opacity-20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"></path></svg>
+                            <span class="text-sm italic">Registra movimientos para ver tu evolución</span>
+                        </div>
                     </div>
                 </div>
 
@@ -394,8 +406,12 @@ const getTypeLabel = (type) => {
                                 </td>
                             </tr>
                             <tr v-if="transactions.data.length === 0">
-                                <td colspan="5" class="px-6 py-8 text-center text-slate-400">
-                                    No se encontraron movimientos en este periodo.
+                                <td colspan="5" class="px-6 py-12 text-center text-slate-400 dark:text-slate-500">
+                                    <div class="flex flex-col items-center justify-center">
+                                        <svg class="w-16 h-16 mb-4 text-slate-300 dark:text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
+                                        <p class="text-lg font-medium text-slate-500 dark:text-slate-400">No se encontraron movimientos</p>
+                                        <p class="text-sm mt-1">Intenta cambiar los filtros de fecha o registra una nueva transacción.</p>
+                                    </div>
                                 </td>
                             </tr>
                         </tbody>

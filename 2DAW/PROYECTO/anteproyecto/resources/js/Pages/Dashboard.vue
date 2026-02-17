@@ -358,41 +358,44 @@ const filteredTransactions = computed(() => {
                             <InfoTooltip text="Desglose de gastos por categoría." />
                         </div>
 
-                         <!-- Gráfico Distribución Gastos -->
-                        <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 h-80 relative">
-                            <div v-if="expenses.byCategory.length > 0" class="relative w-full h-full">
-                                <DoughnutChart :data="expensesDistributionData" :options="doughnutOptions" />
+                        <div v-if="expenses.byCategory.length > 0" class="space-y-6">
+                             <!-- Gráfico Distribución Gastos -->
+                            <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 h-80 relative">
+                                <div class="relative w-full h-full">
+                                    <DoughnutChart :data="expensesDistributionData" :options="doughnutOptions" />
+                                </div>
                             </div>
-                            <div v-else class="h-full flex items-center justify-center text-slate-400 dark:text-slate-500 italic">
-                                No hay gastos registrados este mes.
+
+                            <!-- Lista de Categorías de Gastos -->
+                            <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 overflow-hidden">
+                                <table class="w-full text-sm text-left">
+                                    <thead class="bg-slate-50 dark:bg-slate-700/50 text-slate-500 dark:text-slate-400 uppercase font-medium text-xs">
+                                        <tr>
+                                            <th class="px-4 py-3">Categoría</th>
+                                            <th class="px-4 py-3 text-right">Total</th>
+                                            <th class="px-4 py-3 text-right">%</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-slate-100 dark:divide-slate-700">
+                                        <tr v-for="cat in expenses.byCategory" :key="cat.category" class="hover:bg-slate-50 dark:hover:bg-slate-700/50">
+                                            <td class="px-4 py-3 font-medium text-slate-700 dark:text-slate-300">{{ cat.category }}</td>
+                                            <td class="px-4 py-3 text-right text-rose-600 dark:text-rose-400 font-bold">{{ formatCurrency(cat.total) }}</td>
+                                            <td class="px-4 py-3 text-right text-slate-500 dark:text-slate-400">
+                                                {{ expenses.monthlyTotal > 0 ? ((cat.total / expenses.monthlyTotal) * 100).toFixed(1) : 0 }}%
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
-
-                        <!-- Lista de Categorías de Gastos -->
-                        <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 overflow-hidden">
-                            <table class="w-full text-sm text-left">
-                                <thead class="bg-slate-50 dark:bg-slate-700/50 text-slate-500 dark:text-slate-400 uppercase font-medium text-xs">
-                                    <tr>
-                                        <th class="px-4 py-3">Categoría</th>
-                                        <th class="px-4 py-3 text-right">Total</th>
-                                        <th class="px-4 py-3 text-right">%</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="divide-y divide-slate-100 dark:divide-slate-700">
-                                    <tr v-for="cat in expenses.byCategory" :key="cat.category" class="hover:bg-slate-50 dark:hover:bg-slate-700/50">
-                                        <td class="px-4 py-3 font-medium text-slate-700 dark:text-slate-300">{{ cat.category }}</td>
-                                        <td class="px-4 py-3 text-right text-rose-600 dark:text-rose-400 font-bold">{{ formatCurrency(cat.total) }}</td>
-                                        <td class="px-4 py-3 text-right text-slate-500 dark:text-slate-400">
-                                            {{ expenses.monthlyTotal > 0 ? ((cat.total / expenses.monthlyTotal) * 100).toFixed(1) : 0 }}%
-                                        </td>
-                                    </tr>
-                                    <tr v-if="expenses.byCategory.length === 0">
-                                        <td colspan="3" class="px-4 py-6 text-center text-slate-400 dark:text-slate-500 italic">
-                                            Sin gastos este mes
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                        
+                        <!-- Empty State Gastos -->
+                        <div v-else class="bg-white dark:bg-slate-800 p-8 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 text-center flex flex-col items-center justify-center h-80">
+                            <div class="bg-slate-50 dark:bg-slate-700 p-4 rounded-full mb-4">
+                                <svg class="w-8 h-8 text-slate-400 dark:text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                            </div>
+                            <h4 class="text-slate-900 dark:text-white font-medium mb-1">Sin gastos este mes</h4>
+                            <p class="text-slate-500 dark:text-slate-400 text-sm">Tus gastos aparecerán aquí cuando añadas transacciones.</p>
                         </div>
                     </div>
 

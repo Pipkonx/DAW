@@ -31,6 +31,7 @@ const form = useForm({
     asset_name: '', // Acts as Ticker/Symbol
     asset_full_name: '', // New field for display name
     asset_type: 'stock',
+    market_asset_id: null, // Link to global market asset
     isin: '', // New ISIN field
     quantity: '',
     price_per_unit: '',
@@ -83,6 +84,7 @@ const selectAsset = (asset) => {
     form.asset_name = asset.ticker;
     form.asset_full_name = asset.name;
     form.asset_type = asset.type;
+    form.market_asset_id = asset.id;
     form.isin = asset.isin || '';
     form.sector = asset.sector || '';
     form.currency_code = asset.currency_code || 'USD';
@@ -96,28 +98,36 @@ const selectAsset = (asset) => {
 
 // Fetch Historical Price
 const fetchPrice = async () => {
-    if (!isTrade.value || !form.asset_name || !form.date) return;
+    if (!isTrade.value || (!form.asset_name && !form.market_asset_id) || !form.date) return;
     
     isFetchingPrice.value = true;
     priceError.value = null;
     priceSource.value = null;
 
     try {
-        const response = await axios.get(route('market.price'), {
-            params: {
-                ticker: form.asset_name,
-                date: form.date,
-                type: form.asset_type
-            }
-        });
+        const params = {
+            date: form.date,
+            type: form.asset_type
+        };
+
+        if (form.market_asset_id) {
+            params.market_asset_id = form.market_asset_id;
+        } else {
+            params.ticker = form.asset_name;
+        }
+
+        const response = await axios.get(route('market.price'), { params });
         
         if (response.data.price) {
             form.price_per_unit = response.data.price;
-            priceSource.value = response.data.source;
+            priceSource.value = `Fuente: ${response.data.source} (${response.data.currency})`;
+            if (response.data.currency) {
+                form.currency_code = response.data.currency;
+            }
         }
     } catch (error) {
         console.error('Price fetch error:', error);
-        priceError.value = "No se encontró precio para esta fecha.";
+        priceError.value = "No se encontró precio para esta fecha. Ingrese manualmente.";
     } finally {
         isFetchingPrice.value = false;
     }

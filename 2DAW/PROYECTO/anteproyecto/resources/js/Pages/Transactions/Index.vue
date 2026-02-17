@@ -1,7 +1,7 @@
 <script setup>
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, router, useForm } from '@inertiajs/vue3';
 import { ref, computed } from 'vue';
+import { Head, router, useForm } from '@inertiajs/vue3';
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import TransactionModal from '@/Components/TransactionModal.vue';
 import PortfolioModal from '@/Components/PortfolioModal.vue';
 import SettingsModal from '@/Components/SettingsModal.vue';
@@ -36,7 +36,7 @@ const allocationLabels = {
     region: 'Región',
     country: 'País',
     currency_code: 'Divisa',
-    asset: 'Posición Individual (Deep Dive)'
+    asset: 'Posición Individual'
 };
 const showPortfolioModal = ref(false);
 const editingPortfolio = ref(null);
@@ -46,6 +46,7 @@ const showSettingsModal = ref(false);
 const showAssetModal = ref(false);
 const editingAsset = ref(null);
 const chartMode = ref('value'); // 'value' | 'performance'
+const assetFilter = ref(''); // Filtro para Posiciones Activas
 
 const openCreatePortfolioModal = () => {
     editingPortfolio.value = null;
@@ -57,8 +58,11 @@ const openSettings = () => {
 };
 
 const editAsset = (asset) => {
-    editingAsset.value = asset;
-    showAssetModal.value = true;
+    // Restringido: Solo permitir editar operaciones, no el activo en sí desde aquí.
+    // El usuario pidió: "NO permitir editar el activo, Solo permitir editar o eliminar las operaciones asociadas"
+    // Por ahora, eliminamos la acción de editar activo desde la lista de posiciones.
+    // Podríamos redirigir al historial filtrado por este activo.
+    filterByAsset(asset);
 };
 
 const filterByAsset = (asset) => {
@@ -71,6 +75,48 @@ const filterByAsset = (asset) => {
         timeframe: props.filters.timeframe 
     }, { preserveState: true, preserveScroll: true });
 };
+
+const filteredAssets = computed(() => {
+    if (!assetFilter.value) return props.assets;
+    const lower = assetFilter.value.toLowerCase();
+    return props.assets.filter(a => 
+        a.name.toLowerCase().includes(lower) || 
+        a.ticker.toLowerCase().includes(lower)
+    );
+});
+
+const groupedTransactions = computed(() => {
+    if (!props.transactions.data) return [];
+    
+    const groups = {};
+    props.transactions.data.forEach(tx => {
+        const date = new Date(tx.date);
+        const monthYear = date.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' }).toUpperCase();
+        
+        if (!groups[monthYear]) {
+            groups[monthYear] = [];
+        }
+        groups[monthYear].push(tx);
+    });
+    
+    return Object.keys(groups).map(key => ({
+        monthYear: key,
+        items: groups[key]
+    }));
+});
+
+const exportHistory = (format) => {
+    // Redirigir a la ruta de exportación con los filtros actuales
+    const params = new URLSearchParams({
+        format: format,
+        portfolio_id: props.selectedPortfolioId !== 'aggregated' ? props.selectedPortfolioId : 'aggregated',
+        asset_id: props.selectedAssetId || '',
+        timeframe: props.filters.timeframe || '1M'
+    });
+    
+    window.location.href = `${route('transactions.export')}?${params.toString()}`;
+};
+
 
 const editPortfolio = (portfolio) => {
     editingPortfolio.value = portfolio;
@@ -223,7 +269,7 @@ const allocationChartOptions = {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
-        legend: { position: 'right', labels: { boxWidth: 12, usePointStyle: true } },
+        legend: { position: 'bottom', labels: { boxWidth: 12, usePointStyle: true, padding: 15 } },
         tooltip: {
             callbacks: {
                 label: (context) => {
@@ -414,23 +460,22 @@ const openNewTransaction = () => {
 
                     <!-- Gráfico de Distribución (1/3) -->
                     <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex flex-col h-[450px] dark:bg-slate-800 dark:border-slate-700">
-                        <div class="flex justify-between items-center mb-6">
-                            <h3 class="text-lg font-bold text-slate-800 dark:text-white">Distribución</h3>
-                            <div class="relative group">
-                                <button class="text-xs font-medium text-blue-600 hover:text-blue-800 bg-blue-50 px-3 py-1 rounded-full transition-colors flex items-center dark:bg-blue-900/50 dark:text-blue-400 dark:hover:text-blue-300">
-                                    {{ allocationLabels[allocationType] }}
-                                    <svg class="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        <div class="flex flex-col mb-4">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="text-lg font-bold text-slate-800 dark:text-white">Distribución</h3>
+                            </div>
+                            
+                            <!-- Scroll de Filtros (Reemplaza Grid) -->
+                            <div class="flex space-x-2 overflow-x-auto pb-2 no-scrollbar">
+                                <button v-for="(label, key) in allocationLabels" :key="key" 
+                                    @click="allocationType = key"
+                                    class="px-3 py-1 text-xs font-medium rounded-full transition-colors border whitespace-nowrap"
+                                    :class="allocationType === key 
+                                        ? 'bg-blue-600 text-white border-blue-600 dark:bg-blue-500' 
+                                        : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50 dark:bg-slate-700 dark:text-slate-300 dark:border-slate-600 dark:hover:bg-slate-600'"
+                                >
+                                    {{ label }}
                                 </button>
-                                <!-- Dropdown Hover -->
-                                <div class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-slate-100 hidden group-hover:block z-20 py-1 dark:bg-slate-800 dark:border-slate-700">
-                                    <button v-for="(label, key) in allocationLabels" :key="key" 
-                                        @click="allocationType = key"
-                                        class="block w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 hover:text-blue-600 dark:text-slate-300 dark:hover:bg-slate-700 dark:hover:text-blue-400"
-                                        :class="{ 'bg-slate-50 text-blue-600 font-medium dark:bg-slate-700 dark:text-blue-400': allocationType === key }"
-                                    >
-                                        {{ label }}
-                                    </button>
-                                </div>
                             </div>
                         </div>
                         <div class="flex-grow relative">
@@ -441,14 +486,21 @@ const openNewTransaction = () => {
 
                 <!-- 3. POSICIONES ACTIVAS -->
                 <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden dark:bg-slate-800 dark:border-slate-700">
-                    <div class="p-6 border-b border-slate-100 flex justify-between items-center dark:border-slate-700">
+                    <div class="p-6 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-center gap-4 dark:border-slate-700">
                         <div>
                             <h3 class="text-lg font-bold text-slate-800 dark:text-white">Posiciones Activas</h3>
                             <p class="text-sm text-slate-500 mt-1 dark:text-slate-400">Desglose detallado de tus activos actuales</p>
                         </div>
-                        <PrimaryButton @click="openNewTransaction">
-                            + Añadir Transacción
-                        </PrimaryButton>
+                        <div class="flex items-center gap-2">
+                             <TextInput
+                                v-model="assetFilter"
+                                placeholder="Filtrar por nombre o ticker..."
+                                class="text-sm w-full sm:w-64"
+                            />
+                            <PrimaryButton @click="openNewTransaction">
+                                + Añadir Transacción
+                            </PrimaryButton>
+                        </div>
                     </div>
                     <div class="overflow-x-auto">
                         <table class="w-full text-sm text-left">
@@ -462,7 +514,7 @@ const openNewTransaction = () => {
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-slate-100 dark:divide-slate-700">
-                                <tr v-for="asset in assets" :key="asset.id" class="hover:bg-slate-50 transition-colors dark:hover:bg-slate-700" :class="{ 'bg-blue-50/50 dark:bg-blue-900/20': selectedAssetId == asset.id }">
+                                <tr v-for="asset in filteredAssets" :key="asset.id" class="hover:bg-slate-50 transition-colors dark:hover:bg-slate-700" :class="{ 'bg-blue-50/50 dark:bg-blue-900/20': selectedAssetId == asset.id }">
                                     <td class="px-6 py-4">
                                         <div class="flex items-center space-x-4">
                                             <div class="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold text-white shadow-sm" :style="{ backgroundColor: asset.color }">
@@ -496,24 +548,17 @@ const openNewTransaction = () => {
                                             @click="filterByAsset(asset)" 
                                             class="p-2 rounded-lg hover:bg-slate-200 transition-colors dark:hover:bg-slate-600"
                                             :class="selectedAssetId == asset.id ? 'text-blue-600 bg-blue-100 dark:bg-blue-900 dark:text-blue-300' : 'text-slate-400 dark:text-slate-500'"
-                                            title="Filtrar Historial"
+                                            title="Ver Historial de Operaciones"
                                         >
                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                                             </svg>
                                         </button>
-                                        <button 
-                                            @click="editAsset(asset)" 
-                                            class="p-2 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-colors dark:text-slate-500 dark:hover:text-blue-400 dark:hover:bg-slate-700"
-                                            title="Editar Activo"
-                                        >
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                                            </svg>
-                                        </button>
+                                        <!-- Edit Asset button removed as per request -->
                                     </td>
                                 </tr>
-                                <tr v-if="assets.length === 0">
+                                <tr v-if="filteredAssets.length === 0">
+
                                     <td colspan="5" class="px-6 py-12 text-center text-slate-500 dark:text-slate-400">
                                         <div class="flex flex-col items-center">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-slate-300 dark:text-slate-600 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -534,8 +579,16 @@ const openNewTransaction = () => {
 
                 <!-- 4. HISTORIAL DE TRANSACCIONES -->
                 <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden dark:bg-slate-800 dark:border-slate-700">
-                    <div class="p-6 border-b border-slate-100 dark:border-slate-700">
+                    <div class="p-6 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center">
                         <h3 class="text-lg font-bold text-slate-800 dark:text-white">Historial de Operaciones</h3>
+                        <div class="flex gap-2">
+                            <button @click="exportHistory('pdf')" class="px-3 py-1 text-xs font-medium text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-colors border border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-900/50 dark:hover:bg-red-900/40">
+                                PDF
+                            </button>
+                            <button @click="exportHistory('excel')" class="px-3 py-1 text-xs font-medium text-emerald-600 bg-emerald-50 hover:bg-emerald-100 rounded-lg transition-colors border border-emerald-200 dark:bg-emerald-900/20 dark:text-emerald-400 dark:border-emerald-900/50 dark:hover:bg-emerald-900/40">
+                                Excel
+                            </button>
+                        </div>
                     </div>
                     <div class="overflow-x-auto">
                         <table class="w-full text-sm text-left">
@@ -550,24 +603,31 @@ const openNewTransaction = () => {
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-slate-100 dark:divide-slate-700">
-                                <tr v-for="tx in transactions.data" :key="tx.id" class="hover:bg-slate-50 transition-colors dark:hover:bg-slate-700">
-                                    <td class="px-6 py-4 whitespace-nowrap text-slate-500 dark:text-slate-400">{{ formatDate(tx.date) }}</td>
-                                    <td class="px-6 py-4">
-                                        <span :class="{
-                                            'bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-300': ['dividend', 'reward', 'gift'].includes(tx.type),
-                                            'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300': tx.type === 'buy',
-                                            'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300': tx.type === 'sell',
-                                            'bg-slate-100 text-slate-800 dark:bg-slate-700 dark:text-slate-300': !['buy', 'sell', 'dividend', 'reward', 'gift'].includes(tx.type)
-                                        }" class="px-2 py-1 rounded-full text-xs font-semibold capitalize">
-                                            {{ tx.type === 'buy' ? 'Compra' : (tx.type === 'sell' ? 'Venta' : tx.type) }}
-                                        </span>
-                                    </td>
-                                    <td class="px-6 py-4 font-medium text-slate-900 dark:text-white">{{ tx.asset ? tx.asset.ticker : '-' }}</td>
-                                    <td class="px-6 py-4 text-right dark:text-slate-300">{{ tx.quantity }}</td>
-                                    <td class="px-6 py-4 text-right dark:text-slate-300">{{ formatCurrency(tx.price) }}</td>
-                                    <td class="px-6 py-4 text-right font-bold text-slate-800 dark:text-white">{{ formatCurrency(tx.total) }}</td>
-                                </tr>
-                                <tr v-if="transactions.data.length === 0">
+                                <template v-for="group in groupedTransactions" :key="group.monthYear">
+                                    <tr class="bg-slate-50/50 dark:bg-slate-700/30">
+                                        <td colspan="6" class="px-6 py-2 text-xs font-bold text-slate-400 dark:text-slate-500 text-center tracking-widest uppercase">
+                                            ─ ─ ─ ─ ─ {{ group.monthYear }} ─ ─ ─ ─ ─
+                                        </td>
+                                    </tr>
+                                    <tr v-for="tx in group.items" :key="tx.id" class="hover:bg-slate-50 transition-colors dark:hover:bg-slate-700">
+                                        <td class="px-6 py-4 whitespace-nowrap text-slate-500 dark:text-slate-400">{{ formatDate(tx.date) }}</td>
+                                        <td class="px-6 py-4">
+                                            <span :class="{
+                                                'bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-300': ['dividend', 'reward', 'gift'].includes(tx.type),
+                                                'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300': tx.type === 'buy',
+                                                'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300': tx.type === 'sell',
+                                                'bg-slate-100 text-slate-800 dark:bg-slate-700 dark:text-slate-300': !['buy', 'sell', 'dividend', 'reward', 'gift'].includes(tx.type)
+                                            }" class="px-2 py-1 rounded-full text-xs font-semibold capitalize">
+                                                {{ tx.type === 'buy' ? 'Compra' : (tx.type === 'sell' ? 'Venta' : tx.type) }}
+                                            </span>
+                                        </td>
+                                        <td class="px-6 py-4 font-medium text-slate-900 dark:text-white">{{ tx.asset ? tx.asset.ticker : '-' }}</td>
+                                        <td class="px-6 py-4 text-right dark:text-slate-300">{{ tx.quantity }}</td>
+                                        <td class="px-6 py-4 text-right dark:text-slate-300">{{ formatCurrency(tx.price) }}</td>
+                                        <td class="px-6 py-4 text-right font-bold text-slate-800 dark:text-white">{{ formatCurrency(tx.total) }}</td>
+                                    </tr>
+                                </template>
+                                <tr v-if="groupedTransactions.length === 0">
                                     <td colspan="6" class="px-6 py-8 text-center text-slate-500 italic dark:text-slate-400">
                                         No hay transacciones registradas.
                                     </td>

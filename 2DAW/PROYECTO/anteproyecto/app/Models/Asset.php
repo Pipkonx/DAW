@@ -12,8 +12,10 @@ class Asset extends Model
     protected $fillable = [
         'user_id',
         'portfolio_id',
+        'market_asset_id', // Added
         'name',
         'ticker',
+        'isin', // Added
         'type',
         'sector',
         'industry',
@@ -39,6 +41,11 @@ class Asset extends Model
     public function transactions()
     {
         return $this->hasMany(Transaction::class);
+    }
+
+    public function marketAsset()
+    {
+        return $this->belongsTo(MarketAsset::class);
     }
 
     // Calcula el valor total actual del activo

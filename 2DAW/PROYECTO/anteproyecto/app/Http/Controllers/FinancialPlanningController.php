@@ -63,7 +63,7 @@ class FinancialPlanningController extends Controller
             'liquid_balance' => $totalBalance,
             'invested_balance' => $totalInvestedValue,
             'apy' => $weightedApy,
-            'investment_return_rate' => $investmentReturnRate * 100,
+            'investment_return_rate' => round($investmentReturnRate * 100, 2),
             'projected_1y' => $projections->sum('projected_1y') + $invested1y,
             'projected_5y' => $projections->sum('projected_5y') + $invested5y,
             'projected_10y' => $projections->sum('projected_10y') + $invested10y,
@@ -84,8 +84,11 @@ class FinancialPlanningController extends Controller
         ]);
 
         $user = Auth::user();
+        // Limit to 2 decimals as requested
+        $rate = round($validated['investment_return_rate'], 2);
+        
         $user->update([
-            'investment_return_rate' => $validated['investment_return_rate'],
+            'investment_return_rate' => $rate,
         ]);
 
         return redirect()->back()->with('success', 'Configuración actualizada correctamente.');

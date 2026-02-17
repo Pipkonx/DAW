@@ -48,8 +48,15 @@
     .input-field {
         @apply w-full border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-lg shadow-sm transition-colors;
     }
+}
 
-    .label {
-        @apply block font-medium text-sm text-slate-700 mb-1;
+@layer utilities {
+    /* Ocultar barra de desplazamiento */
+    .no-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
+    .no-scrollbar {
+        -ms-overflow-style: none;  /* IE and Edge */
+        scrollbar-width: none;  /* Firefox */
     }
 }
