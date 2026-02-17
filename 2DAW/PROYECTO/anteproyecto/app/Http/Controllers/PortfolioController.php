@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Portfolio;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
 use Smalot\PdfParser\Parser;
 
 class PortfolioController extends Controller
@@ -254,92 +255,198 @@ class PortfolioController extends Controller
                 // PDF parsing failed
             }
         } elseif (in_array(strtolower($extension), ['jpg', 'jpeg', 'png'])) {
-            // Mock OCR implementation as Tesseract is not available in this environment
-            // In a real production environment, we would use a library like TesseractOCR or an API
-            
-            // Simulating OCR extraction for demonstration purposes
-            // We'll generate some sample transactions based on common receipt/screenshot data:
-            // - Date
-            // - Name/Ticker/ISIN
-            // - Quantity (Participations)
-            // - Price per unit (Buy Price)
-            
-            // Example 1: Apple Purchase (Ticker)
-            // "AAPL - 5 shares @ $175.50 on 2023-10-15"
-            $transactions[] = [
-                'date' => now()->subDays(rand(1, 30))->format('Y-m-d'),
-                'ticker' => 'AAPL',
-                'type' => 'buy',
-                'quantity' => rand(1, 10),
-                'price_per_unit' => rand(170, 180) + (rand(0, 99) / 100),
-                'amount' => 0, 
-            ];
-            
-            // Example 2: ETF Purchase (ISIN)
-            // "IE00B3RBWM25 - Vanguard FTSE All-World - 25 units @ €102.30"
-            $transactions[] = [
-                'date' => now()->subDays(rand(5, 20))->format('Y-m-d'),
-                'ticker' => 'IE00B3RBWM25', // Vanguard FTSE All-World
-                'type' => 'buy',
-                'quantity' => rand(10, 50),
-                'price_per_unit' => rand(95, 105) + (rand(0, 99) / 100),
-                'amount' => 0,
-            ];
-
-            // Example 3: Fund Purchase (Name) - Missing Price
-            // "Vanguard Global Stock Index Fund - 12.5 participations" (Price missing, will need fetch)
-            $transactions[] = [
-                'date' => now()->subDays(rand(1, 15))->format('Y-m-d'),
-                'ticker' => 'Vanguard Global Stock Index Fund',
-                'type' => 'buy',
-                'quantity' => rand(5, 20) + (rand(0, 99) / 100), // fractional shares common in funds
-                'price_per_unit' => 0, // Missing price
-                'amount' => 0,
-            ];
-            
-            // Example 4: Bond Purchase (Description)
-            // "Bonos del Estado 3.5% 2024 - 1000 nominal"
-            $transactions[] = [
-                'date' => now()->subDays(rand(1, 60))->format('Y-m-d'),
-                'ticker' => 'Bonos Estado 10Y',
-                'type' => 'buy',
-                'quantity' => 1,
-                'price_per_unit' => 1000,
-                'amount' => 0,
-            ];
-
-            // Calculate totals and format numbers
-            foreach ($transactions as &$tx) {
-                // Ensure floating point precision
-                $tx['quantity'] = round((float)$tx['quantity'], 4);
-                $tx['price_per_unit'] = round((float)$tx['price_per_unit'], 2);
+            // Use OCR.space API (Free Tier) to process the image without local installation
+            try {
+                $imageContent = file_get_contents($file->getRealPath());
                 
-                // If price is missing (0) but we have ticker/ISIN and date, try to fetch it
-                // This is a simulation of calling an external API like Yahoo Finance, Alpha Vantage, or a fund database
-                if ($tx['price_per_unit'] <= 0 && !empty($tx['ticker']) && !empty($tx['date'])) {
-                    // Simulation logic: generate a realistic price based on asset type
-                    // In production, this would be: $price = $this->fetchHistoricalPrice($tx['ticker'], $tx['date']);
-                    
-                    if (str_starts_with($tx['ticker'], 'IE')) { // ETF/Fund ISIN
-                        $tx['price_per_unit'] = rand(50, 150) + (rand(0, 99) / 100);
-                    } elseif (stripos($tx['ticker'], 'Fund') !== false || stripos($tx['ticker'], 'Fondo') !== false) { // Fund Name
-                        $tx['price_per_unit'] = rand(10, 50) + (rand(0, 99) / 100);
-                    } elseif (ctype_upper($tx['ticker']) && strlen($tx['ticker']) <= 5) { // Stock Ticker
-                        $tx['price_per_unit'] = rand(100, 300) + (rand(0, 99) / 100);
-                    } else {
-                         $tx['price_per_unit'] = 100.00; // Default fallback
-                    }
-                    
-                    // Mark as estimated/fetched
-                    $tx['price_source'] = 'estimated';
-                }
+                $response = Http::asMultipart()
+                    ->attach('file', $imageContent, $file->getClientOriginalName())
+                    ->post('https://api.ocr.space/parse/image', [
+                        'apikey' => 'helloworld', // Free API key (limitations apply)
+                        'language' => 'eng', // English is standard for financial terms usually
+                        'isOverlayRequired' => 'false',
+                        'detectOrientation' => 'true',
+                        'scale' => 'true',
+                        'OCREngine' => '2', // Better for numbers/special chars
+                    ]);
 
-                // Calculate amount if not set
-                if (empty($tx['amount'])) {
-                    $tx['amount'] = round($tx['quantity'] * $tx['price_per_unit'], 2);
-                } else {
-                    $tx['amount'] = round((float)$tx['amount'], 2);
+                if ($response->successful()) {
+                    $result = $response->json();
+                    
+                    if (isset($result['ParsedResults'][0]['ParsedText'])) {
+                        $text = $result['ParsedResults'][0]['ParsedText'];
+                        
+                        // Parse the extracted text line by line
+                        $lines = explode("\n", $text);
+                        $currentDate = now()->format('Y-m-d'); // Default to today
+                        $pendingTx = null; // Store transaction being built
+                        
+                        foreach ($lines as $line) {
+                            $line = trim($line);
+                            if (empty($line)) continue;
+
+                            // 1. Global Date Detection (Header: 01/02/2026)
+                            // Prioritize Spanish format DD/MM/YYYY
+                            if (preg_match('/^(\d{1,2})[\/\-\.](\d{1,2})[\/\-\.](\d{2,4})$/', $line, $dateMatch)) {
+                                try {
+                                    $d = $dateMatch[1];
+                                    $m = $dateMatch[2];
+                                    $y = $dateMatch[3];
+                                    
+                                    // Check for YYYY-MM-DD
+                                    if (strlen($d) == 4) {
+                                        $y = $dateMatch[1];
+                                        $m = $dateMatch[2];
+                                        $d = $dateMatch[3];
+                                    } elseif (strlen($y) == 2) {
+                                        $y = "20" . $y;
+                                    }
+                                    
+                                    if (checkdate((int)$m, (int)$d, (int)$y)) {
+                                        $currentDate = "$y-$m-$d"; // Update global date context
+                                        continue; // Skip this line, it's just a header
+                                    }
+                                } catch (\Exception $e) {}
+                            }
+                            
+                            // 2. Start of Transaction: Type + Amount (e.g., "Suscripción ... + 15,00 €")
+                            // Heuristic: "Suscripción" or "Reembolso" or line ending in Amount (€)
+                            $isStart = false;
+                            $type = 'buy';
+                            
+                            if (stripos($line, 'Suscripción') !== false || stripos($line, 'Compra') !== false) {
+                                $isStart = true;
+                                $type = 'buy';
+                            } elseif (stripos($line, 'Reembolso') !== false || stripos($line, 'Venta') !== false) {
+                                $isStart = true;
+                                $type = 'sell';
+                            } elseif (preg_match('/[\+\-]\s*[\d\.,]+\s*[€$]/', $line)) {
+                                // Line has explicit amount format like "+ 15,00 €"
+                                $isStart = true;
+                                // Guess type from sign
+                                if (str_contains($line, '-')) $type = 'sell';
+                            }
+                            
+                            if ($isStart) {
+                                // Check if this is just an "Amount Line" that belongs to the CURRENT pending transaction?
+                                // This happens if the OCR split "Suscripción" (Line 1) and "+ 15,00 €" (Line 2)
+                                // OR if the Name was on Line 2 and Amount on Line 3.
+                                
+                                $isExplicitNew = (stripos($line, 'Suscripción') !== false || stripos($line, 'Reembolso') !== false || stripos($line, 'Compra') !== false);
+                                
+                                if ($pendingTx && $pendingTx['amount'] == 0 && !$isExplicitNew) {
+                                    // It's likely the amount for the current pending transaction!
+                                    // Extract Amount
+                                    $amount = 0;
+                                    preg_match('/([-+]?[\d\.,]+)\s*[€$]/', $line, $amtMatch);
+                                    if (!empty($amtMatch[1])) {
+                                        $amount = $this->parseNumber($amtMatch[1]);
+                                    } else {
+                                        // Fallback search for any number
+                                        preg_match_all('/[-+]?(\d{1,3}(?:[.,]\d{3})*(?:[.,]\d{1,6})?)/', $line, $nums);
+                                        if (!empty($nums[0])) {
+                                            $lastNum = end($nums[0]);
+                                            $amount = $this->parseNumber($lastNum);
+                                        }
+                                    }
+                                    
+                                    if ($amount > 0) {
+                                        $pendingTx['amount'] = abs($amount);
+                                        $pendingTx['type'] = $type; // Update type just in case
+                                        $pendingTx['original_text'] .= " | " . $line;
+                                        continue; // Done with this line, merged into pendingTx
+                                    }
+                                }
+                                
+                                // Flush previous pending transaction if exists (and we didn't merge)
+                                if ($pendingTx) {
+                                    // Process and push pendingTx
+                                    $transactions[] = $this->finalizeTransaction($pendingTx);
+                                    $pendingTx = null;
+                                }
+                                
+                                // Extract Amount
+                                $amount = 0;
+                                preg_match('/([-+]?[\d\.,]+)\s*[€$]/', $line, $amtMatch);
+                                if (!empty($amtMatch[1])) {
+                                    $amount = $this->parseNumber($amtMatch[1]);
+                                } else {
+                                    // Fallback search for any number
+                                    preg_match_all('/[-+]?(\d{1,3}(?:[.,]\d{3})*(?:[.,]\d{1,6})?)/', $line, $nums);
+                                    if (!empty($nums[0])) {
+                                        // Take the last number as amount usually?
+                                        $lastNum = end($nums[0]);
+                                        $amount = $this->parseNumber($lastNum);
+                                    }
+                                }
+                                
+                                $pendingTx = [
+                                    'date' => $currentDate,
+                                    'type' => $type,
+                                    'amount' => abs($amount),
+                                    'quantity' => 0,
+                                    'price_per_unit' => 0,
+                                    'name' => '', // Waiting for next line
+                                    'original_text' => $line,
+                                    'state' => 'WAITING_NAME' // New state
+                                ];
+                                continue;
+                            }
+                            
+                            // 3. Quantity Line (e.g. "... participaciones")
+                            if ($pendingTx && (stripos($line, 'participaciones') !== false || stripos($line, 'títulos') !== false)) {
+                                preg_match('/([\d\.,]+)\s*(?:participaciones|títulos)/i', $line, $qtyMatch);
+                                if (!empty($qtyMatch[1])) {
+                                    $pendingTx['quantity'] = $this->parseNumber($qtyMatch[1]);
+                                } else {
+                                     // Just grab the first number found
+                                     preg_match('/([\d\.,]+)/', $line, $qtyMatchFallback);
+                                     if (!empty($qtyMatchFallback[1])) {
+                                         $pendingTx['quantity'] = $this->parseNumber($qtyMatchFallback[1]);
+                                     }
+                                }
+                                
+                                // Append text to original
+                                $pendingTx['original_text'] .= " | " . $line;
+                                
+                                // This closes the transaction visually
+                                $transactions[] = $this->finalizeTransaction($pendingTx);
+                                $pendingTx = null;
+                                continue;
+                            }
+                            
+                            // 4. Asset Name (Line between Start and Quantity)
+                            if ($pendingTx && $pendingTx['state'] === 'WAITING_NAME') {
+                                // Ignore "Finalizada", "Puntual" lines if they are just status
+                                $cleanLine = str_replace(['Finalizada', 'Puntual', 'En proceso'], '', $line);
+                                $cleanLine = trim($cleanLine);
+                                
+                                if (strlen($cleanLine) > 2) {
+                                    $pendingTx['name'] = $cleanLine;
+                                    $pendingTx['ticker'] = $cleanLine; // Initial guess
+                                    $pendingTx['original_text'] .= " | " . $line;
+                                    $pendingTx['state'] = 'WAITING_QUANTITY';
+                                }
+                                continue;
+                            }
+                            
+                            // If we are here, it's an unhandled line.
+                            // If we have a pending Tx, maybe append to original text just in case
+                            if ($pendingTx) {
+                                $pendingTx['original_text'] .= " " . $line;
+                            }
+                        }
+                        
+                        // Flush any remaining pending transaction
+                        if ($pendingTx) {
+                            $transactions[] = $this->finalizeTransaction($pendingTx);
+                        }
+
+                    }
                 }
+            } catch (\Exception $e) {
+                // OCR failed or network error
+                // Fallback to empty or error message handled by frontend
             }
         }
 
@@ -347,6 +454,27 @@ class PortfolioController extends Controller
             'transactions' => $transactions,
             'count' => count($transactions)
         ]);
+    }
+
+    private function finalizeTransaction($tx) {
+        // Calculate price if missing
+        if ($tx['quantity'] > 0 && $tx['amount'] > 0 && $tx['price_per_unit'] == 0) {
+            $tx['price_per_unit'] = $tx['amount'] / $tx['quantity'];
+        }
+        
+        // Try to find Asset ID
+        $name = $tx['name'];
+        if (empty($name)) $name = "Activo Desconocido";
+        
+        $asset = \App\Models\Asset::where('ticker', $name)
+                    ->orWhere('isin', $name)
+                    ->orWhere('name', 'like', "%$name%")
+                    ->first();
+        
+        $tx['asset_id'] = $asset ? $asset->id : null;
+        if ($asset) $tx['ticker'] = $asset->ticker;
+        
+        return $tx;
     }
 
     /**

@@ -297,7 +297,12 @@ const close = () => {
                                     </select>
                                 </td>
                                 <td class="p-1">
-                                    <input type="text" v-model="tx.ticker" class="w-full text-xs border-0 bg-transparent focus:ring-1 focus:ring-indigo-500 rounded px-1 py-1 text-slate-900 dark:text-slate-300 font-medium uppercase" />
+                                    <div class="flex flex-col">
+                                        <input type="text" v-model="tx.ticker" class="w-full text-xs border-0 bg-transparent focus:ring-1 focus:ring-indigo-500 rounded px-1 py-1 text-slate-900 dark:text-slate-300 font-medium" :title="tx.original_text || tx.name" />
+                                        <span v-if="tx.original_text" class="text-[10px] text-slate-400 truncate max-w-[150px] pl-1" :title="tx.original_text">
+                                            {{ tx.original_text }}
+                                        </span>
+                                    </div>
                                 </td>
                                 <td class="p-1">
                                     <input type="number" step="any" v-model="tx.quantity" @input="updateAmount(tx)" class="w-full text-xs text-right border-0 bg-transparent focus:ring-1 focus:ring-indigo-500 rounded px-1 py-1 text-slate-900 dark:text-slate-300" />
