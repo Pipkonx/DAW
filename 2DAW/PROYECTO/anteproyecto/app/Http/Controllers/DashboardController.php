@@ -268,12 +268,20 @@ class DashboardController extends Controller
                 ];
             });
 
+        // Activos pendientes de vinculación (Log de errores/pendientes)
+        $unlinkedAssets = Asset::where('user_id', $user->id)
+            ->whereIn('link_status', ['pending', 'failed'])
+            ->select('id', 'name', 'ticker', 'isin', 'type', 'link_status', 'original_name', 'created_at')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
         return inertia('Dashboard', [
             'summary' => [
                 'netWorth' => $netWorth,
                 'cash' => $cashFlow,
                 'investmentsTotal' => $investmentsTotalValue,
             ],
+            'unlinkedAssets' => $unlinkedAssets,
             'portfolios' => $portfoliosData,
             'expenses' => [
                 'monthlyTotal' => $monthlyExpense,

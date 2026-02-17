@@ -11,6 +11,8 @@ use App\Http\Controllers\PortfolioController;
 use App\Http\Controllers\BankAccountController;
 use App\Http\Controllers\FinancialPlanningController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\MarketController;
+use App\Http\Controllers\MarketDataController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -58,6 +60,10 @@ Route::put('/transactions/{transaction}', [TransactionController::class, 'update
     ->middleware(['auth'])
     ->name('transactions.update');
 
+Route::delete('/transactions/bulk-destroy', [TransactionController::class, 'bulkDestroy'])
+    ->middleware(['auth'])
+    ->name('transactions.bulk-destroy');
+
 Route::delete('/transactions/{transaction}', [TransactionController::class, 'destroy'])
     ->middleware(['auth'])
     ->name('transactions.destroy');
@@ -68,9 +74,10 @@ Route::get('/expenses', [ExpenseController::class, 'index'])
     ->name('expenses.index');
 
 // Rutas de Perfil de Usuario (Autenticadas)
-use App\Http\Controllers\MarketDataController;
-
 Route::middleware(['auth', 'verified'])->group(function () {
+    // Mercados
+    Route::get('/markets', [MarketController::class, 'index'])->name('markets.index');
+
     // Market Data API (Search & Price)
     Route::get('/api/market/search', [MarketDataController::class, 'search'])->name('market.search');
     Route::get('/api/market/price', [MarketDataController::class, 'getPrice'])->name('market.price');
@@ -86,7 +93,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/portfolios/{portfolio}', [PortfolioController::class, 'destroy'])->name('portfolios.destroy');
 
     // Rutas de Activos
+    Route::delete('/assets/bulk-destroy', [App\Http\Controllers\AssetController::class, 'bulkDestroy'])->name('assets.bulk-destroy');
     Route::put('/assets/{asset}', [App\Http\Controllers\AssetController::class, 'update'])->name('assets.update');
+    Route::delete('/assets/{asset}', [App\Http\Controllers\AssetController::class, 'destroy'])->name('assets.destroy');
 
     // Rutas de Planificación Financiera y Cuentas Bancarias
     Route::get('/financial-planning', [FinancialPlanningController::class, 'index'])->name('financial-planning.index');

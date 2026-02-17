@@ -22,13 +22,14 @@ class MarketDataController extends Controller
     public function search(Request $request)
     {
         $query = $request->input('query');
+        $type = $request->input('type'); // Get asset type
         
         if (!$query || strlen($query) < 2) {
             return response()->json([]);
         }
 
         // Delegate search to service (handles API + Local DB)
-        $assets = $this->marketData->search($query);
+        $assets = $this->marketData->search($query, $type);
 
         return response()->json($assets);
     }

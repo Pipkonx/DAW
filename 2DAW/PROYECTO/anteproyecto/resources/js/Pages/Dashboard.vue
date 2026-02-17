@@ -7,13 +7,14 @@
  * Recibe los datos (props) directamente del controlador de Laravel (Inertia).
  */
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head } from '@inertiajs/vue3';
+import { Head, Link } from '@inertiajs/vue3';
 import { ref, computed } from 'vue';
 import TransactionModal from '@/Components/TransactionModal.vue';
 import LineChart from '@/Components/Charts/LineChart.vue';
 import DoughnutChart from '@/Components/Charts/DoughnutChart.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import InfoTooltip from '@/Components/InfoTooltip.vue';
+import UnlinkedAssetsLog from '@/Components/Dashboard/UnlinkedAssetsLog.vue';
 
 // Definición de Props: Datos que vienen del Backend (DashboardController)
 const props = defineProps({
@@ -24,6 +25,7 @@ const props = defineProps({
     recentTransactions: Array,// Últimas transacciones
     allAssetsList: Array,     // Lista simple de activos (para referencias si es necesario)
     categories: Array,        // Lista de categorías disponibles
+    unlinkedAssets: Array,    // Lista de activos no vinculados (Log)
 });
 
 // Estado reactivo
@@ -236,6 +238,11 @@ const filteredTransactions = computed(() => {
 
         <div class="py-8 space-y-8">
             
+            <!-- Log de Activos No Vinculados -->
+            <div v-if="unlinkedAssets && unlinkedAssets.length > 0" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <UnlinkedAssetsLog :assets="unlinkedAssets" />
+            </div>
+
             <!-- 1. RESUMEN PRINCIPAL (KPIs) -->
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -310,39 +317,53 @@ const filteredTransactions = computed(() => {
                             <InfoTooltip text="Desglose de tus inversiones por cartera." />
                         </div>
 
-                        <!-- Gráfico Distribución Carteras -->
-                        <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 h-80 relative">
-                            <div class="relative w-full h-full">
-                                <DoughnutChart :data="portfolioDistributionData" :options="doughnutOptions" />
+                        <div v-if="portfolios.length > 0" class="space-y-6">
+                            <!-- Gráfico Distribución Carteras -->
+                            <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 h-80 relative">
+                                <div class="relative w-full h-full">
+                                    <DoughnutChart :data="portfolioDistributionData" :options="doughnutOptions" />
+                                </div>
+                            </div>
+
+                            <!-- Lista de Carteras -->
+                            <div class="space-y-4">
+                                <div v-for="portfolio in portfolios" :key="portfolio.id" class="bg-white dark:bg-slate-800 p-5 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 hover:border-blue-200 dark:hover:border-blue-700 transition-colors">
+                                    <div class="flex justify-between items-start mb-3">
+                                        <div>
+                                            <h4 class="font-bold text-slate-800 dark:text-white text-lg">{{ portfolio.name }}</h4>
+                                            <p class="text-xs text-slate-500 dark:text-slate-400">{{ portfolio.description }}</p>
+                                        </div>
+                                        <div class="text-right">
+                                            <p class="text-lg font-bold text-slate-900 dark:text-white">{{ formatCurrency(portfolio.total_value) }}</p>
+                                            <p class="text-xs font-medium" :class="portfolio.yield >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'">
+                                                {{ portfolio.yield >= 0 ? '+' : '' }}{{ portfolio.yield.toFixed(2) }}% Rend.
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <!-- Mini desglose de activos (top 3) -->
+                                    <div class="space-y-1 mt-3 pt-3 border-t border-slate-50 dark:border-slate-700">
+                                        <div v-for="asset in portfolio.assets.slice(0, 3)" :key="asset.id" class="flex justify-between text-sm">
+                                            <span class="text-slate-600 dark:text-slate-400">{{ asset.name }}</span>
+                                            <span class="text-slate-800 dark:text-slate-200 font-medium">{{ formatCurrency(asset.current_value) }}</span>
+                                        </div>
+                                        <div v-if="portfolio.assets.length > 3" class="text-xs text-blue-500 dark:text-blue-400 font-medium pt-1">
+                                            + {{ portfolio.assets.length - 3 }} activos más...
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
-                        <!-- Lista de Carteras -->
-                        <div class="space-y-4">
-                            <div v-for="portfolio in portfolios" :key="portfolio.id" class="bg-white dark:bg-slate-800 p-5 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 hover:border-blue-200 dark:hover:border-blue-700 transition-colors">
-                                <div class="flex justify-between items-start mb-3">
-                                    <div>
-                                        <h4 class="font-bold text-slate-800 dark:text-white text-lg">{{ portfolio.name }}</h4>
-                                        <p class="text-xs text-slate-500 dark:text-slate-400">{{ portfolio.description }}</p>
-                                    </div>
-                                    <div class="text-right">
-                                        <p class="text-lg font-bold text-slate-900 dark:text-white">{{ formatCurrency(portfolio.total_value) }}</p>
-                                        <p class="text-xs font-medium" :class="portfolio.yield >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'">
-                                            {{ portfolio.yield >= 0 ? '+' : '' }}{{ portfolio.yield.toFixed(2) }}% Rend.
-                                        </p>
-                                    </div>
-                                </div>
-                                <!-- Mini desglose de activos (top 3) -->
-                                <div class="space-y-1 mt-3 pt-3 border-t border-slate-50 dark:border-slate-700">
-                                    <div v-for="asset in portfolio.assets.slice(0, 3)" :key="asset.id" class="flex justify-between text-sm">
-                                        <span class="text-slate-600 dark:text-slate-400">{{ asset.name }}</span>
-                                        <span class="text-slate-800 dark:text-slate-200 font-medium">{{ formatCurrency(asset.current_value) }}</span>
-                                    </div>
-                                    <div v-if="portfolio.assets.length > 3" class="text-xs text-blue-500 dark:text-blue-400 font-medium pt-1">
-                                        + {{ portfolio.assets.length - 3 }} activos más...
-                                    </div>
-                                </div>
+                        <!-- Empty State Carteras -->
+                        <div v-else class="bg-white dark:bg-slate-800 p-8 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 text-center flex flex-col items-center justify-center h-80">
+                            <div class="bg-blue-50 dark:bg-blue-900/30 p-4 rounded-full mb-4">
+                                <svg class="w-8 h-8 text-blue-500 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
                             </div>
+                            <h4 class="text-slate-900 dark:text-white font-medium mb-1">Sin carteras activas</h4>
+                            <p class="text-slate-500 dark:text-slate-400 text-sm mb-6">No tienes carteras de inversión registradas.</p>
+                            <Link :href="route('transactions.index')" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg shadow-sm transition-colors">
+                                Crear Cartera
+                            </Link>
                         </div>
                     </div>
 

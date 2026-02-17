@@ -231,7 +231,13 @@ class TransactionController extends Controller
         $query = Transaction::where('user_id', $user->id)->with(['asset', 'portfolio']);
 
         if ($assetId) {
-            $query->where('asset_id', $assetId);
+            if (is_array($assetId)) {
+                $query->whereIn('asset_id', $assetId);
+            } elseif (is_string($assetId) && str_contains($assetId, ',')) {
+                 $query->whereIn('asset_id', explode(',', $assetId));
+            } else {
+                $query->where('asset_id', $assetId);
+            }
         } elseif ($portfolioId !== 'aggregated') {
             $query->where(function($q) use ($portfolioId, $assetIds) {
                 $q->where('portfolio_id', $portfolioId)
@@ -403,13 +409,15 @@ class TransactionController extends Controller
             'isin' => 'nullable|string',
             'quantity' => 'nullable|numeric|min:0',
             'price_per_unit' => 'nullable|numeric|min:0',
-            'portfolio_id' => 'nullable|exists:portfolios,id',
+            // Enforce portfolio for investment transactions
+            'portfolio_id' => 'required_if:type,buy,sell,dividend|nullable|exists:portfolios,id',
             // Metadata for Assets (Deep Dive)
-            'sector' => 'nullable|string',
-            'industry' => 'nullable|string',
-            'region' => 'nullable|string',
-            'country' => 'nullable|string',
             'currency_code' => 'nullable|string|size:3',
+            // Advanced fields
+            'time' => 'nullable|date_format:H:i',
+            'fees' => 'nullable|numeric|min:0',
+            'exchange_fees' => 'nullable|numeric|min:0',
+            'tax' => 'nullable|numeric|min:0',
         ]);
 
         // 2. Inicio de Transacción de Base de Datos
@@ -438,7 +446,8 @@ class TransactionController extends Controller
                             $validated['asset_name'], 
                             $validated['asset_type'] ?? 'stock', 
                             $validated['asset_full_name'] ?? $validated['asset_name'],
-                            $validated['currency_code'] ?? 'USD'
+                            $validated['currency_code'] ?? 'USD',
+                            $validated['isin'] ?? null
                         );
                         if ($marketAsset) {
                             $marketAssetId = $marketAsset->id;
@@ -476,7 +485,14 @@ class TransactionController extends Controller
                         'quantity' => 0,
                         'avg_buy_price' => 0,
                         'current_price' => $validated['price_per_unit'] ?? 0,
-                        'color' => '#' . str_pad(dechex(mt_rand(0, 0xFFFFFF)), 6, '0', STR_PAD_LEFT),
+                        'color' => (function($str) {
+                            $hash = md5($str);
+                            // Generate darker colors (max 128) for better contrast with white text
+                            $r = hexdec(substr($hash, 0, 2)) % 128; 
+                            $g = hexdec(substr($hash, 2, 2)) % 128;
+                            $b = hexdec(substr($hash, 4, 2)) % 128;
+                            return sprintf("#%02x%02x%02x", $r, $g, $b);
+                        })($validated['asset_full_name'] ?? $validated['asset_name']),
                     ]);
                 }
                 
@@ -492,12 +508,55 @@ class TransactionController extends Controller
 
                 $asset->save();
 
+                // Auto-fetch price/link for new or unpriced assets
+                if ($asset->wasRecentlyCreated || !$asset->market_asset_id || !$asset->current_price) {
+                     try {
+                         // This will attempt to link by name and fetch price
+                         $latestPrice = $this->marketDataService->getLatestPrice($asset);
+                         
+                         // If no price found, try explicit broader search for "similar" asset
+                         if (!$latestPrice) {
+                             $nameToSearch = $validated['asset_full_name'] ?? $validated['asset_name'];
+                             $searchResults = $this->marketDataService->search($nameToSearch);
+                             
+                             if ($searchResults->isNotEmpty()) {
+                                 $bestMatch = $searchResults->first();
+                                 
+                                 // Sync and link the best match found
+                                 $marketAsset = $this->marketDataService->syncAsset(
+                                     $bestMatch['ticker'], 
+                                     $bestMatch['type'], 
+                                     $bestMatch['name'], 
+                                     $bestMatch['currency'] ?? 'EUR', 
+                                     $bestMatch['isin'] ?? null
+                                 );
+                                 
+                                 if ($marketAsset) {
+                                     $asset->update([
+                                         'market_asset_id' => $marketAsset->id,
+                                         // Update local metadata to match better info
+                                         'ticker' => $marketAsset->ticker,
+                                         'isin' => $marketAsset->isin ?? $asset->isin,
+                                         'type' => $marketAsset->type
+                                     ]);
+                                     
+                                     // Retry price fetch with linked asset
+                                     $latestPrice = $this->marketDataService->getLatestPrice($asset);
+                                 }
+                             }
+                         }
+
+                         if ($latestPrice) {
+                             $asset->current_price = $latestPrice;
+                             $asset->save();
+                         }
+                     } catch (\Exception $e) {
+                         \Illuminate\Support\Facades\Log::warning("Failed to auto-fetch price: " . $e->getMessage());
+                     }
+                }
+
                 // Update metadata if provided (allows enriching asset data)
                 $asset->update([
-                    'sector' => $validated['sector'] ?? $asset->sector,
-                    'industry' => $validated['industry'] ?? $asset->industry,
-                    'region' => $validated['region'] ?? $asset->region,
-                    'country' => $validated['country'] ?? $asset->country,
                     'currency_code' => $validated['currency_code'] ?? $asset->currency_code,
                 ]);
 
@@ -558,6 +617,11 @@ class TransactionController extends Controller
                 'quantity' => $validated['quantity'] ?? null,
                 'price_per_unit' => $validated['price_per_unit'] ?? null,
                 'portfolio_id' => $validated['portfolio_id'] ?? null,
+                'fees' => $validated['fees'] ?? null,
+                'exchange_fees' => $validated['exchange_fees'] ?? null,
+                'tax' => $validated['tax'] ?? null,
+                'currency' => $validated['currency_code'] ?? 'EUR',
+                'time' => $validated['time'] ?? null,
             ]);
 
             // Increment usage count for category
@@ -599,11 +663,12 @@ class TransactionController extends Controller
             'quantity' => 'nullable|numeric|min:0',
             'price_per_unit' => 'nullable|numeric|min:0',
             // Metadata for Assets
-            'sector' => 'nullable|string',
-            'industry' => 'nullable|string',
-            'region' => 'nullable|string',
-            'country' => 'nullable|string',
             'currency_code' => 'nullable|string|size:3',
+            // Advanced fields
+            'time' => 'nullable|date_format:H:i',
+            'fees' => 'nullable|numeric|min:0',
+            'exchange_fees' => 'nullable|numeric|min:0',
+            'tax' => 'nullable|numeric|min:0',
         ]);
 
         DB::beginTransaction();
@@ -613,6 +678,23 @@ class TransactionController extends Controller
             // NOTA: Para un sistema real, esto requiere un recálculo histórico completo.
             // Aquí asumiremos que el usuario corrige un error reciente.
             
+            if ($transaction->asset_id && in_array($transaction->type, ['buy', 'sell'])) {
+                $asset = $transaction->asset;
+                $oldQuantity = $transaction->quantity;
+                $newQuantity = $validated['quantity'] ?? $oldQuantity;
+                
+                if ($oldQuantity != $newQuantity) {
+                    $diff = $newQuantity - $oldQuantity;
+                    
+                    if ($transaction->type === 'buy') {
+                        $asset->quantity += $diff;
+                    } elseif ($transaction->type === 'sell') {
+                        $asset->quantity -= $diff;
+                    }
+                    $asset->save();
+                }
+            }
+
             $transaction->update([
                 'amount' => $validated['amount'],
                 'date' => $validated['date'],
@@ -620,15 +702,16 @@ class TransactionController extends Controller
                 'description' => $validated['description'],
                 'quantity' => $validated['quantity'] ?? $transaction->quantity,
                 'price_per_unit' => $validated['price_per_unit'] ?? $transaction->price_per_unit,
+                'fees' => $validated['fees'] ?? $transaction->fees,
+                'exchange_fees' => $validated['exchange_fees'] ?? $transaction->exchange_fees,
+                'tax' => $validated['tax'] ?? $transaction->tax,
+                'currency' => $validated['currency_code'] ?? $transaction->currency,
+                'time' => $validated['time'] ?? $transaction->time,
             ]);
 
             // Update asset metadata if provided
             if ($transaction->asset_id) {
                 $transaction->asset->update([
-                    'sector' => $validated['sector'] ?? $transaction->asset->sector,
-                    'industry' => $validated['industry'] ?? $transaction->asset->industry,
-                    'region' => $validated['region'] ?? $transaction->asset->region,
-                    'country' => $validated['country'] ?? $transaction->asset->country,
                     'currency_code' => $validated['currency_code'] ?? $transaction->asset->currency_code,
                 ]);
             }
@@ -670,7 +753,16 @@ class TransactionController extends Controller
                 $asset->save();
             }
 
+            $assetId = $transaction->asset_id;
             $transaction->delete();
+
+            // Verificar si el activo quedó sin transacciones y eliminarlo si es así
+            if ($assetId) {
+                $remainingTransactions = Transaction::where('asset_id', $assetId)->count();
+                if ($remainingTransactions === 0) {
+                    Asset::where('id', $assetId)->delete();
+                }
+            }
 
             DB::commit();
             return redirect()->back()->with('success', 'Transacción eliminada.');
@@ -678,6 +770,60 @@ class TransactionController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             return redirect()->back()->withErrors(['error' => 'Error al eliminar: ' . $e->getMessage()]);
+        }
+    }
+
+    /**
+     * Elimina múltiples transacciones.
+     */
+    public function bulkDestroy(Request $request)
+    {
+        $request->validate([
+            'ids' => 'required|array',
+            'ids.*' => 'exists:transactions,id'
+        ]);
+
+        DB::beginTransaction();
+
+        try {
+            $transactions = Transaction::whereIn('id', $request->ids)
+                ->where('user_id', Auth::id())
+                ->get();
+
+            $assetIdsToCheck = [];
+
+            foreach ($transactions as $transaction) {
+                // Revertir impacto en el activo
+                if ($transaction->asset_id && $transaction->asset) {
+                    $asset = $transaction->asset;
+                    
+                    if ($transaction->type === 'buy') {
+                        $asset->quantity = max(0, $asset->quantity - $transaction->quantity);
+                    } elseif ($transaction->type === 'sell') {
+                        $asset->quantity += $transaction->quantity;
+                    }
+                    
+                    $asset->save();
+                    $assetIdsToCheck[] = $transaction->asset_id;
+                }
+                
+                $transaction->delete();
+            }
+
+            // Verificar activos huérfanos
+            $assetIdsToCheck = array_unique($assetIdsToCheck);
+            foreach ($assetIdsToCheck as $assetId) {
+                if (Transaction::where('asset_id', $assetId)->count() === 0) {
+                    Asset::where('id', $assetId)->delete();
+                }
+            }
+
+            DB::commit();
+            return redirect()->back()->with('success', count($transactions) . ' transacciones eliminadas.');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->withErrors(['error' => 'Error al eliminar masivamente: ' . $e->getMessage()]);
         }
     }
 }

@@ -90,6 +90,13 @@ onMounted(() => {
                                 >
                                     Planificación
                                 </NavLink>
+                                <NavLink
+                                    :href="route('markets.index')"
+                                    :active="route().current('markets.index')"
+                                    class="text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300"
+                                >
+                                    Mercados
+                                </NavLink>
                             </div>
                         </div>
 
@@ -230,6 +237,12 @@ onMounted(() => {
                             :active="route().current('financial-planning.index')"
                         >
                             Planificación
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink
+                            :href="route('markets.index')"
+                            :active="route().current('markets.index')"
+                        >
+                            Mercados
                         </ResponsiveNavLink>
                     </div>
 

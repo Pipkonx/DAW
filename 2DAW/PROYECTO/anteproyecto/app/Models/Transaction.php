@@ -15,18 +15,27 @@ class Transaction extends Model
         'asset_id',
         'type',
         'amount',
+        'currency',
         'date',
+        'time',
         'category_id',
         'description',
         'quantity',
         'price_per_unit',
+        'fees',
+        'exchange_fees',
+        'tax',
     ];
 
     protected $casts = [
         'date' => 'date',
+        'time' => 'datetime:H:i',
         'amount' => 'decimal:2',
         'quantity' => 'decimal:8',
         'price_per_unit' => 'decimal:8',
+        'fees' => 'decimal:2',
+        'exchange_fees' => 'decimal:2',
+        'tax' => 'decimal:2',
     ];
 
     public function user()

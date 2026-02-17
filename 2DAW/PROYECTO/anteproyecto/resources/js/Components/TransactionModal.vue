@@ -27,6 +27,7 @@ const form = useForm({
     type: 'expense',
     amount: '',
     date: new Date().toISOString().substr(0, 10),
+    time: '', // New field
     category_id: null,
     description: '',
     asset_name: '', // Acts as Ticker/Symbol
@@ -37,11 +38,10 @@ const form = useForm({
     quantity: '',
     price_per_unit: '',
     portfolio_id: '',
-    sector: '',
-    industry: '',
-    region: '',
-    country: '',
-    currency_code: '',
+    fees: '', // New field
+    exchange_fees: '', // New field
+    tax: '', // New field
+    currency_code: 'EUR',
     logo_url: '', // Store logo URL if available
 });
 
@@ -62,7 +62,13 @@ const performSearch = _.debounce(async (query) => {
     }
     isSearching.value = true;
     try {
-        const response = await axios.get(route('market.search'), { params: { query } });
+        const response = await axios.get(route('market.search'), { 
+            params: { 
+                query,
+                // Remove type restriction to allow searching across all asset types
+                // type: form.asset_type 
+            } 
+        });
         searchResults.value = response.data;
     } catch (error) {
         console.error('Search error:', error);
@@ -77,6 +83,13 @@ watch(() => form.asset_name, (val) => {
     if (showSuggestions.value) performSearch(val);
 });
 
+// Watch for asset type changes to re-trigger search if input exists
+watch(() => form.asset_type, () => {
+    if (form.asset_name && form.asset_name.length >= 2) {
+        performSearch(form.asset_name);
+    }
+});
+
 // Also search by ISIN
 watch(() => form.isin, (val) => {
     if (val && val.length > 5) performSearch(val);
@@ -88,8 +101,7 @@ const selectAsset = (asset) => {
     form.asset_type = asset.type;
     form.market_asset_id = asset.id;
     form.isin = asset.isin || '';
-    form.sector = asset.sector || '';
-    form.currency_code = asset.currency_code || 'USD';
+    form.currency_code = asset.currency_code || 'EUR';
     form.logo_url = asset.logo_url || '';
     
     showSuggestions.value = false;
@@ -165,8 +177,21 @@ const calculateFromQuantity = () => {
         return;
     }
     // Quantity * Price = Amount
+    let total = form.quantity * form.price_per_unit;
+    
+    const fees = parseFloat(form.fees || 0);
+    const exchange_fees = parseFloat(form.exchange_fees || 0);
+    const tax = parseFloat(form.tax || 0);
+
+    if (form.type === 'buy' || form.type === 'expense') {
+        total += fees + exchange_fees + tax;
+    } else {
+        // For sell, dividend, reward, income - fees/tax reduce the net amount received
+        total -= (fees + exchange_fees + tax);
+    }
+
     // Standard currency rounding
-    form.amount = parseFloat((form.quantity * form.price_per_unit).toFixed(2));
+    form.amount = parseFloat(total.toFixed(2));
 };
 
 const calculateFromPrice = () => {
@@ -198,6 +223,13 @@ watch(() => form.quantity, (val) => {
 
 watch(() => form.price_per_unit, (val) => {
     calculateFromPrice();
+});
+
+watch(() => [form.fees, form.exchange_fees, form.tax], () => {
+    // Only update if we have base data
+    if (form.quantity && form.price_per_unit) {
+        calculateFromQuantity();
+    }
 });
 
 // Category Logic (Existing)
@@ -242,19 +274,31 @@ watch(() => props.show, (newVal) => {
             form.type = props.transaction.type;
             form.amount = props.transaction.amount;
             form.date = props.transaction.date.substring(0, 10);
+            form.time = props.transaction.time ? props.transaction.time.substring(0, 5) : '';
             form.category_id = props.transaction.category_id;
             form.description = props.transaction.description;
-            form.asset_name = props.transaction.asset_name || '';
-            form.isin = props.transaction.asset?.isin || '';
+            
+            // Populate Asset Data from Relation
+            if (props.transaction.asset) {
+                form.asset_name = props.transaction.asset.ticker || props.transaction.asset.name;
+                form.asset_full_name = props.transaction.asset.name;
+                form.asset_type = props.transaction.asset.type;
+                form.market_asset_id = props.transaction.asset.market_asset_id;
+                form.isin = props.transaction.asset.isin || '';
+            } else {
+                form.asset_name = '';
+                form.asset_full_name = '';
+                form.asset_type = 'stock'; // Default
+                form.market_asset_id = null;
+                form.isin = '';
+            }
+
             form.quantity = props.transaction.quantity || '';
             form.price_per_unit = props.transaction.price_per_unit || '';
-            if (props.transaction.asset) {
-                form.sector = props.transaction.asset.sector || '';
-                form.industry = props.transaction.asset.industry || '';
-                form.region = props.transaction.asset.region || '';
-                form.country = props.transaction.asset.country || '';
-                form.currency_code = props.transaction.asset.currency_code || '';
-            }
+            form.fees = props.transaction.fees || '';
+            form.exchange_fees = props.transaction.exchange_fees || '';
+            form.tax = props.transaction.tax || '';
+            form.currency_code = props.transaction.currency || 'EUR';
         } else {
             // Create Mode
             form.reset();
@@ -362,6 +406,23 @@ watch(() => props.allowedTypes, (newTypes) => {
     }
 }, { immediate: true });
 
+const getTypeColor = (type) => {
+    switch (type) {
+        case 'stock': return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300';
+        case 'etf': return 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300';
+        case 'crypto': return 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300';
+        case 'fund': return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300';
+        case 'bond': return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300';
+        case 'real_estate': return 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-300';
+        default: return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300';
+    }
+};
+
+const getTypeLabel = (type) => {
+    const found = assetTypes.find(t => t.value === type);
+    return found ? found.label : type;
+};
+
 </script>
 
 <template>
@@ -373,25 +434,125 @@ watch(() => props.allowedTypes, (newTypes) => {
 
             <form @submit.prevent="submit" class="space-y-5">
                 
-                <!-- Tipo de Transacción y Fecha -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="md:col-span-2">
-                        <InputLabel for="type" value="Tipo de Operación" class="dark:text-slate-300" />
-                        <select
-                            id="type"
-                            v-model="form.type"
-                            :disabled="!!transaction?.id" 
-                            class="mt-1 block w-full border-slate-300 dark:border-slate-600 focus:border-blue-500 focus:ring-blue-500 rounded-lg shadow-sm text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-700"
-                        >
-                            <option v-for="type in availableTransactionTypes" :key="type.value" :value="type.value">
-                                {{ type.label }}
-                            </option>
-                        </select>
-                        <InputError :message="form.errors.type" class="mt-2" />
+                <!-- 1. Cartera (Solo crear y si hay carteras) -->
+                <div v-if="!transaction && portfolios.length > 0">
+                    <InputLabel for="portfolio_id" value="Cartera de Inversiones" class="dark:text-slate-300" />
+                    <select
+                        id="portfolio_id"
+                        v-model="form.portfolio_id"
+                        class="mt-1 block w-full border-slate-300 dark:border-slate-600 focus:border-blue-500 focus:ring-blue-500 rounded-lg shadow-sm text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-700"
+                    >
+                        <option value="" disabled>Selecciona una cartera</option>
+                        <option v-for="portfolio in portfolios" :key="portfolio.id" :value="portfolio.id">
+                            {{ portfolio.name }}
+                        </option>
+                    </select>
+                </div>
+
+                <!-- 2. Tipo de Transacción -->
+                <div>
+                    <InputLabel for="type" value="Tipo de Transacción" class="dark:text-slate-300" />
+                    <select
+                        id="type"
+                        v-model="form.type"
+                        :disabled="!!transaction?.id" 
+                        class="mt-1 block w-full border-slate-300 dark:border-slate-600 focus:border-blue-500 focus:ring-blue-500 rounded-lg shadow-sm text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-700"
+                    >
+                        <option v-for="type in availableTransactionTypes" :key="type.value" :value="type.value">
+                            {{ type.label }}
+                        </option>
+                    </select>
+                    <InputError :message="form.errors.type" class="mt-2" />
+                </div>
+
+                <!-- SECCIÓN: INVERSIONES -->
+                <div v-if="isInvestment" class="space-y-5">
+                    
+                    <!-- 3. Tipo de Activo y Agregar Activo -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <!-- Tipo de Activo -->
+                        <div class="md:col-span-1">
+                            <InputLabel for="asset_type" value="Tipo de Activo" class="dark:text-slate-300" />
+                            <select
+                                id="asset_type"
+                                v-model="form.asset_type"
+                                class="mt-1 block w-full border-slate-300 dark:border-slate-600 focus:border-blue-500 focus:ring-blue-500 rounded-lg shadow-sm text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-700 disabled:bg-slate-100 dark:disabled:bg-slate-800 disabled:text-slate-500"
+                                :disabled="!!transaction?.id"
+                            >
+                                <option value="stock">Acción</option>
+                                <option value="fund">Fondo</option>
+                                <option value="etf">ETF</option>
+                                <option value="crypto">Criptomoneda</option>
+                                <option value="bond">Bono</option>
+                                <option value="real_estate">Inmueble</option>
+                                <option value="other">Otro</option>
+                            </select>
+                        </div>
+
+                        <!-- Agregar Activo -->
+                        <div class="md:col-span-2 relative z-20">
+                            <InputLabel for="asset_name" value="Buscar Activo (Ticker, Nombre, ISIN)" class="dark:text-slate-300" />
+                            <div class="relative">
+                                <TextInput
+                                    id="asset_name"
+                                    type="text"
+                                    class="mt-1 block w-full uppercase dark:bg-slate-700 dark:border-slate-600 dark:text-white disabled:bg-slate-100 dark:disabled:bg-slate-800 disabled:text-slate-500"
+                                    v-model="form.asset_name"
+                                    @input="showSuggestions = true"
+                                    @focus="showSuggestions = true"
+                                    placeholder="Ej: AAPL, Bitcoin, ES01..."
+                                    autocomplete="off"
+                                    :disabled="!!transaction?.id"
+                                />
+                                <div v-if="isSearching" class="absolute right-3 top-3">
+                                    <svg class="animate-spin h-5 w-5 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            
+                            <!-- Resultados de Búsqueda -->
+                            <div v-if="showSuggestions && searchResults.length > 0" class="absolute left-0 right-0 mt-1 bg-white dark:bg-slate-800 rounded-md shadow-lg border border-slate-200 dark:border-slate-600 max-h-60 overflow-auto z-50">
+                                <ul>
+                                    <li 
+                                        v-for="result in searchResults" 
+                                        :key="result.id || result.ticker"
+                                        @click="selectAsset(result)"
+                                        class="px-4 py-3 hover:bg-slate-50 dark:hover:bg-slate-700 cursor-pointer border-b border-slate-100 dark:border-slate-700 last:border-0"
+                                    >
+                                        <div class="flex items-center justify-between">
+                                            <div class="font-bold text-slate-800 dark:text-white">
+                                                {{ result.ticker }} 
+                                                <span v-if="result.isin" class="ml-2 text-xs font-normal text-slate-500 bg-slate-100 dark:bg-slate-600 dark:text-slate-300 px-1.5 py-0.5 rounded">{{ result.isin }}</span>
+                                            </div>
+                                            <span class="text-xs font-bold px-2 py-0.5 rounded-full" :class="getTypeColor(result.type)">{{ getTypeLabel(result.type) }}</span>
+                                        </div>
+                                        <div class="text-slate-600 dark:text-slate-400 text-sm mt-0.5">{{ result.name }} <span class="text-xs text-slate-400">({{ result.currency }})</span></div>
+                                    </li>
+                                </ul>
+                            </div>
+                            <InputError :message="form.errors.asset_name" class="mt-2" />
+                        </div>
                     </div>
 
+                    <!-- 4. Componentes (Cantidad) -->
                     <div>
-                        <InputLabel for="date" value="Fecha" class="dark:text-slate-300" />
+                        <InputLabel for="quantity" value="Componentes (Cantidad)" class="dark:text-slate-300" />
+                        <TextInput
+                            id="quantity"
+                            type="number"
+                            step="any"
+                            class="mt-1 block w-full dark:bg-slate-700 dark:border-slate-600 dark:text-white"
+                            v-model="form.quantity"
+                            @focus="lastEditedField = 'quantity'"
+                            @input="lastEditedField = 'quantity'"
+                        />
+                    </div>
+
+                    <!-- 5. Fecha -->
+                    <div>
+                        <InputLabel for="date" value="Fecha de Operación" class="dark:text-slate-300" />
                         <TextInput
                             id="date"
                             type="date"
@@ -402,125 +563,12 @@ watch(() => props.allowedTypes, (newTypes) => {
                         <InputError :message="form.errors.date" class="mt-2" />
                     </div>
 
-                    <div>
-                        <InputLabel for="amount" value="Monto (€)" class="dark:text-slate-300" />
-                        <TextInput
-                            id="amount"
-                            type="number"
-                            step="0.01"
-                            class="mt-1 block w-full font-mono dark:bg-slate-700 dark:border-slate-600 dark:text-white"
-                            v-model="form.amount"
-                            required
-                            placeholder="0.00"
-                            @focus="lastEditedField = 'amount'"
-                            @input="lastEditedField = 'amount'"
-                        />
-                        <InputError :message="form.errors.amount" class="mt-2" />
-                    </div>
-                </div>
-
-                <!-- SECCIÓN: INVERSIONES -->
-                <div v-if="isInvestment" class="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-xl border border-blue-100 dark:border-blue-800 space-y-4">
-                    <h3 class="text-sm font-bold text-blue-800 dark:text-blue-300 flex items-center">
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
-                        Detalles de Inversión
-                    </h3>
-                    
-                    <!-- Cartera (Solo crear) -->
-                    <div v-if="!transaction && portfolios.length > 0">
-                        <InputLabel for="portfolio_id" value="Cartera Destino" class="dark:text-slate-300" />
-                        <select
-                            id="portfolio_id"
-                            v-model="form.portfolio_id"
-                            class="mt-1 block w-full border-blue-200 dark:border-slate-600 focus:border-blue-500 focus:ring-blue-500 rounded-md shadow-sm text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-700"
-                        >
-                            <option value="" disabled>Selecciona una cartera</option>
-                            <option v-for="portfolio in portfolios" :key="portfolio.id" :value="portfolio.id">
-                                {{ portfolio.name }}
-                            </option>
-                        </select>
-                    </div>
-
-                    <!-- Búsqueda Avanzada de Activo -->
-                    <div class="relative z-20">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <InputLabel for="asset_name" value="Buscar Activo (Ticker/Nombre)" class="dark:text-slate-300" />
-                                <div class="relative">
-                                    <TextInput
-                                        id="asset_name"
-                                        type="text"
-                                        class="mt-1 block w-full uppercase dark:bg-slate-700 dark:border-slate-600 dark:text-white"
-                                        v-model="form.asset_name"
-                                        @input="showSuggestions = true"
-                                        @focus="showSuggestions = true"
-                                        placeholder="Ej: BTC, AAPL"
-                                        autocomplete="off"
-                                    />
-                                    <div v-if="isSearching" class="absolute right-3 top-3">
-                                        <svg class="animate-spin h-5 w-5 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                        </svg>
-                                    </div>
-                                </div>
-                            </div>
-                            <div>
-                                <InputLabel for="isin" value="ISIN (Opcional)" class="dark:text-slate-300" />
-                                <TextInput
-                                    id="isin"
-                                    type="text"
-                                    class="mt-1 block w-full dark:bg-slate-700 dark:border-slate-600 dark:text-white"
-                                    v-model="form.isin"
-                                    placeholder="Ej: US0378331005"
-                                />
-                            </div>
-                        </div>
-                        
-                        <!-- Resultados de Búsqueda -->
-                        <div v-if="showSuggestions && searchResults.length > 0" class="absolute left-0 right-0 mt-1 bg-white dark:bg-slate-800 rounded-md shadow-lg border border-slate-200 dark:border-slate-600 max-h-60 overflow-auto z-50">
-                            <ul>
-                                <li 
-                                    v-for="asset in searchResults" 
-                                    :key="asset.ticker"
-                                    @click="selectAsset(asset)"
-                                    class="px-4 py-3 hover:bg-blue-50 dark:hover:bg-slate-700 cursor-pointer flex items-center justify-between border-b dark:border-slate-700 last:border-0"
-                                >
-                                    <div class="flex items-center">
-                                        <img v-if="asset.logo_url" :src="asset.logo_url" class="w-8 h-8 mr-3 rounded-full bg-white p-0.5" alt="" />
-                                        <div class="flex flex-col">
-                                            <span class="font-bold text-slate-800 dark:text-white">{{ asset.ticker }}</span>
-                                            <span class="text-xs text-slate-500 dark:text-slate-400">{{ asset.name }}</span>
-                                        </div>
-                                    </div>
-                                    <div class="flex flex-col items-end">
-                                        <span class="text-xs font-semibold px-2 py-1 rounded bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 uppercase">{{ asset.type }}</span>
-                                        <span v-if="asset.isin" class="text-[10px] text-slate-400 dark:text-slate-500 mt-1">{{ asset.isin }}</span>
-                                    </div>
-                                </li>
-                            </ul>
-                        </div>
-                        <InputError :message="form.errors.asset_name" class="mt-2" />
-                    </div>
-
-                    <!-- Cantidad y Precio Automático -->
-                    <div v-if="isTrade" class="grid grid-cols-2 gap-4">
-                        <div>
-                            <InputLabel for="quantity" value="Cantidad" class="dark:text-slate-300" />
-                            <TextInput
-                                id="quantity"
-                                type="number"
-                                step="any"
-                                class="mt-1 block w-full dark:bg-slate-700 dark:border-slate-600 dark:text-white"
-                                v-model="form.quantity"
-                                @focus="lastEditedField = 'quantity'"
-                                @input="lastEditedField = 'quantity'"
-                            />
-                        </div>
+                    <!-- 6. Precio y Divisa -->
+                    <div class="grid grid-cols-2 gap-4">
                         <div>
                             <div class="flex justify-between">
-                                <InputLabel for="price_per_unit" value="Precio Unitario" class="dark:text-slate-300" />
-                                <span v-if="isFetchingPrice" class="text-xs text-blue-500 animate-pulse">Buscando precio...</span>
+                                <InputLabel for="price_per_unit" value="Precio de Compra" class="dark:text-slate-300" />
+                                <span v-if="isFetchingPrice" class="text-xs text-blue-500 animate-pulse">Buscando...</span>
                             </div>
                             <TextInput
                                 id="price_per_unit"
@@ -530,90 +578,158 @@ watch(() => props.allowedTypes, (newTypes) => {
                                 v-model="form.price_per_unit"
                             />
                             <p v-if="priceSource" class="text-[10px] text-green-600 dark:text-green-400 mt-1">
-                                ✓ Precio estimado: {{ priceSource }}
+                                ✓ {{ priceSource }}
                             </p>
-                            <p v-if="priceError" class="text-[10px] text-orange-500 mt-1">
-                                ⚠ {{ priceError }}
-                            </p>
+                        </div>
+                        <div>
+                            <InputLabel for="currency_code" value="Divisa" class="dark:text-slate-300" />
+                            <select
+                                id="currency_code"
+                                v-model="form.currency_code"
+                                class="mt-1 block w-full border-slate-300 dark:border-slate-600 focus:border-blue-500 focus:ring-blue-500 rounded-lg shadow-sm text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-700"
+                            >
+                                <option value="EUR">EUR</option>
+                                <option value="USD">USD</option>
+                                <option value="GBP">GBP</option>
+                            </select>
                         </div>
                     </div>
 
-                    <!-- Tipo Activo y Detalles Adicionales -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <InputLabel for="asset_type" value="Tipo de Activo" class="dark:text-slate-300" />
-                            <select
-                                id="asset_type"
-                                v-model="form.asset_type"
-                                class="mt-1 block w-full border-blue-200 dark:border-slate-600 focus:border-blue-500 focus:ring-blue-500 rounded-md shadow-sm text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-700"
-                            >
-                                <option v-for="type in assetTypes" :key="type.value" :value="type.value">
-                                    {{ type.label }}
-                                </option>
-                            </select>
-                        </div>
-                         <!-- Detalles del Activo (Collapsible) -->
-                         <div class="md:col-span-2 mt-2">
-                            <details class="group">
-                                <summary class="flex justify-between items-center font-medium cursor-pointer list-none text-blue-700 dark:text-blue-400 text-sm">
-                                    <span>Información Avanzada (Sector, Divisa...)</span>
-                                    <span class="transition group-open:rotate-180">
-                                        <svg fill="none" height="24" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewBox="0 0 24 24" width="24"><path d="M6 9l6 6 6-6"></path></svg>
-                                    </span>
-                                </summary>
-                                <div class="text-neutral-600 dark:text-gray-400 mt-3 group-open:animate-fadeIn grid grid-cols-2 gap-4">
-                                    <div>
-                                        <InputLabel for="sector" value="Sector" class="dark:text-gray-300" />
-                                        <TextInput id="sector" type="text" v-model="form.sector" class="mt-1 block w-full text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder="Ej: Tecnología" />
-                                    </div>
-                                    <div>
-                                        <InputLabel for="currency_code" value="Divisa Base" class="dark:text-gray-300" />
-                                        <TextInput id="currency_code" type="text" v-model="form.currency_code" class="mt-1 block w-full text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder="Ej: USD" maxlength="3" />
-                                    </div>
+                    <!-- Opciones Avanzadas (Collapsible) -->
+                    <div class="mt-4 border-t dark:border-slate-700 pt-4">
+                        <details class="group">
+                            <summary class="flex justify-between items-center font-medium cursor-pointer list-none text-blue-600 dark:text-blue-400 hover:text-blue-800">
+                                <span>Introducción de transacción avanzada (opcional)</span>
+                                <span class="transition group-open:rotate-180">
+                                    <svg fill="none" height="24" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewBox="0 0 24 24" width="24"><path d="M6 9l6 6 6-6"></path></svg>
+                                </span>
+                            </summary>
+                            
+                            <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4 group-open:animate-fadeIn">
+                                <!-- Hora -->
+                                <div>
+                                    <InputLabel for="time" value="Hora de Transacción" class="dark:text-slate-300" />
+                                    <TextInput
+                                        id="time"
+                                        type="time"
+                                        class="mt-1 block w-full dark:bg-slate-700 dark:border-slate-600 dark:text-white"
+                                        v-model="form.time"
+                                    />
                                 </div>
-                            </details>
+
+                                <!-- Costo de Negociación -->
+                                <div>
+                                    <InputLabel for="fees" value="Costo de Negociación" class="dark:text-slate-300" />
+                                    <TextInput
+                                        id="fees"
+                                        type="number"
+                                        step="0.01"
+                                        class="mt-1 block w-full dark:bg-slate-700 dark:border-slate-600 dark:text-white"
+                                        v-model="form.fees"
+                                        placeholder="0.00"
+                                    />
+                                </div>
+
+                                <!-- Comisión de Cambio -->
+                                <div>
+                                    <InputLabel for="exchange_fees" value="Comisión de Cambio" class="dark:text-slate-300" />
+                                    <TextInput
+                                        id="exchange_fees"
+                                        type="number"
+                                        step="0.01"
+                                        class="mt-1 block w-full dark:bg-slate-700 dark:border-slate-600 dark:text-white"
+                                        v-model="form.exchange_fees"
+                                        placeholder="0.00"
+                                    />
+                                </div>
+
+                                <!-- Impuestos -->
+                                <div>
+                                    <InputLabel for="tax" value="Impuestos" class="dark:text-slate-300" />
+                                    <TextInput
+                                        id="tax"
+                                        type="number"
+                                        step="0.01"
+                                        class="mt-1 block w-full dark:bg-slate-700 dark:border-slate-600 dark:text-white"
+                                        v-model="form.tax"
+                                        placeholder="0.00"
+                                    />
+                                </div>
+
+                                <!-- Descripción -->
+                                <div class="md:col-span-2">
+                                    <InputLabel for="description" value="Descripción" class="dark:text-slate-300" />
+                                    <TextInput
+                                        id="description"
+                                        type="text"
+                                        class="mt-1 block w-full dark:bg-slate-700 dark:border-slate-600 dark:text-white"
+                                        v-model="form.description"
+                                        placeholder="Notas adicionales..."
+                                    />
+                                </div>
+                            </div>
+                        </details>
+                    </div>
+
+                    <!-- Importe Total -->
+                    <div class="mt-4 p-4 bg-slate-50 dark:bg-slate-700/50 rounded-lg flex justify-between items-center">
+                        <div>
+                            <InputLabel value="Importe Total" class="dark:text-slate-300 font-bold text-lg" />
+                            <p class="text-xs text-slate-500 mt-1 dark:text-slate-400">Calculado automáticamente</p>
+                        </div>
+                        <div class="text-2xl font-bold text-slate-800 dark:text-white">
+                            {{ form.amount ? Number(form.amount).toLocaleString('es-ES', { style: 'currency', currency: form.currency_code }) : '0,00 €' }}
                         </div>
                     </div>
                 </div>
 
-                <!-- SECCIÓN: GASTOS / OTROS -->
-                <div v-else>
-                    <div class="space-y-4">
-                        <!-- Categoría -->
-                        <div>
-                            <InputLabel for="category_id" value="Categoría" class="dark:text-gray-300" />
-                            <select
-                                id="category_id"
-                                v-model="form.category_id"
-                                class="mt-1 block w-full border-slate-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500 rounded-lg shadow-sm text-slate-700 dark:text-gray-300 bg-white dark:bg-gray-700"
-                            >
-                                <option :value="null">Sin categoría</option>
-                                <template v-for="cat in availableCategories" :key="cat.id">
-                                    <option :value="cat.id" class="font-bold">
-                                        {{ cat.name }} {{ cat.id === mostUsedCategoryId ? ' (Más Usado)' : '' }}
-                                    </option>
-                                    <option 
-                                        v-for="sub in cat.children" 
-                                        :key="sub.id" 
-                                        :value="sub.id"
-                                        class="pl-4"
-                                    >
-                                        &nbsp;&nbsp;&nbsp;{{ sub.name }} {{ sub.id === mostUsedCategoryId ? ' (Más Usado)' : '' }}
-                                    </option>
-                                </template>
-                            </select>
-                        </div>
-                        
-                        <div>
-                             <InputLabel for="description" value="Descripción (Opcional)" class="dark:text-gray-300" />
-                             <TextInput
-                                id="description"
-                                type="text"
-                                class="mt-1 block w-full dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                                v-model="form.description"
-                                placeholder="Detalles adicionales..."
-                            />
-                        </div>
+                <!-- SECCIÓN: GASTOS / OTROS (Simplificado) -->
+                <div v-else class="space-y-4">
+                    <div>
+                        <InputLabel for="date" value="Fecha" class="dark:text-slate-300" />
+                        <TextInput
+                            id="date"
+                            type="date"
+                            class="mt-1 block w-full dark:bg-slate-700 dark:border-slate-600 dark:text-white"
+                            v-model="form.date"
+                            required
+                        />
+                    </div>
+                    <div>
+                        <InputLabel for="amount" value="Monto (€)" class="dark:text-slate-300" />
+                        <TextInput
+                            id="amount"
+                            type="number"
+                            step="0.01"
+                            class="mt-1 block w-full dark:bg-slate-700 dark:border-slate-600 dark:text-white"
+                            v-model="form.amount"
+                            required
+                        />
+                    </div>
+                    <div>
+                        <InputLabel for="category_id" value="Categoría" class="dark:text-gray-300" />
+                        <select
+                            id="category_id"
+                            v-model="form.category_id"
+                            class="mt-1 block w-full border-slate-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500 rounded-lg shadow-sm text-slate-700 dark:text-gray-300 bg-white dark:bg-gray-700"
+                        >
+                            <option :value="null">Sin categoría</option>
+                            <template v-for="cat in availableCategories" :key="cat.id">
+                                <option :value="cat.id">{{ cat.name }}</option>
+                                <option v-for="sub in cat.children" :key="sub.id" :value="sub.id" class="pl-4">
+                                    &nbsp;&nbsp;&nbsp;{{ sub.name }}
+                                </option>
+                            </template>
+                        </select>
+                    </div>
+                    <div>
+                        <InputLabel for="description" value="Descripción" class="dark:text-gray-300" />
+                        <TextInput
+                            id="description"
+                            type="text"
+                            class="mt-1 block w-full dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                            v-model="form.description"
+                        />
                     </div>
                 </div>
 

@@ -33,4 +33,45 @@ class AssetController extends Controller
 
         return back();
     }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(Asset $asset)
+    {
+        if ($asset->user_id !== Auth::id()) {
+            abort(403);
+        }
+
+        // Eliminar todas las transacciones asociadas
+        $asset->transactions()->delete();
+
+        // Eliminar el activo
+        $asset->delete();
+
+        return redirect()->back()->with('success', 'Activo y sus operaciones eliminados correctamente.');
+    }
+
+    /**
+     * Elimina múltiples activos.
+     */
+    public function bulkDestroy(Request $request)
+    {
+        $request->validate([
+            'ids' => 'required|array',
+            'ids.*' => 'exists:assets,id'
+        ]);
+
+        $count = 0;
+        foreach ($request->ids as $id) {
+            $asset = Asset::find($id);
+            if ($asset && $asset->user_id === Auth::id()) {
+                $asset->transactions()->delete();
+                $asset->delete();
+                $count++;
+            }
+        }
+
+        return redirect()->back()->with('success', $count . ' activos y sus operaciones eliminados correctamente.');
+    }
 }

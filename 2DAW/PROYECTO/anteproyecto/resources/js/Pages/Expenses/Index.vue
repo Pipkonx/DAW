@@ -29,6 +29,7 @@ const dateFilters = ref({
 // Estado para Modal
 const showModal = ref(false);
 const editingTransaction = ref(null);
+const selectedTransactions = ref([]);
 
 // Aplicar filtros automáticamente al cambiar fechas
 const applyFilters = () => {
@@ -187,6 +188,46 @@ const editTransaction = (transaction) => {
 const closeModal = () => {
     showModal.value = false;
     editingTransaction.value = null;
+};
+
+const deleteTransaction = (transaction) => {
+    if (confirm('¿Estás seguro de que quieres eliminar esta transacción?')) {
+        router.delete(route('transactions.destroy', transaction.id), {
+            preserveScroll: true,
+            onSuccess: () => {
+                applyFilters();
+            }
+        });
+    }
+};
+
+const toggleSelection = (id) => {
+    if (selectedTransactions.value.includes(id)) {
+        selectedTransactions.value = selectedTransactions.value.filter(txId => txId !== id);
+    } else {
+        selectedTransactions.value.push(id);
+    }
+};
+
+const toggleAll = () => {
+    if (selectedTransactions.value.length === props.transactions.data.length) {
+        selectedTransactions.value = [];
+    } else {
+        selectedTransactions.value = props.transactions.data.map(tx => tx.id);
+    }
+};
+
+const deleteSelected = () => {
+    if (confirm(`¿Estás seguro de que quieres eliminar ${selectedTransactions.value.length} transacciones?`)) {
+        router.delete(route('transactions.bulk-destroy'), {
+            data: { ids: selectedTransactions.value },
+            preserveScroll: true,
+            onSuccess: () => {
+                selectedTransactions.value = [];
+                applyFilters();
+            }
+        });
+    }
 };
 
 // Helper para colores de tipo
@@ -355,6 +396,13 @@ const getTypeLabel = (type) => {
                 <div class="p-6 border-b border-slate-100 dark:border-slate-700 flex flex-col sm:flex-row justify-between items-center gap-4">
                     <h3 class="text-lg font-bold text-slate-800 dark:text-white">Historial de Movimientos</h3>
                     <div class="flex gap-2">
+                        <button 
+                            v-if="selectedTransactions.length > 0"
+                            @click="deleteSelected"
+                            class="bg-rose-100 text-rose-700 hover:bg-rose-200 px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                        >
+                            Eliminar seleccionados ({{ selectedTransactions.length }})
+                        </button>
                         <SecondaryButton @click="router.visit(route('categories.index'))" class="dark:bg-slate-700 dark:text-slate-200 dark:hover:bg-slate-600 dark:border-slate-600">
                             Gestionar Categorías
                         </SecondaryButton>
@@ -368,11 +416,20 @@ const getTypeLabel = (type) => {
                     <table class="w-full text-sm text-left">
                         <thead class="bg-slate-50 dark:bg-slate-700/50 text-slate-500 dark:text-slate-400 uppercase font-medium text-xs">
                             <tr>
+                                <th class="px-6 py-3">
+                                    <input 
+                                        type="checkbox" 
+                                        :checked="transactions.data.length > 0 && selectedTransactions.length === transactions.data.length"
+                                        @change="toggleAll"
+                                        class="rounded border-slate-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+                                    />
+                                </th>
                                 <th class="px-6 py-3">Fecha</th>
                                 <th class="px-6 py-3">Tipo</th>
                                 <th class="px-6 py-3">Categoría</th>
                                 <th class="px-6 py-3">Descripción</th>
                                 <th class="px-6 py-3 text-right">Monto</th>
+                                <th class="px-6 py-3 text-right">Acciones</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-100 dark:divide-slate-700">
@@ -382,6 +439,14 @@ const getTypeLabel = (type) => {
                                 @click="editTransaction(tx)"
                                 class="hover:bg-slate-50 dark:hover:bg-slate-700/50 cursor-pointer transition-colors group"
                             >
+                                <td class="px-6 py-4 whitespace-nowrap" @click.stop>
+                                    <input 
+                                        type="checkbox" 
+                                        :checked="selectedTransactions.includes(tx.id)"
+                                        @change="toggleSelection(tx.id)"
+                                        class="rounded border-slate-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+                                    />
+                                </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-slate-600 dark:text-slate-300">{{ tx.display_date }}</td>
                                 <td class="px-6 py-4">
                                     <span class="px-2 py-1 rounded-md text-xs font-medium border"
@@ -400,9 +465,14 @@ const getTypeLabel = (type) => {
                                     :class="['expense', 'transfer_out'].includes(tx.type) ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-600 dark:text-emerald-400'">
                                     {{ ['expense', 'transfer_out'].includes(tx.type) ? '-' : '+' }}{{ formatCurrency(tx.amount) }}
                                 </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                    <button @click.stop="deleteTransaction(tx)" class="text-rose-600 hover:text-rose-900 dark:text-rose-400 dark:hover:text-rose-300">
+                                        Eliminar
+                                    </button>
+                                </td>
                             </tr>
                             <tr v-if="transactions.data.length === 0">
-                                <td colspan="5" class="px-6 py-12 text-center text-slate-400 dark:text-slate-500">
+                                <td colspan="7" class="px-6 py-12 text-center text-slate-400 dark:text-slate-500">
                                     <div class="flex flex-col items-center justify-center">
                                         <svg class="w-16 h-16 mb-4 text-slate-300 dark:text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
                                         <p class="text-lg font-medium text-slate-500 dark:text-slate-400">No se encontraron movimientos</p>

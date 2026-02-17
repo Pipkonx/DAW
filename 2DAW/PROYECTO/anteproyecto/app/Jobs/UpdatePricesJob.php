@@ -36,30 +36,49 @@ class UpdatePricesJob implements ShouldQueue
             ->distinct()
             ->pluck('market_asset_id');
 
-        Log::info("Starting UpdatePricesJob for " . count($marketAssetIds) . " assets.");
+        Log::info("Starting UpdatePricesJob for " . count($marketAssetIds) . " market assets.");
 
         foreach ($marketAssetIds as $id) {
             $marketAsset = MarketAsset::find($id);
             if (!$marketAsset) continue;
 
             try {
-                // Fetch current price (Service handles caching and DB storage)
-                // We create a temporary Asset object or pass the MarketAsset if the service supports it.
-                // My MarketDataService::getLatestPrice expects an Asset model.
-                // I should update MarketDataService to accept MarketAsset too, or just use one of the assets.
-                
                 $asset = Asset::where('market_asset_id', $id)->first();
                 if ($asset) {
                     $price = $marketData->getLatestPrice($asset);
                     Log::info("Updated price for {$marketAsset->ticker}: {$price}");
                 }
-
             } catch (\Exception $e) {
                 Log::error("Failed to update price for {$marketAsset->ticker}: " . $e->getMessage());
             }
             
             // Optional: Add small delay if processing many to be gentle on API
             usleep(200000); // 0.2s
+        }
+
+        // 2. Handle assets WITHOUT market_asset_id (Added by name)
+        // These are the ones the user complained about
+        $unlinkedAssets = Asset::whereNull('market_asset_id')
+            ->whereNotNull('name')
+            ->get();
+
+        Log::info("Checking " . count($unlinkedAssets) . " unlinked assets for price updates.");
+
+        foreach ($unlinkedAssets as $asset) {
+            try {
+                // This will trigger searchAndLinkByName internally if possible
+                $price = $marketData->getLatestPrice($asset);
+                
+                if ($price) {
+                    Log::info("Updated price and linked asset: {$asset->name} -> {$price}");
+                } else {
+                    Log::warning("Could not find price for unlinked asset: {$asset->name}");
+                }
+            } catch (\Exception $e) {
+                Log::error("Failed to update price for unlinked asset {$asset->name}: " . $e->getMessage());
+            }
+            
+            usleep(500000); // 0.5s delay for scraping safety
         }
         
         Log::info("UpdatePricesJob completed.");

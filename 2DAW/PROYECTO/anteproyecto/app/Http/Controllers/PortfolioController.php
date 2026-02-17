@@ -13,7 +13,7 @@ class PortfolioController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(Request $request, \App\Services\MarketDataService $marketDataService)
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
@@ -21,12 +21,15 @@ class PortfolioController extends Controller
             'transactions.*.date' => 'required_with:transactions|date',
             'transactions.*.type' => 'required_with:transactions|string',
             'transactions.*.ticker' => 'required_with:transactions|string',
+            'transactions.*.isin' => 'nullable|string',
+            'transactions.*.asset_type' => 'nullable|string|in:stock,fund,etf,crypto,bond',
             'transactions.*.quantity' => 'required_with:transactions|numeric',
             'transactions.*.price_per_unit' => 'required_with:transactions|numeric',
             'transactions.*.amount' => 'required_with:transactions|numeric',
+            'transactions.*.name' => 'nullable|string',
         ]);
 
-        $portfolio = Portfolio::create([
+        $portfolio = Portfolio::firstOrCreate([
             'user_id' => Auth::id(),
             'name' => $validated['name'],
         ]);
@@ -34,17 +37,115 @@ class PortfolioController extends Controller
         if (!empty($validated['transactions'])) {
             foreach ($validated['transactions'] as $txData) {
                 // Find or Create Asset
-                $asset = \App\Models\Asset::firstOrCreate(
-                    [
+                $ticker = strtoupper($txData['ticker']);
+                $isin = $txData['isin'] ?? null;
+                $assetType = $txData['asset_type'] ?? 'stock';
+                $name = $txData['name'] ?? $ticker;
+
+                // If ticker looks like ISIN and ISIN is missing, set ISIN
+                if (!$isin && preg_match('/^[A-Z]{2}[A-Z0-9]{9}\d$/', $ticker)) {
+                    $isin = $ticker;
+                    $assetType = 'fund'; // Assume fund/ETF if ISIN provided as ticker
+                }
+
+                $asset = \App\Models\Asset::where('user_id', Auth::id())
+                    ->where('portfolio_id', $portfolio->id)
+                    ->where(function ($query) use ($ticker, $isin) {
+                        $query->where('ticker', $ticker);
+                        if ($isin) {
+                            $query->orWhere('isin', $isin);
+                        }
+                    })
+                    ->first();
+
+                if (!$asset) {
+                    $asset = \App\Models\Asset::create([
                         'user_id' => Auth::id(),
                         'portfolio_id' => $portfolio->id,
-                        'ticker' => strtoupper($txData['ticker']),
-                    ],
-                    [
-                        'name' => $txData['name'] ?? $txData['ticker'],
-                        'type' => 'stock', // Default, user can change later
-                    ]
-                );
+                        'ticker' => $ticker,
+                        'isin' => $isin,
+                        'name' => $name,
+                        'type' => $assetType,
+                        'link_status' => $txData['link_status'] ?? 'linked', // Default to linked if not provided (manual)
+                        'original_name' => $txData['original_name'] ?? null,
+                        'original_text' => $txData['original_text'] ?? null,
+                        'nav_date' => $txData['nav_date'] ?? null,
+                        'color' => (function($str) {
+                            $hash = md5($str);
+                            // Generate darker colors (max 128) for better contrast with white text
+                            $r = hexdec(substr($hash, 0, 2)) % 128; 
+                            $g = hexdec(substr($hash, 2, 2)) % 128;
+                            $b = hexdec(substr($hash, 4, 2)) % 128;
+                            return sprintf("#%02x%02x%02x", $r, $g, $b);
+                        })($name),
+                    ]);
+
+                    // Auto-fetch price/link for new assets
+                    try {
+                        // First try standard price fetch (which attempts auto-link)
+                        $latestPrice = $marketDataService->getLatestPrice($asset);
+                        
+                        // If no price found, try explicit broader search for "similar" asset
+                        if (!$latestPrice) {
+                            $searchResults = $marketDataService->search($name);
+                            
+                            if ($searchResults->isNotEmpty()) {
+                                $bestMatch = $searchResults->first();
+                                
+                                // Sync and link the best match found
+                                $marketAsset = $marketDataService->syncAsset(
+                                    $bestMatch['ticker'], 
+                                    $bestMatch['type'], 
+                                    $bestMatch['name'], 
+                                    $bestMatch['currency'] ?? 'EUR', 
+                                    $bestMatch['isin'] ?? null
+                                );
+                                
+                                if ($marketAsset) {
+                                    $asset->update([
+                                        'market_asset_id' => $marketAsset->id,
+                                        // Update local metadata to match better info
+                                        'ticker' => $marketAsset->ticker,
+                                        'isin' => $marketAsset->isin ?? $asset->isin,
+                                        'type' => $marketAsset->type
+                                    ]);
+                                    
+                                    // Retry price fetch with linked asset
+                                    $latestPrice = $marketDataService->getLatestPrice($asset);
+                                }
+                            }
+                        }
+
+                        if ($latestPrice) {
+                            $asset->current_price = $latestPrice;
+                            $asset->save();
+                        }
+                    } catch (\Exception $e) {
+                        \Illuminate\Support\Facades\Log::warning("PortfolioController: Failed to auto-fetch price for {$name}: " . $e->getMessage());
+                    }
+                } else {
+                    // Update metadata if better info provided
+                    $updates = [];
+                    if ($isin && !$asset->isin) $updates['isin'] = $isin;
+                    if ($assetType !== 'stock' && $asset->type === 'stock') $updates['type'] = $assetType;
+                    // If it was pending and now we have info, update status?
+                    // Or if we are re-importing... 
+                    // Let's just update fields if they are missing
+                    if (!empty($updates)) $asset->update($updates);
+                }
+
+                // Check for duplicate transaction
+                $exists = \App\Models\Transaction::where('user_id', Auth::id())
+                    ->where('asset_id', $asset->id)
+                    ->where('type', strtolower($txData['type']))
+                    ->whereDate('date', \Carbon\Carbon::parse($txData['date']))
+                    ->where('quantity', $txData['quantity'])
+                    ->where('amount', $txData['amount'])
+                    ->exists();
+
+                if ($exists) {
+                    continue;
+                }
 
                 // Create Transaction
                 \App\Models\Transaction::create([
@@ -55,7 +156,7 @@ class PortfolioController extends Controller
                     'quantity' => $txData['quantity'],
                     'price_per_unit' => $txData['price_per_unit'],
                     'amount' => $txData['amount'],
-                    'description' => 'Importación automática',
+                    'description' => 'Importación automática' . (isset($txData['original_text']) ? ' | OCR' : ''),
                 ]);
 
                 // Update Asset Averages (simplified, would normally use a service)
@@ -462,17 +563,91 @@ class PortfolioController extends Controller
             $tx['price_per_unit'] = $tx['amount'] / $tx['quantity'];
         }
         
-        // Try to find Asset ID
-        $name = $tx['name'];
+        // Clean Name
+        $name = trim($tx['name']);
         if (empty($name)) $name = "Activo Desconocido";
         
-        $asset = \App\Models\Asset::where('ticker', $name)
-                    ->orWhere('isin', $name)
-                    ->orWhere('name', 'like', "%$name%")
+        $tx['original_name'] = $name;
+        $tx['link_status'] = 'pending'; // Default state until linked
+        $tx['nav_date'] = $tx['date']; // Default NAV date is transaction date
+
+        // Determine Asset Type based on keywords (simple heuristic)
+        $typeHint = 'stock'; // Default
+        
+        // Helper to check multiple needles
+        $containsAny = function($haystack, $needles) {
+            foreach ($needles as $needle) {
+                if (stripos($haystack, $needle) !== false) return true;
+            }
+            return false;
+        };
+
+        if ($containsAny($name, ['Fondo', 'Fund', 'Index', 'Indice', 'Índice', 'Acc', 'Class', 'Clase', '(IE)', '(LU)', 'Sicav'])) {
+            $typeHint = 'fund';
+        } elseif (stripos($name, 'ETF') !== false) {
+            $typeHint = 'etf'; // Treated as stock usually, but distinct type
+        } elseif ($containsAny($name, ['Bitcoin', 'BTC', 'Crypto', 'ETH', 'Ethereum', 'Solana', 'USDT'])) {
+            $typeHint = 'crypto';
+        }
+
+        // 1. Try to find Asset ID in User's existing assets (Local DB)
+        $asset = \App\Models\Asset::where('user_id', Auth::id())
+                    ->where(function($q) use ($name) {
+                        $q->where('ticker', $name)
+                          ->orWhere('isin', $name)
+                          ->orWhere('name', 'like', "%$name%");
+                    })
                     ->first();
         
-        $tx['asset_id'] = $asset ? $asset->id : null;
-        if ($asset) $tx['ticker'] = $asset->ticker;
+        // 2. If not found, try to find in Market Assets (Global DB) or External Search
+        $marketAsset = null;
+        if (!$asset && strlen($name) > 3) {
+            // Use MarketDataService to find or link
+            try {
+                $marketDataService = app(\App\Services\MarketDataService::class);
+                
+                // If type is fund, we prioritize fund search
+                if ($typeHint === 'fund') {
+                    // This calls FundService::searchByName internally if needed
+                    $marketAsset = $marketDataService->findOrLinkAsset($name, 'fund');
+                } else {
+                    // For stocks, try stock search
+                    $marketAsset = $marketDataService->findOrLinkAsset($name, $typeHint);
+                }
+
+                if ($marketAsset) {
+                    $tx['isin'] = $marketAsset->isin;
+                    $tx['ticker'] = $marketAsset->ticker;
+                    $tx['asset_type'] = $marketAsset->type;
+                    $tx['name'] = $marketAsset->name; // Update name to official one
+                    $tx['link_status'] = 'linked';
+                    
+                    // Check if we have a recent price/NAV
+                    if ($marketAsset->current_price) {
+                         // We don't overwrite the transaction price (which is historical cost)
+                         // But we might want to store the scraped date?
+                         // The prompt says "Guardar NAV y fecha". 
+                         // This usually means for the ASSET history, not necessarily the transaction.
+                         // But if we just scraped it, maybe update the asset later.
+                    }
+                }
+            } catch (\Exception $e) {
+                // Log error but continue
+                \Illuminate\Support\Facades\Log::error("Error linking asset in OCR: " . $e->getMessage());
+                $tx['link_status'] = 'failed';
+            }
+        } else if ($asset) {
+             $tx['link_status'] = 'linked';
+             $tx['asset_id'] = $asset->id;
+             $tx['ticker'] = $asset->ticker;
+             $tx['isin'] = $asset->isin;
+             $tx['asset_type'] = $asset->type;
+        } else {
+             // Fallback for completely unknown
+             if (!isset($tx['ticker'])) $tx['ticker'] = 'UNKNOWN';
+             if (!isset($tx['asset_type'])) $tx['asset_type'] = $typeHint;
+             $tx['link_status'] = 'pending';
+        }
         
         return $tx;
     }
