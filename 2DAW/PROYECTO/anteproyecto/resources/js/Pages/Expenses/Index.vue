@@ -388,6 +388,15 @@ const getTypeLabel = (type) => {
                 </div>
 
                 <div class="flex flex-wrap items-center gap-2">
+                    <!-- Botón Agregar Operación -->
+                    <PrimaryButton @click="openTransactionModal" class="flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                        </svg>
+                        <span class="hidden sm:inline">Agregar Operación</span>
+                        <span class="sm:hidden">Agregar</span>
+                    </PrimaryButton>
+
                     <!-- Filtros de Fecha (Opcional) -->
                     <div class="flex items-center gap-2 bg-white dark:bg-slate-800 p-2 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700">
                         <div>
