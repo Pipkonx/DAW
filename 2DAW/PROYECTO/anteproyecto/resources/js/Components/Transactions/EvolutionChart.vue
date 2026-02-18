@@ -2,6 +2,9 @@
 import { ref, computed } from 'vue';
 import LineChart from '@/Components/Charts/LineChart.vue';
 import { formatCurrency, formatPercent } from '@/Utils/formatting';
+import { usePrivacy } from '@/Composables/usePrivacy';
+
+const { isPrivacyMode } = usePrivacy();
 
 const props = defineProps({
     summary: {
@@ -183,7 +186,8 @@ const performanceChartOptions = computed(() => ({
                 <div class="flex items-center gap-4 h-12">
                     <div class="min-w-[200px]">
                         <h2 class="text-3xl font-bold text-slate-900 dark:text-white leading-none">
-                            <span v-if="hoveredValue !== null">
+                            <span v-if="isPrivacyMode">****</span>
+                            <span v-else-if="hoveredValue !== null">
                                 {{ chartMode === 'value' ? formatCurrency(hoveredValue) : formatPercent(hoveredValue) }}
                             </span>
                             <span v-else>
@@ -195,7 +199,11 @@ const performanceChartOptions = computed(() => ({
                     <!-- Change Indicator (Vertical Stack) -->
                     <div class="flex flex-col justify-center leading-none">
                          <!-- Hover State -->
-                         <template v-if="hoveredValue !== null">
+                         <template v-if="isPrivacyMode">
+                            <span class="text-sm font-bold mb-1 text-slate-400">****</span>
+                            <span class="text-xs font-semibold text-slate-400">****</span>
+                         </template>
+                         <template v-else-if="hoveredValue !== null">
                             <span class="text-sm font-bold mb-1" 
                                 :class="hoveredChange >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'">
                                 {{ hoveredChange >= 0 ? '+' : '' }}{{ formatCurrency(hoveredChange) }}
@@ -207,12 +215,13 @@ const performanceChartOptions = computed(() => ({
 
                          <!-- Default State -->
                          <template v-else>
-                            <span class="text-sm font-bold mb-1"
+                            <span class="text-sm font-bold mb-1" 
                                 :class="chart.period_pl_value >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'">
                                 {{ chart.period_pl_value >= 0 ? '+' : '' }}{{ formatCurrency(chart.period_pl_value) }}
                             </span>
-                            <span class="text-xs font-medium text-slate-500 dark:text-slate-400">
-                                {{ chart.period_pl_value >= 0 ? '+' : '' }}{{ formatPercent(chart.period_pl_percent) }}
+                            <span class="text-xs font-semibold"
+                                :class="chart.period_pl_percent >= 0 ? 'text-emerald-600 bg-emerald-50 dark:bg-emerald-900/20 dark:text-emerald-400 px-1.5 py-0.5 rounded' : 'text-rose-600 bg-rose-50 dark:bg-rose-900/20 dark:text-rose-400 px-1.5 py-0.5 rounded'">
+                                {{ chart.period_pl_percent >= 0 ? '▲' : '▼' }} {{ formatPercent(chart.period_pl_percent) }}
                             </span>
                          </template>
                     </div>
@@ -256,7 +265,7 @@ const performanceChartOptions = computed(() => ({
             </div>
         </div>
 
-        <div class="flex-grow relative w-full min-h-0">
+        <div class="flex-grow relative w-full min-h-0" :class="{ 'blur-sm select-none': isPrivacyMode }">
             <LineChart :data="performanceChartData" :options="performanceChartOptions" />
         </div>
     </div>

@@ -2,6 +2,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import { ref, computed } from 'vue';
+import { usePrivacy } from '@/Composables/usePrivacy';
 import Modal from '@/Components/Modal.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import TextInput from '@/Components/TextInput.vue';
@@ -16,6 +17,8 @@ const props = defineProps({
     projections: Array,
     aggregated: Object,
 });
+
+const { isPrivacyMode } = usePrivacy();
 
 const showModal = ref(false);
 const editingAccount = ref(null);
@@ -143,9 +146,9 @@ const formatPercent = (value) => {
                     <div class="bg-white dark:bg-slate-800 overflow-hidden shadow-sm sm:rounded-lg p-6 flex flex-col justify-between border border-slate-200 dark:border-slate-700">
                         <div>
                             <h3 class="text-sm font-medium text-slate-500 dark:text-slate-400">Patrimonio Total</h3>
-                            <p class="mt-2 text-3xl font-bold text-slate-900 dark:text-white">{{ formatCurrency(aggregated.current_balance) }}</p>
+                            <p class="mt-2 text-3xl font-bold text-slate-900 dark:text-white">{{ isPrivacyMode ? '****' : formatCurrency(aggregated.current_balance) }}</p>
                         </div>
-                        <div class="h-32 relative mt-4">
+                        <div class="h-32 relative mt-4" :class="{ 'blur-sm select-none': isPrivacyMode }">
                              <DoughnutChart :data="chartData" :options="chartOptions" />
                         </div>
                     </div>
@@ -153,27 +156,27 @@ const formatPercent = (value) => {
                     <!-- Proyección 1 Año -->
                     <div class="bg-white dark:bg-slate-800 overflow-hidden shadow-sm sm:rounded-lg p-6 border-l-4 border-blue-500 border-y border-r border-slate-200 dark:border-slate-700 dark:border-l-blue-500">
                         <h3 class="text-sm font-medium text-slate-500 dark:text-slate-400">Proyección 1 Año</h3>
-                        <p class="mt-2 text-2xl font-bold text-slate-900 dark:text-white">{{ formatCurrency(aggregated.projected_1y) }}</p>
+                        <p class="mt-2 text-2xl font-bold text-slate-900 dark:text-white">{{ isPrivacyMode ? '****' : formatCurrency(aggregated.projected_1y) }}</p>
                         <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                            Ganancia: +{{ formatCurrency(aggregated.projected_1y - aggregated.current_balance) }}
+                            Ganancia: <span v-if="isPrivacyMode">****</span><span v-else>+{{ formatCurrency(aggregated.projected_1y - aggregated.current_balance) }}</span>
                         </p>
                     </div>
 
                     <!-- Proyección 5 Años -->
                     <div class="bg-white dark:bg-slate-800 overflow-hidden shadow-sm sm:rounded-lg p-6 border-l-4 border-indigo-500 border-y border-r border-slate-200 dark:border-slate-700 dark:border-l-indigo-500">
                         <h3 class="text-sm font-medium text-slate-500 dark:text-slate-400">Proyección 5 Años</h3>
-                        <p class="mt-2 text-2xl font-bold text-slate-900 dark:text-white">{{ formatCurrency(aggregated.projected_5y) }}</p>
+                        <p class="mt-2 text-2xl font-bold text-slate-900 dark:text-white">{{ isPrivacyMode ? '****' : formatCurrency(aggregated.projected_5y) }}</p>
                         <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                            Ganancia: +{{ formatCurrency(aggregated.projected_5y - aggregated.current_balance) }}
+                            Ganancia: <span v-if="isPrivacyMode">****</span><span v-else>+{{ formatCurrency(aggregated.projected_5y - aggregated.current_balance) }}</span>
                         </p>
                     </div>
 
                     <!-- Proyección 10 Años -->
                     <div class="bg-white dark:bg-slate-800 overflow-hidden shadow-sm sm:rounded-lg p-6 border-l-4 border-purple-500 border-y border-r border-slate-200 dark:border-slate-700 dark:border-l-purple-500">
                         <h3 class="text-sm font-medium text-slate-500 dark:text-slate-400">Proyección 10 Años</h3>
-                        <p class="mt-2 text-2xl font-bold text-slate-900 dark:text-white">{{ formatCurrency(aggregated.projected_10y) }}</p>
+                        <p class="mt-2 text-2xl font-bold text-slate-900 dark:text-white">{{ isPrivacyMode ? '****' : formatCurrency(aggregated.projected_10y) }}</p>
                         <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                            Ganancia: +{{ formatCurrency(aggregated.projected_10y - aggregated.current_balance) }}
+                            Ganancia: <span v-if="isPrivacyMode">****</span><span v-else>+{{ formatCurrency(aggregated.projected_10y - aggregated.current_balance) }}</span>
                         </p>
                     </div>
                 </div>
@@ -231,13 +234,13 @@ const formatPercent = (value) => {
                                         </span>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-slate-900 dark:text-white font-mono">
-                                        {{ formatCurrency(account.current_balance) }}
+                                        {{ isPrivacyMode ? '****' : formatCurrency(account.current_balance) }}
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-slate-500 dark:text-slate-400">
                                         {{ account.apy }}%
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-green-600 dark:text-green-400 font-mono">
-                                        +{{ formatCurrency(account.monthly_earnings) }}
+                                        <span v-if="isPrivacyMode">****</span><span v-else>+{{ formatCurrency(account.monthly_earnings) }}</span>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                         <button @click="openModal(bankAccounts.find(a => a.id === account.id))" class="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300 mr-4">Editar</button>

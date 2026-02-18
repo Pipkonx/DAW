@@ -44,6 +44,10 @@ Route::get('/dashboard', [DashboardController::class, 'index'])
     ->name('dashboard');
 
 // Transacciones
+Route::post('/transactions/import', [TransactionController::class, 'import'])
+    ->middleware(['auth'])
+    ->name('transactions.import');
+
 Route::get('/transactions/export', [TransactionController::class, 'export'])
     ->middleware(['auth', 'verified'])
     ->name('transactions.export');

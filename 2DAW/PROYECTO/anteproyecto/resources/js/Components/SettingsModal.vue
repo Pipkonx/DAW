@@ -5,6 +5,9 @@ import DangerButton from '@/Components/DangerButton.vue';
 import { useForm, router } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import { formatCurrency } from '@/Utils/formatting';
+import { usePrivacy } from '@/Composables/usePrivacy';
+
+const { isPrivacyMode } = usePrivacy();
 
 const props = defineProps({
     show: Boolean,
@@ -82,7 +85,7 @@ const close = () => {
                                 <div class="flex items-center space-x-2 text-xs text-slate-500 dark:text-slate-400">
                                     <span>{{ portfolio.assets_count || 0 }} activos</span>
                                     <span>•</span>
-                                    <span class="font-medium text-slate-700 dark:text-slate-300">{{ formatCurrency(portfolio.total_value || 0) }}</span>
+                                    <span class="font-medium text-slate-700 dark:text-slate-300">{{ isPrivacyMode ? '****' : formatCurrency(portfolio.total_value || 0) }}</span>
                                 </div>
                             </div>
                             <div class="flex items-center space-x-2">

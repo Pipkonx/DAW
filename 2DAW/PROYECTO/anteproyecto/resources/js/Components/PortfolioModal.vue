@@ -8,11 +8,14 @@ import DangerButton from '@/Components/DangerButton.vue';
 import { useForm } from '@inertiajs/vue3';
 import { watch, ref, computed } from 'vue';
 import axios from 'axios';
+import { usePrivacy } from '@/Composables/usePrivacy';
 
 const props = defineProps({
     show: Boolean,
     portfolio: Object, // null if creating
 });
+
+const { isPrivacyMode } = usePrivacy();
 
 const emit = defineEmits(['close']);
 
@@ -305,13 +308,13 @@ const close = () => {
                                     </div>
                                 </td>
                                 <td class="p-1">
-                                    <input type="number" step="any" v-model="tx.quantity" @input="updateAmount(tx)" class="w-full text-xs text-right border-0 bg-transparent focus:ring-1 focus:ring-indigo-500 rounded px-1 py-1 text-slate-900 dark:text-slate-300" />
+                                    <input type="number" step="any" v-model="tx.quantity" @input="updateAmount(tx)" class="w-full text-xs text-right border-0 bg-transparent focus:ring-1 focus:ring-indigo-500 rounded px-1 py-1 text-slate-900 dark:text-slate-300" :class="{ 'blur-sm focus:blur-none transition-all': isPrivacyMode }" />
                                 </td>
                                 <td class="p-1">
-                                    <input type="number" step="any" v-model="tx.price_per_unit" @input="updateAmount(tx)" class="w-full text-xs text-right border-0 bg-transparent focus:ring-1 focus:ring-indigo-500 rounded px-1 py-1 text-slate-900 dark:text-slate-300" />
+                                    <input type="number" step="any" v-model="tx.price_per_unit" @input="updateAmount(tx)" class="w-full text-xs text-right border-0 bg-transparent focus:ring-1 focus:ring-indigo-500 rounded px-1 py-1 text-slate-900 dark:text-slate-300" :class="{ 'blur-sm focus:blur-none transition-all': isPrivacyMode }" />
                                 </td>
                                 <td class="p-1">
-                                    <input type="number" step="any" v-model="tx.amount" class="w-full text-xs text-right border-0 bg-transparent focus:ring-1 focus:ring-indigo-500 rounded px-1 py-1 text-slate-900 dark:text-slate-300 font-bold" />
+                                    <input type="number" step="any" v-model="tx.amount" class="w-full text-xs text-right border-0 bg-transparent focus:ring-1 focus:ring-indigo-500 rounded px-1 py-1 text-slate-900 dark:text-slate-300 font-bold" :class="{ 'blur-sm focus:blur-none transition-all': isPrivacyMode }" />
                                 </td>
                                 <td class="p-1 text-center">
                                     <button @click="removeTransaction(idx)" class="text-slate-400 hover:text-red-500 transition-colors p-1 opacity-0 group-hover:opacity-100" title="Eliminar">

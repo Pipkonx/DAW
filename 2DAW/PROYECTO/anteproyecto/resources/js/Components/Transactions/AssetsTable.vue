@@ -4,6 +4,9 @@ import { router } from '@inertiajs/vue3';
 import TextInput from '@/Components/TextInput.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import { formatCurrency, formatPercent } from '@/Utils/formatting';
+import { usePrivacy } from '@/Composables/usePrivacy';
+
+const { isPrivacyMode } = usePrivacy();
 
 const props = defineProps({
     assets: {
@@ -199,17 +202,23 @@ const getAssetPerformance = (asset) => {
                                     <div class="text-sm text-slate-500 dark:text-slate-400 flex items-center gap-2">
                                         <span v-if="asset.ticker && asset.ticker !== asset.isin" class="font-medium text-slate-700 dark:text-slate-300">{{ asset.ticker }}</span>
                                         <span v-if="asset.isin" class="text-xs text-slate-400">{{ asset.isin }}</span>
-                                        <span class="text-xs bg-slate-100 dark:bg-slate-700 px-1.5 py-0.5 rounded text-slate-600 dark:text-slate-300">x{{ parseFloat(asset.quantity).toLocaleString('es-ES') }}</span>
+                                        <span class="text-xs bg-slate-100 dark:bg-slate-700 px-1.5 py-0.5 rounded text-slate-600 dark:text-slate-300">
+                                            {{ isPrivacyMode ? '****' : 'x' + parseFloat(asset.quantity).toLocaleString('es-ES') }}
+                                        </span>
                                     </div>
                                 </div>
                             </div>
                         </td>
                         <td class="px-6 py-4 text-right">
-                            <div class="font-medium text-slate-900 dark:text-white">{{ formatCurrency(asset.current_price) }}</div>
-                            <div class="text-sm text-slate-500 dark:text-slate-400 mt-0.5">{{ formatCurrency(asset.current_value) }}</div>
+                            <div class="font-medium text-slate-900 dark:text-white">{{ isPrivacyMode ? '****' : formatCurrency(asset.current_price) }}</div>
+                            <div class="text-sm text-slate-500 dark:text-slate-400 mt-0.5">{{ isPrivacyMode ? '****' : formatCurrency(asset.current_value) }}</div>
                         </td>
                         <td class="px-6 py-4 text-right">
-                            <div class="flex flex-col items-end">
+                            <div v-if="isPrivacyMode" class="flex flex-col items-end">
+                                <span class="font-bold text-slate-400">****</span>
+                                <span class="text-xs text-slate-400">****</span>
+                            </div>
+                            <div v-else class="flex flex-col items-end">
                                 <span :class="getAssetPerformance(asset).value >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'" class="font-bold">
                                     {{ getAssetPerformance(asset).value >= 0 ? '+' : '' }}{{ formatCurrency(getAssetPerformance(asset).value) }}
                                 </span>

@@ -2,6 +2,9 @@
 import { ref, computed } from 'vue';
 import DoughnutChart from '@/Components/Charts/DoughnutChart.vue';
 import { formatCurrency } from '@/Utils/formatting';
+import { usePrivacy } from '@/Composables/usePrivacy';
+
+const { isPrivacyMode } = usePrivacy();
 
 const props = defineProps({
     allocations: {
@@ -121,7 +124,7 @@ const allocationChartOptions = {
             <div v-if="!allocations[allocationType] || allocations[allocationType].length === 0" class="h-full flex items-center justify-center text-slate-400 text-sm">
                 No hay datos disponibles
             </div>
-            <div v-else class="relative h-full w-full">
+            <div v-else class="relative h-full w-full" :class="{ 'blur-sm select-none': isPrivacyMode }">
                 <DoughnutChart :data="allocationChartData" :options="allocationChartOptions" />
                 
                 <!-- Center Text Overlay -->
@@ -131,10 +134,10 @@ const allocationChartOptions = {
                             {{ hoveredItem.label }}
                         </span>
                         <span class="text-xl font-bold text-slate-800 dark:text-white mb-1">
-                            {{ formatCurrency(hoveredItem.value) }}
+                            {{ isPrivacyMode ? '****' : formatCurrency(hoveredItem.value) }}
                         </span>
                         <span class="text-sm font-semibold text-blue-600 dark:text-blue-400">
-                            {{ hoveredItem.percentage }}
+                            {{ isPrivacyMode ? '****' : hoveredItem.percentage }}
                         </span>
                     </template>
                     <template v-else>
@@ -142,7 +145,7 @@ const allocationChartOptions = {
                             Patrimonio Neto Total
                         </span>
                         <span class="text-2xl font-bold text-slate-800 dark:text-white">
-                            {{ formatCurrency(totalAmount) }}
+                            {{ isPrivacyMode ? '****' : formatCurrency(totalAmount) }}
                         </span>
                     </template>
                 </div>

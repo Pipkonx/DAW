@@ -1,8 +1,9 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, router } from '@inertiajs/vue3';
-import { ref, watch, computed } from 'vue';
+import { ref, watch, computed, onMounted } from 'vue';
 import TransactionModal from '@/Components/TransactionModal.vue';
+import TransactionHistory from '@/Components/Transactions/TransactionHistory.vue';
 import LineChart from '@/Components/Charts/LineChart.vue';
 import BarChart from '@/Components/Charts/BarChart.vue';
 import DoughnutChart from '@/Components/Charts/DoughnutChart.vue';
@@ -10,6 +11,9 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
 import InfoTooltip from '@/Components/InfoTooltip.vue';
 import { formatCurrency } from '@/Utils/formatting';
+import { usePrivacy } from '@/Composables/usePrivacy';
+
+const { isPrivacyMode } = usePrivacy();
 
 const props = defineProps({
     filters: Object,
@@ -18,6 +22,11 @@ const props = defineProps({
     transactions: Object,
     portfolios: Array,
     categories: Array,
+    availableYears: Array,
+    selectedYear: Number,
+    yearStats: Object,
+    topExpenses: Array,
+    topIncome: Array,
 });
 
 // Estado para filtros
@@ -25,6 +34,73 @@ const dateFilters = ref({
     start_date: props.filters.start_date,
     end_date: props.filters.end_date,
 });
+
+// Paginación "Load More" para listas Top
+const displayedTopExpenses = ref([]);
+const displayedTopIncome = ref([]);
+const topExpensesPage = ref(1);
+const topIncomePage = ref(1);
+const pageSize = 20;
+
+const loadMoreTopExpenses = () => {
+    if (!props.topExpenses) return;
+    const start = (topExpensesPage.value - 1) * pageSize;
+    const end = start + pageSize;
+    if (start < props.topExpenses.length) {
+        displayedTopExpenses.value.push(...props.topExpenses.slice(start, end));
+        topExpensesPage.value++;
+    }
+};
+
+const loadMoreTopIncome = () => {
+    if (!props.topIncome) return;
+    const start = (topIncomePage.value - 1) * pageSize;
+    const end = start + pageSize;
+    if (start < props.topIncome.length) {
+        displayedTopIncome.value.push(...props.topIncome.slice(start, end));
+        topIncomePage.value++;
+    }
+};
+
+// Intersection Observers for infinite scroll in lists
+const topExpensesObserverTarget = ref(null);
+const topIncomeObserverTarget = ref(null);
+
+onMounted(() => {
+    // Configurar observers
+    const options = { root: null, rootMargin: '50px', threshold: 0.1 };
+    
+    const expensesObserver = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting) {
+            loadMoreTopExpenses();
+        }
+    }, options);
+    
+    if (topExpensesObserverTarget.value) expensesObserver.observe(topExpensesObserverTarget.value);
+    
+    const incomeObserver = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting) {
+            loadMoreTopIncome();
+        }
+    }, options);
+    
+    if (topIncomeObserverTarget.value) incomeObserver.observe(topIncomeObserverTarget.value);
+});
+
+// Watch for prop changes to reset lists
+watch(() => props.topExpenses, () => {
+    displayedTopExpenses.value = [];
+    topExpensesPage.value = 1;
+    loadMoreTopExpenses();
+}, { immediate: true });
+
+watch(() => props.topIncome, () => {
+    displayedTopIncome.value = [];
+    topIncomePage.value = 1;
+    loadMoreTopIncome();
+}, { immediate: true });
+
+
 
 // Estado para Modal
 const showModal = ref(false);
@@ -36,32 +112,27 @@ const applyFilters = () => {
     router.get(route('expenses.index'), dateFilters.value, {
         preserveState: true,
         replace: true,
-        only: ['summary', 'charts', 'transactions', 'filters']
+        only: ['summary', 'charts', 'transactions', 'filters', 'yearStats', 'topExpenses', 'selectedYear']
     });
 };
 
-// Configuración Gráfico Tendencia (Línea Comparativa)
+// Configuración Gráfico Tendencia (Línea de Saldo Acumulado)
 const trendChartData = computed(() => ({
     labels: props.charts.trend.labels,
     datasets: [
         {
-            label: 'Ingresos',
-            data: props.charts.trend.income,
-            borderColor: '#10b981', // Emerald 500
-            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+            label: 'Saldo Acumulado',
+            data: props.charts.trend.balance,
+            borderColor: '#3b82f6', // Blue 500
+            backgroundColor: (context) => {
+                const ctx = context.chart.ctx;
+                const gradient = ctx.createLinearGradient(0, 0, 0, 300);
+                gradient.addColorStop(0, 'rgba(59, 130, 246, 0.2)');
+                gradient.addColorStop(1, 'rgba(59, 130, 246, 0.0)');
+                return gradient;
+            },
             pointBackgroundColor: '#ffffff',
-            pointBorderColor: '#10b981',
-            pointBorderWidth: 2,
-            tension: 0.4,
-            fill: true,
-        },
-        {
-            label: 'Gastos',
-            data: props.charts.trend.expenses,
-            borderColor: '#f43f5e', // Rose 500
-            backgroundColor: 'rgba(244, 63, 94, 0.1)',
-            pointBackgroundColor: '#ffffff',
-            pointBorderColor: '#f43f5e',
+            pointBorderColor: '#3b82f6',
             pointBorderWidth: 2,
             tension: 0.4,
             fill: true,
@@ -77,16 +148,16 @@ const trendChartOptions = {
         intersect: false,
     },
     plugins: {
-        legend: { position: 'top', align: 'end' },
+        legend: { display: false }, // Ocultar leyenda ya que es una sola línea explicada en el título
         tooltip: {
             callbacks: {
-                label: (context) => `${context.dataset.label}: ${formatCurrency(context.parsed.y)}`
+                label: (context) => `Saldo: ${formatCurrency(context.parsed.y)}`
             }
         }
     },
     scales: {
         y: {
-            beginAtZero: true,
+            beginAtZero: false, // Permitir valores negativos o rangos dinámicos
             grid: { color: 'rgba(148, 163, 184, 0.1)' },
             ticks: { font: { size: 10 }, color: '#94a3b8' }
         },
@@ -230,6 +301,56 @@ const deleteSelected = () => {
     }
 };
 
+// CSV Import Logic
+const fileInput = ref(null);
+
+const triggerFileInput = () => {
+    if (fileInput.value) {
+        fileInput.value.click();
+    }
+};
+
+const handleExport = (format) => {
+    const params = {
+        format: format,
+        ...dateFilters.value
+    };
+    
+    // Usar window.location para descargar el archivo
+    const url = route('transactions.export', params);
+    window.location.href = url;
+};
+
+const handleFileUpload = (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    if (confirm(`¿Deseas importar el archivo "${file.name}"?`)) {
+        const formData = new FormData();
+        formData.append('file', file);
+
+        router.post(route('transactions.import'), formData, {
+            forceFormData: true,
+            preserveScroll: true,
+            onSuccess: () => {
+                applyFilters();
+                alert('Transacciones importadas correctamente. Las categorías se han actualizado según el archivo.');
+            },
+            onError: (errors) => {
+                console.error(errors);
+                alert('Hubo un error al importar el archivo. Por favor verifica el formato.');
+            },
+            onFinish: () => {
+                // Reset input
+                if (fileInput.value) fileInput.value.value = null;
+            }
+        });
+    } else {
+        // Reset input if cancelled
+        event.target.value = null;
+    }
+};
+
 // Helper para colores de tipo
 const getTypeColor = (type) => {
     if (['income', 'dividend', 'gift', 'reward', 'transfer_in'].includes(type)) return 'text-emerald-600 bg-emerald-50 border-emerald-200';
@@ -266,24 +387,26 @@ const getTypeLabel = (type) => {
                     </p>
                 </div>
 
-                <!-- Filtros de Fecha -->
-                <div class="flex items-center gap-2 bg-white dark:bg-slate-800 p-2 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700">
-                    <div>
-                        <input 
-                            type="date" 
-                            v-model="dateFilters.start_date"
-                            @change="applyFilters"
-                            class="text-xs border-none bg-slate-50 dark:bg-slate-700 rounded focus:ring-rose-500 text-slate-600 dark:text-slate-200 p-1.5"
-                        />
-                    </div>
-                    <span class="text-slate-400">-</span>
-                    <div>
-                        <input 
-                            type="date" 
-                            v-model="dateFilters.end_date"
-                            @change="applyFilters"
-                            class="text-xs border-none bg-slate-50 dark:bg-slate-700 rounded focus:ring-rose-500 text-slate-600 dark:text-slate-200 p-1.5"
-                        />
+                <div class="flex flex-wrap items-center gap-2">
+                    <!-- Filtros de Fecha (Opcional) -->
+                    <div class="flex items-center gap-2 bg-white dark:bg-slate-800 p-2 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700">
+                        <div>
+                            <input 
+                                type="date" 
+                                v-model="dateFilters.start_date"
+                                @change="applyFilters"
+                                class="text-xs border-none bg-slate-50 dark:bg-slate-700 rounded focus:ring-rose-500 text-slate-600 dark:text-slate-200 p-1.5"
+                            />
+                        </div>
+                        <span class="text-slate-400">-</span>
+                        <div>
+                            <input 
+                                type="date" 
+                                v-model="dateFilters.end_date"
+                                @change="applyFilters"
+                                class="text-xs border-none bg-slate-50 dark:bg-slate-700 rounded focus:ring-rose-500 text-slate-600 dark:text-slate-200 p-1.5"
+                            />
+                        </div>
                     </div>
                 </div>
             </div>
@@ -297,7 +420,7 @@ const getTypeLabel = (type) => {
                 <div class="bg-white dark:bg-slate-800 p-5 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 border-l-4 border-l-emerald-500 relative overflow-hidden">
                     <div class="relative z-10">
                         <p class="text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wide">Ingresos Totales</p>
-                        <h3 class="text-2xl font-bold text-slate-800 dark:text-white mt-1">{{ formatCurrency(summary.total_income) }}</h3>
+                        <h3 class="text-2xl font-bold text-slate-800 dark:text-white mt-1">{{ isPrivacyMode ? '****' : formatCurrency(summary.total_income) }}</h3>
                         <p class="text-xs text-slate-400 dark:text-slate-500 mt-2">En el periodo seleccionado</p>
                     </div>
                     <div class="absolute right-0 top-0 p-4 opacity-10">
@@ -309,8 +432,8 @@ const getTypeLabel = (type) => {
                 <div class="bg-white dark:bg-slate-800 p-5 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 border-l-4 border-l-rose-500 relative overflow-hidden">
                     <div class="relative z-10">
                         <p class="text-xs font-bold text-rose-600 dark:text-rose-400 uppercase tracking-wide">Gastos Totales</p>
-                        <h3 class="text-2xl font-bold text-slate-800 dark:text-white mt-1">{{ formatCurrency(summary.total_expense) }}</h3>
-                        <p class="text-xs text-slate-400 dark:text-slate-500 mt-2">Promedio diario: {{ formatCurrency(summary.avg_daily_expense) }}</p>
+                        <h3 class="text-2xl font-bold text-slate-800 dark:text-white mt-1">{{ isPrivacyMode ? '****' : formatCurrency(summary.total_expense) }}</h3>
+                        <p class="text-xs text-slate-400 dark:text-slate-500 mt-2">Promedio diario: {{ isPrivacyMode ? '****' : formatCurrency(summary.avg_daily_expense) }}</p>
                     </div>
                     <div class="absolute right-0 top-0 p-4 opacity-10">
                         <svg class="w-16 h-16 text-rose-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 10.293a1 1 0 010 1.414l-6 6a1 1 0 01-1.414 0l-6-6a1 1 0 111.414-1.414L9 14.586V3a1 1 0 012 0v11.586l4.293-4.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
@@ -325,9 +448,10 @@ const getTypeLabel = (type) => {
                            :class="summary.net_savings >= 0 ? 'text-blue-600 dark:text-blue-400' : 'text-orange-600 dark:text-orange-400'">
                             {{ summary.net_savings >= 0 ? 'Ahorro Neto' : 'Déficit' }}
                         </p>
-                        <h3 class="text-2xl font-bold text-slate-800 dark:text-white mt-1">{{ formatCurrency(summary.net_savings) }}</h3>
+                        <h3 class="text-2xl font-bold text-slate-800 dark:text-white mt-1">{{ isPrivacyMode ? '****' : formatCurrency(summary.net_savings) }}</h3>
                         <p class="text-xs text-slate-400 dark:text-slate-500 mt-2">
-                            {{ summary.total_income > 0 ? ((summary.net_savings / summary.total_income) * 100).toFixed(1) + '% de tasa de ahorro' : '-' }}
+                            <span v-if="isPrivacyMode">****</span>
+                            <span v-else>{{ summary.total_income > 0 ? ((summary.net_savings / summary.total_income) * 100).toFixed(1) + '% de tasa de ahorro' : '-' }}</span>
                         </p>
                     </div>
                     <div class="absolute right-0 top-0 p-4 opacity-10">
@@ -345,7 +469,7 @@ const getTypeLabel = (type) => {
                         <InfoTooltip text="Comparativa mensual de tus ingresos, gastos y ahorro resultante." />
                     </div>
                     <div class="absolute inset-x-6 bottom-6 top-16">
-                        <div v-if="summary.total_income > 0 || summary.total_expense > 0" class="w-full h-full relative">
+                        <div v-if="summary.total_income > 0 || summary.total_expense > 0" class="w-full h-full relative" :class="{ 'blur-sm select-none': isPrivacyMode }">
                             <BarChart :data="monthlyChartData" :options="monthlyChartOptions" />
                         </div>
                         <div v-else class="h-full flex flex-col items-center justify-center text-slate-400">
@@ -359,11 +483,11 @@ const getTypeLabel = (type) => {
                     <!-- Gráfico de Tendencia (2/3 ancho) -->
                     <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 lg:col-span-2 relative h-80">
                     <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-lg font-bold text-slate-800 dark:text-white">Evolución Ingresos vs Gastos</h3>
-                        <InfoTooltip text="Compara tus entradas y salidas de dinero día a día." />
+                        <h3 class="text-lg font-bold text-slate-800 dark:text-white">Evolución del Saldo</h3>
+                        <InfoTooltip text="Muestra cómo ha crecido o disminuido tu saldo acumulado a lo largo del periodo." />
                     </div>
                     <div class="absolute inset-x-6 bottom-6 top-16">
-                        <div v-if="summary.total_income > 0 || summary.total_expense > 0" class="w-full h-full relative">
+                        <div v-if="summary.total_income > 0 || summary.total_expense > 0" class="w-full h-full relative" :class="{ 'blur-sm select-none': isPrivacyMode }">
                             <LineChart :data="trendChartData" :options="trendChartOptions" />
                         </div>
                         <div v-else class="h-full flex flex-col items-center justify-center text-slate-400">
@@ -380,126 +504,79 @@ const getTypeLabel = (type) => {
                         <InfoTooltip text="Distribución de tus gastos." />
                     </div>
                     <div class="absolute inset-x-6 bottom-6 top-16">
-                        <div v-if="summary.total_expense > 0" class="w-full h-full relative">
+                        <div v-if="summary.total_expense > 0 && charts.categories.data.length > 0" class="w-full h-full relative" :class="{ 'blur-sm select-none': isPrivacyMode }">
                             <DoughnutChart :data="categoryChartData" :options="categoryChartOptions" />
                         </div>
                         <div v-else class="h-full flex items-center justify-center text-slate-400 italic text-sm">
-                            No hay gastos para mostrar
+                            No hay gastos categorizados para mostrar
                         </div>
                     </div>
                 </div>
                 </div>
             </div>
 
-            <!-- 3. TABLA DETALLADA -->
-            <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 overflow-hidden">
-                <div class="p-6 border-b border-slate-100 dark:border-slate-700 flex flex-col sm:flex-row justify-between items-center gap-4">
-                    <h3 class="text-lg font-bold text-slate-800 dark:text-white">Historial de Movimientos</h3>
-                    <div class="flex gap-2">
-                        <button 
-                            v-if="selectedTransactions.length > 0"
-                            @click="deleteSelected"
-                            class="bg-rose-100 text-rose-700 hover:bg-rose-200 px-4 py-2 rounded-lg text-sm font-medium transition-colors"
-                        >
-                            Eliminar seleccionados ({{ selectedTransactions.length }})
-                        </button>
-                        <SecondaryButton @click="router.visit(route('categories.index'))" class="dark:bg-slate-700 dark:text-slate-200 dark:hover:bg-slate-600 dark:border-slate-600">
-                            Gestionar Categorías
-                        </SecondaryButton>
-                        <PrimaryButton @click="openTransactionModal" class="bg-blue-600 hover:bg-blue-700 focus:ring-blue-500">
-                            + Registrar Transacción
-                        </PrimaryButton>
-                    </div>
-                </div>
-                
-                <div class="overflow-x-auto">
-                    <table class="w-full text-sm text-left">
-                        <thead class="bg-slate-50 dark:bg-slate-700/50 text-slate-500 dark:text-slate-400 uppercase font-medium text-xs">
-                            <tr>
-                                <th class="px-6 py-3">
-                                    <input 
-                                        type="checkbox" 
-                                        :checked="transactions.data.length > 0 && selectedTransactions.length === transactions.data.length"
-                                        @change="toggleAll"
-                                        class="rounded border-slate-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
-                                    />
-                                </th>
-                                <th class="px-6 py-3">Fecha</th>
-                                <th class="px-6 py-3">Tipo</th>
-                                <th class="px-6 py-3">Categoría</th>
-                                <th class="px-6 py-3">Descripción</th>
-                                <th class="px-6 py-3 text-right">Monto</th>
-                                <th class="px-6 py-3 text-right">Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-slate-100 dark:divide-slate-700">
-                            <tr 
-                                v-for="tx in transactions.data" 
-                                :key="tx.id"
-                                @click="editTransaction(tx)"
-                                class="hover:bg-slate-50 dark:hover:bg-slate-700/50 cursor-pointer transition-colors group"
-                            >
-                                <td class="px-6 py-4 whitespace-nowrap" @click.stop>
-                                    <input 
-                                        type="checkbox" 
-                                        :checked="selectedTransactions.includes(tx.id)"
-                                        @change="toggleSelection(tx.id)"
-                                        class="rounded border-slate-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
-                                    />
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-slate-600 dark:text-slate-300">{{ tx.display_date }}</td>
-                                <td class="px-6 py-4">
-                                    <span class="px-2 py-1 rounded-md text-xs font-medium border"
-                                          :class="getTypeColor(tx.type)">
-                                        {{ getTypeLabel(tx.type) }}
-                                    </span>
-                                </td>
-                                <td class="px-6 py-4">
-                                    <span v-if="tx.category" class="px-2 py-1 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-md text-xs font-medium border border-slate-200 dark:border-slate-600">
-                                        {{ tx.category }}
-                                    </span>
-                                    <span v-else class="text-slate-400">-</span>
-                                </td>
-                                <td class="px-6 py-4 text-slate-700 dark:text-slate-300">{{ tx.description || '-' }}</td>
-                                <td class="px-6 py-4 text-right font-bold"
-                                    :class="['expense', 'transfer_out'].includes(tx.type) ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-600 dark:text-emerald-400'">
-                                    {{ ['expense', 'transfer_out'].includes(tx.type) ? '-' : '+' }}{{ formatCurrency(tx.amount) }}
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                    <button @click.stop="deleteTransaction(tx)" class="text-rose-600 hover:text-rose-900 dark:text-rose-400 dark:hover:text-rose-300">
-                                        Eliminar
-                                    </button>
-                                </td>
-                            </tr>
-                            <tr v-if="transactions.data.length === 0">
-                                <td colspan="7" class="px-6 py-12 text-center text-slate-400 dark:text-slate-500">
-                                    <div class="flex flex-col items-center justify-center">
-                                        <svg class="w-16 h-16 mb-4 text-slate-300 dark:text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
-                                        <p class="text-lg font-medium text-slate-500 dark:text-slate-400">No se encontraron movimientos</p>
-                                        <p class="text-sm mt-1">Intenta cambiar los filtros de fecha o registra una nueva transacción.</p>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+            <!-- 3. TOP GASTOS, INGRESOS & HISTORIAL -->
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+                <!-- Historial (3/4 ancho, Izquierda) -->
+                <div class="lg:col-span-3 space-y-4 order-2 lg:order-1">
+                    <TransactionHistory 
+                        :transactions="transactions" 
+                        filter-mode="expenses" 
+                        @edit="editTransaction"
+                        @export="handleExport"
+                        @import="triggerFileInput"
+                    />
                 </div>
 
-                <!-- Paginación -->
-                <div v-if="transactions.links.length > 3" class="p-4 border-t border-slate-100 dark:border-slate-700 flex justify-center">
-                    <div class="flex flex-wrap gap-1">
-                        <button
-                            v-for="(link, k) in transactions.links"
-                            :key="k"
-                            @click="changePage(link.url)"
-                            v-html="link.label"
-                            class="px-3 py-1 rounded text-sm transition-colors"
-                            :class="{
-                                'bg-slate-800 text-white dark:bg-blue-600': link.active,
-                                'bg-white text-slate-600 hover:bg-slate-100 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700': !link.active,
-                                'opacity-50 cursor-not-allowed': !link.url
-                            }"
-                            :disabled="!link.url"
-                        />
+                <!-- Input para Importar CSV -->
+                <input 
+                    type="file" 
+                    ref="fileInput" 
+                    @change="handleFileUpload" 
+                    class="hidden" 
+                    accept=".csv" 
+                />
+
+                <!-- Top Gastos e Ingresos (1/4 ancho, Derecha) -->
+                <div class="lg:col-span-1 space-y-6 order-1 lg:order-2">
+                    <!-- Top Gastos -->
+                    <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 max-h-96 overflow-y-auto custom-scrollbar">
+                        <h3 class="text-lg font-bold text-slate-800 dark:text-white mb-4 sticky top-0 bg-white dark:bg-slate-800 z-10 py-2">Top Gastos</h3>
+                        <div v-if="displayedTopExpenses.length > 0" class="space-y-4">
+                            <div v-for="(category, index) in displayedTopExpenses" :key="index" class="relative">
+                                <div class="flex justify-between items-center mb-1">
+                                    <span class="text-sm font-medium text-slate-700 dark:text-slate-300 truncate w-2/3" :title="category.category_name">{{ category.category_name }}</span>
+                                    <span class="text-sm font-bold text-slate-900 dark:text-white">{{ isPrivacyMode ? '****' : formatCurrency(category.total) }}</span>
+                                </div>
+                                <div class="w-full bg-slate-100 dark:bg-slate-700 rounded-full h-2">
+                                    <div class="bg-rose-500 h-2 rounded-full" :style="{ width: Math.min((category.total / (summary.total_expense || 1) * 100), 100) + '%' }"></div>
+                                </div>
+                            </div>
+                            <div ref="topExpensesObserverTarget" class="h-1 w-full"></div>
+                        </div>
+                        <div v-else class="text-slate-400 text-sm italic text-center py-4">
+                            No hay gastos registrados en este periodo.
+                        </div>
+                    </div>
+
+                    <!-- Top Ingresos -->
+                    <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 max-h-96 overflow-y-auto custom-scrollbar">
+                        <h3 class="text-lg font-bold text-slate-800 dark:text-white mb-4 sticky top-0 bg-white dark:bg-slate-800 z-10 py-2">Top Ingresos</h3>
+                        <div v-if="displayedTopIncome.length > 0" class="space-y-4">
+                            <div v-for="(category, index) in displayedTopIncome" :key="index" class="relative">
+                                <div class="flex justify-between items-center mb-1">
+                                    <span class="text-sm font-medium text-slate-700 dark:text-slate-300 truncate w-2/3" :title="category.category_name">{{ category.category_name }}</span>
+                                    <span class="text-sm font-bold text-slate-900 dark:text-white">{{ isPrivacyMode ? '****' : formatCurrency(category.total) }}</span>
+                                </div>
+                                <div class="w-full bg-slate-100 dark:bg-slate-700 rounded-full h-2">
+                                    <div class="bg-emerald-500 h-2 rounded-full" :style="{ width: Math.min((category.total / (summary.total_income || 1) * 100), 100) + '%' }"></div>
+                                </div>
+                            </div>
+                            <div ref="topIncomeObserverTarget" class="h-1 w-full"></div>
+                        </div>
+                        <div v-else class="text-slate-400 text-sm italic text-center py-4">
+                            No hay ingresos registrados en este periodo.
+                        </div>
                     </div>
                 </div>
             </div>

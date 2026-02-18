@@ -15,6 +15,9 @@ import DoughnutChart from '@/Components/Charts/DoughnutChart.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import InfoTooltip from '@/Components/InfoTooltip.vue';
 import UnlinkedAssetsLog from '@/Components/Dashboard/UnlinkedAssetsLog.vue';
+import { usePrivacy } from '@/Composables/usePrivacy';
+
+const { isPrivacyMode } = usePrivacy();
 
 // Definición de Props: Datos que vienen del Backend (DashboardController)
 const props = defineProps({
@@ -256,10 +259,10 @@ const filteredTransactions = computed(() => {
                                 <p class="text-sm font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Patrimonio Neto</p>
                                 <InfoTooltip text="Suma total de Inversiones + Efectivo/Ahorros." />
                             </div>
-                            <h3 class="text-3xl font-bold text-slate-900 dark:text-white">{{ formatCurrency(summary.netWorth) }}</h3>
+                            <h3 class="text-3xl font-bold text-slate-900 dark:text-white">{{ isPrivacyMode ? '****' : formatCurrency(summary.netWorth) }}</h3>
                             <div class="mt-4 flex items-center text-sm">
                                 <span class="text-slate-500 dark:text-slate-400">Efectivo: </span>
-                                <span class="font-semibold text-slate-700 dark:text-slate-300 ml-1">{{ formatCurrency(summary.cash) }}</span>
+                                <span class="font-semibold text-slate-700 dark:text-slate-300 ml-1">{{ isPrivacyMode ? '****' : formatCurrency(summary.cash) }}</span>
                             </div>
                         </div>
                     </div>
@@ -274,7 +277,7 @@ const filteredTransactions = computed(() => {
                                 <p class="text-sm font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Inversiones</p>
                                 <InfoTooltip text="Valor actual de mercado de todos tus activos en carteras." />
                             </div>
-                            <h3 class="text-3xl font-bold text-emerald-600 dark:text-emerald-400">{{ formatCurrency(summary.investmentsTotal) }}</h3>
+                            <h3 class="text-3xl font-bold text-emerald-600 dark:text-emerald-400">{{ isPrivacyMode ? '****' : formatCurrency(summary.investmentsTotal) }}</h3>
                             <div class="mt-4 flex items-center text-sm">
                                 <span class="text-slate-500 dark:text-slate-400">{{ portfolios.length }} carteras activas</span>
                             </div>
@@ -291,10 +294,10 @@ const filteredTransactions = computed(() => {
                                 <p class="text-sm font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Gastos (Mes Actual)</p>
                                 <InfoTooltip text="Total de gastos registrados este mes." />
                             </div>
-                            <h3 class="text-3xl font-bold text-rose-600 dark:text-rose-400">-{{ formatCurrency(expenses.monthlyTotal) }}</h3>
+                            <h3 class="text-3xl font-bold text-rose-600 dark:text-rose-400">{{ isPrivacyMode ? '****' : '-' + formatCurrency(expenses.monthlyTotal) }}</h3>
                             <div class="mt-4 flex items-center text-sm">
                                 <span class="text-slate-500 dark:text-slate-400">Ingresos: </span>
-                                <span class="font-semibold text-emerald-600 dark:text-emerald-400 ml-1">+{{ formatCurrency(expenses.monthlyIncome) }}</span>
+                                <span class="font-semibold text-emerald-600 dark:text-emerald-400 ml-1">{{ isPrivacyMode ? '****' : '+' + formatCurrency(expenses.monthlyIncome) }}</span>
                             </div>
                         </div>
                     </div>
@@ -320,7 +323,7 @@ const filteredTransactions = computed(() => {
                         <div v-if="portfolios.length > 0" class="space-y-6">
                             <!-- Gráfico Distribución Carteras -->
                             <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 h-80 relative">
-                                <div class="relative w-full h-full">
+                                <div class="relative w-full h-full" :class="{ 'blur-sm select-none': isPrivacyMode }">
                                     <DoughnutChart :data="portfolioDistributionData" :options="doughnutOptions" />
                                 </div>
                             </div>
@@ -334,17 +337,18 @@ const filteredTransactions = computed(() => {
                                             <p class="text-xs text-slate-500 dark:text-slate-400">{{ portfolio.description }}</p>
                                         </div>
                                         <div class="text-right">
-                                            <p class="text-lg font-bold text-slate-900 dark:text-white">{{ formatCurrency(portfolio.total_value) }}</p>
-                                            <p class="text-xs font-medium" :class="portfolio.yield >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'">
+                                            <p class="text-lg font-bold text-slate-900 dark:text-white">{{ isPrivacyMode ? '****' : formatCurrency(portfolio.total_value) }}</p>
+                                            <p v-if="!isPrivacyMode" class="text-xs font-medium" :class="portfolio.yield >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'">
                                                 {{ portfolio.yield >= 0 ? '+' : '' }}{{ portfolio.yield.toFixed(2) }}% Rend.
                                             </p>
+                                            <p v-else class="text-xs font-medium text-slate-400">****</p>
                                         </div>
                                     </div>
                                     <!-- Mini desglose de activos (top 3) -->
                                     <div class="space-y-1 mt-3 pt-3 border-t border-slate-50 dark:border-slate-700">
                                         <div v-for="asset in portfolio.assets.slice(0, 3)" :key="asset.id" class="flex justify-between text-sm">
                                             <span class="text-slate-600 dark:text-slate-400">{{ asset.name }}</span>
-                                            <span class="text-slate-800 dark:text-slate-200 font-medium">{{ formatCurrency(asset.current_value) }}</span>
+                                            <span class="text-slate-800 dark:text-slate-200 font-medium">{{ isPrivacyMode ? '****' : formatCurrency(asset.current_value) }}</span>
                                         </div>
                                         <div v-if="portfolio.assets.length > 3" class="text-xs text-blue-500 dark:text-blue-400 font-medium pt-1">
                                             + {{ portfolio.assets.length - 3 }} activos más...
@@ -382,7 +386,7 @@ const filteredTransactions = computed(() => {
                         <div v-if="expenses.byCategory.length > 0" class="space-y-6">
                              <!-- Gráfico Distribución Gastos -->
                             <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 h-80 relative">
-                                <div class="relative w-full h-full">
+                                <div class="relative w-full h-full" :class="{ 'blur-sm select-none': isPrivacyMode }">
                                     <DoughnutChart :data="expensesDistributionData" :options="doughnutOptions" />
                                 </div>
                             </div>
@@ -400,9 +404,9 @@ const filteredTransactions = computed(() => {
                                     <tbody class="divide-y divide-slate-100 dark:divide-slate-700">
                                         <tr v-for="cat in expenses.byCategory" :key="cat.category" class="hover:bg-slate-50 dark:hover:bg-slate-700/50">
                                             <td class="px-4 py-3 font-medium text-slate-700 dark:text-slate-300">{{ cat.category }}</td>
-                                            <td class="px-4 py-3 text-right text-rose-600 dark:text-rose-400 font-bold">{{ formatCurrency(cat.total) }}</td>
+                                            <td class="px-4 py-3 text-right text-rose-600 dark:text-rose-400 font-bold">{{ isPrivacyMode ? '****' : formatCurrency(cat.total) }}</td>
                                             <td class="px-4 py-3 text-right text-slate-500 dark:text-slate-400">
-                                                {{ expenses.monthlyTotal > 0 ? ((cat.total / expenses.monthlyTotal) * 100).toFixed(1) : 0 }}%
+                                                {{ isPrivacyMode ? '****' : (expenses.monthlyTotal > 0 ? ((cat.total / expenses.monthlyTotal) * 100).toFixed(1) : 0) }}%
                                             </td>
                                         </tr>
                                     </tbody>
@@ -450,7 +454,7 @@ const filteredTransactions = computed(() => {
                             </button>
                         </div>
                     </div>
-                    <div class="h-[300px] w-full relative">
+                    <div class="h-[300px] w-full relative" :class="{ 'blur-sm select-none': isPrivacyMode }">
                         <LineChart :data="netWorthChartData" :options="lineChartOptions" />
                     </div>
                 </div>
@@ -520,7 +524,8 @@ const filteredTransactions = computed(() => {
                                     </td>
                                     <td class="px-6 py-4 text-slate-500 dark:text-slate-400">{{ transaction.category || '-' }}</td>
                                     <td class="px-6 py-4 text-right font-bold" :class="['expense', 'buy', 'transfer_out'].includes(transaction.type) ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-600 dark:text-emerald-400'">
-                                        {{ ['expense', 'buy', 'transfer_out'].includes(transaction.type) ? '-' : '+' }}{{ formatCurrency(transaction.amount) }}
+                                        <span v-if="isPrivacyMode">****</span>
+                                        <span v-else>{{ ['expense', 'buy', 'transfer_out'].includes(transaction.type) ? '-' : '+' }}{{ formatCurrency(transaction.amount) }}</span>
                                     </td>
                                 </tr>
                                 <tr v-if="filteredTransactions.length === 0">

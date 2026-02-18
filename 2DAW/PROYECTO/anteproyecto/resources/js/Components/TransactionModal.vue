@@ -1,6 +1,7 @@
 <script setup>
 import { computed, watch, ref, onMounted } from 'vue';
 import { useForm } from '@inertiajs/vue3';
+import { usePrivacy } from '@/Composables/usePrivacy';
 import Modal from '@/Components/Modal.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import TextInput from '@/Components/TextInput.vue';
@@ -10,6 +11,8 @@ import SecondaryButton from '@/Components/SecondaryButton.vue';
 import DangerButton from '@/Components/DangerButton.vue';
 import axios from 'axios';
 import _ from 'lodash'; // Lodash for debounce
+
+const { isPrivacyMode } = usePrivacy();
 
 const props = defineProps({
     show: { type: Boolean, default: false },
@@ -558,9 +561,11 @@ const getTypeLabel = (type) => {
                             type="number"
                             step="any"
                             class="mt-1 block w-full dark:bg-slate-700 dark:border-slate-600 dark:text-white"
+                            :class="{ 'blur-sm focus:blur-none transition-all': isPrivacyMode }"
                             v-model="form.quantity"
                             @focus="lastEditedField = 'quantity'"
                             @input="lastEditedField = 'quantity'"
+                            placeholder="0.00000000"
                         />
                     </div>
 
@@ -589,7 +594,9 @@ const getTypeLabel = (type) => {
                                 type="number"
                                 step="any"
                                 class="mt-1 block w-full dark:bg-slate-700 dark:border-slate-600 dark:text-white"
+                                :class="{ 'blur-sm focus:blur-none transition-all': isPrivacyMode }"
                                 v-model="form.price_per_unit"
+                                placeholder="0.00"
                             />
                             <p v-if="priceSource" class="text-[10px] text-green-600 dark:text-green-400 mt-1">
                                 ✓ {{ priceSource }}
@@ -639,6 +646,7 @@ const getTypeLabel = (type) => {
                                         type="number"
                                         step="0.01"
                                         class="mt-1 block w-full dark:bg-slate-700 dark:border-slate-600 dark:text-white"
+                                        :class="{ 'blur-sm focus:blur-none transition-all': isPrivacyMode }"
                                         v-model="form.fees"
                                         placeholder="0.00"
                                     />
@@ -652,6 +660,7 @@ const getTypeLabel = (type) => {
                                         type="number"
                                         step="0.01"
                                         class="mt-1 block w-full dark:bg-slate-700 dark:border-slate-600 dark:text-white"
+                                        :class="{ 'blur-sm focus:blur-none transition-all': isPrivacyMode }"
                                         v-model="form.exchange_fees"
                                         placeholder="0.00"
                                     />
@@ -665,6 +674,7 @@ const getTypeLabel = (type) => {
                                         type="number"
                                         step="0.01"
                                         class="mt-1 block w-full dark:bg-slate-700 dark:border-slate-600 dark:text-white"
+                                        :class="{ 'blur-sm focus:blur-none transition-all': isPrivacyMode }"
                                         v-model="form.tax"
                                         placeholder="0.00"
                                     />
@@ -691,7 +701,7 @@ const getTypeLabel = (type) => {
                             <InputLabel value="Importe Total" class="dark:text-slate-300 font-bold text-lg" />
                             <p class="text-xs text-slate-500 mt-1 dark:text-slate-400">Calculado automáticamente</p>
                         </div>
-                        <div class="text-2xl font-bold text-slate-800 dark:text-white">
+                        <div class="text-2xl font-bold text-slate-800 dark:text-white" :class="{ 'blur-sm select-none': isPrivacyMode }">
                             {{ form.amount ? Number(form.amount).toLocaleString('es-ES', { style: 'currency', currency: form.currency_code }) : '0,00 €' }}
                         </div>
                     </div>
@@ -716,6 +726,7 @@ const getTypeLabel = (type) => {
                             type="number"
                             step="0.01"
                             class="mt-1 block w-full dark:bg-slate-700 dark:border-slate-600 dark:text-white"
+                            :class="{ 'blur-sm focus:blur-none transition-all': isPrivacyMode }"
                             v-model="form.amount"
                             required
                         />

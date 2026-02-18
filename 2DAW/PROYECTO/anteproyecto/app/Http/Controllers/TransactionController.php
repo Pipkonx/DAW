@@ -16,6 +16,8 @@ use Inertia\Inertia;
 use App\Models\MarketAsset;
 use App\Services\MarketDataService;
 
+use App\Models\Category; // Importar modelo Category
+
 class TransactionController extends Controller
 {
     protected $marketDataService;
@@ -831,5 +833,186 @@ class TransactionController extends Controller
             DB::rollBack();
             return redirect()->back()->withErrors(['error' => 'Error al eliminar masivamente: ' . $e->getMessage()]);
         }
+    }
+
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|file|mimes:csv,txt',
+        ]);
+
+        $user = Auth::user();
+        $file = $request->file('file');
+        
+        if (($handle = fopen($file->getRealPath(), 'r')) === FALSE) {
+             return back()->withErrors(['file' => 'No se pudo abrir el archivo.']);
+        }
+
+        // Detectar separador
+        $firstLine = fgets($handle);
+        $separator = str_contains($firstLine, ';') ? ';' : ',';
+        rewind($handle);
+
+        // Leer cabeceras
+        $headers = fgetcsv($handle, 1000, $separator);
+        
+        if (!$headers) {
+             return back()->withErrors(['file' => 'El archivo está vacío o no tiene cabeceras.']);
+        }
+
+        // Normalizar cabeceras
+        $normalizedHeaders = array_map(function($h) {
+            return strtolower(trim(preg_replace('/[\x00-\x1F\x7F\xA0]/u', '', str_replace(['"', "'"], '', $h))));
+        }, $headers);
+
+        $successCount = 0;
+        $row = 0;
+
+        DB::beginTransaction();
+        try {
+            while (($data = fgetcsv($handle, 1000, $separator)) !== FALSE) {
+                $row++;
+                if (count($data) < 2) continue; 
+                
+                $rowData = [];
+                if (count($data) === count($normalizedHeaders)) {
+                    $rowData = array_combine($normalizedHeaders, $data);
+                } else {
+                    $rowData = [
+                        'fecha' => $data[0] ?? null,
+                        'tipo' => $data[1] ?? null,
+                        'concepto' => $data[2] ?? null,
+                        'cantidad' => $data[3] ?? null,
+                        'precio' => $data[4] ?? null,
+                        'total' => $data[5] ?? null,
+                        'descripcion' => $data[6] ?? null,
+                    ];
+                }
+
+                $dateStr = $this->findValue($rowData, ['fecha', 'date', 'day', 'time']);
+                $typeStr = $this->findValue($rowData, ['tipo', 'type', 'kind']);
+                $amountStr = $this->findValue($rowData, ['total', 'amount', 'monto', 'importe', 'valor']);
+                $descStr = $this->findValue($rowData, ['descripción', 'descripcion', 'description', 'concepto', 'concept', 'detalle']);
+                $catStr = $this->findValue($rowData, ['categoría', 'categoria', 'category', 'cat', 'clasificación', 'clasificacion']);
+                
+                if (!$dateStr || !$amountStr) continue;
+
+                // Parsear Fecha
+                $date = null;
+                try {
+                    if (str_contains($dateStr, '/')) {
+                        $date = Carbon::createFromFormat('d/m/Y', $dateStr);
+                    } else {
+                        $date = Carbon::parse($dateStr);
+                    }
+                } catch (\Exception $e) {
+                    try {
+                        $date = Carbon::parse($dateStr);
+                    } catch (\Exception $e2) {
+                        continue; 
+                    }
+                }
+
+                // Parsear Monto
+                $amountStr = str_replace(['€', '$', ' '], '', $amountStr);
+                if (str_contains($amountStr, ',') && str_contains($amountStr, '.')) {
+                     $amountStr = str_replace('.', '', $amountStr); 
+                     $amountStr = str_replace(',', '.', $amountStr); 
+                } elseif (str_contains($amountStr, ',')) {
+                     $amountStr = str_replace(',', '.', $amountStr);
+                }
+                $amount = (float) $amountStr;
+
+                // Tipo
+                $type = 'expense';
+                if ($typeStr) {
+                    $type = match(strtolower(trim($typeStr))) {
+                        'ingreso', 'income', 'depósito', 'deposit' => 'income',
+                        'gasto', 'expense', 'retiro', 'withdrawal', 'compra', 'payment' => 'expense',
+                        'transferencia', 'transfer' => 'transfer_out',
+                        'dividendo', 'dividend' => 'dividend',
+                        'venta', 'sell' => 'sell',
+                        'compra', 'buy' => 'buy',
+                        default => 'expense'
+                    };
+                } else {
+                    $type = $amount >= 0 ? 'income' : 'expense';
+                }
+
+                // Categoría
+                $categoryId = null;
+                if ($catStr) {
+                    $catName = trim($catStr);
+                    if (!empty($catName)) {
+                        $category = Category::firstOrCreate(
+                            ['name' => $catName, 'user_id' => $user->id],
+                            [
+                                'type' => $type, 
+                                'color' => '#' . substr(md5($catName), 0, 6)
+                            ]
+                        );
+                        $categoryId = $category->id;
+                    }
+                }
+
+                // Si no hay categoría en CSV, asignar a General o dejar null?
+                // El usuario pide "crearlas según el csv". Si no hay, tal vez 'General'.
+                if (!$categoryId) {
+                     $generalCat = Category::firstOrCreate(
+                        ['name' => 'General', 'user_id' => $user->id],
+                        ['type' => 'expense', 'color' => '#94a3b8']
+                     );
+                     $categoryId = $generalCat->id;
+                }
+
+                Transaction::create([
+                    'user_id' => $user->id,
+                    'date' => $date,
+                    'type' => $type,
+                    'amount' => abs($amount),
+                    'description' => $descStr ?? 'Importado CSV',
+                    'category_id' => $categoryId,
+                    'currency_code' => 'EUR',
+                ]);
+                
+                $successCount++;
+            }
+            
+            // Limpieza de categorías no usadas (excepto generales)
+            // Esto asegura que solo queden las creadas/usadas y las generales
+            $protectedNames = ['General', 'Otros', 'Ingresos', 'Gastos', 'Sin categoría', 'Ahorro', 'Inversión'];
+            
+            // Obtener IDs de categorías en uso por este usuario
+            $usedCategoryIds = Transaction::where('user_id', $user->id)
+                ->whereNotNull('category_id')
+                ->pluck('category_id')
+                ->unique()
+                ->toArray();
+                
+            // Eliminar categorías del usuario que NO se usan y NO son protegidas
+            Category::where('user_id', $user->id)
+                ->whereNotIn('id', $usedCategoryIds)
+                ->whereNotIn('name', $protectedNames)
+                ->delete();
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->withErrors(['file' => 'Error en fila ' . $row . ': ' . $e->getMessage()]);
+        } finally {
+            fclose($handle);
+        }
+
+        return back()->with('success', "$successCount transacciones importadas correctamente.");
+    }
+
+    private function findValue($row, $keys) {
+        foreach ($keys as $key) {
+            if (isset($row[$key])) return $row[$key];
+            foreach ($row as $k => $v) {
+                if (str_contains(strtolower($k), $key)) return $v;
+            }
+        }
+        return null;
     }
 }
