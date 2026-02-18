@@ -284,9 +284,9 @@ onMounted(() => {
                             <ResponsiveNavLink :href="route('profile.edit')">
                                 Perfil
                             </ResponsiveNavLink>
-                            <ResponsiveNavLink :href="route('anteproyecto.download')">
+                            <a :href="route('anteproyecto.download')" class="block w-full ps-3 pe-4 py-2 border-l-4 border-transparent text-start text-base font-medium text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 hover:border-slate-300 dark:hover:border-slate-600 focus:outline-none focus:text-slate-800 dark:focus:text-slate-200 focus:bg-slate-50 dark:focus:bg-slate-800 focus:border-slate-300 dark:focus:border-slate-600 transition duration-150 ease-in-out" download>
                                 Descargar Anteproyecto
-                            </ResponsiveNavLink>
+                            </a>
                             <ResponsiveNavLink
                                 :href="route('logout')"
                                 method="post"
