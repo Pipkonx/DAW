@@ -59,7 +59,19 @@ const onDeleteAsset = (asset) => {
 
 const assetFilter = ref('');
 
+// Period Selector State
+const selectedPeriod = ref('all'); // '1d', '1w', '1m', 'ytd', '1y', 'all'
+const periods = [
+    { value: '1d', label: '1D' },
+    { value: '1w', label: '1S' },
+    { value: '1m', label: '1M' },
+    { value: 'ytd', label: 'YTD' },
+    { value: '1y', label: '1A' },
+    { value: 'all', label: 'Max' }
+];
+
 const filteredAssets = computed(() => {
+    // Just simple search filter
     if (!assetFilter.value) return props.assets;
     const lower = assetFilter.value.toLowerCase();
     return props.assets.filter(a => 
@@ -90,6 +102,27 @@ const onFilterAsset = (asset) => {
 const onAddTransaction = () => {
     emit('add-transaction');
 };
+
+// Mock function to simulate P/L change based on period (Since we don't have historical data for all periods yet)
+// In a real app, this would fetch or compute historical performance
+const getAssetPerformance = (asset) => {
+    // If period is 'all' (Max), use the total profit/loss
+    if (selectedPeriod.value === 'all') {
+        return {
+            value: asset.profit_loss,
+            percentage: asset.profit_loss_percentage
+        };
+    }
+    
+    // For other periods, we would ideally need historical data points.
+    // For now, we will just show the total P/L as a placeholder or 0 if not available,
+    // but the UI is prepared for the switch.
+    // TODO: Implement historical performance calculation per asset
+    return {
+        value: asset.profit_loss, // Placeholder
+        percentage: asset.profit_loss_percentage // Placeholder
+    };
+};
 </script>
 
 <template>
@@ -107,11 +140,22 @@ const onAddTransaction = () => {
                 >
                     Eliminar ({{ bulkSelectedAssets.length }})
                 </button>
-                 <TextInput
-                    v-model="assetFilter"
-                    placeholder="Filtrar por nombre o ticker..."
-                    class="text-sm w-full sm:w-64"
-                />
+                
+                <!-- Period Selector -->
+                <div class="flex bg-slate-100 dark:bg-slate-700 rounded-lg p-1 mr-2">
+                    <button 
+                        v-for="period in periods" 
+                        :key="period.value"
+                        @click="selectedPeriod = period.value"
+                        class="px-3 py-1 text-xs font-medium rounded-md transition-all"
+                        :class="selectedPeriod === period.value 
+                            ? 'bg-white text-blue-600 shadow-sm dark:bg-slate-600 dark:text-white' 
+                            : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200'"
+                    >
+                        {{ period.label }}
+                    </button>
+                </div>
+
                 <PrimaryButton @click="onAddTransaction">
                     + Añadir Transacción
                 </PrimaryButton>
@@ -166,11 +210,11 @@ const onAddTransaction = () => {
                         </td>
                         <td class="px-6 py-4 text-right">
                             <div class="flex flex-col items-end">
-                                <span :class="asset.profit_loss >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'" class="font-bold">
-                                    {{ asset.profit_loss >= 0 ? '+' : '' }}{{ formatCurrency(asset.profit_loss) }}
+                                <span :class="getAssetPerformance(asset).value >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'" class="font-bold">
+                                    {{ getAssetPerformance(asset).value >= 0 ? '+' : '' }}{{ formatCurrency(getAssetPerformance(asset).value) }}
                                 </span>
-                                <span :class="asset.profit_loss >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'" class="text-xs">
-                                    {{ asset.profit_loss >= 0 ? '+' : '' }}{{ formatPercent(asset.profit_loss_percentage) }}
+                                <span :class="getAssetPerformance(asset).value >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'" class="text-xs">
+                                    {{ getAssetPerformance(asset).value >= 0 ? '+' : '' }}{{ formatPercent(getAssetPerformance(asset).percentage) }}
                                 </span>
                             </div>
                         </td>

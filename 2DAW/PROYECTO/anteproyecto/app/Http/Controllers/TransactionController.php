@@ -122,7 +122,7 @@ class TransactionController extends Controller
             'region' => $this->getAllocation($assets, 'region'),
             'country' => $this->getAllocation($assets, 'country'),
             'currency_code' => $this->getAllocation($assets, 'currency_code'),
-            'asset' => $assets->map(fn($a) => ['label' => $a->ticker ?? $a->name, 'value' => $a->current_value, 'color' => $a->color]),
+            'asset' => $assets->map(fn($a) => ['label' => $a->name, 'value' => $a->current_value, 'color' => $a->color]),
         ];
 
         return Inertia::render('Transactions/Index', [
