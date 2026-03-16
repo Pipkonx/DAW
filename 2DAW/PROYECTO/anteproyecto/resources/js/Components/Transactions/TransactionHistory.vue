@@ -18,7 +18,7 @@ const props = defineProps({
     }
 });
 
-const emit = defineEmits(['export', 'edit']);
+const emit = defineEmits(['export', 'edit', 'import']);
 
 const selectedTransactions = ref([]);
 const activeFilter = ref('all');
