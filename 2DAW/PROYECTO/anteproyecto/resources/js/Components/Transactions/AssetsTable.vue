@@ -194,7 +194,10 @@ const getAssetPerformance = (asset) => {
                         </td>
                         <td class="px-6 py-4">
                             <div class="flex items-center space-x-4">
-                                <div class="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold text-white shadow-sm" :style="{ backgroundColor: asset.color }">
+                                <div v-if="asset.logo" class="w-10 h-10 rounded-full overflow-hidden bg-slate-100 dark:bg-slate-700 flex items-center justify-center shadow-sm">
+                                    <img :src="asset.logo" class="w-full h-full object-cover" @error="asset.logo = null" />
+                                </div>
+                                <div v-else class="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold text-white shadow-sm" :style="{ backgroundColor: asset.color || '#3b82f6' }">
                                     {{ asset.ticker ? asset.ticker.substring(0,2) : asset.name.substring(0,2) }}
                                 </div>
                                 <div>

@@ -24,6 +24,8 @@ class User extends Authenticatable implements MustVerifyEmail
         'google_id',
         'avatar',
         'investment_return_rate',
+        'enable_tax_projection',
+        'tax_rate',
     ];
 
     /**
@@ -46,6 +48,9 @@ class User extends Authenticatable implements MustVerifyEmail
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'enable_tax_projection' => 'boolean',
+            'tax_rate' => 'decimal:2',
+            'investment_return_rate' => 'decimal:2',
         ];
     }
 

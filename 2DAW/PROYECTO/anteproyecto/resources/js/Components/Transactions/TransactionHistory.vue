@@ -486,8 +486,11 @@ const onExport = (format) => {
                                     <!-- Fecha Corta -->
                                     <span class="text-xs font-medium text-slate-400 w-10">{{ getShortDate(tx.date) }}</span>
                                     
-                                    <!-- Icono -->
-                                    <div :class="getTypeIcon(tx.type)" class="w-10 h-10 rounded-full flex items-center justify-center shrink-0">
+                                    <!-- Logo o Icono -->
+                                    <div v-if="tx.asset && tx.asset.logo" class="w-10 h-10 rounded-full overflow-hidden bg-slate-100 dark:bg-slate-700 flex items-center justify-center shrink-0 shadow-sm">
+                                        <img :src="tx.asset.logo" class="w-full h-full object-cover" @error="tx.asset.logo = null" />
+                                    </div>
+                                    <div v-else :class="getTypeIcon(tx.type)" class="w-10 h-10 rounded-full flex items-center justify-center shrink-0">
                                         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="getTypeIconSvg(tx.type)" />
                                         </svg>

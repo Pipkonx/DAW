@@ -1,4 +1,5 @@
 <script setup>
+import { ref } from 'vue';
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
@@ -17,10 +18,28 @@ defineProps({
 const user = usePage().props.auth.user;
 
 const form = useForm({
+    _method: 'PATCH', // Spoofing for multipart form with Inertia
     name: user.name,
     email: user.email,
-    avatar: user.avatar || '',
+    avatar: null, // Change to null for file input
 });
+
+const previewUrl = ref(user.avatar || null);
+
+const handleAvatarChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+        form.avatar = file;
+        previewUrl.value = URL.createObjectURL(file);
+    }
+};
+
+const submitForm = () => {
+    form.post(route('profile.update'), {
+        preserveScroll: true,
+        forceFormData: true,
+    });
+};
 </script>
 
 <template>
@@ -36,7 +55,7 @@ const form = useForm({
         </header>
 
         <form
-            @submit.prevent="form.patch(route('profile.update'))"
+            @submit.prevent="submitForm"
             class="mt-6 space-y-6"
         >
             <div>
@@ -56,14 +75,29 @@ const form = useForm({
             </div>
 
             <div>
-                <InputLabel for="avatar" value="URL de Foto de Perfil" />
-                <TextInput
-                    id="avatar"
-                    type="url"
-                    class="mt-1 block w-full"
-                    v-model="form.avatar"
-                    placeholder="https://example.com/photo.jpg"
-                />
+                <InputLabel for="avatar" value="Foto de Perfil" />
+                
+                <div class="mt-2 flex items-center gap-4">
+                    <!-- Preview Circle -->
+                    <div class="w-16 h-16 rounded-full overflow-hidden bg-slate-100 dark:bg-slate-700 flex-shrink-0 border-2 border-slate-200 dark:border-slate-600">
+                        <img v-if="previewUrl" :src="previewUrl" class="w-full h-full object-cover" />
+                        <div v-else class="w-full h-full flex items-center justify-center text-slate-400">
+                            <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col gap-1">
+                        <input
+                            id="avatar"
+                            type="file"
+                            class="text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 dark:file:bg-slate-700 dark:file:text-slate-300"
+                            @change="handleAvatarChange"
+                            accept="image/*"
+                        />
+                        <p class="text-[10px] text-slate-500">JPG, PNG o GIF. Máx 2MB.</p>
+                    </div>
+                </div>
+                
                 <InputError class="mt-2" :message="form.errors.avatar" />
             </div>
 

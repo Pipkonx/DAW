@@ -43,6 +43,10 @@ Route::get('/dashboard', [DashboardController::class, 'index'])
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
 
+Route::get('/api/dashboard/transactions', [DashboardController::class, 'getTransactions'])
+    ->middleware(['auth', 'verified'])
+    ->name('dashboard.transactions');
+
 // Transacciones
 Route::post('/transactions/import', [TransactionController::class, 'import'])
     ->middleware(['auth'])

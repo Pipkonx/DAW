@@ -8,7 +8,7 @@
  */
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link } from '@inertiajs/vue3';
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
 import TransactionModal from '@/Components/TransactionModal.vue';
 import LineChart from '@/Components/Charts/LineChart.vue';
 import DoughnutChart from '@/Components/Charts/DoughnutChart.vue';
@@ -16,6 +16,7 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
 import InfoTooltip from '@/Components/InfoTooltip.vue';
 import UnlinkedAssetsLog from '@/Components/Dashboard/UnlinkedAssetsLog.vue';
 import { usePrivacy } from '@/Composables/usePrivacy';
+import axios from 'axios';
 
 const { isPrivacyMode } = usePrivacy();
 
@@ -23,7 +24,7 @@ const { isPrivacyMode } = usePrivacy();
 const props = defineProps({
     summary: Object,          // { netWorth, cash, investmentsTotal }
     portfolios: Array,        // Lista de carteras con sus métricas y activos
-    expenses: Object,         // { monthlyTotal, monthlyIncome, byCategory: [...] }
+    expenses: Object,         // { monthlyTotal, monthlyIncome, ranges: { month: {...}, year: {...}, all: {...} } }
     charts: Object,           // { netWorthLabels, netWorthData, portfolioHistory }
     recentTransactions: Array,// Últimas transacciones
     allAssetsList: Array,     // Lista simple de activos (para referencias si es necesario)
@@ -36,6 +37,74 @@ const showModal = ref(false);
 const editingTransaction = ref(null);
 const chartMode = ref('global'); // 'global' | 'portfolios'
 const transactionFilter = ref('all'); // 'all' | 'income' | 'expense' | 'investment'
+const expenseRange = ref(localStorage.getItem('dashboard_expense_range') || 'month'); // 'month' | 'year' | 'all'
+
+// Persistir el rango de gastos
+watch(expenseRange, (newRange) => {
+    localStorage.setItem('dashboard_expense_range', newRange);
+});
+
+// Scroll infinito para transacciones
+const allTransactions = ref([...props.recentTransactions]);
+const loadingMore = ref(false);
+const hasMore = ref(true);
+const offset = ref(props.recentTransactions.length);
+const limit = 20;
+
+const loadMoreTransactions = async () => {
+    if (loadingMore.value || !hasMore.value) return;
+
+    loadingMore.value = true;
+    try {
+        const response = await axios.get(route('dashboard.transactions'), {
+            params: {
+                offset: offset.value,
+                limit: limit
+            }
+        });
+
+        const newTransactions = response.data;
+        if (newTransactions.length < limit) {
+            hasMore.value = false;
+        }
+
+        allTransactions.value = [...allTransactions.value, ...newTransactions];
+        offset.value += newTransactions.length;
+    } catch (error) {
+        console.error('Error cargando más transacciones:', error);
+    } finally {
+        loadingMore.value = false;
+    }
+};
+
+// Intersection Observer para el scroll infinito
+const loadMoreTrigger = ref(null);
+let observer = null;
+
+onMounted(() => {
+    observer = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting) {
+            loadMoreTransactions();
+        }
+    }, { threshold: 0.1 });
+
+    if (loadMoreTrigger.value) {
+        observer.observe(loadMoreTrigger.value);
+    }
+});
+
+onUnmounted(() => {
+    if (observer) {
+        observer.disconnect();
+    }
+});
+
+// Sincronizar si las transacciones iniciales cambian (ej: tras crear una nueva)
+watch(() => props.recentTransactions, (newVal) => {
+    allTransactions.value = [...newVal];
+    offset.value = newVal.length;
+    hasMore.value = true;
+}, { deep: true });
 
 // Abrir modal para nueva transacción
 const openNewTransaction = () => {
@@ -172,8 +241,9 @@ const portfolioDistributionData = computed(() => {
 
 // 3. Gráfico de Gastos (Por Categoría)
 const expensesDistributionData = computed(() => {
-    const labels = props.expenses.byCategory.map(c => c.category);
-    const data = props.expenses.byCategory.map(c => c.total);
+    const rangeData = props.expenses.ranges[expenseRange.value]?.byCategory || [];
+    const labels = rangeData.map(c => c.category);
+    const data = rangeData.map(c => c.total);
     const colors = ['#ef4444', '#f97316', '#f59e0b', '#eab308', '#84cc16', '#22c55e', '#06b6d4', '#3b82f6', '#6366f1', '#a855f7'];
 
     return {
@@ -186,6 +256,17 @@ const expensesDistributionData = computed(() => {
         }]
     };
 });
+
+// Resumen del rango de gastos seleccionado
+const currentExpenseRangeTotal = computed(() => {
+    return props.expenses.ranges[expenseRange.value]?.total || 0;
+});
+
+const expenseRangeLabels = {
+    month: 'del Mes',
+    year: 'del Año',
+    all: 'Total'
+};
 
 const doughnutOptions = {
     responsive: true,
@@ -211,13 +292,33 @@ const doughnutOptions = {
 
 // Filtro de Transacciones
 const filteredTransactions = computed(() => {
-    if (transactionFilter.value === 'all') return props.recentTransactions;
-    return props.recentTransactions.filter(t => {
-        if (transactionFilter.value === 'income') return ['income', 'dividend', 'reward', 'gift', 'transfer_in'].includes(t.type);
-        if (transactionFilter.value === 'expense') return ['expense', 'transfer_out'].includes(t.type);
-        if (transactionFilter.value === 'investment') return ['buy', 'sell'].includes(t.type);
-        return true;
+    let filtered = allTransactions.value;
+    if (transactionFilter.value !== 'all') {
+        filtered = filtered.filter(t => {
+            if (transactionFilter.value === 'income') return ['income', 'dividend', 'reward', 'gift', 'transfer_in'].includes(t.type);
+            if (transactionFilter.value === 'expense') return ['expense', 'transfer_out'].includes(t.type);
+            if (transactionFilter.value === 'investment') return ['buy', 'sell'].includes(t.type);
+            return true;
+        });
+    }
+
+    // Agrupar por Mes/Año
+    const groups = {};
+    filtered.forEach(tx => {
+        const date = new Date(tx.date);
+        const monthYear = date.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
+        const formattedMonthYear = monthYear.charAt(0).toUpperCase() + monthYear.slice(1);
+        
+        if (!groups[formattedMonthYear]) {
+            groups[formattedMonthYear] = [];
+        }
+        groups[formattedMonthYear].push(tx);
     });
+    
+    return Object.keys(groups).map(key => ({
+        monthYear: key,
+        items: groups[key]
+    }));
 });
 
 </script>
@@ -346,8 +447,19 @@ const filteredTransactions = computed(() => {
                                     </div>
                                     <!-- Mini desglose de activos (top 3) -->
                                     <div class="space-y-1 mt-3 pt-3 border-t border-slate-50 dark:border-slate-700">
-                                        <div v-for="asset in portfolio.assets.slice(0, 3)" :key="asset.id" class="flex justify-between text-sm">
-                                            <span class="text-slate-600 dark:text-slate-400">{{ asset.name }}</span>
+                                        <div v-for="asset in portfolio.assets.slice(0, 3)" :key="asset.id" class="flex justify-between items-center text-sm py-1">
+                                            <div class="flex items-center gap-3">
+                                                <div v-if="asset.logo" class="w-8 h-8 rounded-full overflow-hidden bg-slate-100 dark:bg-slate-700 flex items-center justify-center">
+                                                    <img :src="asset.logo" class="w-full h-full object-cover" @error="asset.logo = null" />
+                                                </div>
+                                                <div v-else class="w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-bold text-white shadow-sm" :style="{ backgroundColor: asset.color || '#3b82f6' }">
+                                                    {{ asset.ticker ? asset.ticker.substring(0,2) : asset.name.substring(0,2) }}
+                                                </div>
+                                                <div>
+                                                    <p class="text-sm font-bold text-slate-800 dark:text-white leading-none">{{ asset.name }}</p>
+                                                    <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-1 uppercase tracking-wider">{{ asset.ticker || asset.type }}</p>
+                                                </div>
+                                            </div>
                                             <span class="text-slate-800 dark:text-slate-200 font-medium">{{ isPrivacyMode ? '****' : formatCurrency(asset.current_value) }}</span>
                                         </div>
                                         <div v-if="portfolio.assets.length > 3" class="text-xs text-blue-500 dark:text-blue-400 font-medium pt-1">
@@ -378,12 +490,28 @@ const filteredTransactions = computed(() => {
                                 <span class="bg-rose-100 dark:bg-rose-900/30 text-rose-600 dark:text-rose-400 p-2 rounded-lg mr-3">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
                                 </span>
-                                Gastos del Mes
+                                Gastos {{ expenseRangeLabels[expenseRange] }}
                             </h3>
-                            <InfoTooltip text="Desglose de gastos por categoría." />
+                            
+                            <!-- Selector de Rango de Gastos -->
+                            <div class="bg-slate-100 dark:bg-slate-700 p-1 rounded-lg flex text-xs font-medium">
+                                <button 
+                                    v-for="range in [
+                                        { id: 'month', label: 'Mes' },
+                                        { id: 'year', label: 'Año' },
+                                        { id: 'all', label: 'Todo' }
+                                    ]" 
+                                    :key="range.id"
+                                    @click="expenseRange = range.id"
+                                    class="px-3 py-1 rounded-md transition-all"
+                                    :class="expenseRange === range.id ? 'bg-white dark:bg-slate-600 text-rose-600 dark:text-rose-400 shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'"
+                                >
+                                    {{ range.label }}
+                                </button>
+                            </div>
                         </div>
 
-                        <div v-if="expenses.byCategory.length > 0" class="space-y-6">
+                        <div v-if="expenses.ranges[expenseRange]?.byCategory.length > 0" class="space-y-6">
                              <!-- Gráfico Distribución Gastos -->
                             <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 h-80 relative">
                                 <div class="relative w-full h-full" :class="{ 'blur-sm select-none': isPrivacyMode }">
@@ -402,11 +530,11 @@ const filteredTransactions = computed(() => {
                                         </tr>
                                     </thead>
                                     <tbody class="divide-y divide-slate-100 dark:divide-slate-700">
-                                        <tr v-for="cat in expenses.byCategory" :key="cat.category" class="hover:bg-slate-50 dark:hover:bg-slate-700/50">
+                                        <tr v-for="cat in expenses.ranges[expenseRange].byCategory" :key="cat.category" class="hover:bg-slate-50 dark:hover:bg-slate-700/50">
                                             <td class="px-4 py-3 font-medium text-slate-700 dark:text-slate-300">{{ cat.category }}</td>
                                             <td class="px-4 py-3 text-right text-rose-600 dark:text-rose-400 font-bold">{{ isPrivacyMode ? '****' : formatCurrency(cat.total) }}</td>
                                             <td class="px-4 py-3 text-right text-slate-500 dark:text-slate-400">
-                                                {{ isPrivacyMode ? '****' : (expenses.monthlyTotal > 0 ? ((cat.total / expenses.monthlyTotal) * 100).toFixed(1) : 0) }}%
+                                                {{ isPrivacyMode ? '****' : (currentExpenseRangeTotal > 0 ? ((cat.total / currentExpenseRangeTotal) * 100).toFixed(1) : 0) }}%
                                             </td>
                                         </tr>
                                     </tbody>
@@ -419,7 +547,7 @@ const filteredTransactions = computed(() => {
                             <div class="bg-slate-50 dark:bg-slate-700 p-4 rounded-full mb-4">
                                 <svg class="w-8 h-8 text-slate-400 dark:text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                             </div>
-                            <h4 class="text-slate-900 dark:text-white font-medium mb-1">Sin gastos este mes</h4>
+                            <h4 class="text-slate-900 dark:text-white font-medium mb-1">Sin gastos {{ expenseRangeLabels[expenseRange] }}</h4>
                             <p class="text-slate-500 dark:text-slate-400 text-sm">Tus gastos aparecerán aquí cuando añadas transacciones.</p>
                         </div>
                     </div>
@@ -502,32 +630,46 @@ const filteredTransactions = computed(() => {
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-slate-100 dark:divide-slate-700">
-                                <tr 
-                                    v-for="transaction in filteredTransactions" 
-                                    :key="transaction.id" 
-                                    class="hover:bg-blue-50 dark:hover:bg-slate-700/50 cursor-pointer transition-colors group"
-                                    @click="editTransaction(transaction)"
-                                >
-                                    <td class="px-6 py-4 whitespace-nowrap text-slate-600 dark:text-slate-300">{{ transaction.display_date }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <span class="px-2.5 py-0.5 rounded-full text-xs font-medium border flex items-center w-fit gap-1" :class="transactionTypes[transaction.type]?.color || 'bg-gray-100 text-gray-600'">
-                                            <span>{{ transactionTypes[transaction.type]?.icon }}</span>
-                                            {{ transactionTypes[transaction.type]?.label || transaction.type }}
-                                        </span>
-                                    </td>
-                                    <td class="px-6 py-4 text-slate-700 dark:text-slate-200 font-medium">
-                                        <div class="flex items-center">
-                                            <!-- Asset Logo if available -->
-                                            <img v-if="transaction.asset_logo" :src="transaction.asset_logo" class="w-6 h-6 rounded-full mr-2 bg-slate-100 dark:bg-slate-700" alt="logo" />
-                                            <span>{{ transaction.description || transaction.asset_name || '-' }}</span>
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-4 text-slate-500 dark:text-slate-400">{{ transaction.category || '-' }}</td>
-                                    <td class="px-6 py-4 text-right font-bold" :class="['expense', 'buy', 'transfer_out'].includes(transaction.type) ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-600 dark:text-emerald-400'">
-                                        <span v-if="isPrivacyMode">****</span>
-                                        <span v-else>{{ ['expense', 'buy', 'transfer_out'].includes(transaction.type) ? '-' : '+' }}{{ formatCurrency(transaction.amount) }}</span>
-                                    </td>
-                                </tr>
+                                <template v-for="group in filteredTransactions" :key="group.monthYear">
+                                    <!-- Cabecera de Mes -->
+                                    <tr class="bg-slate-50/50 dark:bg-slate-700/30">
+                                        <td colspan="5" class="px-6 py-2 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                                            {{ group.monthYear }}
+                                        </td>
+                                    </tr>
+                                    <tr 
+                                        v-for="transaction in group.items" 
+                                        :key="transaction.id" 
+                                        class="hover:bg-blue-50 dark:hover:bg-slate-700/50 cursor-pointer transition-colors group"
+                                        @click="editTransaction(transaction)"
+                                    >
+                                        <td class="px-6 py-4 whitespace-nowrap text-slate-600 dark:text-slate-300">{{ transaction.display_date }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2.5 py-0.5 rounded-full text-xs font-medium border flex items-center w-fit gap-1" :class="transactionTypes[transaction.type]?.color || 'bg-gray-100 text-gray-600'">
+                                                <span>{{ transactionTypes[transaction.type]?.icon }}</span>
+                                                {{ transactionTypes[transaction.type]?.label || transaction.type }}
+                                            </span>
+                                        </td>
+                                        <td class="px-6 py-4 text-slate-700 dark:text-slate-200 font-medium">
+                                            <div class="flex items-center">
+                                                <!-- Asset Logo if available -->
+                                                <img 
+                                                    v-if="transaction.asset_logo" 
+                                                    :src="transaction.asset_logo" 
+                                                    class="w-6 h-6 rounded-full mr-2 bg-slate-100 dark:bg-slate-700" 
+                                                    alt="logo" 
+                                                    @error="transaction.asset_logo = null"
+                                                />
+                                                <span>{{ transaction.description || transaction.asset_name || '-' }}</span>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 text-slate-500 dark:text-slate-400">{{ transaction.category || '-' }}</td>
+                                        <td class="px-6 py-4 text-right font-bold" :class="['expense', 'buy', 'transfer_out'].includes(transaction.type) ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-600 dark:text-emerald-400'">
+                                            <span v-if="isPrivacyMode">****</span>
+                                            <span v-else>{{ ['expense', 'buy', 'transfer_out'].includes(transaction.type) ? '-' : '+' }}{{ formatCurrency(transaction.amount) }}</span>
+                                        </td>
+                                    </tr>
+                                </template>
                                 <tr v-if="filteredTransactions.length === 0">
                                     <td colspan="5" class="px-6 py-8 text-center text-slate-400 dark:text-slate-500">
                                         No hay transacciones que coincidan con el filtro.
@@ -535,6 +677,20 @@ const filteredTransactions = computed(() => {
                                 </tr>
                             </tbody>
                         </table>
+                    </div>
+
+                    <!-- Trigger para Scroll Infinito -->
+                    <div ref="loadMoreTrigger" class="py-6 flex justify-center">
+                        <div v-if="loadingMore" class="flex items-center space-x-2 text-blue-600 dark:text-blue-400">
+                            <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            <span class="text-sm font-medium">Cargando más transacciones...</span>
+                        </div>
+                        <div v-else-if="!hasMore && allTransactions.length > 0" class="text-slate-400 dark:text-slate-500 text-sm">
+                            No hay más transacciones para cargar.
+                        </div>
                     </div>
                 </div>
             </div>

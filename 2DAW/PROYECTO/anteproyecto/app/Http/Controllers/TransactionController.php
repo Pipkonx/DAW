@@ -59,7 +59,7 @@ class TransactionController extends Controller
         });
 
         // 2. Filtrar Activos según Cartera Seleccionada
-        $assetsQuery = Asset::where('user_id', $user->id);
+        $assetsQuery = Asset::where('user_id', $user->id)->with('marketAsset');
         
         if ($portfolioId !== 'aggregated') {
             $assetsQuery->where('portfolio_id', $portfolioId);
@@ -240,7 +240,7 @@ class TransactionController extends Controller
      */
     private function getTransactionsQuery($user, $portfolioId, $assetId, $assetIds)
     {
-        $query = Transaction::where('user_id', $user->id)->with(['asset', 'portfolio']);
+        $query = Transaction::where('user_id', $user->id)->with(['asset.marketAsset', 'portfolio']);
 
         if ($assetId) {
             if (is_array($assetId)) {
@@ -260,7 +260,7 @@ class TransactionController extends Controller
                 $q->whereNotNull('portfolio_id')
                   ->orWhereIn('asset_id', $assetIds)
                   ->orWhereIn('type', ['buy', 'sell', 'dividend', 'reward', 'gift']);
-            });
+            })->where('type', '!=', 'expense');
         }
 
         return $query->orderBy('date', 'desc')->orderBy('created_at', 'desc');

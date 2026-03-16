@@ -16,6 +16,7 @@ const props = defineProps({
     bankAccounts: Array,
     projections: Array,
     aggregated: Object,
+    settings: Object,
 });
 
 const { isPrivacyMode } = usePrivacy();
@@ -70,7 +71,9 @@ const form = useForm({
 });
 
 const formSettings = useForm({
-    investment_return_rate: props.aggregated.investment_return_rate,
+    investment_return_rate: props.settings.investment_return_rate,
+    tax_rate: props.settings.tax_rate,
+    enable_tax_projection: props.settings.enable_tax_projection,
 });
 
 const updateSettings = () => {
@@ -184,19 +187,55 @@ const formatPercent = (value) => {
                 <!-- Configuración de Proyecciones -->
                 <div class="bg-white dark:bg-slate-800 overflow-hidden shadow-sm sm:rounded-lg p-6 border border-slate-200 dark:border-slate-700">
                     <h3 class="text-lg font-medium text-slate-900 dark:text-white mb-4">Configuración de Proyecciones</h3>
-                    <div>
-                        <InputLabel for="investment_return_rate" value="Tasa de Retorno Esperado Inversiones (%)" class="dark:text-slate-300" />
-                        <TextInput 
-                            id="investment_return_rate" 
-                            v-model="formSettings.investment_return_rate" 
-                            type="number" 
-                            step="0.01" 
-                            min="0"
-                            max="100"
-                            class="mt-1 block w-full dark:bg-slate-900 dark:border-slate-700 dark:text-slate-300" 
-                            @change="updateSettings"
-                        />
-                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Rentabilidad media anual proyectada para tu cartera de inversión.</p>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div>
+                            <InputLabel for="investment_return_rate" value="Tasa de Retorno Esperado Inversiones (%)" class="dark:text-slate-300" />
+                            <TextInput 
+                                id="investment_return_rate" 
+                                v-model="formSettings.investment_return_rate" 
+                                type="number" 
+                                step="0.01" 
+                                min="0"
+                                max="100"
+                                class="mt-1 block w-full dark:bg-slate-900 dark:border-slate-700 dark:text-slate-300" 
+                                @change="updateSettings"
+                            />
+                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Rentabilidad media anual proyectada para tu cartera de inversión.</p>
+                        </div>
+
+                        <div>
+                            <InputLabel for="enable_tax_projection" value="¿Calcular Impuestos sobre Rendimientos?" class="dark:text-slate-300" />
+                            <div class="mt-2 flex items-center">
+                                <label class="inline-flex items-center cursor-pointer">
+                                    <input 
+                                        type="checkbox" 
+                                        v-model="formSettings.enable_tax_projection" 
+                                        class="sr-only peer"
+                                        @change="updateSettings"
+                                    >
+                                    <div class="relative w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-slate-600 peer-checked:bg-blue-600"></div>
+                                    <span class="ms-3 text-sm font-medium text-slate-700 dark:text-slate-300">
+                                        {{ formSettings.enable_tax_projection ? 'Activado' : 'Desactivado' }}
+                                    </span>
+                                </label>
+                            </div>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Resta automáticamente los impuestos de las proyecciones de beneficio.</p>
+                        </div>
+
+                        <div v-if="formSettings.enable_tax_projection">
+                            <InputLabel for="tax_rate" value="Tipo Impositivo / Impuestos (%)" class="dark:text-slate-300" />
+                            <TextInput 
+                                id="tax_rate" 
+                                v-model="formSettings.tax_rate" 
+                                type="number" 
+                                step="0.01" 
+                                min="0"
+                                max="100"
+                                class="mt-1 block w-full dark:bg-slate-900 dark:border-slate-700 dark:text-slate-300" 
+                                @change="updateSettings"
+                            />
+                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Porcentaje de impuestos que se aplica a tus ganancias (ej: 19% en España).</p>
+                        </div>
                     </div>
                 </div>
 

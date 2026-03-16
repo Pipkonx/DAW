@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 use Inertia\Response;
 
+use Illuminate\Support\Facades\Storage;
+
 class ProfileController extends Controller
 {
     /**
@@ -29,13 +31,30 @@ class ProfileController extends Controller
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-        $request->user()->fill($request->validated());
+        $user = $request->user();
+        $validated = $request->validated();
 
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
+        // Handle Avatar Upload
+        if ($request->hasFile('avatar')) {
+            // Delete old local avatar if exists
+            if ($user->avatar && Storage::disk('public')->exists(str_replace('/storage/', '', $user->avatar))) {
+                Storage::disk('public')->delete(str_replace('/storage/', '', $user->avatar));
+            }
+
+            $path = $request->file('avatar')->store('avatars', 'public');
+            $validated['avatar'] = '/storage/' . $path;
+        } else {
+            // Keep existing avatar if no new file uploaded
+            unset($validated['avatar']);
         }
 
-        $request->user()->save();
+        $user->fill($validated);
+
+        if ($user->isDirty('email')) {
+            $user->email_verified_at = null;
+        }
+
+        $user->save();
 
         return Redirect::route('profile.edit');
     }

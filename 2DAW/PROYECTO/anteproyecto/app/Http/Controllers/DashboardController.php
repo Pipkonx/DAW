@@ -55,7 +55,7 @@ class DashboardController extends Controller
         $portfolios = Portfolio::where('user_id', $user->id)
             ->with(['assets' => function ($query) {
                 // Incluimos activos con cantidad > 0 para visualización limpia
-                $query->where('quantity', '>', 0);
+                $query->where('quantity', '>', 0)->with('marketAsset');
             }])
             ->get();
 
@@ -89,6 +89,7 @@ class DashboardController extends Controller
                         'current_value' => $asset->current_value,
                         'profit_loss_pct' => $asset->profit_loss_percentage,
                         'color' => $asset->color,
+                        'logo' => $asset->logo,
                     ];
                 }),
             ];
@@ -98,6 +99,7 @@ class DashboardController extends Controller
         $orphanAssets = Asset::where('user_id', $user->id)
             ->whereNull('portfolio_id')
             ->where('quantity', '>', 0)
+            ->with('marketAsset')
             ->get();
         
         if ($orphanAssets->count() > 0) {
@@ -124,6 +126,7 @@ class DashboardController extends Controller
                         'current_value' => $asset->current_value,
                         'profit_loss_pct' => $asset->profit_loss_percentage,
                         'color' => $asset->color,
+                        'logo' => $asset->logo,
                     ];
                 }),
             ]);
@@ -147,21 +150,36 @@ class DashboardController extends Controller
         $monthlyIncome = $monthlyMetrics->income ?? 0;
         $monthlyExpense = $monthlyMetrics->expense ?? 0;
 
-        // Desglose de gastos por categoría (para gráfica de quesitos)
-        $expensesByCategory = Transaction::where('transactions.user_id', $user->id)
-            ->where('transactions.type', 'expense')
-            ->whereBetween('transactions.date', [$startOfMonth, $endOfMonth])
-            ->leftJoin('categories', 'transactions.category_id', '=', 'categories.id')
-            ->select('categories.name as category_name', DB::raw('SUM(transactions.amount) as total'))
-            ->groupBy('categories.name')
-            ->orderByDesc('total')
-            ->get()
-            ->map(function ($item) {
-                return [
-                    'category' => $item->category_name ?? 'Sin categoría',
-                    'total' => (float)$item->total,
-                ];
-            });
+        // Desglose de gastos por categoría (Mes, Año, Todo)
+        $expenseRanges = [
+            'month' => [$now->copy()->startOfMonth(), $now->copy()->endOfMonth()],
+            'year' => [$now->copy()->startOfYear(), $now->copy()->endOfYear()],
+            'all' => [Carbon::parse('1970-01-01'), $now->copy()->endOfDay()],
+        ];
+
+        $expensesData = [];
+        foreach ($expenseRanges as $range => $dates) {
+            $expensesData[$range] = [
+                'total' => (float) Transaction::where('user_id', $user->id)
+                    ->where('type', 'expense')
+                    ->whereBetween('date', $dates)
+                    ->sum('amount'),
+                'byCategory' => Transaction::where('transactions.user_id', $user->id)
+                    ->where('transactions.type', 'expense')
+                    ->whereBetween('transactions.date', $dates)
+                    ->leftJoin('categories', 'transactions.category_id', '=', 'categories.id')
+                    ->select('categories.name as category_name', DB::raw('SUM(transactions.amount) as total'))
+                    ->groupBy('categories.name')
+                    ->orderByDesc('total')
+                    ->get()
+                    ->map(function ($item) {
+                        return [
+                            'category' => $item->category_name ?? 'Sin categoría',
+                            'total' => (float)$item->total,
+                        ];
+                    })
+            ];
+        }
 
         // ---------------------------------------------------------
         // 3. PATRIMONIO TOTAL (NET WORTH)
@@ -247,7 +265,7 @@ class DashboardController extends Controller
 
         // Últimas transacciones (Editables)
         $recentTransactions = Transaction::where('user_id', $user->id)
-            ->with(['asset', 'category'])
+            ->with(['asset.marketAsset', 'category'])
             ->orderBy('date', 'desc')
             ->take(20) // Aumentamos a 20 para mejor visualización
             ->get()
@@ -257,14 +275,14 @@ class DashboardController extends Controller
                     'type' => $tx->type,
                     'amount' => (float)$tx->amount,
                     'date' => $tx->date->format('Y-m-d'), // Formato input date
-                    'display_date' => $tx->date->format('d/m/Y'),
+                    'display_date' => $tx->date->format('d.m'),
                     'category' => $tx->category ? $tx->category->name : 'Sin categoría',
                     'category_id' => $tx->category_id,
                     'description' => $tx->description,
                     'asset_name' => $tx->asset?->name,
                     'quantity' => $tx->quantity,
                     'price_per_unit' => $tx->price_per_unit,
-                    'asset_logo' => $tx->asset?->ticker ? 'https://logo.clearbit.com/' . strtolower($tx->asset->ticker) . '.com' : null, // Intento de logo simple
+                    'asset_logo' => $tx->asset?->logo,
                 ];
             });
 
@@ -286,7 +304,7 @@ class DashboardController extends Controller
             'expenses' => [
                 'monthlyTotal' => $monthlyExpense,
                 'monthlyIncome' => $monthlyIncome,
-                'byCategory' => $expensesByCategory,
+                'ranges' => $expensesData,
             ],
             'charts' => [
                 'netWorthLabels' => $chartLabels,
@@ -297,5 +315,38 @@ class DashboardController extends Controller
             'allAssetsList' => Asset::where('user_id', $user->id)->select('id', 'name', 'ticker')->get(),
             'categories' => $categories,
         ]);
+    }
+
+    /**
+     * Obtiene transacciones paginadas para scroll infinito.
+     */
+    public function getTransactions(Request $request)
+    {
+        $user = Auth::user();
+        $limit = $request->input('limit', 20);
+        $offset = $request->input('offset', 0);
+
+        return Transaction::where('user_id', $user->id)
+            ->with(['asset.marketAsset', 'category'])
+            ->orderBy('date', 'desc')
+            ->offset($offset)
+            ->limit($limit)
+            ->get()
+            ->map(function ($tx) {
+                return [
+                    'id' => $tx->id,
+                    'type' => $tx->type,
+                    'amount' => (float)$tx->amount,
+                    'date' => $tx->date->format('Y-m-d'),
+                    'display_date' => $tx->date->format('d.m'),
+                    'category' => $tx->category ? $tx->category->name : 'Sin categoría',
+                    'category_id' => $tx->category_id,
+                    'description' => $tx->description,
+                    'asset_name' => $tx->asset?->name,
+                    'quantity' => $tx->quantity,
+                    'price_per_unit' => $tx->price_per_unit,
+                    'asset_logo' => $tx->asset?->logo,
+                ];
+            });
     }
 }

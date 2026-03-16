@@ -33,6 +33,7 @@ class Asset extends Model
         'total_invested',
         'profit_loss',
         'profit_loss_percentage',
+        'logo',
     ];
 
     public function user()
@@ -77,6 +78,26 @@ class Asset extends Model
     {
         if ($this->total_invested == 0) return 0;
         return ($this->profit_loss / $this->total_invested) * 100;
+    }
+
+    // Retorna la URL del logo del activo
+    public function getLogoAttribute()
+    {
+        // 1. Intentar usar el logo de MarketAsset si está vinculado
+        if ($this->marketAsset && $this->marketAsset->logo_url) {
+            return $this->marketAsset->logo_url;
+        }
+
+        // 2. Intentar Clearbit si el ticker parece válido para un dominio
+        if ($this->ticker) {
+            $ticker = strtolower($this->ticker);
+            // Solo intentar Clearbit si parece un ticker de acción normal (sin : ni . y longitud <= 5)
+            if (!str_contains($ticker, ':') && !str_contains($ticker, '.') && strlen($ticker) <= 5) {
+                return "https://logo.clearbit.com/{$ticker}.com";
+            }
+        }
+
+        return null;
     }
 
     /**

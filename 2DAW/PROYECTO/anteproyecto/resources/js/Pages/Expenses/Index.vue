@@ -1,7 +1,7 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, router } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import TransactionModal from '@/Components/TransactionModal.vue';
 import TransactionHistory from '@/Components/Transactions/TransactionHistory.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
@@ -33,6 +33,34 @@ const dateFilters = ref({
     start_date: props.filters.start_date,
     end_date: props.filters.end_date,
 });
+
+// Sincronizar estado si los props cambian (ej: navegación con nuevos parámetros)
+watch(() => props.filters, (newFilters) => {
+    dateFilters.value.start_date = newFilters.start_date;
+    dateFilters.value.end_date = newFilters.end_date;
+}, { deep: true });
+
+// Cargar filtros persistidos al montar
+onMounted(() => {
+    const queryParams = new URLSearchParams(window.location.search);
+    const hasUrlFilters = queryParams.has('start_date') || queryParams.has('end_date');
+    
+    const savedStart = localStorage.getItem('expenses_filter_start');
+    const savedEnd = localStorage.getItem('expenses_filter_end');
+    
+    // Si no hay filtros en la URL pero sí en localStorage, aplicarlos
+    if (!hasUrlFilters && (savedStart || savedEnd)) {
+        dateFilters.value.start_date = savedStart || dateFilters.value.start_date;
+        dateFilters.value.end_date = savedEnd || dateFilters.value.end_date;
+        applyFilters();
+    }
+});
+
+// Persistir cambios en los filtros
+watch(() => dateFilters.value, (newFilters) => {
+    if (newFilters.start_date) localStorage.setItem('expenses_filter_start', newFilters.start_date);
+    if (newFilters.end_date) localStorage.setItem('expenses_filter_end', newFilters.end_date);
+}, { deep: true });
 
 const applyFilters = () => {
     router.get(route('expenses.index'), {

@@ -53,6 +53,7 @@ const searchResults = ref([]);
 const isSearching = ref(false);
 const showSuggestions = ref(false);
 const isFetchingPrice = ref(false);
+const isFormLoading = ref(false); // To avoid auto-fetching during modal open/edit
 const priceError = ref(null);
 const priceSource = ref(null);
 const lastEditedField = ref(null);
@@ -95,7 +96,7 @@ watch(() => form.asset_type, () => {
 
 // Also search by ISIN
 watch(() => form.isin, (val) => {
-    if (val && val.length > 5) performSearch(val);
+    if (val && val.length > 5 && !isFormLoading.value) performSearch(val);
 });
 
 const selectAsset = (asset) => {
@@ -116,7 +117,7 @@ const selectAsset = (asset) => {
 // Fetch Historical Price
 const fetchPrice = async () => {
     // Remove strict isTrade check to allow fetching if user has selected asset/date
-    if ((!form.asset_name && !form.market_asset_id) || !form.date) return;
+    if ((!form.asset_name && !form.market_asset_id) || !form.date || isFormLoading.value) return;
     
     isFetchingPrice.value = true;
     priceError.value = null;
@@ -150,7 +151,10 @@ const fetchPrice = async () => {
             }
         }
     } catch (error) {
-        console.error('Price fetch error:', error);
+        // Only log if it's NOT a 404 (Expected if price is not available)
+        if (error.response?.status !== 404) {
+            console.error('Price fetch error:', error);
+        }
         priceError.value = "No se encontró precio para esta fecha. Ingrese manualmente.";
     } finally {
         isFetchingPrice.value = false;
@@ -281,6 +285,7 @@ const preselectCategory = (type) => {
 // Reset or populate form
 watch(() => props.show, (newVal) => {
     if (newVal) {
+        isFormLoading.value = true; // Block auto-fetchers
         searchResults.value = [];
         showSuggestions.value = false;
         priceError.value = null;
@@ -325,6 +330,11 @@ watch(() => props.show, (newVal) => {
             if (props.defaultPortfolioId && props.defaultPortfolioId !== 'aggregated') form.portfolio_id = props.defaultPortfolioId;
             else if (props.portfolios.length > 0) form.portfolio_id = props.portfolios[0].id;
         }
+
+        // Delay unsetting isFormLoading to allow all watchers to run
+        setTimeout(() => {
+            isFormLoading.value = false;
+        }, 50);
     }
 });
 
