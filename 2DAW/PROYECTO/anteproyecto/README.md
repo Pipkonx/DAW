@@ -1,147 +1,118 @@
-# FintechPro - Gestión de Finanzas Personales
+# 💰 Wealth Manager: Gestor Inteligente de Patrimonio
 
-![FintechPro Dashboard](https://via.placeholder.com/800x400?text=FintechPro+Preview)
+[![Laravel Version](https://img.shields.io/badge/Laravel-12.x-red.svg)](https://laravel.com)
+[![Vue Version](https://img.shields.io/badge/Vue-3.x-green.svg)](https://vuejs.org)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-**FintechPro** es una aplicación de gestión financiera personal (SPA) construida con **Laravel 11**, **Vue 3** e **Inertia.js**. Diseñada para ser intuitiva incluso para usuarios sin experiencia financiera, permite llevar un control total de ingresos, gastos, ahorros e inversiones en una interfaz moderna y profesional.
+**Wealth Manager** es una plataforma de ingeniería financiera diseñada para centralizar y automatizar el control de activos heterogéneos (acciones, fondos, cripto, bonos y efectivo). Olvídate de picar datos en un Excel: este sistema utiliza **Web Scraping**, **OCR** y **Parsing de PDFs** para que tu patrimonio se actualice solo.
 
 ---
 
-## 🚀 Características Principales
+## 🌟 Características Principales
 
-### 1. 📊 Dashboard Financiero Integral
-- **KPIs en Tiempo Real:** Visualiza tu Patrimonio Neto, Ingresos Mensuales, Gastos, Tasa de Ahorro y Rendimiento de Inversiones al instante.
-- **Gráficos Interactivos:** Evolución histórica de tu patrimonio y desglose de activos (Doughnut Chart) con filtros por tipo de activo.
-- **Resumen Mensual:** Desglose automático de transacciones por tipo (Ingresos, Gastos, Compras, Ventas, Dividendos, etc.).
-
-### 2. 💰 Gestión de Inversiones Avanzada
-- **Soporte Multi-Activo:** Registra Acciones, Criptomonedas, Fondos de Inversión, ETFs, Bonos, Bienes Raíces y más.
-- **Cálculo de Rendimiento:** Seguimiento automático del coste base vs. valor actual para calcular ganancias/pérdidas (%) y rendimientos totales.
-- **Proyección a Futuro:** Estimación de tu patrimonio a 1 año basada en tu ritmo de ahorro actual y un crecimiento conservador del 5%.
-
-### 3. 📝 Transacciones Dinámicas
-- **Formulario Inteligente:** El botón "Nueva Transacción" adapta los campos según la operación:
-  - *Compras/Ventas:* Pide activo, cantidad y precio.
-  - *Dividendos:* Pide activo y monto recibido.
-  - *Gastos/Ingresos:* Pide categoría y monto.
-- **Categorización Automática:** Organiza tus movimientos para un análisis detallado.
-
-### 4. 🔐 Seguridad y Autenticación
-- **Login Social:** Integración completa con **Google OAuth** (vía Laravel Socialite).
-- **Registro Seguro:** Verificación de correo electrónico y validaciones robustas.
-- **UI Consistente:** Diseño de autenticación unificado con la estética de la aplicación.
-
-### 5. 🎨 Diseño Fintech Moderno
-- **Interfaz Limpia:** Estilo minimalista con Tailwind CSS, sombras suaves y tipografía clara.
-- **Modo Educativo:** Tooltips explicativos (`InfoTooltip`) en cada métrica para ayudar a entender conceptos financieros.
-- **Responsive:** Funciona perfectamente en escritorio, tablet y móvil.
-- **Modo Oscuro:** Soporte completo para tema oscuro en toda la aplicación.
+*   **📈 Dashboard Multi-Activo**: Visualización en tiempo real de tu *Net Worth* y rendimiento (P/L).
+*   **🤖 Automatización OCR**: Sube una captura de tu banco y el sistema extraerá las transacciones automáticamente usando la API de **OCR.space**.
+*   **📄 Importación de PDFs**: Lógica avanzada con `smalot/pdfparser` para leer extractos bancarios sin errores.
+*   **🕵️ Motor de Scraping**: Fallback inteligente (Morningstar > JustETF > Financial Times) para obtener precios de fondos donde no hay APIs.
+*   **⚖️ Cálculo de WAC**: Implementación matemática del **Costo Medio Ponderado** para una rentabilidad exacta.
+*   **📊 Análisis de Distribución**: Desglose visual por sector, industria, región y divisa.
 
 ---
 
 ## 🛠️ Stack Tecnológico
 
-- **Backend:** [Laravel 11](https://laravel.com)
-- **Frontend:** [Vue 3](https://vuejs.org) (Composition API)
-- **Full-Stack Glue:** [Inertia.js](https://inertiajs.com)
-- **Estilos:** [Tailwind CSS](https://tailwindcss.com)
-- **Base de Datos:** MySQL / PostgreSQL
-- **Gráficos:** [Chart.js](https://www.chartjs.org) (vía vue-chartjs)
-- **Autenticación:** Laravel Breeze + Socialite
+He diseñado el sistema priorizando la modularidad y la escalabilidad:
+
+### Backend & Core
+*   **Laravel 12.x**: Potencia total en el manejo de colas de procesos (`Jobs`) y ORM.
+*   **Inertia.js**: La "magia" que une Laravel con Vue 3 sin necesidad de una API REST compleja.
+*   **Guzzle**: Cliente HTTP para integraciones con **CoinGecko**, **EODHD** y proveedores de OCR.
+*   **Symfony DomCrawler**: Extracción de datos financieros mediante XPath.
+
+### Frontend
+*   **Vue 3 (Composition API)**: Reactividad y componentes modulares.
+*   **Tailwind CSS**: Diseño moderno, limpio y totalmente *responsive*.
+*   **Chart.js**: Gráficas interactivas para el seguimiento de la evolución patrimonial.
 
 ---
 
-## 🏗️ Arquitectura y Refactorización
+## 📂 Arquitectura Crítica del Proyecto
 
-El proyecto ha sido refactorizado siguiendo principios de **Clean Code** y **Arquitectura de Componentes** para asegurar escalabilidad y mantenibilidad.
-
-### Estructura de Componentes
-Se ha adoptado una estrategia de "Componentes Atómicos" y "Separación de Responsabilidades":
-
-- **Orquestadores (Pages):** Las vistas principales (ej: `Transactions/Index.vue`) actúan solo como orquestadores, gestionando el estado global y la comunicación entre componentes hijos, sin contener lógica de presentación compleja.
-- **Componentes de Dominio:** Se han creado componentes específicos por funcionalidad en directorios organizados (ej: `Components/Transactions/`).
-  - `PortfolioHeader`: Gestión de carteras.
-  - `EvolutionChart` y `AllocationChart`: Lógica de visualización de datos.
-  - `AssetsTable`: Listado y filtrado de activos.
-  - `TransactionHistory`: Historial de operaciones con paginación.
-  - `ExportModal`: Lógica reutilizable de exportación.
-
-### Utilidades Compartidas
-- **Formatting Utils:** Se ha centralizado la lógica de formato (moneda, porcentajes, fechas) en `Utils/formatting.js` para garantizar consistencia en toda la app y facilitar la localización.
-
-### Buenas Prácticas Aplicadas
-- **Single Responsibility Principle:** Cada componente tiene una única responsabilidad.
-- **DRY (Don't Repeat Yourself):** Eliminación de código duplicado mediante extracción de componentes y utilidades.
-- **Composition API:** Uso moderno de Vue 3 con `<script setup>` para una lógica más limpia.
-- **Prop Validation:** Definición estricta de `props` para asegurar la integridad de los datos.
+| Componente | Ruta del Archivo | Responsabilidad |
+| :--- | :--- | :--- |
+| **Controlador Maestro** | `app/Http/Controllers/PortfolioController.php` | Orquestación de importaciones y lógica OCR. |
+| **Servicio de Datos** | `app/Services/MarketDataService.php` | Gateway centralizado para obtención de precios. |
+| **Lógica de Mercado** | `app/Services/MarketData/FundService.php` | Motor de Scraping con sistema de fallbacks. |
+| **Modelo Financiero** | `app/Models/Asset.php` | Recalculación de métricas y estados de vinculación. |
+| **Procesos Background** | `app/Jobs/UpdatePricesJob.php` | Tareas programadas de actualización de mercado. |
+| **Routing** | `routes/web.php` | Definición de los 35+ endpoints del sistema. |
 
 ---
 
-## ⚙️ Instalación y Configuración
+## 🧠 Lógica de Ingeniería Avanzada
 
-Sigue estos pasos para desplegar el proyecto en tu entorno local:
+### 1. Motor de Auto-Healing
+El sistema detecta automáticamente inconsistencias en los activos (ej. tras una importación masiva) y dispara la reconstrucción del estado basada en el historial crudo de transacciones:
+> `app/Http/Controllers/TransactionController.php:70`
 
-### 1. Prerrequisitos
-- PHP 8.2+
-- Composer
-- Node.js & NPM
-- Servidor de Base de Datos (MySQL/MariaDB/PostgreSQL)
+### 2. Simulación de Curva de Rendimiento
+Ante la falta de APIs históricas gratuitas para todos los activos, se implementa una **Interpolación Lineal de Plusvalías** para generar gráficas de rendimiento realistas basadas en flujos de caja:
+> `TransactionController@getChartData` (Línea 281)
 
-### 2. Clonar y Configurar
-```bash
-git clone https://github.com/tu-usuario/fintech-pro.git
-cd fintech-pro
-
-# Instalar dependencias de PHP
-composer install
-
-# Instalar dependencias de JS
-npm install
-```
-
-### 3. Configuración de Entorno (.env)
-Copia el archivo de ejemplo y configura tu base de datos:
-```bash
-cp .env.example .env
-php artisan key:generate
-```
-
-Edita el `.env` con tus credenciales:
-```ini
-DB_CONNECTION=mysql
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_DATABASE=fintech_pro
-DB_USERNAME=root
-DB_PASSWORD=
-
-# Configuración Google OAuth (Opcional)
-GOOGLE_CLIENT_ID=tu-client-id
-GOOGLE_CLIENT_SECRET=tu-client-secret
-GOOGLE_REDIRECT_URL="${APP_URL}/auth/google/callback"
-```
-
-### 4. Base de Datos y Seeders
-Ejecuta las migraciones y carga datos de prueba (muy recomendado para ver todas las funciones):
-```bash
-php artisan migrate --seed
-```
-
-### 5. Compilar Assets y Servir
-En dos terminales separadas:
-```bash
-# Terminal 1: Servidor Laravel
-php artisan serve
-
-# Terminal 2: Compilación de Assets (Vite)
-npm run dev
-```
+### 3. Máquina de Estados OCR
+El parser de imágenes no es lineal; utiliza estados (`SCANNING`, `MATCHING`, `FINALIZING`) para reconstruir transacciones desordenadas o divididas en varias líneas por el motor de OCR.
 
 ---
 
-## 🤝 Contribución
+## 🚀 Instalación y Despliegue en Local
 
-1. Haz un Fork del proyecto
-2. Crea una rama para tu Feature (`git checkout -b feature/AmazingFeature`)
-3. Haz Commit de tus cambios (`git commit -m 'Add some AmazingFeature'`)
-4. Haz Push a la rama (`git push origin feature/AmazingFeature`)
-5. Abre un Pull Request
+Sigue estos pasos para levantar el entorno de desarrollo:
+
+1.  **Clonado y Backend**:
+    ```bash
+    git clone https://github.com/tu-usuario/wealth-manager.git
+    cd wealth-manager
+    composer install
+    ```
+2.  **Dependencias Frontend**:
+    ```bash
+    npm install
+    ```
+3.  **Configuración de Entorno**:
+    ```bash
+    cp .env.example .env
+    php artisan key:generate
+    ```
+    > [!WARNING]
+    > Es crítico configurar las variables de base de datos y la `EODHD_API_KEY` en el `.env` para que el scraping de bonos y la persistencia funcionen correctamente.
+
+4.  **Migraciones y Seeders**:
+    ```bash
+    php artisan migrate --seed
+    ```
+    *Nota: El seeder (`MarketAssetSeeder.php`) cargará activos reales como BTC, AAPL y SPY.*
+
+5.  **Lanzamiento**:
+    Inicia los servidores en paralelo: `php artisan serve` y `npm run dev`.
+
+---
+
+## 📈 Roadmap
+
+- [ ] Integración con APIs bancarias directas (PSD2).
+- [ ] Notificaciones push de alertas de precios.
+- [ ] Soporte para carteras multi-divisa con conversión en tiempo real.
+- [ ] Exportación avanzada de informes fiscales (Modelo 720/D6).
+
+---
+
+## 🤝 Créditos y Librerías Destacadas
+
+Este proyecto no sería posible sin:
+- [Ziggy](https://github.com/tighten/ziggy) para las rutas en JS.
+- [PDFParser](https://github.com/smalot/pdfparser) para la extracción de PDFs.
+- [Socialite](https://laravel.com/docs/socialite) para el login con Google.
+
+---
+Desarrollado con ❤️ por **Rafael**.
+Si este proyecto te ha servido de inspiración, ¡no dudes en darle una ⭐!
