@@ -13,7 +13,7 @@ class StockService
 
     public function __construct()
     {
-        $this->apiKey = env('FMP_API_KEY');
+        $this->apiKey = config('services.fmp.key') ?? env('FMP_API_KEY');
     }
 
     public function getPrice($symbol)

@@ -101,6 +101,13 @@ onMounted(() => {
                                 >
                                     Mercados
                                 </NavLink>
+                                <NavLink
+                                    :href="route('ai-analyst.index')"
+                                    :active="route().current('ai-analyst.index')"
+                                    class="text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300"
+                                >
+                                    Analista IA
+                                </NavLink>
                             </div>
                         </div>
 
@@ -264,6 +271,12 @@ onMounted(() => {
                             :active="route().current('markets.index')"
                         >
                             Mercados
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink
+                            :href="route('ai-analyst.index')"
+                            :active="route().current('ai-analyst.index')"
+                        >
+                            Analista IA
                         </ResponsiveNavLink>
                     </div>
 

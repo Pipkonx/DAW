@@ -13,7 +13,7 @@ class CryptoService
 
     public function __construct()
     {
-        $this->apiKey = env('COINGECKO_API_KEY');
+        $this->apiKey = config('services.coingecko.key') ?? env('COINGECKO_API_KEY');
     }
 
     public function getPrice($symbol)

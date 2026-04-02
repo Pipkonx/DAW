@@ -41,4 +41,16 @@ return [
         'redirect' => env('GOOGLE_REDIRECT_URI'),
     ],
 
+    'gemini' => [
+        'key' => env('GEMINI_API_KEY'),
+    ],
+
+    'fmp' => [
+        'key' => env('FMP_API_KEY'),
+    ],
+
+    'coingecko' => [
+        'key' => env('COINGECKO_API_KEY'),
+    ],
+
 ];

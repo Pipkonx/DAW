@@ -13,6 +13,9 @@ use App\Http\Controllers\FinancialPlanningController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\MarketController;
 use App\Http\Controllers\MarketDataController;
+use App\Http\Controllers\AiAnalystController;
+use App\Http\Controllers\TransactionActionController;
+use App\Http\Controllers\TransactionExportController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -48,11 +51,7 @@ Route::get('/api/dashboard/transactions', [DashboardController::class, 'getTrans
     ->name('dashboard.transactions');
 
 // Transacciones
-Route::post('/transactions/import', [TransactionController::class, 'import'])
-    ->middleware(['auth'])
-    ->name('transactions.import');
-
-Route::get('/transactions/export', [TransactionController::class, 'export'])
+Route::get('/transactions/export', [TransactionExportController::class, 'export'])
     ->middleware(['auth', 'verified'])
     ->name('transactions.export');
 
@@ -60,26 +59,28 @@ Route::get('/transactions', [TransactionController::class, 'index'])
     ->middleware(['auth', 'verified'])
     ->name('transactions.index');
 
-Route::post('/transactions', [TransactionController::class, 'store'])
+Route::post('/transactions', [TransactionActionController::class, 'store'])
     ->middleware(['auth'])
     ->name('transactions.store');
 
-Route::put('/transactions/{transaction}', [TransactionController::class, 'update'])
+Route::put('/transactions/{transaction}', [TransactionActionController::class, 'update'])
     ->middleware(['auth'])
     ->name('transactions.update');
 
-Route::delete('/transactions/bulk-destroy', [TransactionController::class, 'bulkDestroy'])
+Route::delete('/transactions/bulk-destroy', [TransactionActionController::class, 'bulkDestroy'])
     ->middleware(['auth'])
     ->name('transactions.bulk-destroy');
 
-Route::delete('/transactions/{transaction}', [TransactionController::class, 'destroy'])
+Route::delete('/transactions/{transaction}', [TransactionActionController::class, 'destroy'])
     ->middleware(['auth'])
     ->name('transactions.destroy');
 
-// Análisis de Gastos
-Route::get('/expenses', [ExpenseController::class, 'index'])
-    ->middleware(['auth', 'verified'])
-    ->name('expenses.index');
+    // Análisis de Gastos
+    Route::get('/expenses', [ExpenseController::class, 'index'])->name('expenses.index');
+
+    // Analista IA (Nuevo)
+    Route::get('/ai-analyst', [AiAnalystController::class, 'index'])->name('ai-analyst.index');
+    Route::get('/api/ai-analyst/report', [AiAnalystController::class, 'generateReport'])->name('ai-analyst.report');
 
 // Rutas de Perfil de Usuario (Autenticadas)
 Route::middleware(['auth', 'verified'])->group(function () {
