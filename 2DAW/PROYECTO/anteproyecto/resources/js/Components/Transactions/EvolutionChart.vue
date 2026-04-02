@@ -89,10 +89,10 @@ const performanceChartData = computed(() => {
             data: dataPoints,
             borderColor: borderColor,
             backgroundColor: bgColor,
-            borderWidth: 2,
+            borderWidth: 3, // Increased for better visibility
             tension: 0.4,
             fill: true,
-            pointRadius: 0,
+            pointRadius: chartMode.value === 'performance' ? 2 : 0, // Show points in performance mode
             pointHoverRadius: 6,
             pointHoverBackgroundColor: '#ffffff',
             pointHoverBorderWidth: 2,
@@ -179,49 +179,45 @@ const performanceChartOptions = computed(() => ({
     <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex flex-col h-[450px] dark:bg-slate-800 dark:border-slate-700 overflow-hidden" @mouseleave="resetHover">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4 shrink-0">
             <!-- Left: Header & Value -->
-            <div class="flex flex-col justify-center">
+            <div class="flex flex-col">
                 <h3 class="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-2 dark:text-slate-400">
                     Evolución de Cartera
                 </h3>
-                <div class="flex items-center gap-4 h-12">
-                    <div class="min-w-[200px]">
-                        <h2 class="text-3xl font-bold text-slate-900 dark:text-white leading-none">
-                            <span v-if="isPrivacyMode">****</span>
-                            <span v-else-if="hoveredValue !== null">
-                                {{ chartMode === 'value' ? formatCurrency(hoveredValue) : formatPercent(hoveredValue) }}
-                            </span>
-                            <span v-else>
-                                {{ formatCurrency(summary.current_value) }}
-                            </span>
-                        </h2>
-                    </div>
+                <div class="flex flex-col">
+                    <h2 class="text-3xl font-bold text-slate-900 dark:text-white leading-tight">
+                        <span v-if="isPrivacyMode">****</span>
+                        <span v-else-if="hoveredValue !== null">
+                            {{ chartMode === 'value' ? formatCurrency(hoveredValue) : formatPercent(hoveredValue) }}
+                        </span>
+                        <span v-else>
+                            {{ formatCurrency(summary.current_value) }}
+                        </span>
+                    </h2>
                     
-                    <!-- Change Indicator (Vertical Stack) -->
-                    <div class="flex flex-col justify-center leading-none">
+                    <!-- Change Indicators (Below the number) -->
+                    <div class="flex items-center mt-1 gap-3 min-h-[24px]">
                          <!-- Hover State -->
                          <template v-if="isPrivacyMode">
-                            <span class="text-sm font-bold mb-1 text-slate-400">****</span>
-                            <span class="text-xs font-semibold text-slate-400">****</span>
+                            <span class="text-sm font-bold text-slate-400">****</span>
                          </template>
                          <template v-else-if="hoveredValue !== null">
-                            <span class="text-sm font-bold mb-1" 
+                            <span class="text-sm font-bold" 
                                 :class="hoveredChange >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'">
                                 {{ hoveredChange >= 0 ? '+' : '' }}{{ formatCurrency(hoveredChange) }}
                             </span>
-                            <span class="text-xs font-medium text-slate-500 dark:text-slate-400">
+                            <span class="text-xs font-medium text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-700 px-1.5 py-0.5 rounded">
                                 {{ hoveredChange >= 0 ? '+' : '' }}{{ formatPercent(hoveredChangePercent) }}
                             </span>
                          </template>
-
-                         <!-- Default State -->
+                         <!-- Default State: Total Yield since purchase -->
                          <template v-else>
-                            <span class="text-sm font-bold mb-1" 
-                                :class="chart.period_pl_value >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'">
-                                {{ chart.period_pl_value >= 0 ? '+' : '' }}{{ formatCurrency(chart.period_pl_value) }}
+                            <span class="text-sm font-bold" 
+                                :class="summary.total_pl >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'">
+                                {{ summary.total_pl >= 0 ? '+' : '' }}{{ formatCurrency(summary.total_pl) }}
                             </span>
-                            <span class="text-xs font-semibold"
-                                :class="chart.period_pl_percent >= 0 ? 'text-emerald-600 bg-emerald-50 dark:bg-emerald-900/20 dark:text-emerald-400 px-1.5 py-0.5 rounded' : 'text-rose-600 bg-rose-50 dark:bg-rose-900/20 dark:text-rose-400 px-1.5 py-0.5 rounded'">
-                                {{ chart.period_pl_percent >= 0 ? '▲' : '▼' }} {{ formatPercent(chart.period_pl_percent) }}
+                            <span class="text-xs font-semibold px-1.5 py-0.5 rounded"
+                                :class="summary.total_pl_percent >= 0 ? 'text-emerald-600 bg-emerald-50 dark:bg-emerald-900/20 dark:text-emerald-400' : 'text-rose-600 bg-rose-50 dark:bg-rose-900/20 dark:text-rose-400'">
+                                {{ summary.total_pl_percent >= 0 ? '▲' : '▼' }} {{ formatPercent(summary.total_pl_percent) }}
                             </span>
                          </template>
                     </div>
@@ -235,17 +231,17 @@ const performanceChartOptions = computed(() => ({
                     <div class="flex bg-slate-100 p-1 rounded-lg dark:bg-slate-700">
                         <button 
                             @click="chartMode = 'value'"
-                            :class="chartMode === 'value' ? 'bg-white text-slate-900 shadow-sm dark:bg-slate-600 dark:text-white' : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200'"
+                            :class="chartMode === 'value' ? 'bg-white text-blue-600 shadow-sm dark:bg-slate-600 dark:text-blue-400' : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200'"
                             class="px-3 py-1 text-xs font-medium rounded-md transition-all"
                         >
-                            Valor
+                            Valor (€)
                         </button>
                         <button 
                             @click="chartMode = 'performance'"
-                            :class="chartMode === 'performance' ? 'bg-white text-slate-900 shadow-sm dark:bg-slate-600 dark:text-white' : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200'"
+                            :class="chartMode === 'performance' ? 'bg-white text-emerald-600 shadow-sm dark:bg-slate-600 dark:text-emerald-400' : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200'"
                             class="px-3 py-1 text-xs font-medium rounded-md transition-all"
                         >
-                            %
+                            Rendimiento (%)
                         </button>
                     </div>
 

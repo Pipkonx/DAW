@@ -57,7 +57,16 @@ class DashboardService
     {
         $labels = [];
         $values = [];
+        $yields = [];
         $now = Carbon::now();
+
+        // Obtener todos los activos del usuario para procesar sus transacciones una sola vez
+        $assets = Asset::where('user_id', $userId)->get();
+        $allTransactions = Transaction::where('user_id', $userId)
+            ->orderBy('date', 'asc')
+            ->orderBy('created_at', 'asc')
+            ->get()
+            ->groupBy('asset_id');
 
         for ($i = $months - 1; $i >= 0; $i--) {
             $date = $now->copy()->subMonths($i)->endOfMonth();
@@ -71,18 +80,39 @@ class DashboardService
                     ELSE 0 END) as cash")
                 ->value('cash') ?? 0;
 
-            $assetsValue = 0;
-            $assets = Asset::where('user_id', $userId)->get();
+            $totalAssetsValue = 0;
+            $totalAssetsCost = 0;
+
             foreach ($assets as $asset) {
-                $qty = Transaction::where('user_id', $userId)->where('asset_id', $asset->id)->where('date', '<=', $date)
-                    ->selectRaw("SUM(CASE WHEN type = 'buy' THEN quantity WHEN type = 'sell' THEN -quantity ELSE 0 END) as q")
-                    ->value('q') ?? 0;
-                $assetsValue += $qty * ($asset->current_price ?? 0);
+                $assetTxs = $allTransactions->get($asset->id, collect())->filter(fn($t) => $t->date <= $date);
+                
+                $qty = 0;
+                $costBasis = 0;
+                
+                foreach ($assetTxs as $tx) {
+                    if (in_array($tx->type, ['buy', 'transfer_in', 'gift', 'reward'])) {
+                        $costBasis += $tx->quantity * $tx->price_per_unit;
+                        $qty += $tx->quantity;
+                    } elseif (in_array($tx->type, ['sell', 'transfer_out'])) {
+                        if ($qty > 0) {
+                            $avg = $costBasis / $qty;
+                            $costBasis -= $avg * $tx->quantity;
+                        }
+                        $qty -= $tx->quantity;
+                    }
+                }
+
+                if ($qty > 0) {
+                    $totalAssetsValue += $qty * ($asset->current_price ?? 0);
+                    $totalAssetsCost += $costBasis;
+                }
             }
-            $values[] = round($cash + $assetsValue, 2);
+
+            $values[] = round($cash + $totalAssetsValue, 2);
+            $yields[] = $totalAssetsCost > 0 ? round((($totalAssetsValue - $totalAssetsCost) / $totalAssetsCost) * 100, 2) : 0;
         }
 
-        return compact('labels', 'values');
+        return compact('labels', 'values', 'yields');
     }
 
     /**
@@ -94,36 +124,58 @@ class DashboardService
         $history = [];
         $now = Carbon::now();
 
-        foreach ($portfolios as $p) {
-            $history[$p->id] = [];
+        // Pre-cargar activos y transacciones
+        $allAssets = Asset::where('user_id', $userId)->get()->groupBy('portfolio_id');
+        $allTransactions = Transaction::where('user_id', $userId)
+            ->orderBy('date', 'asc')
+            ->get()
+            ->groupBy('asset_id');
+
+        $calculateHistory = function($portfolioId) use ($months, $now, $allAssets, $allTransactions) {
+            $valHistory = [];
+            $yieldHistory = [];
+            $assets = $allAssets->get($portfolioId, collect());
+
             for ($i = $months - 1; $i >= 0; $i--) {
                 $date = $now->copy()->subMonths($i)->endOfMonth();
-                $val = 0;
-                $assets = Asset::where('portfolio_id', $p->id)->get();
+                $totalVal = 0;
+                $totalCost = 0;
+
                 foreach ($assets as $asset) {
-                    $qty = Transaction::where('user_id', $userId)->where('asset_id', $asset->id)->where('date', '<=', $date)
-                        ->selectRaw("SUM(CASE WHEN type = 'buy' THEN quantity WHEN type = 'sell' THEN -quantity ELSE 0 END) as q")
-                        ->value('q') ?? 0;
-                    $val += $qty * ($asset->current_price ?? 0);
+                    $assetTxs = $allTransactions->get($asset->id, collect())->filter(fn($t) => $t->date <= $date);
+                    $qty = 0;
+                    $costBasis = 0;
+
+                    foreach ($assetTxs as $tx) {
+                        if (in_array($tx->type, ['buy', 'transfer_in', 'gift', 'reward'])) {
+                            $costBasis += $tx->quantity * $tx->price_per_unit;
+                            $qty += $tx->quantity;
+                        } elseif (in_array($tx->type, ['sell', 'transfer_out'])) {
+                            if ($qty > 0) {
+                                $avg = $costBasis / $qty;
+                                $costBasis -= $avg * $tx->quantity;
+                            }
+                            $qty -= $tx->quantity;
+                        }
+                    }
+
+                    if ($qty > 0) {
+                        $totalVal += $qty * ($asset->current_price ?? 0);
+                        $totalCost += $costBasis;
+                    }
                 }
-                $history[$p->id][] = round($val, 2);
+                $valHistory[] = round($totalVal, 2);
+                $yieldHistory[] = $totalCost > 0 ? round((($totalVal - $totalCost) / $totalCost) * 100, 2) : 0;
             }
+            return ['values' => $valHistory, 'yields' => $yieldHistory];
+        };
+
+        foreach ($portfolios as $p) {
+            $history[$p->id] = $calculateHistory($p->id);
         }
 
-        // Orphans (Sin Cartera) - key 'orphan' matches Dashboard.vue logic
-        $history['orphan'] = [];
-        for ($i = $months - 1; $i >= 0; $i--) {
-            $date = $now->copy()->subMonths($i)->endOfMonth();
-            $val = 0;
-            $orphans = Asset::where('user_id', $userId)->whereNull('portfolio_id')->get();
-            foreach ($orphans as $asset) {
-                $qty = Transaction::where('user_id', $userId)->where('asset_id', $asset->id)->where('date', '<=', $date)
-                    ->selectRaw("SUM(CASE WHEN type = 'buy' THEN quantity WHEN type = 'sell' THEN -quantity ELSE 0 END) as q")
-                    ->value('q') ?? 0;
-                $val += $qty * ($asset->current_price ?? 0);
-            }
-            $history['orphan'][] = round($val, 2);
-        }
+        // Orphans (Sin Cartera)
+        $history['orphan'] = $calculateHistory(null);
 
         return $history;
     }

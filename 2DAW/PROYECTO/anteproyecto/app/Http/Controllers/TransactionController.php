@@ -100,6 +100,23 @@ class TransactionController extends Controller
             }
         });
 
+        if ($portfolioId === 'aggregated') {
+            $assets = $assets->groupBy('ticker')->map(function ($groupedAssets) {
+                $base = clone $groupedAssets->first();
+                
+                if ($groupedAssets->count() > 1) {
+                    $totalQty = $groupedAssets->sum('quantity');
+                    $totalInvested = $groupedAssets->sum('total_invested');
+                    
+                    $base->id = $groupedAssets->pluck('id')->implode(',');
+                    $base->quantity = $totalQty;
+                    $base->avg_buy_price = $totalQty > 0 ? ($totalInvested / $totalQty) : $base->avg_buy_price;
+                }
+                
+                return $base;
+            })->values();
+        }
+
         return $assets;
     }
 

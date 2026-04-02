@@ -31,65 +31,60 @@ class PerformanceService
         $endDate = Carbon::now();
         $startDate = $this->getStartDate($userId, $assetIds, $timeframe);
 
-        // Fetch transactions for flow calculation
+        // Fetch ALL transactions for the included assets to trace cost basis correctly from the beginning
         $allTransactions = Transaction::where('user_id', $userId)
             ->whereIn('asset_id', $assetIds)
-            ->whereIn('type', ['buy', 'sell'])
             ->orderBy('date', 'asc')
+            ->orderBy('created_at', 'asc')
             ->get();
-
-        $invested = 0;
-        
-        // Initial invested amount before start date
-        foreach($allTransactions as $t) {
-            if (Carbon::parse($t->date)->lt($startDate)) {
-                if ($t->type === 'buy') $invested += $t->amount;
-                if ($t->type === 'sell') $invested -= $t->amount;
-            }
-        }
-
-        $period = CarbonPeriod::create($startDate, '1 day', $endDate);
+            
+        // Group transactions by date for efficient iteration
         $txByDate = $allTransactions->groupBy(fn($t) => substr($t->date, 0, 10));
         
-        // Final invested amount calculation
-        $finalInvested = $invested;
-        foreach ($period as $date) {
-            $dateStr = $date->format('Y-m-d');
-            if (isset($txByDate[$dateStr])) {
-                foreach ($txByDate[$dateStr] as $t) {
-                    if ($t->type === 'buy') $finalInvested += $t->amount;
-                    if ($t->type === 'sell') $finalInvested -= $t->amount;
-                }
+        // Timeframe dates
+        $period = CarbonPeriod::create($startDate, '1 day', $endDate);
+        
+        // Tracking state of each asset (quantity and cost basis)
+        $assetsState = [];
+        $assets = \App\Models\Asset::whereIn('id', $assetIds)->get()->keyBy('id');
+        
+        // 1. Process transactions BEFORE the start date to set the initial point
+        foreach ($allTransactions as $t) {
+            $tDate = Carbon::parse($t->date);
+            if ($tDate->lt($startDate)) {
+                $this->updateAssetState($assetsState, $t);
             }
         }
         
-        $totalProfit = $currentTotalValue - $finalInvested;
-        $totalDays = $startDate->diffInDays($endDate) ?: 1;
-        
+        // 2. Iterate through the period calculating daily values
         $dataPoints = [];
-        $currentInvested = $invested;
-        $dayCounter = 0;
-
         foreach ($period as $date) {
             $dateStr = $date->format('Y-m-d');
             
+            // Update state with today's transactions
             if (isset($txByDate[$dateStr])) {
                 foreach ($txByDate[$dateStr] as $t) {
-                    if ($t->type === 'buy') $currentInvested += $t->amount;
-                    if ($t->type === 'sell') $currentInvested -= $t->amount;
+                    $this->updateAssetState($assetsState, $t);
                 }
             }
             
-            $dailyProfit = ($dayCounter / $totalDays) * $totalProfit;
-            $estimatedValue = $currentInvested + $dailyProfit;
+            // Calculate total value and cost at this point in time
+            $dailyValue = 0;
+            $dailyCost = 0;
+            foreach ($assetsState as $assetId => $state) {
+                if ($state['qty'] > 0) {
+                    $asset = $assets->get($assetId);
+                    // Use current_price for now (ideally use historical price from AssetPrice)
+                    $dailyValue += $state['qty'] * ($asset->current_price ?? 0);
+                    $dailyCost += $state['costBasis'];
+                }
+            }
 
             $dataPoints[] = [
                 'x' => $dateStr,
-                'y' => max(0, $estimatedValue),
-                'invested' => $currentInvested
+                'y' => round($dailyValue, 2),
+                'invested' => round($dailyCost, 2)
             ];
-            
-            $dayCounter++;
         }
 
         // Calculate Period Performance
@@ -102,6 +97,27 @@ class PerformanceService
             'period_pl_value' => $performance['value'],
             'period_pl_percent' => $performance['percent'],
         ];
+    }
+
+    /**
+     * Internal helper to update asset quantity and cost basis using WAC.
+     */
+    private function updateAssetState(&$state, $tx)
+    {
+        if (!isset($state[$tx->asset_id])) {
+            $state[$tx->asset_id] = ['qty' => 0, 'costBasis' => 0];
+        }
+        
+        if (in_array($tx->type, ['buy', 'transfer_in', 'gift', 'reward'])) {
+            $state[$tx->asset_id]['costBasis'] += $tx->quantity * $tx->price_per_unit;
+            $state[$tx->asset_id]['qty'] += $tx->quantity;
+        } elseif (in_array($tx->type, ['sell', 'transfer_out'])) {
+            if ($state[$tx->asset_id]['qty'] > 0) {
+                $avgCost = $state[$tx->asset_id]['costBasis'] / $state[$tx->asset_id]['qty'];
+                $state[$tx->asset_id]['costBasis'] -= $avgCost * $tx->quantity;
+            }
+            $state[$tx->asset_id]['qty'] -= $tx->quantity;
+        }
     }
 
     /**

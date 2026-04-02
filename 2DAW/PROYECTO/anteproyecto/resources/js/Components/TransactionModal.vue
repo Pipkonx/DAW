@@ -1,6 +1,6 @@
 <script setup>
 import { computed, watch, ref, onMounted } from 'vue';
-import { useForm } from '@inertiajs/vue3';
+import { useForm, router } from '@inertiajs/vue3';
 import { usePrivacy } from '@/Composables/usePrivacy';
 import Modal from '@/Components/Modal.vue';
 import InputLabel from '@/Components/InputLabel.vue';
@@ -31,7 +31,9 @@ const form = useForm({
     amount: '',
     date: new Date().toISOString().substr(0, 10),
     time: '', // New field
+    time: '', // New field
     category_id: null,
+    category_name: '', // Free Text Category
     description: '',
     asset_name: '', // Acts as Ticker/Symbol
     asset_full_name: '', // New field for display name
@@ -57,6 +59,19 @@ const isFormLoading = ref(false); // To avoid auto-fetching during modal open/ed
 const priceError = ref(null);
 const priceSource = ref(null);
 const lastEditedField = ref(null);
+const showCategoryDropdown = ref(false); // Dropdown for categories
+
+const findCategoryNameById = (id) => {
+    for (const cat of props.categories) {
+        if (cat.id === id) return cat.name;
+        if (cat.children) {
+            for (const child of cat.children) {
+                if (child.id === id) return child.name;
+            }
+        }
+    }
+    return '';
+};
 
 // Debounced Search Function
 const performSearch = _.debounce(async (query) => {
@@ -297,6 +312,12 @@ watch(() => props.show, (newVal) => {
             form.date = props.transaction.date.substring(0, 10);
             form.time = props.transaction.time ? props.transaction.time.substring(0, 5) : '';
             form.category_id = props.transaction.category_id;
+            
+            if (form.category_id) {
+                form.category_name = findCategoryNameById(form.category_id);
+            } else {
+                form.category_name = props.transaction.category?.name || ''; 
+            }
             form.description = props.transaction.description;
             
             // Populate Asset Data from Relation
@@ -345,9 +366,16 @@ const submit = () => {
     const method = props.transaction?.id ? 'put' : 'post';
     
     form[method](route(routeName, routeParams), {
+        preserveState: true,
+        preserveScroll: true,
         onSuccess: () => {
             form.reset();
             emit('close');
+            // Force reset to first page to see the newly added transaction
+            router.reload({
+                data: { page: 1 },
+                preserveScroll: true,
+            });
         },
     });
 };
@@ -369,6 +397,7 @@ const close = () => {
     form.reset();
     form.clearErrors();
     showSuggestions.value = false;
+    showCategoryDropdown.value = false;
 };
 
 // Computed properties
@@ -395,6 +424,39 @@ const availableCategories = computed(() => {
             return c.is_active || isCurrent || hasActiveChildren;
         })
         .sort((a, b) => (b.usage_count || 0) - (a.usage_count || 0));
+});
+
+const filteredCategoriesList = computed(() => {
+    let list = [];
+    availableCategories.value.forEach(cat => {
+        list.push({ id: cat.id, name: cat.name, isParent: true });
+        if (cat.children) {
+             cat.children.forEach(child => {
+                  list.push({ id: child.id, name: `${child.name}`, parentPath: cat.name, isParent: false });
+             });
+        }
+    });
+
+    if (!form.category_name) return list;
+    const q = form.category_name.toLowerCase();
+    return list.filter(c => c.name.toLowerCase().includes(q) || (c.parentPath && c.parentPath.toLowerCase().includes(q)));
+});
+
+const selectCategory = (cat) => {
+    form.category_id = cat.id;
+    form.category_name = cat.name;
+    showCategoryDropdown.value = false;
+};
+
+// Check id dynamically typing
+watch(() => form.category_name, (newVal) => {
+    if (newVal) {
+        const exact = filteredCategoriesList.value.find(c => c.name.toLowerCase() === newVal.toLowerCase());
+        if (exact) form.category_id = exact.id;
+        else form.category_id = null;
+    } else {
+        form.category_id = null;
+    }
 });
 
 const transactionTypes = [
@@ -741,21 +803,34 @@ const getTypeLabel = (type) => {
                             required
                         />
                     </div>
-                    <div>
-                        <InputLabel for="category_id" value="Categoría" class="dark:text-gray-300" />
-                        <select
-                            id="category_id"
-                            v-model="form.category_id"
-                            class="mt-1 block w-full border-slate-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500 rounded-lg shadow-sm text-slate-700 dark:text-gray-300 bg-white dark:bg-gray-700"
-                        >
-                            <option :value="null">Sin categoría</option>
-                            <template v-for="cat in availableCategories" :key="cat.id">
-                                <option :value="cat.id">{{ cat.name }}</option>
-                                <option v-for="sub in cat.children" :key="sub.id" :value="sub.id" class="pl-4">
-                                    &nbsp;&nbsp;&nbsp;{{ sub.name }}
-                                </option>
-                            </template>
-                        </select>
+                    <div class="relative">
+                        <InputLabel for="category_name" value="Categoría" class="dark:text-gray-300" />
+                        <TextInput
+                            id="category_name"
+                            type="text"
+                            class="mt-1 block w-full dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                            v-model="form.category_name"
+                            @focus="showCategoryDropdown = true"
+                            @blur="() => { setTimeout(() => showCategoryDropdown = false, 200); }"
+                            placeholder="Ej: Gasolina, Supermercado..."
+                            autocomplete="off"
+                        />
+                        <!-- Dropdown Sugerencias Categorías -->
+                        <div v-if="showCategoryDropdown && filteredCategoriesList.length > 0" class="absolute left-0 right-0 mt-1 bg-white dark:bg-slate-800 rounded-md shadow-lg border border-slate-200 dark:border-slate-600 max-h-60 overflow-auto z-50">
+                            <ul>
+                                <li 
+                                    v-for="cat in filteredCategoriesList" 
+                                    :key="cat.id"
+                                    @click="selectCategory(cat)"
+                                    class="px-4 py-3 hover:bg-slate-50 dark:hover:bg-slate-700 cursor-pointer border-b border-slate-100 dark:border-slate-700 last:border-0"
+                                >
+                                    <div class="text-slate-800 dark:text-white text-sm" :class="{ 'ml-4': !cat.isParent, 'font-semibold': cat.isParent }">
+                                        <span v-if="!cat.isParent" class="text-xs text-slate-400 mr-1">{{ cat.parentPath }} ></span>
+                                        {{ cat.name }}
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
                     <div>
                         <InputLabel for="description" value="Descripción" class="dark:text-gray-300" />

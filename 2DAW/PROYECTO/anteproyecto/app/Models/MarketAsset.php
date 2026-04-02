@@ -11,6 +11,7 @@ class MarketAsset extends Model
 
     protected $fillable = [
         'ticker',
+        'api_id',
         'name',
         'isin',
         'type',

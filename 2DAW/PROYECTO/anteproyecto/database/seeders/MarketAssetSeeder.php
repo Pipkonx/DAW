@@ -14,10 +14,10 @@ class MarketAssetSeeder extends Seeder
     {
         $assets = [
             // Crypto
-            ['ticker' => 'BTC', 'name' => 'Bitcoin', 'type' => 'crypto', 'isin' => null, 'sector' => 'Currency', 'logo_url' => 'https://cryptologos.cc/logos/bitcoin-btc-logo.png'],
-            ['ticker' => 'ETH', 'name' => 'Ethereum', 'type' => 'crypto', 'isin' => null, 'sector' => 'Smart Contracts', 'logo_url' => 'https://cryptologos.cc/logos/ethereum-eth-logo.png'],
-            ['ticker' => 'SOL', 'name' => 'Solana', 'type' => 'crypto', 'isin' => null, 'sector' => 'Smart Contracts', 'logo_url' => 'https://cryptologos.cc/logos/solana-sol-logo.png'],
-            ['ticker' => 'USDT', 'name' => 'Tether', 'type' => 'crypto', 'isin' => null, 'sector' => 'Stablecoin', 'logo_url' => 'https://cryptologos.cc/logos/tether-usdt-logo.png'],
+            ['ticker' => 'BTC', 'name' => 'Bitcoin', 'type' => 'crypto', 'isin' => null, 'sector' => 'Currency', 'logo_url' => 'https://assets.coincap.io/assets/icons/btc@2x.png'],
+            ['ticker' => 'ETH', 'name' => 'Ethereum', 'type' => 'crypto', 'isin' => null, 'sector' => 'Smart Contracts', 'logo_url' => 'https://assets.coincap.io/assets/icons/eth@2x.png'],
+            ['ticker' => 'SOL', 'name' => 'Solana', 'type' => 'crypto', 'isin' => null, 'sector' => 'Smart Contracts', 'logo_url' => 'https://assets.coincap.io/assets/icons/sol@2x.png'],
+            ['ticker' => 'USDT', 'name' => 'Tether', 'type' => 'crypto', 'isin' => null, 'sector' => 'Stablecoin', 'logo_url' => 'https://assets.coincap.io/assets/icons/usdt@2x.png'],
 
             // Stocks (Tech)
             ['ticker' => 'AAPL', 'name' => 'Apple Inc.', 'type' => 'stock', 'isin' => 'US0378331005', 'sector' => 'Technology', 'logo_url' => 'https://logo.clearbit.com/apple.com'],

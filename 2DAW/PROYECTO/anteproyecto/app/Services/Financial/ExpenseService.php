@@ -105,17 +105,16 @@ class ExpenseService
             ->whereBetween('transactions.date', [$startDate, $endDate])
             ->whereIn('transactions.type', $types)
             ->leftJoin('categories', 'transactions.category_id', '=', 'categories.id')
-            ->select('categories.name as category_name', 'transactions.description', DB::raw('SUM(transactions.amount) as total'))
-            ->groupBy('categories.name', 'transactions.description')
+            ->select('categories.name as category_name', DB::raw('SUM(transactions.amount) as total'))
+            ->groupBy('categories.name')
             ->orderByDesc('total')
             ->get();
 
         return $items->map(function($item) {
-            $item->category_name = $item->description ?: ($item->category_name ?: 'Sin categoría');
-            return $item;
-        })->groupBy('category_name')->map(fn($group) => [
-            'category_name' => $group->first()->category_name,
-            'total' => (float)$group->sum('total')
-        ])->values()->sortByDesc('total')->values();
+            return [
+                'category_name' => $item->category_name ?: 'Sin categoría',
+                'total' => (float)$item->total
+            ];
+        });
     }
 }

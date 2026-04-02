@@ -26,6 +26,7 @@ class TransactionActionController extends Controller
             'amount' => 'required|numeric|min:0',
             'date' => 'required|date',
             'category_id' => 'nullable|exists:categories,id',
+            'category_name' => 'nullable|string|max:255',
             'description' => 'nullable|string',
             'asset_name' => 'nullable|string',
             'asset_full_name' => 'nullable|string',
@@ -44,7 +45,8 @@ class TransactionActionController extends Controller
 
         try {
             $this->transactionService->store($validated);
-            return redirect()->back()->with('success', 'Transacción registrada correctamente.');
+            $msg = $this->generateSuccessMessage($validated, 'creada');
+            return redirect()->back()->with('success', $msg);
         } catch (\Exception $e) {
             return redirect()->back()->withErrors(['error' => 'Error al guardar: ' . $e->getMessage()]);
         }
@@ -61,6 +63,7 @@ class TransactionActionController extends Controller
             'amount' => 'required|numeric|min:0',
             'date' => 'required|date',
             'category_id' => 'nullable|exists:categories,id',
+            'category_name' => 'nullable|string|max:255',
             'description' => 'nullable|string',
             'quantity' => 'nullable|numeric|min:0',
             'price_per_unit' => 'nullable|numeric|min:0',
@@ -73,7 +76,8 @@ class TransactionActionController extends Controller
 
         try {
             $this->transactionService->update($transaction, $validated);
-            return redirect()->back()->with('success', 'Transacción actualizada.');
+            $msg = $this->generateSuccessMessage(array_merge($transaction->toArray(), $validated), 'actualizada');
+            return redirect()->back()->with('success', $msg);
         } catch (\Exception $e) {
             return redirect()->back()->withErrors(['error' => 'Error al actualizar: ' . $e->getMessage()]);
         }
@@ -109,6 +113,49 @@ class TransactionActionController extends Controller
             return redirect()->back()->with('success', 'Transacciones eliminadas masivamente.');
         } catch (\Exception $e) {
             return redirect()->back()->withErrors(['error' => 'Error en eliminación masiva: ' . $e->getMessage()]);
+        }
+    }
+
+    private function generateSuccessMessage(array $data, string $action)
+    {
+        $amount = number_format($data['amount'] ?? 0, 2, ',', '.') . '€';
+        
+        switch ($data['type'] ?? '') {
+            case 'expense':
+                $cat = $data['category_name'] ?? 'Gastos';
+                return $action === 'creada' 
+                    ? "Has registrado un gasto de {$amount} en {$cat}."
+                    : "Gasto de {$amount} en {$cat} actualizado.";
+            case 'income':
+                $cat = $data['category_name'] ?? 'Ingresos';
+                return $action === 'creada'
+                    ? "Has registrado un ingreso de {$amount} en {$cat}."
+                    : "Ingreso de {$amount} en {$cat} actualizado.";
+            case 'buy':
+                $qty = $data['quantity'] ?? 0;
+                $asset = $data['asset_name'] ?? 'activo';
+                return $action === 'creada'
+                    ? "Has comprado {$qty} uds de {$asset} por {$amount}."
+                    : "Compra de {$asset} actualizada ({$amount}).";
+            case 'sell':
+                $qty = $data['quantity'] ?? 0;
+                $asset = $data['asset_name'] ?? 'activo';
+                return $action === 'creada'
+                    ? "Has vendido {$qty} uds de {$asset} por {$amount}."
+                    : "Venta de {$asset} actualizada ({$amount}).";
+            case 'dividend':
+                $asset = $data['asset_name'] ?? 'tus inversiones';
+                return $action === 'creada'
+                    ? "Has registrado {$amount} en dividendos de {$asset}."
+                    : "Dividendo de {$asset} actualizado ({$amount}).";
+            case 'reward':
+                $qty = $data['quantity'] ?? 0;
+                $asset = $data['asset_name'] ?? 'activo';
+                return $action === 'creada'
+                    ? "Has recibido una recompensa de {$qty} uds de {$asset}."
+                    : "Recompensa de {$asset} actualizada.";
+            default:
+                return "Transacción {$action} correctamente ({$amount}).";
         }
     }
 }

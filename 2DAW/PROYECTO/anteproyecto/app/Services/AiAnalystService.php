@@ -4,7 +4,9 @@ namespace App\Services;
 
 use App\Models\Asset;
 use App\Models\User;
+use App\Models\Transaction;
 use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 
 class AiAnalystService
 {
@@ -43,9 +45,6 @@ class AiAnalystService
         $this->geminiService->streamGenerateContent($prompt, $onChunk);
     }
 
-    /**
-     * Prepares the data and prompt for analysis.
-     */
     private function preparePrompt(User $user)
     {
         $assets = Asset::where('user_id', $user->id)
@@ -56,7 +55,12 @@ class AiAnalystService
             return null;
         }
 
-        $portfolioData = $assets->map(function ($asset) {
+        $totalValue = $assets->sum('current_value');
+        $totalInvested = $assets->sum('total_invested');
+        $totalProfit = $totalValue - $totalInvested;
+
+        $portfolioData = $assets->map(function ($asset) use ($totalValue) {
+            $currentWeight = $totalValue > 0 ? ($asset->current_value / $totalValue) * 100 : 0;
             return [
                 'nombre' => $asset->name,
                 'ticker' => $asset->ticker,
@@ -66,28 +70,65 @@ class AiAnalystService
                 'precio_actual' => $asset->current_price,
                 'valor_actual' => $asset->current_value,
                 'ganancia_perdida' => $asset->profit_loss,
-                'porcentaje' => $asset->profit_loss_percentage,
+                'porcentaje_ganancia' => $asset->profit_loss_percentage,
+                'peso_actual_cartera' => round($currentWeight, 2) . '%',
                 'sector' => $asset->sector,
                 'region' => $asset->region,
             ];
         });
 
-        $totalInvested = $assets->sum('total_invested');
-        $totalValue = $assets->sum('current_value');
-        $totalProfit = $totalValue - $totalInvested;
+        $recentContributions = $this->getRecentContributions($user);
 
-        return $this->buildAnalysisPrompt($user->name, $portfolioData, $totalInvested, $totalValue, $totalProfit);
+        return $this->buildAnalysisPrompt($user->name, $portfolioData, $totalInvested, $totalValue, $totalProfit, $recentContributions);
+    }
+
+    /**
+     * Recopila las aportaciones de los últimos 6 meses.
+     */
+    private function getRecentContributions(User $user)
+    {
+        $sixMonthsAgo = Carbon::now()->subMonths(6)->startOfMonth();
+
+        $transactions = Transaction::where('user_id', $user->id)
+            ->whereIn('type', ['buy', 'transfer_in', 'gift', 'reward'])
+            ->where('date', '>=', $sixMonthsAgo)
+            ->with('asset')
+            ->orderBy('date', 'desc')
+            ->get();
+
+        if ($transactions->isEmpty()) {
+            return "No se han registrado aportaciones en los últimos 6 meses.";
+        }
+
+        $monthlyData = [];
+        foreach ($transactions as $tx) {
+            $month = $tx->date->format('F Y');
+            $assetName = $tx->asset ? $tx->asset->name : 'General/Desconocido';
+            
+            if (!isset($monthlyData[$month])) {
+                $monthlyData[$month] = [];
+            }
+            
+            if (!isset($monthlyData[$month][$assetName])) {
+                $monthlyData[$month][$assetName] = 0;
+            }
+            
+            $monthlyData[$month][$assetName] += (float) $tx->amount;
+        }
+
+        return $monthlyData;
     }
 
     /**
      * Builds the prompt for the AI model.
      */
-    private function buildAnalysisPrompt($userName, $portfolioData, $totalInvested, $totalValue, $totalProfit)
+    private function buildAnalysisPrompt($userName, $portfolioData, $totalInvested, $totalValue, $totalProfit, $recentContributions)
     {
         $portfolioJson = json_encode($portfolioData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+        $contributionsJson = json_encode($recentContributions, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
 
         return "Actúa como un analista financiero profesional de nivel senior (CFA Charterholder). 
-        Analiza la siguiente cartera de inversiones del usuario {$userName}.
+        Analiza la siguiente cartera de inversiones de {$userName} para evaluar si está bien equilibrada.
         
         Datos de la Cartera (JSON):
         {$portfolioJson}
@@ -97,17 +138,25 @@ class AiAnalystService
         - Valor Actual: {$totalValue}
         - Ganancia/Pérdida Total: {$totalProfit}
         
-        Instrucciones para el Informe:
-        1. Comienza con un saludo profesional y una visión general del estado actual de la cartera.
-        2. Analiza las posiciones individuales: cuáles están funcionando bien, cuáles no, y por qué (basándote en tendencias de mercado generales o la naturaleza de los activos).
-        3. Identifica riesgos de concentración (por sector, tipo de activo o región) si los hay.
-        4. Proporciona un pronóstico detallado:
+        Historial de Aportaciones Recientes (Últimos 6 meses):
+        {$contributionsJson}
+
+        Instrucciones Obligatorias para el Informe:
+        1. Comparación con Benchmarks: Compara el rendimiento y la composición de esta cartera ÚNICAMENTE con los índices MSCI World y S&P 500. Indica si la cartera está infraponderada o sobreponderada respecto a estos índices en términos de sectores y regiones.
+        2. Análisis de Equilibrio: Determina si la cartera está equilibrada según el perfil general de un inversor a largo plazo.
+        3. Recomendaciones Concretas de Rebalanceo: Proporciona sugerencias ESPECÍFICAS con porcentajes. 
+           - Ejemplo: \"Reducir la exposición a BTC del 15% actual al 10% para disminuir la volatilidad\".
+           - Ejemplo: \"Aumentar el peso en Renta Variable Global (MSCI World) del 40% al 55%\".
+        4. Ajustes según Aportaciones Mensuales: Analiza el ritmo de aportaciones recientes. Sugiere cómo redirigir el capital de las próximas aportaciones mensuales para alcanzar el equilibrio deseado sin necesidad de vender activos si es posible (enfoque DCA selectivo).
+        5. Identifica riesgos de concentración críticos.
+        6. Pronóstico:
            - Corto plazo (1-3 meses)
            - Mediano plazo (6-12 meses)
            - Largo plazo (2-5 años)
-        5. Sugiere ajustes estratégicos (ej. rebalanceo, diversificación) de forma prudente.
-        6. Mantén un tono profesional, analítico, educativo y alentador, pero advirtiendo siempre sobre los riesgos del mercado.
-        7. El informe debe estar formateado en Markdown limpio y profesional, usando encabezados, negritas y listas.
+        
+        Tono y Formato:
+        - Mantén un tono analítico, profesional y directo.
+        - Formateado en Markdown con encabezados (H2, H3), negritas y listas.
         
         Escribe el informe en Español.";
     }

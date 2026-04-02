@@ -25,7 +25,7 @@ const props = defineProps({
     summary: Object,          // { netWorth, cash, investmentsTotal }
     portfolios: Array,        // Lista de carteras con sus métricas y activos
     expenses: Object,         // { monthlyTotal, monthlyIncome, ranges: { month: {...}, year: {...}, all: {...} } }
-    charts: Object,           // { netWorthLabels, netWorthData, portfolioHistory }
+    charts: Object,           // { netWorthLabels, netWorthData, portfolioHistory, allocation }
     recentTransactions: Array,// Últimas transacciones
     allAssetsList: Array,     // Lista simple de activos (para referencias si es necesario)
     categories: Array,        // Lista de categorías disponibles
@@ -140,24 +140,30 @@ const transactionTypes = {
 // CONFIGURACIÓN DE GRÁFICOS
 // ---------------------------------------------------------
 
-// 1. Gráfico Patrimonio (Line Chart) - Soporta modo Global y Por Cartera
+const displayMode = ref('value'); // 'value' | 'percent'
+
+// 1. Gráfico Patrimonio (Line Chart) - Soporta modo Global y Por Cartera, y Valor vs Rendimiento
 const netWorthChartData = computed(() => {
-    if (chartMode.value === 'global') {
+    const isGlobal = chartMode.value === 'global';
+    const isPercent = displayMode.value === 'percent';
+    
+    if (isGlobal) {
+        const data = isPercent ? props.charts.netWorthYields || props.charts.netWorthData.map(() => 0) : props.charts.netWorthData;
         return {
             labels: props.charts.netWorthLabels,
             datasets: [
                 {
-                    label: 'Patrimonio Neto (€)',
-                    backgroundColor: 'rgba(59, 130, 246, 0.1)', // Azul transparente
-                    borderColor: '#3b82f6', // Azul Tailwind 500
+                    label: isPercent ? 'Rendimiento (%)' : 'Patrimonio Neto (€)',
+                    backgroundColor: isPercent ? 'rgba(16, 185, 129, 0.1)' : 'rgba(59, 130, 246, 0.1)',
+                    borderColor: isPercent ? '#10b981' : '#3b82f6',
                     pointBackgroundColor: '#ffffff',
-                    pointBorderColor: '#3b82f6',
+                    pointBorderColor: isPercent ? '#10b981' : '#3b82f6',
                     pointBorderWidth: 2,
                     pointRadius: 4,
                     pointHoverRadius: 6,
                     fill: true,
                     tension: 0.4,
-                    data: props.charts.netWorthData
+                    data: data
                 }
             ]
         };
@@ -167,11 +173,12 @@ const netWorthChartData = computed(() => {
         const colors = ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ef4444', '#ec4899', '#6366f1'];
         
         let i = 0;
-        // Asumiendo que props.charts.portfolioHistory es un objeto { portfolioId: [data...] }
-        for (const [id, data] of Object.entries(props.charts.portfolioHistory || {})) {
+        for (const [id, history] of Object.entries(props.charts.portfolioHistory || {})) {
             const portfolio = props.portfolios.find(p => p.id == id) || { name: 'Sin Cartera' };
+            const data = isPercent ? history.yields : history.values;
+            
             datasets.push({
-                label: portfolio.name,
+                label: portfolio.name + (isPercent ? ' (%)' : ' (€)'),
                 borderColor: colors[i % colors.length],
                 backgroundColor: 'transparent',
                 pointBackgroundColor: '#ffffff',
@@ -200,7 +207,14 @@ const lineChartOptions = {
             padding: 10,
             cornerRadius: 8,
             callbacks: {
-                label: (context) => `${context.dataset.label}: ${formatCurrency(context.parsed.y)}`
+                label: (context) => {
+                    const label = context.dataset.label || '';
+                    const value = context.parsed.y;
+                    if (displayMode.value === 'percent') {
+                        return `${label}: ${value >= 0 ? '+' : ''}${value.toFixed(2)}%`;
+                    }
+                    return `${label}: ${formatCurrency(value)}`;
+                }
             }
         }
     },
@@ -208,7 +222,12 @@ const lineChartOptions = {
         y: {
             grid: { color: '#f1f5f9' },
             ticks: {
-                callback: (value) => new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR', maximumSignificantDigits: 3 }).format(value),
+                callback: (value) => {
+                    if (displayMode.value === 'percent') {
+                        return (value >= 0 ? '+' : '') + value.toFixed(1) + '%';
+                    }
+                    return new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR', maximumSignificantDigits: 3 }).format(value);
+                },
                 font: { size: 11 },
                 color: '#64748b'
             },
@@ -257,6 +276,23 @@ const expensesDistributionData = computed(() => {
     };
 });
 
+// 4. Gráfico Distribución de Patrimonio (Invertido vs Líquido)
+const allocationChartData = computed(() => {
+    const colors = ['#3b82f6', '#10b981', '#f59e0b']; // Blue, Green, Yellow
+    // Evitar que valores negativos rompan el gráfico circular (ej. liquidez negativa)
+    const chartValues = (props.charts.allocation?.values || []).map(v => v < 0 ? 0 : v);
+    
+    return {
+        labels: props.charts.allocation?.labels || [],
+        datasets: [{
+            data: chartValues,
+            backgroundColor: colors,
+            borderWidth: 0,
+            hoverOffset: 4
+        }]
+    };
+});
+
 // Resumen del rango de gastos seleccionado
 const currentExpenseRangeTotal = computed(() => {
     return props.expenses.ranges[expenseRange.value]?.total || 0;
@@ -266,6 +302,26 @@ const expenseRangeLabels = {
     month: 'del Mes',
     year: 'del Año',
     all: 'Total'
+};
+
+// Configuraciones de Gráficos Circulares
+const allocationDoughnutOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+        legend: { display: false },
+        tooltip: {
+            callbacks: {
+                label: (context) => {
+                    const value = context.parsed;
+                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                    const percentage = total > 0 ? ((value / total) * 100).toFixed(1) + '%' : '0%';
+                    return ` ${context.label}: ${formatCurrency(value)} (${percentage})`;
+                }
+            }
+        }
+    },
+    cutout: '72%'
 };
 
 const doughnutOptions = {
@@ -405,11 +461,49 @@ const filteredTransactions = computed(() => {
                 </div>
             </div>
 
-            <!-- 2. SECCIÓN DIVIDIDA: INVERSIONES vs GASTOS -->
+            <!-- 2. DISTRIBUCIÓN GLOBAL Y SECCIÓN DIVIDIDA -->
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     
-                    <!-- COLUMNA IZQUIERDA: INVERSIONES -->
+                    <!-- DISTRIBUCIÓN GLOBAL DE PATRIMONIO -->
+                    <div class="space-y-6">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-xl font-bold text-slate-800 dark:text-white flex items-center">
+                                <span class="bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 p-2 rounded-lg mr-3">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"></path></svg>
+                                </span>
+                                Distribución Global
+                            </h3>
+                            <InfoTooltip text="Porcentaje de tu patrimonio invertido vs líquido." />
+                        </div>
+                        <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 h-80 flex items-center justify-between">
+                            <!-- Contenedor del gráfico en formato Cuadrado Perfecto para centrado absoluto -->
+                            <div class="relative w-56 h-56 mx-auto flex-shrink-0" :class="{ 'blur-sm select-none': isPrivacyMode }">
+                                <DoughnutChart :data="allocationChartData" :options="allocationDoughnutOptions" />
+                                <!-- Texto Exactamente Centrado -->
+                                <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                                    <p class="text-[9px] text-slate-500 uppercase tracking-widest font-semibold text-center leading-tight">Tasa de <br> Inversión</p>
+                                    <p class="text-xl font-bold text-slate-800 dark:text-white mt-0.5" style="transform: translateX(2px);">
+                                        {{ isPrivacyMode ? '****' : ( Number(summary.cash) < 0 || Number(summary.investmentsTotal) <= 0 ? (Number(summary.investmentsTotal) > 0 ? '100' : '0') : ((Number(summary.investmentsTotal) / (Number(summary.investmentsTotal) + Number(summary.cash))) * 100).toFixed(1) ) }}%
+                                    </p>
+                                </div>
+                            </div>
+                            
+                            <!-- Leyenda nativa en HTML (replicada y estática) -->
+                            <div class="w-[35%] flex flex-col justify-center space-y-4 pl-4 border-l border-slate-50 dark:border-slate-700/50">
+                                <div class="flex items-center text-slate-600 dark:text-slate-400 text-xs">
+                                    <span class="w-2.5 h-2.5 rounded-full bg-blue-500 mr-2.5 flex-shrink-0"></span>
+                                    Invertido
+                                </div>
+                                <div class="flex items-center text-slate-600 dark:text-slate-400 text-xs mt-3">
+                                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 mr-2.5 flex-shrink-0"></span>
+                                    Liquidez
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- COLUMNA CENTRAL: INVERSIONES -->
                     <div class="space-y-6">
                         <div class="flex items-center justify-between">
                             <h3 class="text-xl font-bold text-slate-800 dark:text-white flex items-center">
@@ -564,22 +658,41 @@ const filteredTransactions = computed(() => {
                             <InfoTooltip text="Visualiza cómo ha crecido tu patrimonio o tus carteras en los últimos 6 meses." />
                         </div>
                         
-                        <!-- Toggle Chart Mode -->
-                        <div class="bg-slate-100 dark:bg-slate-700 p-1 rounded-lg flex text-sm font-medium">
-                            <button 
-                                @click="chartMode = 'global'"
-                                class="px-4 py-1.5 rounded-md transition-all"
-                                :class="chartMode === 'global' ? 'bg-white dark:bg-slate-600 text-blue-600 dark:text-blue-400 shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'"
-                            >
-                                Patrimonio Total
-                            </button>
-                            <button 
-                                @click="chartMode = 'portfolios'"
-                                class="px-4 py-1.5 rounded-md transition-all"
-                                :class="chartMode === 'portfolios' ? 'bg-white dark:bg-slate-600 text-blue-600 dark:text-blue-400 shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'"
-                            >
-                                Por Cartera
-                            </button>
+                        <!-- Toggle Chart Mode & Display (Value vs %) -->
+                        <div class="flex flex-wrap gap-2">
+                            <div class="bg-slate-100 dark:bg-slate-700 p-1 rounded-lg flex text-sm font-medium">
+                                <button 
+                                    @click="chartMode = 'global'"
+                                    class="px-4 py-1.5 rounded-md transition-all"
+                                    :class="chartMode === 'global' ? 'bg-white dark:bg-slate-600 text-blue-600 dark:text-blue-400 shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'"
+                                >
+                                    Patrimonio Total
+                                </button>
+                                <button 
+                                    @click="chartMode = 'portfolios'"
+                                    class="px-4 py-1.5 rounded-md transition-all"
+                                    :class="chartMode === 'portfolios' ? 'bg-white dark:bg-slate-600 text-blue-600 dark:text-blue-400 shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'"
+                                >
+                                    Por Cartera
+                                </button>
+                            </div>
+
+                            <div class="bg-slate-100 dark:bg-slate-700 p-1 rounded-lg flex text-sm font-medium ml-0 sm:ml-4">
+                                <button 
+                                    @click="displayMode = 'value'"
+                                    class="px-4 py-1.5 rounded-md transition-all"
+                                    :class="displayMode === 'value' ? 'bg-white dark:bg-slate-600 text-blue-600 dark:text-blue-400 shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'"
+                                >
+                                    Valor (€)
+                                </button>
+                                <button 
+                                    @click="displayMode = 'percent'"
+                                    class="px-4 py-1.5 rounded-md transition-all"
+                                    :class="displayMode === 'percent' ? 'bg-white dark:bg-slate-600 text-emerald-600 dark:text-emerald-400 shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'"
+                                >
+                                    Rendimiento (%)
+                                </button>
+                            </div>
                         </div>
                     </div>
                     <div class="h-[300px] w-full relative" :class="{ 'blur-sm select-none': isPrivacyMode }">

@@ -16,24 +16,27 @@ class CryptoService
         $this->apiKey = config('services.coingecko.key') ?? env('COINGECKO_API_KEY');
     }
 
-    public function getPrice($symbol)
+    public function getPrice($identifier)
     {
-        return Cache::remember("crypto_price_{$symbol}", 600, function () use ($symbol) {
+        return Cache::remember("crypto_price_{$identifier}", 600, function () use ($identifier) {
             try {
                 // If no API key, use mock data
                 if (empty($this->apiKey)) {
-                    return $this->getMockPrice($symbol);
+                    return $this->getMockPrice($identifier);
                 }
 
-                $response = Http::get("{$this->baseUrl}/simple/price?ids={$symbol}&vs_currencies=usd&x_cg_demo_api_key={$this->apiKey}");
+                // CoinGecko IDs are lowercase
+                $id = strtolower($identifier);
+
+                $response = Http::get("{$this->baseUrl}/simple/price?ids={$id}&vs_currencies=usd&x_cg_demo_api_key={$this->apiKey}");
                 
-                if ($response->successful() && isset($response->json()[$symbol]['usd'])) {
-                    return $response->json()[$symbol]['usd'];
+                if ($response->successful() && isset($response->json()[$id]['usd'])) {
+                    return $response->json()[$id]['usd'];
                 }
                 
                 return null;
             } catch (\Exception $e) {
-                Log::error("Error fetching crypto price for {$symbol}: " . $e->getMessage());
+                Log::error("Error fetching crypto price for {$identifier}: " . $e->getMessage());
                 return null;
             }
         });
@@ -50,7 +53,16 @@ class CryptoService
                 $response = Http::get("{$this->baseUrl}/search?query={$query}&x_cg_demo_api_key={$this->apiKey}");
 
                 if ($response->successful()) {
-                    return $response->json()['coins'];
+                    $coins = $response->json()['coins'];
+                    return array_map(function($coin) {
+                        return [
+                            'id' => $coin['id'], // This is the api_id
+                            'symbol' => strtoupper($coin['symbol']),
+                            'name' => $coin['name'],
+                            'market_cap_rank' => $coin['market_cap_rank'] ?? null,
+                            'thumb' => $coin['thumb'] ?? null,
+                        ];
+                    }, $coins);
                 }
 
                 return [];
@@ -119,6 +131,72 @@ class CryptoService
                 'symbol' => 'SOL',
                 'market_cap_rank' => 5,
             ],
+        ];
+    }
+
+    public function getTrendingCoins()
+    {
+        return Cache::remember("crypto_trending", 3600, function () {
+            try {
+                if (empty($this->apiKey)) return $this->getMockTrending();
+
+                $response = Http::get("{$this->baseUrl}/search/trending?x_cg_demo_api_key={$this->apiKey}");
+                if ($response->successful()) {
+                    $coins = $response->json()['coins'];
+                    return array_map(function($item) {
+                        $coin = $item['item'];
+                        return [
+                            'id' => $coin['id'],
+                            'symbol' => strtoupper($coin['symbol']),
+                            'name' => $coin['name'],
+                            'price' => $coin['data']['price'] ?? 0,
+                            'change_percent' => floatval($coin['data']['price_change_percentage_24h']['usd'] ?? 0),
+                        ];
+                    }, $coins);
+                }
+                
+                return $this->getMockTrending();
+            } catch (\Exception $e) {
+                Log::error("Error fetching trending crypto: " . $e->getMessage());
+                return $this->getMockTrending();
+            }
+        });
+    }
+
+    public function getTopByMarketCap($limit = 10)
+    {
+        return Cache::remember("crypto_top_mcap_{$limit}", 3600, function () use ($limit) {
+            try {
+                if (empty($this->apiKey)) return $this->getMockTrending();
+
+                $response = Http::get("{$this->baseUrl}/coins/markets?vs_currency=usd&order=market_cap_desc&per_page={$limit}&page=1&sparkline=false&x_cg_demo_api_key={$this->apiKey}");
+                
+                if ($response->successful()) {
+                    return array_map(function($coin) {
+                        return [
+                            'id' => $coin['id'],
+                            'symbol' => strtoupper($coin['symbol']),
+                            'name' => $coin['name'],
+                            'price' => floatval($coin['current_price']),
+                            'change_percent' => floatval($coin['price_change_percentage_24h'] ?? 0),
+                        ];
+                    }, $response->json());
+                }
+                
+                return $this->getMockTrending();
+            } catch (\Exception $e) {
+                Log::error("Error fetching top crypto: " . $e->getMessage());
+                return $this->getMockTrending();
+            }
+        });
+    }
+
+    private function getMockTrending()
+    {
+        return [
+            ['id' => 'bitcoin', 'symbol' => 'BTC', 'name' => 'Bitcoin', 'price' => 66000, 'change_percent' => 2.5],
+            ['id' => 'ethereum', 'symbol' => 'ETH', 'name' => 'Ethereum', 'price' => 3500, 'change_percent' => 1.8],
+            ['id' => 'solana', 'symbol' => 'SOL', 'name' => 'Solana', 'price' => 180, 'change_percent' => 5.2],
         ];
     }
 }

@@ -20,18 +20,18 @@ class MarketController extends Controller
     public function index()
     {
         // Use cache to avoid hitting APIs on every page load (refresh every 15 mins)
-        $marketData = Cache::remember('market_index_data', 900, function() {
+        $marketData = Cache::remember('market_index_data_v7', 900, function() {
             return [
-                'stocks' => $this->getRealDataForSymbols([
-                    'winners' => ['NVDA', 'META', 'AMD'],
-                    'losers' => ['TSLA', 'AAPL', 'GOOGL'],
-                    'most_searched' => ['MSFT', 'AMZN', 'PLTR']
-                ], 'stock'),
-                'crypto' => $this->getRealDataForSymbols([
-                    'largest' => ['BTC', 'ETH', 'SOL'],
-                    'popular' => ['ADA', 'XRP', 'DOGE'],
-                    'most_searched' => ['SHIB', 'LINK', 'MATIC']
-                ], 'crypto'),
+                'stocks' => [
+                    'winners' => $this->mapStockData($this->marketDataService->getStockGainers()),
+                    'losers' => $this->mapStockData($this->marketDataService->getStockLosers()),
+                    'most_searched' => $this->mapStockData($this->marketDataService->getStockActive()),
+                ],
+                'crypto' => [
+                    'largest' => $this->mapCryptoData($this->marketDataService->getCryptoTop(3)),
+                    'popular' => $this->mapCryptoData($this->marketDataService->getCryptoTrending()),
+                    'most_searched' => $this->mapCryptoData($this->marketDataService->getCryptoTop(6)), // Fetch top 6, map will slice to 3
+                ],
                 'etfs' => $this->getRealDataForSymbols([
                     'largest' => ['SPY', 'IVV', 'VTI'],
                     'popular' => ['QQQ', 'VOO', 'SCHD'],
@@ -41,12 +41,39 @@ class MarketController extends Controller
                     'popular' => [
                         ['ticker' => 'IE00B4L5Y983', 'name' => 'iShares Core MSCI World', 'price' => 88.20, 'change_percent' => 0.3],
                         ['ticker' => 'LU0348751388', 'name' => 'Vanguard Global Stock Index', 'price' => 124.50, 'change_percent' => 0.5],
+                        ['ticker' => 'LU0389812933', 'name' => 'Fidelity Global Technology', 'price' => 64.10, 'change_percent' => -0.2],
                     ]
                 ]
             ];
         });
 
         return Inertia::render('Markets/Index', $marketData);
+    }
+
+    private function mapStockData($stocks)
+    {
+        return array_map(function($stock) {
+            return [
+                'ticker' => $stock['symbol'],
+                'name' => $stock['name'] ?? $stock['symbol'],
+                'price' => (float)($stock['price'] ?? 0),
+                'change_percent' => (float)($stock['changesPercentage'] ?? 0),
+                'volume' => 'High'
+            ];
+        }, array_slice($stocks, 0, 3)); // Limit to top 3
+    }
+
+    private function mapCryptoData($coins)
+    {
+        return array_map(function($coin) {
+            return [
+                'ticker' => $coin['symbol'],
+                'name' => $coin['name'],
+                'price' => (float)($coin['price'] ?? 0),
+                'change_percent' => (float)($coin['change_percent'] ?? 0),
+                'volume' => 'High'
+            ];
+        }, array_slice($coins, 0, 3)); // Limit to top 3
     }
 
     private function getRealDataForSymbols(array $groups, string $type)

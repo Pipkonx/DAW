@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Services\Financial\ExpenseService;
 use App\Services\Analysis\DashboardService;
+use App\Models\BankAccount;
 
 class DashboardController extends Controller
 {
@@ -34,6 +35,8 @@ class DashboardController extends Controller
 
         $portfoliosData = $this->dashboardService->getPortfoliosData($user->id);
         $investmentsTotalValue = $portfoliosData->sum('total_value');
+        $investmentsTotalCost = $portfoliosData->sum('total_cost');
+        $investmentsYield = $investmentsTotalCost > 0 ? (($investmentsTotalValue - $investmentsTotalCost) / $investmentsTotalCost) * 100 : 0;
 
         // Totales del mes (Ingresos vs Gastos)
         $monthlyMetrics = Transaction::where('user_id', $user->id)
@@ -45,8 +48,11 @@ class DashboardController extends Controller
         // Patrimonio Total
         $cashFlow = Transaction::where('user_id', $user->id)
             ->selectRaw("SUM(CASE WHEN type IN ('income', 'sell', 'dividend', 'gift', 'reward', 'transfer_in') THEN amount 
-                                  WHEN type IN ('expense', 'buy', 'transfer_out') THEN -amount ELSE 0 END) as cash")
+                                   WHEN type IN ('expense', 'buy', 'transfer_out') THEN -amount ELSE 0 END) as cash")
             ->value('cash') ?? 0;
+
+        // Ahorros en planificación financiera (Cuentas remuneradas, etc)
+        $bankBalance = BankAccount::where('user_id', $user->id)->sum('balance') ?? 0;
 
         $history = $this->dashboardService->getNetWorthHistory($user->id);
 
@@ -55,6 +61,9 @@ class DashboardController extends Controller
                 'netWorth' => $cashFlow + $investmentsTotalValue,
                 'cash' => $cashFlow,
                 'investmentsTotal' => $investmentsTotalValue,
+                'investmentsCost' => $investmentsTotalCost,
+                'investmentsYield' => $investmentsYield,
+                'bankBalance' => $bankBalance,
             ],
             'unlinkedAssets' => Asset::where('user_id', $user->id)->whereIn('link_status', ['pending', 'failed'])->get(),
             'portfolios' => $portfoliosData,
@@ -67,6 +76,13 @@ class DashboardController extends Controller
                 'netWorthLabels' => $history['labels'],
                 'netWorthData' => $history['values'],
                 'portfolioHistory' => $this->dashboardService->getPortfolioHistory($user->id),
+                'allocation' => [
+                    'labels' => ['Invertido', 'Liquidez'],
+                    'values' => [
+                        (float)$investmentsTotalValue,
+                        (float)$cashFlow,
+                    ]
+                ]
             ],
             'recentTransactions' => $this->getRecentTransactions($user->id),
             'allAssetsList' => Asset::where('user_id', $user->id)->select('id', 'name', 'ticker')->get(),

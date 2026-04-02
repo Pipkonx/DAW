@@ -29,7 +29,7 @@ class TransactionService
             $userId = Auth::id();
             $assetId = null;
 
-            if (in_array($data['type'], ['buy', 'sell', 'dividend'])) {
+            if (in_array($data['type'], ['buy', 'sell', 'dividend', 'reward', 'gift'])) {
                 $asset = $this->assetService->findOrCreateAndLink($userId, [
                     'portfolio_id' => $data['portfolio_id'] ?? null,
                     'ticker' => $data['asset_name'],
@@ -44,12 +44,19 @@ class TransactionService
                 $assetId = $asset->id;
 
                 // Update asset quantity and prices
-                if ($data['type'] === 'buy') {
+                if (in_array($data['type'], ['buy', 'reward', 'gift'])) {
                     $this->updateAssetOnBuy($asset, $data['quantity'] ?? 0, $data['price_per_unit'] ?? 0);
                 } elseif ($data['type'] === 'sell') {
                     $this->updateAssetOnSell($asset, $data['quantity'] ?? 0, $data['price_per_unit'] ?? 0);
                 }
             }
+
+            $resolvedCategoryId = $this->resolveCategory(
+                $userId, 
+                $data['type'], 
+                $data['category_id'] ?? null, 
+                $data['category_name'] ?? null
+            );
 
             $transaction = Transaction::create([
                 'user_id' => $userId,
@@ -57,7 +64,7 @@ class TransactionService
                 'type' => $data['type'],
                 'amount' => $data['amount'],
                 'date' => $data['date'],
-                'category_id' => $data['category_id'] ?? null,
+                'category_id' => $resolvedCategoryId,
                 'description' => $data['description'] ?? null,
                 'quantity' => $data['quantity'] ?? null,
                 'price_per_unit' => $data['price_per_unit'] ?? null,
@@ -69,7 +76,7 @@ class TransactionService
                 'time' => $data['time'] ?? null,
             ]);
 
-            $this->incrementCategoryUsage($data['category_id'] ?? null);
+            $this->incrementCategoryUsage($resolvedCategoryId);
 
             return $transaction;
         });
@@ -81,21 +88,28 @@ class TransactionService
     public function update(Transaction $transaction, array $data)
     {
         return DB::transaction(function () use ($transaction, $data) {
-            if ($transaction->asset_id && in_array($transaction->type, ['buy', 'sell'])) {
+            if ($transaction->asset_id && in_array($transaction->type, ['buy', 'sell', 'reward', 'gift'])) {
                 $asset = $transaction->asset;
                 $diff = ($data['quantity'] ?? $transaction->quantity) - $transaction->quantity;
                 
                 if ($diff != 0) {
-                    if ($transaction->type === 'buy') $asset->quantity += $diff;
+                    if (in_array($transaction->type, ['buy', 'reward', 'gift'])) $asset->quantity += $diff;
                     elseif ($transaction->type === 'sell') $asset->quantity -= $diff;
                     $asset->save();
                 }
             }
 
+            $resolvedCategoryId = $this->resolveCategory(
+                $transaction->user_id, 
+                $transaction->type, 
+                $data['category_id'] ?? null, 
+                $data['category_name'] ?? null
+            );
+
             $transaction->update([
                 'amount' => $data['amount'],
                 'date' => $data['date'],
-                'category_id' => $data['category_id'] ?? null,
+                'category_id' => $resolvedCategoryId,
                 'description' => $data['description'] ?? null,
                 'quantity' => $data['quantity'] ?? $transaction->quantity,
                 'price_per_unit' => $data['price_per_unit'] ?? $transaction->price_per_unit,
@@ -165,5 +179,33 @@ class TransactionService
                 \App\Models\Category::where('id', $category->parent_id)->increment('usage_count');
             }
         }
+    }
+
+    private function resolveCategory($userId, $type, $categoryId, $categoryName)
+    {
+        if ($categoryId) return $categoryId;
+        if (!$categoryName) return null;
+
+        // Limitar a income/expense
+        $catType = in_array($type, ['income', 'expense']) ? $type : 'expense';
+
+        // Buscar exacta ignorando mayúsculas
+        $category = \App\Models\Category::where('user_id', $userId)
+                        ->where('type', $catType)
+                        ->where('name', 'LIKE', $categoryName)
+                        ->first();
+                        
+        if ($category) return $category->id;
+        
+        // Crear si no existe
+        $newCategory = \App\Models\Category::create([
+            'user_id' => $userId,
+            'name' => $categoryName,
+            'type' => $catType,
+            'color' => '#64748b', // Por defecto un color neutro
+            'is_active' => true,
+        ]);
+        
+        return $newCategory->id;
     }
 }

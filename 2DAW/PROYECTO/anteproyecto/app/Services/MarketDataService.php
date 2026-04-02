@@ -32,6 +32,12 @@ class MarketDataService
         $this->fundService = $fundService;
     }
 
+    public function getStockGainers() { return $this->stockService->getTopGainers(); }
+    public function getStockLosers() { return $this->stockService->getTopLosers(); }
+    public function getStockActive() { return $this->stockService->getMostActive(); }
+    public function getCryptoTrending() { return $this->cryptoService->getTrendingCoins(); }
+    public function getCryptoTop($limit = 10) { return $this->cryptoService->getTopByMarketCap($limit); }
+
     /**
      * Attempts to find a market asset by name if ticker/ISIN are missing.
      */
@@ -109,7 +115,7 @@ class MarketDataService
             ->where('date', $today)
             ->first();
 
-        if ($latestPrice) {
+        if ($latestPrice && $latestPrice->price > 0) {
             return $latestPrice->price;
         }
 
@@ -194,7 +200,7 @@ class MarketDataService
         return $price;
     }
 
-    public function syncAsset($ticker, $type, $name, $currency = 'USD', $isin = null)
+    public function syncAsset($ticker, $type, $name, $currency = 'USD', $isin = null, $apiId = null)
     {
         // Try to find by ticker and type (and isin if provided)
         $query = MarketAsset::where('type', $type);
@@ -203,6 +209,8 @@ class MarketDataService
              $query->where(function($q) use ($ticker, $isin) {
                  $q->where('ticker', $ticker)->orWhere('isin', $isin);
              });
+        } elseif ($apiId) {
+             $query->where('api_id', $apiId);
         } else {
              $query->where('ticker', $ticker);
         }
@@ -212,14 +220,21 @@ class MarketDataService
         if (!$marketAsset) {
             $marketAsset = MarketAsset::create([
                 'ticker' => strtoupper($ticker),
+                'api_id' => $apiId,
                 'name' => $name,
                 'type' => $type,
                 'currency_code' => $currency,
                 'isin' => $isin,
             ]);
-        } elseif ($isin && !$marketAsset->isin) {
-             // Update ISIN if we found it by ticker but ISIN was missing
-             $marketAsset->update(['isin' => $isin]);
+        } else {
+             // Update missing fields if we have more info now
+             $updates = [];
+             if ($isin && !$marketAsset->isin) $updates['isin'] = $isin;
+             if ($apiId && !$marketAsset->api_id) $updates['api_id'] = $apiId;
+             
+             if (!empty($updates)) {
+                 $marketAsset->update($updates);
+             }
         }
         
         return $marketAsset;
@@ -295,6 +310,7 @@ class MarketDataService
                 'currency' => $asset->currency_code,
                 'source' => 'local',
                 'isin' => $asset->isin,
+                'api_id' => $asset->api_id,
             ];
         });
 
@@ -326,8 +342,13 @@ class MarketDataService
                 $apiResults = $this->searchAssets($query, $type);
                 
                 foreach ($apiResults as $apiItem) {
-                    // Check if already in local results by ticker
-                    if (!$results->contains('ticker', $apiItem['symbol'])) {
+                    // Check if already in local results by ticker or api_id
+                    $exists = $results->contains(function ($item) use ($apiItem) {
+                        return $item['ticker'] === $apiItem['symbol'] || 
+                               ($apiItem['api_id'] && $item['api_id'] === $apiItem['api_id']);
+                    });
+
+                    if (!$exists) {
                         $results->push([
                             'id' => null, // Not in DB yet
                             'ticker' => $apiItem['symbol'],
@@ -352,8 +373,29 @@ class MarketDataService
         try {
             switch ($marketAsset->type) {
                 case 'crypto':
-                    // Ideally use a dedicated API ID field, fallback to name/ticker
-                    $identifier = strtolower($marketAsset->name); // CoinGecko uses names like 'bitcoin'
+                    // If we don't have api_id, try to find it by ticker (symbol)
+                    if (!$marketAsset->api_id) {
+                         $results = $this->cryptoService->search($marketAsset->ticker ?: $marketAsset->name);
+                         if (!empty($results)) {
+                             // Find exact match by symbol or very close match by name
+                             $found = null;
+                             $symbol = strtoupper($marketAsset->ticker);
+                             
+                             foreach ($results as $res) {
+                                  if (strtoupper($res['symbol']) === $symbol) {
+                                       $found = $res;
+                                       break;
+                                  }
+                             }
+                             
+                             if ($found) {
+                                 $marketAsset->update(['api_id' => $found['id']]);
+                             }
+                         }
+                    }
+
+                    // Prioritize dedicated API ID field (CoinGecko ID)
+                    $identifier = $marketAsset->api_id ?? strtolower($marketAsset->name);
                     return $this->cryptoService->getPrice($identifier);
                 case 'bond':
                     $identifier = $marketAsset->isin ?? $marketAsset->ticker;
@@ -466,7 +508,7 @@ class MarketDataService
                         'name' => $crypto['name'],
                         'type' => 'crypto',
                         'currency' => 'USD',
-                        'api_id' => $crypto['id'],
+                        'api_id' => $crypto['id'], // ID from CoinGecko
                     ];
                 }
             } catch (\Exception $e) {

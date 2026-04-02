@@ -6,6 +6,7 @@ import DropdownLink from '@/Components/DropdownLink.vue';
 import NavLink from '@/Components/NavLink.vue';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
 import Breadcrumbs from '@/Components/Breadcrumbs.vue';
+import Toast from '@/Components/Toast.vue';
 import { Link, usePage } from '@inertiajs/vue3';
 import { usePrivacy } from '@/Composables/usePrivacy';
 
@@ -39,6 +40,7 @@ onMounted(() => {
 
 <template>
     <div>
+        <Toast />
         <!-- 
             AuthenticatedLayout: Plantilla principal para usuarios logueados (Dashboard, Perfil).
             bg-slate-50: Fondo base coherente con el estilo Fintech global.
