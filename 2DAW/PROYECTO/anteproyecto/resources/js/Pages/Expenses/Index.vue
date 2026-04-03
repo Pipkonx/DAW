@@ -56,7 +56,7 @@ onMounted(() => {
     }
 });
 
-// Persistir cambios en los filtros
+// Peristir cambios en los filtros
 watch(() => dateFilters.value, (newFilters) => {
     if (newFilters.start_date) localStorage.setItem('expenses_filter_start', newFilters.start_date);
     if (newFilters.end_date) localStorage.setItem('expenses_filter_end', newFilters.end_date);

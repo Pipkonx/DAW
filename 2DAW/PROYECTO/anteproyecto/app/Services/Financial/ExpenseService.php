@@ -16,11 +16,16 @@ class ExpenseService
     {
         if (Category::where('user_id', $userId)->count() === 0) {
             $systemCategories = Category::whereNull('user_id')->whereNull('parent_id')->with('children')->get();
+            /** @var \App\Models\Category $systemCat */
             foreach ($systemCategories as $systemCat) {
+                /** @var \App\Models\Category $newParent */
                 $newParent = $systemCat->replicate();
                 $newParent->user_id = $userId;
                 $newParent->save();
+
+                /** @var \App\Models\Category $systemChild */
                 foreach ($systemCat->children as $systemChild) {
+                    /** @var \App\Models\Category $newChild */
                     $newChild = $systemChild->replicate();
                     $newChild->user_id = $userId;
                     $newChild->parent_id = $newParent->id;
@@ -41,7 +46,8 @@ class ExpenseService
             ->get();
 
         return $allCategories->whereNull('parent_id')->map(function ($parent) use ($allCategories) {
-            $parent->children = $allCategories->where('parent_id', $parent->id)->values();
+            /** @var \App\Models\Category $parent */
+            $parent->setAttribute('children', $allCategories->where('parent_id', $parent->id)->values());
             return $parent;
         })->values();
     }
@@ -105,14 +111,18 @@ class ExpenseService
             ->whereBetween('transactions.date', [$startDate, $endDate])
             ->whereIn('transactions.type', $types)
             ->leftJoin('categories', 'transactions.category_id', '=', 'categories.id')
-            ->select('categories.name as category_name', DB::raw('SUM(transactions.amount) as total'))
-            ->groupBy('categories.name')
+            ->leftJoin('assets', 'transactions.asset_id', '=', 'assets.id')
+            ->select(
+                DB::raw('COALESCE(categories.name, assets.name, "Sin categoría") as display_name'),
+                DB::raw('SUM(transactions.amount) as total')
+            )
+            ->groupBy('display_name')
             ->orderByDesc('total')
             ->get();
 
         return $items->map(function($item) {
             return [
-                'category_name' => $item->category_name ?: 'Sin categoría',
+                'category_name' => $item->display_name,
                 'total' => (float)$item->total
             ];
         });

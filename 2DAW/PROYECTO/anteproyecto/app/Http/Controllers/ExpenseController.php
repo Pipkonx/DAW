@@ -109,13 +109,17 @@ class ExpenseController extends Controller
             ->whereBetween('transactions.date', [$startDate, $endDate])
             ->whereIn('transactions.type', ['expense', 'transfer_out'])
             ->leftJoin('categories', 'transactions.category_id', '=', 'categories.id')
-            ->select('categories.name as category_name', DB::raw('SUM(transactions.amount) as total'))
-            ->groupBy('categories.name')
+            ->leftJoin('assets', 'transactions.asset_id', '=', 'assets.id')
+            ->select(
+                DB::raw('COALESCE(categories.name, assets.name, "Sin categoría") as category_name'), 
+                DB::raw('SUM(transactions.amount) as total')
+            )
+            ->groupBy('category_name')
             ->orderByDesc('total')
             ->get();
 
         return [
-            'labels' => $data->map(fn($item) => $item->category_name ?: 'Sin categoría'),
+            'labels' => $data->pluck('category_name'),
             'data' => $data->pluck('total'),
         ];
     }
@@ -155,7 +159,7 @@ class ExpenseController extends Controller
         $query = Transaction::where('transactions.user_id', $userId)
             ->whereBetween('transactions.date', [$startDate, $endDate])
             ->whereIn('transactions.type', ['expense', 'transfer_out', 'income', 'transfer_in', 'dividend', 'gift', 'reward'])
-            ->with('category');
+            ->with(['category', 'asset']);
 
         if ($sort === 'category') {
             $query->leftJoin('categories', 'transactions.category_id', '=', 'categories.id')->orderBy('categories.name', $direction);
@@ -164,9 +168,21 @@ class ExpenseController extends Controller
         }
 
         return $query->select('transactions.*')->orderBy('created_at', 'desc')->paginate(15)->withQueryString()->through(fn($tx) => [
-            'id' => $tx->id, 'type' => $tx->type, 'amount' => (float)$tx->amount, 'date' => $tx->date->format('Y-m-d'),
-            'display_date' => $tx->date->format('d/m/Y'), 'category' => $tx->category ? $tx->category->name : 'Sin categoría',
-            'category_id' => $tx->category_id, 'description' => $tx->description,
+            'id' => $tx->id, 
+            'type' => $tx->type, 
+            'amount' => (float)$tx->amount, 
+            'date' => $tx->date->format('Y-m-d'),
+            'display_date' => $tx->date->format('d/m/Y'), 
+            'category' => $tx->category?->name ?? ($tx->asset?->name ?? 'Sin categoría'),
+            'category_id' => $tx->category_id, 
+            'description' => $tx->description,
+            'asset' => $tx->asset ? [
+                'id' => $tx->asset->id,
+                'name' => $tx->asset->name,
+                'ticker' => $tx->asset->ticker,
+                'logo' => $tx->asset->logo,
+                'type' => $tx->asset->type,
+            ] : null,
         ]);
     }
 }

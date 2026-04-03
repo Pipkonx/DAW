@@ -58,6 +58,7 @@ class MarketController extends Controller
                 'name' => $stock['name'] ?? $stock['symbol'],
                 'price' => (float)($stock['price'] ?? 0),
                 'change_percent' => (float)($stock['changesPercentage'] ?? 0),
+                'image' => $stock['image'] ?? null,
                 'volume' => 'High'
             ];
         }, array_slice($stocks, 0, 3)); // Limit to top 3
@@ -71,6 +72,7 @@ class MarketController extends Controller
                 'name' => $coin['name'],
                 'price' => (float)($coin['price'] ?? 0),
                 'change_percent' => (float)($coin['change_percent'] ?? 0),
+                'image' => $coin['image'] ?? null,
                 'volume' => 'High'
             ];
         }, array_slice($coins, 0, 3)); // Limit to top 3
@@ -96,7 +98,8 @@ class MarketController extends Controller
                     'ticker' => $ticker,
                     'name' => $marketAsset->name ?: $ticker,
                     'price' => (float)$price,
-                    'change_percent' => $this->getRandomChange(), // If API doesn't provide change, we simulate slightly for UI
+                    'change_percent' => $this->getRandomChange(),
+                    'image' => "https://financialmodelingprep.com/image-stock/{$ticker}.png",
                     'volume' => $type === 'crypto' ? 'High' : 'Active'
                 ];
             }

@@ -21,7 +21,10 @@ class TransactionService
     }
 
     /**
-     * Store a new transaction and update asset metrics.
+     * Registra una nueva transacción y actualiza las métricas del activo relacionado.
+     * 
+     * @param array $data Datos de la transacción
+     * @return \App\Models\Transaction
      */
     public function store(array $data)
     {
@@ -43,7 +46,7 @@ class TransactionService
 
                 $assetId = $asset->id;
 
-                // Update asset quantity and prices
+                // Actualizamos la cantidad y los precios del activo según el tipo de movimiento
                 if (in_array($data['type'], ['buy', 'reward', 'gift'])) {
                     $this->updateAssetOnBuy($asset, $data['quantity'] ?? 0, $data['price_per_unit'] ?? 0);
                 } elseif ($data['type'] === 'sell') {
@@ -83,7 +86,7 @@ class TransactionService
     }
 
     /**
-     * Update an existing transaction.
+     * Actualiza una transacción existente y ajusta las métricas si hay cambios en las cantidades.
      */
     public function update(Transaction $transaction, array $data)
     {
@@ -129,7 +132,7 @@ class TransactionService
     }
 
     /**
-     * Delete a transaction and clean up asset metrics.
+     * Elimina una transacción y recalcula o limpia las métricas del activo asociado.
      */
     public function delete(Transaction $transaction)
     {

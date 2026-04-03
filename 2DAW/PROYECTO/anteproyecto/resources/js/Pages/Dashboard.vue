@@ -1,65 +1,87 @@
 <script setup>
 /**
- * Dashboard Principal
+ * Dashboard Principal - Wealth Manager
  * 
- * Este componente es el centro de control del usuario.
- * Utiliza Vue 3 Composition API con <script setup> para una sintaxis más limpia.
- * Recibe los datos (props) directamente del controlador de Laravel (Inertia).
+ * Este es el componente orquestador que centraliza la visualización del patrimonio,
+ * inversiones, gastos y transacciones recientes. Sigue el patrón de diseño de
+ * división por responsabilidades (SRP), delegando la interfaz a subcomponentes.
  */
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, Link } from '@inertiajs/vue3';
-import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
-import TransactionModal from '@/Components/TransactionModal.vue';
-import LineChart from '@/Components/Charts/LineChart.vue';
-import DoughnutChart from '@/Components/Charts/DoughnutChart.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import InfoTooltip from '@/Components/InfoTooltip.vue';
-import UnlinkedAssetsLog from '@/Components/Dashboard/UnlinkedAssetsLog.vue';
-import { usePrivacy } from '@/Composables/usePrivacy';
+import { Head, router } from '@inertiajs/vue3';
+import { ref, onMounted, onUnmounted, watch } from 'vue';
 import axios from 'axios';
 
-const { isPrivacyMode } = usePrivacy();
+// Componentes del Dashboard (Refactorizados)
+import KpiSection from '@/Components/Dashboard/KpiSection.vue';
+import GlobalDistribution from '@/Components/Dashboard/GlobalDistribution.vue';
+import PortfoliosSection from '@/Components/Dashboard/PortfoliosSection.vue';
+import ExpensesSection from '@/Components/Dashboard/ExpensesSection.vue';
+import EvolutionSection from '@/Components/Dashboard/EvolutionSection.vue';
+import RecentTransactions from '@/Components/Dashboard/RecentTransactions.vue';
 
-// Definición de Props: Datos que vienen del Backend (DashboardController)
+// Otros Componentes
+import TransactionModal from '@/Components/TransactionModal.vue';
+import UnlinkedAssetsLog from '@/Components/Dashboard/UnlinkedAssetsLog.vue';
+import { usePrivacy } from '@/Composables/usePrivacy';
+
+// Props: Datos inyectados por el controlador de Laravel (Inertia)
 const props = defineProps({
-    summary: Object,          // { netWorth, cash, investmentsTotal }
-    portfolios: Array,        // Lista de carteras con sus métricas y activos
-    expenses: Object,         // { monthlyTotal, monthlyIncome, ranges: { month: {...}, year: {...}, all: {...} } }
-    charts: Object,           // { netWorthLabels, netWorthData, portfolioHistory, allocation }
-    recentTransactions: Array,// Últimas transacciones
-    allAssetsList: Array,     // Lista simple de activos (para referencias si es necesario)
-    categories: Array,        // Lista de categorías disponibles
-    unlinkedAssets: Array,    // Lista de activos no vinculados (Log)
+    summary: Object,          // Resumen: Patrimonio Neto, Efectivo, Total Inversiones
+    portfolios: Array,        // Lista de carteras con sus activos y rendimientos
+    expenses: Object,         // Métricas de gastos y rangos (mes, año, todo)
+    charts: Object,           // Datos para gráficos de evolución y distribución
+    recentTransactions: Array,// Transacciones iniciales para el listado
+    allAssetsList: Array,     // Referencia de todos los activos disponibles
+    categories: Array,        // Categorías de gastos/ingresos para el modal
+    unlinkedAssets: Array,    // Activos detectados pero no vinculados a mercado
+    currentFilter: String,   // Filtro actual aplicado en el servidor
 });
 
-// Estado reactivo
+// --- ESTADO REACTIVO ---
+const { isPrivacyMode } = usePrivacy();
 const showModal = ref(false);
 const editingTransaction = ref(null);
-const chartMode = ref('global'); // 'global' | 'portfolios'
-const transactionFilter = ref('all'); // 'all' | 'income' | 'expense' | 'investment'
-const expenseRange = ref(localStorage.getItem('dashboard_expense_range') || 'month'); // 'month' | 'year' | 'all'
 
-// Persistir el rango de gastos
+// Modos de visualización persistentes
+const chartMode = ref('global'); // 'global' (patrimonio) | 'portfolios' (por carteras)
+const displayMode = ref('value'); // 'value' (€) | 'percent' (%)
+const transactionFilter = ref('all'); // Filtro de tabla: all, income, expense, investment
+const expenseRange = ref(localStorage.getItem('dashboard_expense_range') || 'month');
+
+// Guardar preferencia de rango de gastos en el navegador
 watch(expenseRange, (newRange) => {
     localStorage.setItem('dashboard_expense_range', newRange);
 });
 
-// Scroll infinito para transacciones
+// Recargar transacciones al cambiar el filtro
+watch(transactionFilter, (newFilter) => {
+    router.get(route('dashboard'), { filter: newFilter }, {
+        preserveState: true,
+        preserveScroll: true,
+        only: ['recentTransactions', 'currentFilter'],
+    });
+});
+
+// --- SCROLL INFINITO (TRANSACCIONES) ---
 const allTransactions = ref([...props.recentTransactions]);
 const loadingMore = ref(false);
 const hasMore = ref(true);
 const offset = ref(props.recentTransactions.length);
 const limit = 20;
 
+/**
+ * Carga más transacciones desde el servidor al hacer scroll.
+ */
 const loadMoreTransactions = async () => {
     if (loadingMore.value || !hasMore.value) return;
 
     loadingMore.value = true;
     try {
         const response = await axios.get(route('dashboard.transactions'), {
-            params: {
-                offset: offset.value,
-                limit: limit
+            params: { 
+                offset: offset.value, 
+                limit: limit,
+                filter: transactionFilter.value // Pasar el filtro actual al API
             }
         });
 
@@ -71,13 +93,13 @@ const loadMoreTransactions = async () => {
         allTransactions.value = [...allTransactions.value, ...newTransactions];
         offset.value += newTransactions.length;
     } catch (error) {
-        console.error('Error cargando más transacciones:', error);
+        console.error('Error al cargar transacciones adicionales:', error);
     } finally {
         loadingMore.value = false;
     }
 };
 
-// Intersection Observer para el scroll infinito
+// Intersection Observer para detectar el final de la lista
 const loadMoreTrigger = ref(null);
 let observer = null;
 
@@ -94,303 +116,41 @@ onMounted(() => {
 });
 
 onUnmounted(() => {
-    if (observer) {
-        observer.disconnect();
-    }
+    if (observer) observer.disconnect();
 });
 
-// Sincronizar si las transacciones iniciales cambian (ej: tras crear una nueva)
+// Sincronizar si las transacciones iniciales cambian (ej: tras una acción en el modal)
 watch(() => props.recentTransactions, (newVal) => {
     allTransactions.value = [...newVal];
     offset.value = newVal.length;
     hasMore.value = true;
 }, { deep: true });
 
-// Abrir modal para nueva transacción
+// --- GESTIÓN DE MODAL ---
 const openNewTransaction = () => {
     editingTransaction.value = null;
     showModal.value = true;
 };
 
-// Abrir modal para editar transacción
 const editTransaction = (transaction) => {
     editingTransaction.value = transaction;
     showModal.value = true;
 };
-
-// Utilidad para formatear moneda (Euro)
-const formatCurrency = (value) => {
-    return new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(value);
-};
-
-// Diccionario de Tipos de Transacción
-const transactionTypes = {
-    income: { label: 'Ingreso', color: 'bg-emerald-50 text-emerald-700 border-emerald-100', icon: '↓' },
-    expense: { label: 'Gasto', color: 'bg-rose-50 text-rose-700 border-rose-100', icon: '↑' },
-    buy: { label: 'Compra', color: 'bg-blue-50 text-blue-700 border-blue-100', icon: 'BUY' },
-    sell: { label: 'Venta', color: 'bg-indigo-50 text-indigo-700 border-indigo-100', icon: 'SELL' },
-    dividend: { label: 'Dividendo', color: 'bg-amber-50 text-amber-700 border-amber-100', icon: '$' },
-    gift: { label: 'Regalo', color: 'bg-pink-50 text-pink-700 border-pink-100', icon: '♥' },
-    reward: { label: 'Recompensa', color: 'bg-purple-50 text-purple-700 border-purple-100', icon: '★' },
-    transfer_in: { label: 'Transf. (Entrada)', color: 'bg-gray-50 text-gray-700 border-gray-100', icon: '→' },
-    transfer_out: { label: 'Transf. (Salida)', color: 'bg-gray-50 text-gray-700 border-gray-100', icon: '←' },
-};
-
-// ---------------------------------------------------------
-// CONFIGURACIÓN DE GRÁFICOS
-// ---------------------------------------------------------
-
-const displayMode = ref('value'); // 'value' | 'percent'
-
-// 1. Gráfico Patrimonio (Line Chart) - Soporta modo Global y Por Cartera, y Valor vs Rendimiento
-const netWorthChartData = computed(() => {
-    const isGlobal = chartMode.value === 'global';
-    const isPercent = displayMode.value === 'percent';
-    
-    if (isGlobal) {
-        const data = isPercent ? props.charts.netWorthYields || props.charts.netWorthData.map(() => 0) : props.charts.netWorthData;
-        return {
-            labels: props.charts.netWorthLabels,
-            datasets: [
-                {
-                    label: isPercent ? 'Rendimiento (%)' : 'Patrimonio Neto (€)',
-                    backgroundColor: isPercent ? 'rgba(16, 185, 129, 0.1)' : 'rgba(59, 130, 246, 0.1)',
-                    borderColor: isPercent ? '#10b981' : '#3b82f6',
-                    pointBackgroundColor: '#ffffff',
-                    pointBorderColor: isPercent ? '#10b981' : '#3b82f6',
-                    pointBorderWidth: 2,
-                    pointRadius: 4,
-                    pointHoverRadius: 6,
-                    fill: true,
-                    tension: 0.4,
-                    data: data
-                }
-            ]
-        };
-    } else {
-        // Modo Por Cartera
-        const datasets = [];
-        const colors = ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ef4444', '#ec4899', '#6366f1'];
-        
-        let i = 0;
-        for (const [id, history] of Object.entries(props.charts.portfolioHistory || {})) {
-            const portfolio = props.portfolios.find(p => p.id == id) || { name: 'Sin Cartera' };
-            const data = isPercent ? history.yields : history.values;
-            
-            datasets.push({
-                label: portfolio.name + (isPercent ? ' (%)' : ' (€)'),
-                borderColor: colors[i % colors.length],
-                backgroundColor: 'transparent',
-                pointBackgroundColor: '#ffffff',
-                pointBorderColor: colors[i % colors.length],
-                tension: 0.4,
-                data: data
-            });
-            i++;
-        }
-        return {
-            labels: props.charts.netWorthLabels,
-            datasets: datasets
-        };
-    }
-});
-
-const lineChartOptions = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-        legend: { display: true, position: 'top', align: 'end' }, // Mostrar leyenda si hay múltiples líneas
-        tooltip: {
-            backgroundColor: '#1e293b',
-            titleColor: '#f8fafc',
-            bodyColor: '#f8fafc',
-            padding: 10,
-            cornerRadius: 8,
-            callbacks: {
-                label: (context) => {
-                    const label = context.dataset.label || '';
-                    const value = context.parsed.y;
-                    if (displayMode.value === 'percent') {
-                        return `${label}: ${value >= 0 ? '+' : ''}${value.toFixed(2)}%`;
-                    }
-                    return `${label}: ${formatCurrency(value)}`;
-                }
-            }
-        }
-    },
-    scales: {
-        y: {
-            grid: { color: '#f1f5f9' },
-            ticks: {
-                callback: (value) => {
-                    if (displayMode.value === 'percent') {
-                        return (value >= 0 ? '+' : '') + value.toFixed(1) + '%';
-                    }
-                    return new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR', maximumSignificantDigits: 3 }).format(value);
-                },
-                font: { size: 11 },
-                color: '#64748b'
-            },
-            border: { display: false }
-        },
-        x: {
-            grid: { display: false },
-            ticks: { font: { size: 11 }, color: '#64748b' },
-            border: { display: false }
-        }
-    }
-};
-
-// 2. Gráfico Distribución de Inversiones (Por Cartera)
-const portfolioDistributionData = computed(() => {
-    const labels = props.portfolios.map(p => p.name);
-    const data = props.portfolios.map(p => p.total_value);
-    const colors = ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ef4444', '#ec4899', '#6366f1'];
-
-    return {
-        labels: labels,
-        datasets: [{
-            data: data,
-            backgroundColor: colors.slice(0, data.length),
-            borderWidth: 0,
-            hoverOffset: 4
-        }]
-    };
-});
-
-// 3. Gráfico de Gastos (Por Categoría)
-const expensesDistributionData = computed(() => {
-    const rangeData = props.expenses.ranges[expenseRange.value]?.byCategory || [];
-    const labels = rangeData.map(c => c.category);
-    const data = rangeData.map(c => c.total);
-    const colors = ['#ef4444', '#f97316', '#f59e0b', '#eab308', '#84cc16', '#22c55e', '#06b6d4', '#3b82f6', '#6366f1', '#a855f7'];
-
-    return {
-        labels: labels,
-        datasets: [{
-            data: data,
-            backgroundColor: colors.slice(0, data.length),
-            borderWidth: 0,
-            hoverOffset: 4
-        }]
-    };
-});
-
-// 4. Gráfico Distribución de Patrimonio (Invertido vs Líquido)
-const allocationChartData = computed(() => {
-    const colors = ['#3b82f6', '#10b981', '#f59e0b']; // Blue, Green, Yellow
-    // Evitar que valores negativos rompan el gráfico circular (ej. liquidez negativa)
-    const chartValues = (props.charts.allocation?.values || []).map(v => v < 0 ? 0 : v);
-    
-    return {
-        labels: props.charts.allocation?.labels || [],
-        datasets: [{
-            data: chartValues,
-            backgroundColor: colors,
-            borderWidth: 0,
-            hoverOffset: 4
-        }]
-    };
-});
-
-// Resumen del rango de gastos seleccionado
-const currentExpenseRangeTotal = computed(() => {
-    return props.expenses.ranges[expenseRange.value]?.total || 0;
-});
-
-const expenseRangeLabels = {
-    month: 'del Mes',
-    year: 'del Año',
-    all: 'Total'
-};
-
-// Configuraciones de Gráficos Circulares
-const allocationDoughnutOptions = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-        legend: { display: false },
-        tooltip: {
-            callbacks: {
-                label: (context) => {
-                    const value = context.parsed;
-                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                    const percentage = total > 0 ? ((value / total) * 100).toFixed(1) + '%' : '0%';
-                    return ` ${context.label}: ${formatCurrency(value)} (${percentage})`;
-                }
-            }
-        }
-    },
-    cutout: '72%'
-};
-
-const doughnutOptions = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-        legend: {
-            position: 'right',
-            labels: { usePointStyle: true, padding: 15, font: { size: 11 }, color: '#475569' }
-        },
-        tooltip: {
-            callbacks: {
-                label: (context) => {
-                    const value = context.parsed;
-                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                    const percentage = total > 0 ? ((value / total) * 100).toFixed(1) + '%' : '0%';
-                    return ` ${context.label}: ${formatCurrency(value)} (${percentage})`;
-                }
-            }
-        }
-    },
-    cutout: '70%'
-};
-
-// Filtro de Transacciones
-const filteredTransactions = computed(() => {
-    let filtered = allTransactions.value;
-    if (transactionFilter.value !== 'all') {
-        filtered = filtered.filter(t => {
-            if (transactionFilter.value === 'income') return ['income', 'dividend', 'reward', 'gift', 'transfer_in'].includes(t.type);
-            if (transactionFilter.value === 'expense') return ['expense', 'transfer_out'].includes(t.type);
-            if (transactionFilter.value === 'investment') return ['buy', 'sell'].includes(t.type);
-            return true;
-        });
-    }
-
-    // Agrupar por Mes/Año
-    const groups = {};
-    filtered.forEach(tx => {
-        const date = new Date(tx.date);
-        const monthYear = date.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
-        const formattedMonthYear = monthYear.charAt(0).toUpperCase() + monthYear.slice(1);
-        
-        if (!groups[formattedMonthYear]) {
-            groups[formattedMonthYear] = [];
-        }
-        groups[formattedMonthYear].push(tx);
-    });
-    
-    return Object.keys(groups).map(key => ({
-        monthYear: key,
-        items: groups[key]
-    }));
-});
-
 </script>
 
 <template>
     <Head title="Panel Financiero" />
 
     <AuthenticatedLayout>
+        <!-- Cabecera del Dashboard -->
         <template #header>
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
-                    <h2 class="text-2xl font-bold leading-tight text-slate-800">
+                    <h2 class="text-2xl font-bold leading-tight text-slate-800 dark:text-white">
                         Panel Financiero
                     </h2>
-                    <p class="text-sm text-slate-500 mt-1">
-                        Resumen de tu situación financiera actual
+                    <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">
+                        Resumen detallado de tu situación patrimonial y flujo de caja.
                     </p>
                 </div>
             </div>
@@ -398,423 +158,96 @@ const filteredTransactions = computed(() => {
 
         <div class="py-8 space-y-8">
             
-            <!-- Log de Activos No Vinculados -->
+            <!-- Alertas de Activos No Vinculados -->
             <div v-if="unlinkedAssets && unlinkedAssets.length > 0" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <UnlinkedAssetsLog :assets="unlinkedAssets" />
             </div>
 
-            <!-- 1. RESUMEN PRINCIPAL (KPIs) -->
+            <!-- Sección 1: Indicadores Clave (KPIs) -->
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <!-- Patrimonio Neto -->
-                    <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 relative group hover:shadow-md transition-shadow">
-                        <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity pointer-events-none overflow-hidden rounded-2xl inset-0">
-                            <svg class="absolute top-4 right-4 w-24 h-24 text-blue-600 dark:text-blue-500" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.31-8.86c-1.77-.45-2.34-.94-2.34-1.67 0-.84.79-1.43 2.1-1.43 1.38 0 1.9.66 1.94 1.64h1.71c-.05-1.34-.87-2.57-2.49-2.95V5h-2.93v1.74c-1.81.44-2.43 1.41-2.43 2.51 0 1.91 1.66 2.52 3.97 3.06 1.77.42 2.34 1.05 2.34 1.81 0 .93-.93 1.54-2.34 1.54-1.47 0-2.09-.73-2.14-1.8h-1.8c.06 1.64 1.13 2.76 2.8 3.08v1.78h2.93v-1.77c1.9-.45 2.51-1.47 2.51-2.67 0-1.99-1.72-2.56-4.03-3.08z"/></svg>
-                        </div>
-                        <div class="relative z-10">
-                            <div class="flex items-center mb-2">
-                                <p class="text-sm font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Patrimonio Neto</p>
-                                <InfoTooltip text="Suma total de Inversiones + Efectivo/Ahorros." />
-                            </div>
-                            <h3 class="text-3xl font-bold text-slate-900 dark:text-white">{{ isPrivacyMode ? '****' : formatCurrency(summary.netWorth) }}</h3>
-                            <div class="mt-4 flex items-center text-sm">
-                                <span class="text-slate-500 dark:text-slate-400">Efectivo: </span>
-                                <span class="font-semibold text-slate-700 dark:text-slate-300 ml-1">{{ isPrivacyMode ? '****' : formatCurrency(summary.cash) }}</span>
-                            </div>
-                        </div>
-                    </div>
+                <KpiSection 
+                    :summary="summary" 
+                    :expenses="expenses" 
+                    :portfolios-count="portfolios.length" 
+                    :is-privacy-mode="isPrivacyMode" 
+                />
+            </div>
 
-                    <!-- Total Inversiones -->
-                    <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 relative group hover:shadow-md transition-shadow">
-                        <div class="absolute inset-0 overflow-hidden rounded-2xl pointer-events-none opacity-10 group-hover:opacity-20 transition-opacity">
-                            <svg class="absolute top-4 right-4 w-24 h-24 text-emerald-600 dark:text-emerald-500" fill="currentColor" viewBox="0 0 24 24"><path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/></svg>
-                        </div>
-                        <div class="relative z-10">
-                            <div class="flex items-center mb-2">
-                                <p class="text-sm font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Inversiones</p>
-                                <InfoTooltip text="Valor actual de mercado de todos tus activos en carteras." />
-                            </div>
-                            <h3 class="text-3xl font-bold text-emerald-600 dark:text-emerald-400">{{ isPrivacyMode ? '****' : formatCurrency(summary.investmentsTotal) }}</h3>
-                            <div class="mt-4 flex items-center text-sm">
-                                <span class="text-slate-500 dark:text-slate-400">{{ portfolios.length }} carteras activas</span>
-                            </div>
-                        </div>
-                    </div>
+            <!-- Sección 2: Análisis de Distribución y Gastos (Fila Superior) -->
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
+                    <!-- 2.1. Distribución Global (Invertido vs Líquido) -->
+                    <GlobalDistribution 
+                        :allocation="charts.allocation" 
+                        :summary="summary"
+                        :is-privacy-mode="isPrivacyMode"
+                        class="h-full"
+                    />
 
-                    <!-- Gastos Mensuales -->
-                    <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 relative group hover:shadow-md transition-shadow">
-                        <div class="absolute inset-0 overflow-hidden rounded-2xl pointer-events-none opacity-10 group-hover:opacity-20 transition-opacity">
-                            <svg class="absolute top-4 right-4 w-24 h-24 text-rose-600 dark:text-rose-500" fill="currentColor" viewBox="0 0 24 24"><path d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 9c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm6 12H6v-1c0-2 4-3.1 6-3.1s6 1.1 6 3.1v1z"/></svg>
-                        </div>
-                        <div class="relative z-10">
-                            <div class="flex items-center mb-2">
-                                <p class="text-sm font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Gastos (Mes Actual)</p>
-                                <InfoTooltip text="Total de gastos registrados este mes." />
-                            </div>
-                            <h3 class="text-3xl font-bold text-rose-600 dark:text-rose-400">{{ isPrivacyMode ? '****' : '-' + formatCurrency(expenses.monthlyTotal) }}</h3>
-                            <div class="mt-4 flex items-center text-sm">
-                                <span class="text-slate-500 dark:text-slate-400">Ingresos: </span>
-                                <span class="font-semibold text-emerald-600 dark:text-emerald-400 ml-1">{{ isPrivacyMode ? '****' : '+' + formatCurrency(expenses.monthlyIncome) }}</span>
-                            </div>
-                        </div>
-                    </div>
+                    <!-- 2.2. Análisis de Gastos por Rango -->
+                    <ExpensesSection 
+                        :expenses="expenses" 
+                        v-model:range="expenseRange"
+                        :is-privacy-mode="isPrivacyMode"
+                        class="h-full"
+                    />
                 </div>
             </div>
 
-            <!-- 2. DISTRIBUCIÓN GLOBAL Y SECCIÓN DIVIDIDA -->
+            <!-- Sección 3: Evolución Histórica (Gráfico de Líneas) -->
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    
-                    <!-- DISTRIBUCIÓN GLOBAL DE PATRIMONIO -->
-                    <div class="space-y-6">
-                        <div class="flex items-center justify-between">
-                            <h3 class="text-xl font-bold text-slate-800 dark:text-white flex items-center">
-                                <span class="bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 p-2 rounded-lg mr-3">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"></path></svg>
-                                </span>
-                                Distribución Global
-                            </h3>
-                            <InfoTooltip text="Porcentaje de tu patrimonio invertido vs líquido." />
-                        </div>
-                        <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 h-80 flex items-center justify-between">
-                            <!-- Contenedor del gráfico en formato Cuadrado Perfecto para centrado absoluto -->
-                            <div class="relative w-56 h-56 mx-auto flex-shrink-0" :class="{ 'blur-sm select-none': isPrivacyMode }">
-                                <DoughnutChart :data="allocationChartData" :options="allocationDoughnutOptions" />
-                                <!-- Texto Exactamente Centrado -->
-                                <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                                    <p class="text-[9px] text-slate-500 uppercase tracking-widest font-semibold text-center leading-tight">Tasa de <br> Inversión</p>
-                                    <p class="text-xl font-bold text-slate-800 dark:text-white mt-0.5" style="transform: translateX(2px);">
-                                        {{ isPrivacyMode ? '****' : ( Number(summary.cash) < 0 || Number(summary.investmentsTotal) <= 0 ? (Number(summary.investmentsTotal) > 0 ? '100' : '0') : ((Number(summary.investmentsTotal) / (Number(summary.investmentsTotal) + Number(summary.cash))) * 100).toFixed(1) ) }}%
-                                    </p>
-                                </div>
-                            </div>
-                            
-                            <!-- Leyenda nativa en HTML (replicada y estática) -->
-                            <div class="w-[35%] flex flex-col justify-center space-y-4 pl-4 border-l border-slate-50 dark:border-slate-700/50">
-                                <div class="flex items-center text-slate-600 dark:text-slate-400 text-xs">
-                                    <span class="w-2.5 h-2.5 rounded-full bg-blue-500 mr-2.5 flex-shrink-0"></span>
-                                    Invertido
-                                </div>
-                                <div class="flex items-center text-slate-600 dark:text-slate-400 text-xs mt-3">
-                                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 mr-2.5 flex-shrink-0"></span>
-                                    Liquidez
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- COLUMNA CENTRAL: INVERSIONES -->
-                    <div class="space-y-6">
-                        <div class="flex items-center justify-between">
-                            <h3 class="text-xl font-bold text-slate-800 dark:text-white flex items-center">
-                                <span class="bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 p-2 rounded-lg mr-3">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
-                                </span>
-                                Carteras de Inversión
-                            </h3>
-                            <InfoTooltip text="Desglose de tus inversiones por cartera." />
-                        </div>
-
-                        <div v-if="portfolios.length > 0" class="space-y-6">
-                            <!-- Gráfico Distribución Carteras -->
-                            <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 h-80 relative">
-                                <div class="relative w-full h-full" :class="{ 'blur-sm select-none': isPrivacyMode }">
-                                    <DoughnutChart :data="portfolioDistributionData" :options="doughnutOptions" />
-                                </div>
-                            </div>
-
-                            <!-- Lista de Carteras -->
-                            <div class="space-y-4">
-                                <div v-for="portfolio in portfolios" :key="portfolio.id" class="bg-white dark:bg-slate-800 p-5 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 hover:border-blue-200 dark:hover:border-blue-700 transition-colors">
-                                    <div class="flex justify-between items-start mb-3">
-                                        <div>
-                                            <h4 class="font-bold text-slate-800 dark:text-white text-lg">{{ portfolio.name }}</h4>
-                                            <p class="text-xs text-slate-500 dark:text-slate-400">{{ portfolio.description }}</p>
-                                        </div>
-                                        <div class="text-right">
-                                            <p class="text-lg font-bold text-slate-900 dark:text-white">{{ isPrivacyMode ? '****' : formatCurrency(portfolio.total_value) }}</p>
-                                            <p v-if="!isPrivacyMode" class="text-xs font-medium" :class="portfolio.yield >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'">
-                                                {{ portfolio.yield >= 0 ? '+' : '' }}{{ portfolio.yield.toFixed(2) }}% Rend.
-                                            </p>
-                                            <p v-else class="text-xs font-medium text-slate-400">****</p>
-                                        </div>
-                                    </div>
-                                    <!-- Mini desglose de activos (top 3) -->
-                                    <div class="space-y-1 mt-3 pt-3 border-t border-slate-50 dark:border-slate-700">
-                                        <div v-for="asset in portfolio.assets.slice(0, 3)" :key="asset.id" class="flex justify-between items-center text-sm py-1">
-                                            <div class="flex items-center gap-3">
-                                                <div v-if="asset.logo" class="w-8 h-8 rounded-full overflow-hidden bg-slate-100 dark:bg-slate-700 flex items-center justify-center">
-                                                    <img :src="asset.logo" class="w-full h-full object-cover" @error="asset.logo = null" />
-                                                </div>
-                                                <div v-else class="w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-bold text-white shadow-sm" :style="{ backgroundColor: asset.color || '#3b82f6' }">
-                                                    {{ asset.ticker ? asset.ticker.substring(0,2) : asset.name.substring(0,2) }}
-                                                </div>
-                                                <div>
-                                                    <p class="text-sm font-bold text-slate-800 dark:text-white leading-none">{{ asset.name }}</p>
-                                                    <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-1 uppercase tracking-wider">{{ asset.ticker || asset.type }}</p>
-                                                </div>
-                                            </div>
-                                            <span class="text-slate-800 dark:text-slate-200 font-medium">{{ isPrivacyMode ? '****' : formatCurrency(asset.current_value) }}</span>
-                                        </div>
-                                        <div v-if="portfolio.assets.length > 3" class="text-xs text-blue-500 dark:text-blue-400 font-medium pt-1">
-                                            + {{ portfolio.assets.length - 3 }} activos más...
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Empty State Carteras -->
-                        <div v-else class="bg-white dark:bg-slate-800 p-8 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 text-center flex flex-col items-center justify-center h-80">
-                            <div class="bg-blue-50 dark:bg-blue-900/30 p-4 rounded-full mb-4">
-                                <svg class="w-8 h-8 text-blue-500 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
-                            </div>
-                            <h4 class="text-slate-900 dark:text-white font-medium mb-1">Sin carteras activas</h4>
-                            <p class="text-slate-500 dark:text-slate-400 text-sm mb-6">No tienes carteras de inversión registradas.</p>
-                            <Link :href="route('transactions.index')" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg shadow-sm transition-colors">
-                                Crear Cartera
-                            </Link>
-                        </div>
-                    </div>
-
-                    <!-- COLUMNA DERECHA: GASTOS -->
-                    <div class="space-y-6">
-                        <div class="flex items-center justify-between">
-                            <h3 class="text-xl font-bold text-slate-800 dark:text-white flex items-center">
-                                <span class="bg-rose-100 dark:bg-rose-900/30 text-rose-600 dark:text-rose-400 p-2 rounded-lg mr-3">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
-                                </span>
-                                Gastos {{ expenseRangeLabels[expenseRange] }}
-                            </h3>
-                            
-                            <!-- Selector de Rango de Gastos -->
-                            <div class="bg-slate-100 dark:bg-slate-700 p-1 rounded-lg flex text-xs font-medium">
-                                <button 
-                                    v-for="range in [
-                                        { id: 'month', label: 'Mes' },
-                                        { id: 'year', label: 'Año' },
-                                        { id: 'all', label: 'Todo' }
-                                    ]" 
-                                    :key="range.id"
-                                    @click="expenseRange = range.id"
-                                    class="px-3 py-1 rounded-md transition-all"
-                                    :class="expenseRange === range.id ? 'bg-white dark:bg-slate-600 text-rose-600 dark:text-rose-400 shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'"
-                                >
-                                    {{ range.label }}
-                                </button>
-                            </div>
-                        </div>
-
-                        <div v-if="expenses.ranges[expenseRange]?.byCategory.length > 0" class="space-y-6">
-                             <!-- Gráfico Distribución Gastos -->
-                            <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 h-80 relative">
-                                <div class="relative w-full h-full" :class="{ 'blur-sm select-none': isPrivacyMode }">
-                                    <DoughnutChart :data="expensesDistributionData" :options="doughnutOptions" />
-                                </div>
-                            </div>
-
-                            <!-- Lista de Categorías de Gastos -->
-                            <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 overflow-hidden">
-                                <table class="w-full text-sm text-left">
-                                    <thead class="bg-slate-50 dark:bg-slate-700/50 text-slate-500 dark:text-slate-400 uppercase font-medium text-xs">
-                                        <tr>
-                                            <th class="px-4 py-3">Categoría</th>
-                                            <th class="px-4 py-3 text-right">Total</th>
-                                            <th class="px-4 py-3 text-right">%</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="divide-y divide-slate-100 dark:divide-slate-700">
-                                        <tr v-for="cat in expenses.ranges[expenseRange].byCategory" :key="cat.category" class="hover:bg-slate-50 dark:hover:bg-slate-700/50">
-                                            <td class="px-4 py-3 font-medium text-slate-700 dark:text-slate-300">{{ cat.category }}</td>
-                                            <td class="px-4 py-3 text-right text-rose-600 dark:text-rose-400 font-bold">{{ isPrivacyMode ? '****' : formatCurrency(cat.total) }}</td>
-                                            <td class="px-4 py-3 text-right text-slate-500 dark:text-slate-400">
-                                                {{ isPrivacyMode ? '****' : (currentExpenseRangeTotal > 0 ? ((cat.total / currentExpenseRangeTotal) * 100).toFixed(1) : 0) }}%
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                        
-                        <!-- Empty State Gastos -->
-                        <div v-else class="bg-white dark:bg-slate-800 p-8 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 text-center flex flex-col items-center justify-center h-80">
-                            <div class="bg-slate-50 dark:bg-slate-700 p-4 rounded-full mb-4">
-                                <svg class="w-8 h-8 text-slate-400 dark:text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                            </div>
-                            <h4 class="text-slate-900 dark:text-white font-medium mb-1">Sin gastos {{ expenseRangeLabels[expenseRange] }}</h4>
-                            <p class="text-slate-500 dark:text-slate-400 text-sm">Tus gastos aparecerán aquí cuando añadas transacciones.</p>
-                        </div>
-                    </div>
-
-                </div>
+                <EvolutionSection 
+                    :charts="charts" 
+                    :portfolios="portfolios"
+                    v-model:chart-mode="chartMode"
+                    v-model:display-mode="displayMode"
+                    :is-privacy-mode="isPrivacyMode"
+                />
             </div>
 
-            <!-- 3. GRÁFICO DE EVOLUCIÓN (PATRIMONIO / CARTERAS) -->
+            <!-- Sección 4: Carteras de Inversión (Ancho Completo) -->
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700">
-                    <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
-                        <div class="flex items-center">
-                            <h3 class="text-lg font-bold text-slate-800 dark:text-white">Evolución Financiera</h3>
-                            <InfoTooltip text="Visualiza cómo ha crecido tu patrimonio o tus carteras en los últimos 6 meses." />
-                        </div>
-                        
-                        <!-- Toggle Chart Mode & Display (Value vs %) -->
-                        <div class="flex flex-wrap gap-2">
-                            <div class="bg-slate-100 dark:bg-slate-700 p-1 rounded-lg flex text-sm font-medium">
-                                <button 
-                                    @click="chartMode = 'global'"
-                                    class="px-4 py-1.5 rounded-md transition-all"
-                                    :class="chartMode === 'global' ? 'bg-white dark:bg-slate-600 text-blue-600 dark:text-blue-400 shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'"
-                                >
-                                    Patrimonio Total
-                                </button>
-                                <button 
-                                    @click="chartMode = 'portfolios'"
-                                    class="px-4 py-1.5 rounded-md transition-all"
-                                    :class="chartMode === 'portfolios' ? 'bg-white dark:bg-slate-600 text-blue-600 dark:text-blue-400 shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'"
-                                >
-                                    Por Cartera
-                                </button>
-                            </div>
-
-                            <div class="bg-slate-100 dark:bg-slate-700 p-1 rounded-lg flex text-sm font-medium ml-0 sm:ml-4">
-                                <button 
-                                    @click="displayMode = 'value'"
-                                    class="px-4 py-1.5 rounded-md transition-all"
-                                    :class="displayMode === 'value' ? 'bg-white dark:bg-slate-600 text-blue-600 dark:text-blue-400 shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'"
-                                >
-                                    Valor (€)
-                                </button>
-                                <button 
-                                    @click="displayMode = 'percent'"
-                                    class="px-4 py-1.5 rounded-md transition-all"
-                                    :class="displayMode === 'percent' ? 'bg-white dark:bg-slate-600 text-emerald-600 dark:text-emerald-400 shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'"
-                                >
-                                    Rendimiento (%)
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="h-[300px] w-full relative" :class="{ 'blur-sm select-none': isPrivacyMode }">
-                        <LineChart :data="netWorthChartData" :options="lineChartOptions" />
-                    </div>
-                </div>
+                <PortfoliosSection 
+                    :portfolios="portfolios" 
+                    :is-privacy-mode="isPrivacyMode"
+                />
             </div>
 
-            <!-- 4. ÚLTIMAS TRANSACCIONES (EDITABLES Y FILTRABLES) -->
+            <!-- Sección 4: Listado de Transacciones con Filtros y Scroll Infinito -->
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 overflow-hidden">
-                    <div class="p-6 border-b border-slate-100 dark:border-slate-700 flex flex-col md:flex-row justify-between items-center gap-4">
-                        <div>
-                            <h3 class="text-lg font-bold text-slate-800 dark:text-white">Historial de Transacciones</h3>
-                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Haz clic en una transacción para editarla.</p>
-                        </div>
-
-                        <!-- Filtros de Transacciones -->
-                        <div class="flex space-x-2 overflow-x-auto pb-1 md:pb-0 w-full md:w-auto">
-                            <button 
-                                v-for="filter in [
-                                    { id: 'all', label: 'Todas' },
-                                    { id: 'income', label: 'Ingresos' },
-                                    { id: 'expense', label: 'Gastos' },
-                                    { id: 'investment', label: 'Inversiones' }
-                                ]" 
-                                :key="filter.id"
-                                @click="transactionFilter = filter.id"
-                                class="px-3 py-1.5 text-xs font-medium rounded-full border transition-colors whitespace-nowrap"
-                                :class="transactionFilter === filter.id 
-                                    ? 'bg-slate-800 dark:bg-blue-600 text-white border-slate-800 dark:border-blue-600' 
-                                    : 'bg-white dark:bg-slate-700 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-600 hover:border-slate-300 dark:hover:border-slate-500'"
-                            >
-                                {{ filter.label }}
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-sm text-left">
-                            <thead class="bg-slate-50 dark:bg-slate-700/50 text-slate-500 dark:text-slate-400 uppercase font-medium text-xs">
-                                <tr>
-                                    <th class="px-6 py-3">Fecha</th>
-                                    <th class="px-6 py-3">Tipo</th>
-                                    <th class="px-6 py-3">Descripción / Activo</th>
-                                    <th class="px-6 py-3">Categoría</th>
-                                    <th class="px-6 py-3 text-right">Monto</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-slate-100 dark:divide-slate-700">
-                                <template v-for="group in filteredTransactions" :key="group.monthYear">
-                                    <!-- Cabecera de Mes -->
-                                    <tr class="bg-slate-50/50 dark:bg-slate-700/30">
-                                        <td colspan="5" class="px-6 py-2 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                                            {{ group.monthYear }}
-                                        </td>
-                                    </tr>
-                                    <tr 
-                                        v-for="transaction in group.items" 
-                                        :key="transaction.id" 
-                                        class="hover:bg-blue-50 dark:hover:bg-slate-700/50 cursor-pointer transition-colors group"
-                                        @click="editTransaction(transaction)"
-                                    >
-                                        <td class="px-6 py-4 whitespace-nowrap text-slate-600 dark:text-slate-300">{{ transaction.display_date }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <span class="px-2.5 py-0.5 rounded-full text-xs font-medium border flex items-center w-fit gap-1" :class="transactionTypes[transaction.type]?.color || 'bg-gray-100 text-gray-600'">
-                                                <span>{{ transactionTypes[transaction.type]?.icon }}</span>
-                                                {{ transactionTypes[transaction.type]?.label || transaction.type }}
-                                            </span>
-                                        </td>
-                                        <td class="px-6 py-4 text-slate-700 dark:text-slate-200 font-medium">
-                                            <div class="flex items-center">
-                                                <!-- Asset Logo if available -->
-                                                <img 
-                                                    v-if="transaction.asset_logo" 
-                                                    :src="transaction.asset_logo" 
-                                                    class="w-6 h-6 rounded-full mr-2 bg-slate-100 dark:bg-slate-700" 
-                                                    alt="logo" 
-                                                    @error="transaction.asset_logo = null"
-                                                />
-                                                <span>{{ transaction.description || transaction.asset_name || '-' }}</span>
-                                            </div>
-                                        </td>
-                                        <td class="px-6 py-4 text-slate-500 dark:text-slate-400">{{ transaction.category || '-' }}</td>
-                                        <td class="px-6 py-4 text-right font-bold" :class="['expense', 'buy', 'transfer_out'].includes(transaction.type) ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-600 dark:text-emerald-400'">
-                                            <span v-if="isPrivacyMode">****</span>
-                                            <span v-else>{{ ['expense', 'buy', 'transfer_out'].includes(transaction.type) ? '-' : '+' }}{{ formatCurrency(transaction.amount) }}</span>
-                                        </td>
-                                    </tr>
-                                </template>
-                                <tr v-if="filteredTransactions.length === 0">
-                                    <td colspan="5" class="px-6 py-8 text-center text-slate-400 dark:text-slate-500">
-                                        No hay transacciones que coincidan con el filtro.
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <!-- Trigger para Scroll Infinito -->
-                    <div ref="loadMoreTrigger" class="py-6 flex justify-center">
-                        <div v-if="loadingMore" class="flex items-center space-x-2 text-blue-600 dark:text-blue-400">
-                            <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                            </svg>
-                            <span class="text-sm font-medium">Cargando más transacciones...</span>
-                        </div>
-                        <div v-else-if="!hasMore && allTransactions.length > 0" class="text-slate-400 dark:text-slate-500 text-sm">
-                            No hay más transacciones para cargar.
-                        </div>
-                    </div>
-                </div>
+                <RecentTransactions 
+                    :transactions="allTransactions" 
+                    v-model:filter="transactionFilter"
+                    :loading-more="loadingMore"
+                    :is-privacy-mode="isPrivacyMode"
+                    @edit="editTransaction"
+                />
+                
+                <!-- Ancla para el Observer del Scroll Infinito -->
+                <div ref="loadMoreTrigger" class="h-4"></div>
             </div>
 
-            <!-- Transaction Modal -->
-            <TransactionModal 
-                :show="showModal" 
-                :transaction="editingTransaction"
-                :portfolios="portfolios"
-                @close="showModal = false" 
-            />
         </div>
+
+        <!-- Accionador Flotante para Nueva Transacción -->
+        <div class="fixed bottom-8 right-8 z-40">
+            <button 
+                @click="openNewTransaction"
+                class="flex items-center justify-center w-14 h-14 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg transition-transform hover:scale-110 active:scale-95"
+            >
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+            </button>
+        </div>
+
+        <!-- Modal para Crear/Editar Transacciones -->
+        <TransactionModal 
+            v-if="showModal" 
+            :show="showModal" 
+            :transaction="editingTransaction"
+            :assets="allAssetsList" 
+            :categories="categories"
+            @close="showModal = false" 
+        />
+
     </AuthenticatedLayout>
 </template>

@@ -26,12 +26,18 @@ class AiAnalystController extends Controller
     {
         $user = Auth::user();
         
+        // Verificar si el usuario tiene inversiones activas (cantidad > 0)
+        $hasInvestments = \App\Models\Asset::where('user_id', $user->id)
+            ->where('quantity', '>', 0)
+            ->exists();
+        
         // Fetch all analyses for the user ordered by date descending
         $analyses = $user->aiAnalyses()->orderBy('date', 'desc')->get();
         
         return Inertia::render('AiAnalyst/Index', [
             'user_name' => $user->name,
             'analyses' => $analyses,
+            'has_investments' => $hasInvestments,
         ]);
     }
 
@@ -45,8 +51,19 @@ class AiAnalystController extends Controller
         // Increase execution time for AI requests
         set_time_limit(120);
 
-        /** @var \App\Models\User $user */
         $user = Auth::user();
+        
+        // Bloqueo de seguridad: No permitir análisis sin inversiones
+        $hasInvestments = \App\Models\Asset::where('user_id', $user->id)
+            ->where('quantity', '>', 0)
+            ->exists();
+
+        if (!$hasInvestments) {
+            return response()->json([
+                'error' => 'No tienes inversiones activas registradas. El Analista IA requiere datos de tu cartera para generar un informe estratégico.'
+            ], 403);
+        }
+
         $today = now()->format('Y-m-d');
 
         // Check if report already exists for today in DB

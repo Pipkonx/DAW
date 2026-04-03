@@ -1,12 +1,13 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head } from '@inertiajs/vue3';
+import { Head, Link } from '@inertiajs/vue3';
 import { ref, onMounted, computed } from 'vue';
 import axios from 'axios';
 
 const props = defineProps({
     user_name: String,
     analyses: Array, // Array of {id, report, date, created_at}
+    has_investments: Boolean,
 });
 
 const allAnalyses = ref([...props.analyses]);
@@ -41,7 +42,12 @@ const stopLoadingSteps = () => {
 };
 
 const fetchTodayReport = async () => {
-    const today = new Date().toISOString().split('T')[0];
+    // Usar fecha local YYYY-MM-DD para evitar problemas con UTC/Zonas horarias
+    const nowLocal = new Date();
+    const today = nowLocal.getFullYear() + '-' + 
+                 String(nowLocal.getMonth() + 1).padStart(2, '0') + '-' + 
+                 String(nowLocal.getDate()).padStart(2, '0');
+                 
     const hasToday = allAnalyses.value.some(a => a.date === today);
     
     if (hasToday) {
@@ -83,7 +89,9 @@ const fetchTodayReport = async () => {
 };
 
 onMounted(() => {
-    fetchTodayReport();
+    if (props.has_investments) {
+        fetchTodayReport();
+    }
 });
 
 const formatDate = (dateStr) => {
@@ -123,6 +131,29 @@ const renderMarkdown = (text) => {
         <div class="py-12">
             <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
                 
+                <!-- Estado sin Inversiones -->
+                <div v-if="!has_investments" class="bg-white dark:bg-slate-800 overflow-hidden shadow-sm sm:rounded-xl p-12 text-center mb-8 border-2 border-dashed border-slate-200 dark:border-slate-700">
+                    <div class="flex flex-col items-center">
+                        <div class="w-20 h-20 mb-6 bg-slate-50 dark:bg-slate-900 rounded-full flex items-center justify-center text-slate-400">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" />
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-slate-800 dark:text-white mb-2">Requiere Inversiones Activas</h3>
+                        <p class="text-slate-500 dark:text-slate-400 max-w-md mx-auto mb-8">
+                            El Analista IA necesita analizar tus posiciones actuales (Acciones, ETFs, Cripto o Fondos) para generarte un informe estratégico personalizado.
+                        </p>
+                        <Link :href="route('dashboard')" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-bold transition-all shadow-lg shadow-blue-500/20 active:scale-95">
+                            Añadir mi primera posición
+                        </Link>
+                    </div>
+                </div>
+
+                <!-- Info de Cortesía -->
+                <div v-if="has_investments" class="mb-6 flex items-center gap-3 px-4 py-3 bg-blue-50/50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-800/50 rounded-xl text-blue-600 dark:text-blue-400 text-xs font-medium">
+                    <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    <span>El Analista IA genera un informe estratégico nuevo cada día al acceder a esta sección, basándose en tus posiciones actuales.</span>
+                </div>
                 <!-- Estado de Carga (Sólo si no hay nada aún) -->
                 <div v-if="loading && allAnalyses.length === 0" class="bg-white dark:bg-slate-800 overflow-hidden shadow-sm sm:rounded-xl p-12 text-center mb-8">
                     <div class="flex flex-col items-center">

@@ -5,15 +5,18 @@ namespace App\Services\MarketData;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
+use App\Services\ApiService;
 
 class StockService
 {
     private $apiKey;
     private $baseUrl = 'https://financialmodelingprep.com/api/v3';
+    private $apiService;
 
-    public function __construct()
+    public function __construct(ApiService $apiService)
     {
         $this->apiKey = config('services.fmp.key') ?? env('FMP_API_KEY');
+        $this->apiService = $apiService;
     }
 
     public function getPrice($symbol)
@@ -32,6 +35,7 @@ class StockService
                 $response = Http::get($url);
                 
                 if ($response->successful()) {
+                    $this->apiService->trackRequest('FMP');
                     $data = $response->json();
                     
                     if (!empty($data) && isset($data[0]['price'])) {
@@ -63,6 +67,7 @@ class StockService
                 $response = Http::get("{$this->baseUrl}/search?query={$query}&limit=10&apikey={$this->apiKey}");
 
                 if ($response->successful()) {
+                    $this->apiService->trackRequest('FMP');
                     return $response->json();
                 }
 
@@ -85,6 +90,7 @@ class StockService
                 $response = Http::get("{$this->baseUrl}/historical-price-full/{$symbol}?from={$date}&to={$date}&apikey={$this->apiKey}");
                 
                 if ($response->successful() && !empty($response->json()['historical'])) {
+                    $this->apiService->trackRequest('FMP');
                     return $response->json()['historical'][0]['close'];
                 }
                 
@@ -94,6 +100,61 @@ class StockService
                 return null;
             }
         });
+    }
+
+    public function getHistoricalData($symbol, $days = 365)
+    {
+        $symbol = strtoupper(trim($symbol));
+        $to = now()->format('Y-m-d');
+        $from = now()->subDays($days)->format('Y-m-d');
+
+        return Cache::remember("stock_history_{$symbol}_{$days}", 3600, function () use ($symbol, $from, $to) {
+            try {
+                if (empty($this->apiKey)) {
+                    return $this->getMockHistory($symbol, $from, $to);
+                }
+
+                $url = "{$this->baseUrl}/historical-price-full/{$symbol}?from={$from}&to={$to}&apikey={$this->apiKey}";
+                $response = Http::get($url);
+
+                if ($response->successful()) {
+                    $this->apiService->trackRequest('FMP');
+                    $data = $response->json();
+                    if (isset($data['historical'])) {
+                        return array_reverse($data['historical']); // Ascending order for charts
+                    }
+                }
+                return $this->getMockHistory($symbol, $from, $to);
+            } catch (\Exception $e) {
+                Log::error("Error fetching historical data for {$symbol}: " . $e->getMessage());
+                return $this->getMockHistory($symbol, $from, $to);
+            }
+        });
+    }
+
+    private function getMockHistory($symbol, $from, $to)
+    {
+        $data = [];
+        $startDate = \Carbon\Carbon::parse($from);
+        $endDate = \Carbon\Carbon::parse($to);
+        $currentPrice = $this->getMockPrice($symbol);
+        
+        $days = $startDate->diffInDays($endDate);
+        
+        for ($i = 0; $i <= $days; $i++) {
+            $date = $startDate->copy()->addDays($i);
+            if ($date->isWeekend()) continue;
+
+            $change = (rand(-200, 210) / 100);
+            $currentPrice += $change;
+
+            $data[] = [
+                'date' => $date->format('Y-m-d'),
+                'close' => round($currentPrice, 2),
+                'volume' => rand(1000000, 5000000)
+            ];
+        }
+        return $data;
     }
 
     private function getMockPrice($symbol)
@@ -130,7 +191,10 @@ class StockService
                 if (empty($this->apiKey)) return $this->getMockGainers();
 
                 $response = Http::get("{$this->baseUrl}/stock_market/gainers?apikey={$this->apiKey}");
-                if ($response->successful()) return $response->json();
+                if ($response->successful()) {
+                    $this->apiService->trackRequest('FMP');
+                    return $response->json();
+                }
                 
                 return $this->getMockGainers();
             } catch (\Exception $e) {
@@ -147,7 +211,10 @@ class StockService
                 if (empty($this->apiKey)) return $this->getMockLosers();
 
                 $response = Http::get("{$this->baseUrl}/stock_market/losers?apikey={$this->apiKey}");
-                if ($response->successful()) return $response->json();
+                if ($response->successful()) {
+                    $this->apiService->trackRequest('FMP');
+                    return $response->json();
+                }
                 
                 return $this->getMockLosers();
             } catch (\Exception $e) {
@@ -164,7 +231,10 @@ class StockService
                 if (empty($this->apiKey)) return $this->getMockActive();
 
                 $response = Http::get("{$this->baseUrl}/stock_market/actives?apikey={$this->apiKey}");
-                if ($response->successful()) return $response->json();
+                if ($response->successful()) {
+                    $this->apiService->trackRequest('FMP');
+                    return $response->json();
+                }
                 
                 return $this->getMockActive();
             } catch (\Exception $e) {
@@ -201,6 +271,133 @@ class StockService
         ];
     }
 
+    public function getProfile($symbol)
+    {
+        $symbol = strtoupper(trim($symbol));
+        
+        return Cache::remember("stock_profile_{$symbol}", 2592000, function () use ($symbol) { // 30 days
+            try {
+                if (empty($this->apiKey)) {
+                    return $this->getMockProfile($symbol);
+                }
+
+                $url = "{$this->baseUrl}/profile/{$symbol}?apikey={$this->apiKey}";
+                $response = Http::get($url);
+                
+                if ($response->successful() && !empty($response->json())) {
+                    $this->apiService->trackRequest('FMP');
+                    $profile = $response->json()[0];
+                    
+                    // Si es un ETF o el sector está vacío, intentar enriquecer con info sectorial
+                    if (strpos(strtoupper($profile['description'] ?? ''), 'ETF') !== false || empty($profile['sector'])) {
+                        $etfInfo = $this->getEtfInfo($symbol);
+                        if ($etfInfo) {
+                            $profile['expenseRatio'] = $etfInfo['expenseRatio'] ?? null;
+                        }
+                    }
+
+                    return $profile;
+                }
+                
+                return $this->getMockProfile($symbol);
+            } catch (\Exception $e) {
+                Log::error("Error fetching profile for {$symbol}: " . $e->getMessage());
+                return $this->getMockProfile($symbol);
+            }
+        });
+    }
+
+    public function getEtfInfo($symbol)
+    {
+        return Cache::remember("etf_info_{$symbol}", 604800, function () use ($symbol) {
+             try {
+                if (empty($this->apiKey)) return ['expenseRatio' => 0.0009];
+                $response = Http::get("{$this->baseUrl}/etf-info/{$symbol}?apikey={$this->apiKey}");
+                if ($response->successful()) {
+                    $this->apiService->trackRequest('FMP');
+                    $data = $response->json();
+                    return !empty($data) ? $data[0] : null;
+                }
+                return null;
+             } catch (\Exception $e) { return null; }
+        });
+    }
+
+    public function getEtfSectorWeightings($symbol)
+    {
+        return Cache::remember("etf_sectors_{$symbol}", 604800, function () use ($symbol) {
+             try {
+                if (empty($this->apiKey)) return $this->getMockSectorWeightings();
+                $response = Http::get("{$this->baseUrl}/etf-sector-weightings/{$symbol}?apikey={$this->apiKey}");
+                if ($response->successful()) {
+                    $this->apiService->trackRequest('FMP');
+                    return $response->json();
+                }
+                return $this->getMockSectorWeightings();
+             } catch (\Exception $e) { return $this->getMockSectorWeightings(); }
+        });
+    }
+
+    public function getEtfCountryWeightings($symbol)
+    {
+        return Cache::remember("etf_countries_{$symbol}", 604800, function () use ($symbol) {
+             try {
+                if (empty($this->apiKey)) return $this->getMockCountryWeightings();
+                $response = Http::get("{$this->baseUrl}/etf-country-weightings/{$symbol}?apikey={$this->apiKey}");
+                if ($response->successful()) {
+                    $this->apiService->trackRequest('FMP');
+                    return $response->json();
+                }
+                return $this->getMockCountryWeightings();
+             } catch (\Exception $e) { return $this->getMockCountryWeightings(); }
+        });
+    }
+
+    private function getMockSectorWeightings()
+    {
+        return [
+            ['sector' => 'Technology', 'weightPercentage' => 28.5],
+            ['sector' => 'Financial Services', 'weightPercentage' => 15.2],
+            ['sector' => 'Healthcare', 'weightPercentage' => 12.8],
+            ['sector' => 'Consumer Cyclical', 'weightPercentage' => 10.5],
+            ['sector' => 'Communication Services', 'weightPercentage' => 8.4],
+        ];
+    }
+
+    private function getMockCountryWeightings()
+    {
+        return [
+            ['country' => 'United States', 'weightPercentage' => 98.5],
+            ['country' => 'Other', 'weightPercentage' => 1.5],
+        ];
+    }
+
+    private function getMockProfile($symbol)
+    {
+        $logos = [
+            'AAPL' => 'https://financialmodelingprep.com/image-stock/AAPL.png',
+            'MSFT' => 'https://financialmodelingprep.com/image-stock/MSFT.png',
+            'GOOGL' => 'https://financialmodelingprep.com/image-stock/GOOGL.png',
+            'TSLA' => 'https://financialmodelingprep.com/image-stock/TSLA.png',
+            'AMZN' => 'https://financialmodelingprep.com/image-stock/AMZN.png',
+            'NVDA' => 'https://financialmodelingprep.com/image-stock/NVDA.png',
+            'META' => 'https://financialmodelingprep.com/image-stock/META.png',
+            'SPY'  => 'https://financialmodelingprep.com/image-stock/SPY.png',
+        ];
+
+        return [
+            'symbol' => $symbol,
+            'companyName' => $symbol . ' Inc.',
+            'image' => $logos[strtoupper($symbol)] ?? "https://ui-avatars.com/api/?name={$symbol}&background=random",
+            'description' => 'Descripción simulada para el activo ' . $symbol,
+            'sector' => $symbol === 'SPY' ? 'ETF' : 'Technology',
+            'industry' => 'Consumer Electronics',
+            'website' => 'https://example.com',
+            'mktCap' => 500000000000,
+            'expenseRatio' => 0.0009
+        ];
+    }
+
     private function getMockSearch($query)
     {
         return [
@@ -226,5 +423,49 @@ class StockService
                 'exchangeShortName' => 'NASDAQ',
             ],
         ];
+    }
+
+    /**
+     * Obtiene los holdings institucionales (reporte 13F más reciente).
+     */
+    public function getInstitutionalHoldings(string $cik)
+    {
+        return $this->fetchFromApi("institutional-holder/portfolio-holdings", [
+            'cik' => $cik
+        ]);
+    }
+
+    /**
+     * Obtiene el historial de holdings institucionales (trades).
+     */
+    public function getInstitutionalHoldingsHistory(string $cik)
+    {
+        return $this->fetchFromApi("institutional-holder/portfolio-holdings-history", [
+            'cik' => $cik
+        ]);
+    }
+
+    /**
+     * Método auxiliar para realizar peticiones a la API de FMP.
+     */
+    private function fetchFromApi(string $endpoint, array $params = [])
+    {
+        try {
+            if (empty($this->apiKey)) return [];
+
+            $queryParams = array_merge($params, ['apikey' => $this->apiKey]);
+            $response = Http::get("{$this->baseUrl}/{$endpoint}", $queryParams);
+
+            if ($response->successful()) {
+                $this->apiService->trackRequest('FMP');
+                return $response->json();
+            }
+
+            Log::error("FMP API error in {$endpoint}: " . $response->status());
+            return [];
+        } catch (\Exception $e) {
+            Log::error("FMP API exception in {$endpoint}: " . $e->getMessage());
+            return [];
+        }
     }
 }

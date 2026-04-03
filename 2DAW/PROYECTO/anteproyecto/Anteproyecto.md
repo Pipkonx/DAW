@@ -48,7 +48,26 @@ Esta estructura me permite que, si borras una transacción, el activo sepa autom
 
 ---
 
-## 5. Endpoints del Sistema (Routing)
+## 5. Ingeniería de Software y Calidad de Código
+
+Para este proyecto, se ha seguido un enfoque de desarrollo profesional aplicando patrones y principios que garantizan la longevidad del sistema.
+
+### 5.1. Principio de Responsabilidad Única (SRP)
+Se ha evitado la creación de "God Objects" (clases o archivos que lo hacen todo).
+- **Frontend**: El Dashboard se ha modularizado en componentes como `KpiSection.vue` y `EvolutionSection.vue`. Esto permite que un cambio en la lógica de visualización de gráficos no afecte a la tabla de transacciones.
+- **Backend**: El `DashboardService.php` se encarga solo de orquestar datos, delegando el cálculo matemático complejo al `PerformanceService.php`.
+
+### 5.2. Don't Repeat Yourself (DRY)
+Se ha centralizado la lógica redundante para evitar errores de inconsistencia:
+- Se ha creado `resources/js/Utils/formatting.js` para unificar el formato de moneda y porcentajes en toda la aplicación. Antes, un cambio en el formato del Euro requería editar 5 archivos; ahora se hace en uno solo.
+
+### 5.3. Principios SOLID
+- **S**egregación: Los servicios están especializados.
+- **L**iskov/Sustitución: Los modelos de activos (`Asset`) pueden manejar diferentes tipos (cripto, stocks, fondos) manteniendo la misma interfaz de métodos.
+
+---
+
+## 6. Endpoints del Sistema (Routing)
 
 He mapeado todas las rutas en `routes/web.php` y `routes/auth.php`. El uso de **Inertia** hace que casi todas las peticiones `GET` devuelvan una vista enriquecida con datos.
 

@@ -26,6 +26,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'investment_return_rate',
         'enable_tax_projection',
         'tax_rate',
+        'is_admin',
     ];
 
     /**
@@ -51,6 +52,7 @@ class User extends Authenticatable implements MustVerifyEmail
             'enable_tax_projection' => 'boolean',
             'tax_rate' => 'decimal:2',
             'investment_return_rate' => 'decimal:2',
+            'is_admin' => 'boolean',
         ];
     }
 
@@ -74,3 +76,14 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(AiAnalysis::class);
     }
 }
+    public function followers()
+    {
+        return $this->belongsToMany(User::class, 'followers', 'followed_id', 'follower_id')->withTimestamps();
+    }
+
+    public function following()
+    {
+        return $this->belongsToMany(User::class, 'followers', 'follower_id', 'followed_id')->withTimestamps();
+    }
+}
+

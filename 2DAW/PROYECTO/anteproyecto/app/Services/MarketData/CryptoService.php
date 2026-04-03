@@ -6,14 +6,18 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
+use App\Services\ApiService;
+
 class CryptoService
 {
     private $apiKey;
     private $baseUrl = 'https://api.coingecko.com/api/v3';
+    private $apiService;
 
-    public function __construct()
+    public function __construct(ApiService $apiService)
     {
         $this->apiKey = config('services.coingecko.key') ?? env('COINGECKO_API_KEY');
+        $this->apiService = $apiService;
     }
 
     public function getPrice($identifier)
@@ -31,6 +35,7 @@ class CryptoService
                 $response = Http::get("{$this->baseUrl}/simple/price?ids={$id}&vs_currencies=usd&x_cg_demo_api_key={$this->apiKey}");
                 
                 if ($response->successful() && isset($response->json()[$id]['usd'])) {
+                    $this->apiService->trackRequest('CoinGecko');
                     return $response->json()[$id]['usd'];
                 }
                 
@@ -53,6 +58,7 @@ class CryptoService
                 $response = Http::get("{$this->baseUrl}/search?query={$query}&x_cg_demo_api_key={$this->apiKey}");
 
                 if ($response->successful()) {
+                    $this->apiService->trackRequest('CoinGecko');
                     $coins = $response->json()['coins'];
                     return array_map(function($coin) {
                         return [
@@ -87,6 +93,7 @@ class CryptoService
                 $response = Http::get("{$this->baseUrl}/coins/{$symbol}/history?date={$formattedDate}&x_cg_demo_api_key={$this->apiKey}");
                 
                 if ($response->successful() && isset($response->json()['market_data']['current_price']['usd'])) {
+                    $this->apiService->trackRequest('CoinGecko');
                     return $response->json()['market_data']['current_price']['usd'];
                 }
                 
@@ -96,6 +103,54 @@ class CryptoService
                 return null;
             }
         });
+    }
+
+    public function getChartData($identifier, $days = 365)
+    {
+        $id = strtolower($identifier);
+        return Cache::remember("crypto_chart_{$id}_{$days}", 3600, function () use ($id, $days) {
+            try {
+                if (empty($this->apiKey)) {
+                    return $this->getMockHistory($id, $days);
+                }
+
+                $response = Http::get("{$this->baseUrl}/coins/{$id}/market_chart?vs_currency=usd&days={$days}&interval=daily&x_cg_demo_api_key={$this->apiKey}");
+                
+                if ($response->successful()) {
+                    $this->apiService->trackRequest('CoinGecko');
+                    $prices = $response->json()['prices'];
+                    return array_map(function($p) {
+                        return [
+                            'date' => date('Y-m-d', $p[0] / 1000),
+                            'close' => $p[1]
+                        ];
+                    }, $prices);
+                }
+                
+                return $this->getMockHistory($id, $days);
+            } catch (\Exception $e) {
+                Log::error("Error fetching crypto chart for {$id}: " . $e->getMessage());
+                return $this->getMockHistory($id, $days);
+            }
+        });
+    }
+
+    private function getMockHistory($id, $days)
+    {
+        $data = [];
+        $currentPrice = $this->getMockPrice($id);
+        
+        for ($i = $days; $i >= 0; $i--) {
+            $date = now()->subDays($i);
+            $change = (rand(-300, 310) / 100);
+            $currentPrice += ($currentPrice * ($change / 100));
+
+            $data[] = [
+                'date' => $date->format('Y-m-d'),
+                'close' => round($currentPrice, 2)
+            ];
+        }
+        return $data;
     }
 
     private function getMockPrice($symbol)
@@ -142,6 +197,7 @@ class CryptoService
 
                 $response = Http::get("{$this->baseUrl}/search/trending?x_cg_demo_api_key={$this->apiKey}");
                 if ($response->successful()) {
+                    $this->apiService->trackRequest('CoinGecko');
                     $coins = $response->json()['coins'];
                     return array_map(function($item) {
                         $coin = $item['item'];
@@ -151,6 +207,7 @@ class CryptoService
                             'name' => $coin['name'],
                             'price' => $coin['data']['price'] ?? 0,
                             'change_percent' => floatval($coin['data']['price_change_percentage_24h']['usd'] ?? 0),
+                            'image' => $coin['small'] ?? $coin['large'] ?? null,
                         ];
                     }, $coins);
                 }
@@ -172,6 +229,7 @@ class CryptoService
                 $response = Http::get("{$this->baseUrl}/coins/markets?vs_currency=usd&order=market_cap_desc&per_page={$limit}&page=1&sparkline=false&x_cg_demo_api_key={$this->apiKey}");
                 
                 if ($response->successful()) {
+                    $this->apiService->trackRequest('CoinGecko');
                     return array_map(function($coin) {
                         return [
                             'id' => $coin['id'],
@@ -179,6 +237,7 @@ class CryptoService
                             'name' => $coin['name'],
                             'price' => floatval($coin['current_price']),
                             'change_percent' => floatval($coin['price_change_percentage_24h'] ?? 0),
+                            'image' => $coin['image'] ?? null,
                         ];
                     }, $response->json());
                 }

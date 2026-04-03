@@ -33,7 +33,7 @@ class TransactionController extends Controller
 
         // Initial Data Fetching
         $firstTransaction = Transaction::where('user_id', $user->id)->orderBy('date', 'asc')->first();
-        $minDate = $firstTransaction ? $firstTransaction->date->format('Y-m-d') : Carbon::now()->format('Y-m-d');
+        $minDate = $firstTransaction ? Carbon::parse($firstTransaction->date)->format('Y-m-d') : Carbon::now()->format('Y-m-d');
 
         $portfolios = $this->getUserPortfolios($user);
         $assets = $this->getUserAssets($user, $portfolioId);
@@ -48,7 +48,7 @@ class TransactionController extends Controller
             ->withQueryString();
 
         // Analytical Data (Performance & Allocations)
-        $chartData = $this->performanceService->getChartData($user->id, $assetIds, $timeframe, $summary['current_value']);
+        $chartData = $this->performanceService->getChartData($user->id, $assetIds->toArray(), $timeframe, $summary['current_value']);
         $allocations = $this->getAllocations($assets);
 
         return Inertia::render('Transactions/Index', [
@@ -79,8 +79,8 @@ class TransactionController extends Controller
             ->get();
             
         return $portfolios->each(function ($portfolio) {
-            $portfolio->total_value = $portfolio->assets->sum(function ($asset) {
-                return $asset->quantity * ($asset->current_price ?? $asset->avg_buy_price);
+            $portfolio->total_value = (float) $portfolio->assets->sum(function ($asset) {
+                return (float) ($asset->quantity * ($asset->current_price ?? $asset->avg_buy_price));
             });
             $portfolio->unsetRelation('assets');
         });
@@ -129,6 +129,10 @@ class TransactionController extends Controller
         $totalPL = $currentValue - $totalInvested;
         $totalPLPercent = ($totalInvested > 0) ? ($totalPL / $totalInvested) * 100 : 0;
 
+        $assetIds = $assets->pluck('id')->toArray();
+        $detailed = $this->performanceService->getDetailedBreakdown($userId, $assetIds);
+        $annual = $this->performanceService->getAnnualPerformance($userId, $assetIds);
+
         return [
             'total_invested' => $totalInvested ?? 0,
             'current_value' => $currentValue ?? 0,
@@ -136,7 +140,78 @@ class TransactionController extends Controller
             'total_pl_percent' => is_nan($totalPLPercent) ? 0 : $totalPLPercent,
             'total_net_worth' => $currentValue + $totalLiquid,
             'liquid_balance' => $totalLiquid ?? 0,
+            'detailed' => $detailed,
+            'annual' => $annual,
         ];
+    }
+
+    /**
+     * Display the detailed Performance dashboard.
+     */
+    public function performance(Request $request)
+    {
+        $user = Auth::user();
+        $portfolioId = $request->input('portfolio_id', 'aggregated');
+        $viewType = $request->input('view', 'MAX'); // MAX or specific year
+
+        $portfolios = $this->getUserPortfolios($user);
+        $assets = $this->getUserAssets($user, $portfolioId);
+        $assetIds = $assets->pluck('id')->toArray();
+
+        $annual = $this->performanceService->getAnnualPerformance($user->id, $assetIds);
+        $heatmap = $this->performanceService->getHeatmapData($user->id, $assetIds);
+        
+        $monthly = null;
+        $detailedYear = null;
+        
+        if ($viewType !== 'MAX' && is_numeric($viewType)) {
+            $detailedYear = (int)$viewType;
+            $monthly = $this->performanceService->getMonthlyPerformance($user->id, $assetIds, $detailedYear);
+        }
+
+        $detailed = $this->performanceService->getDetailedBreakdown($user->id, $assetIds, $detailedYear);
+
+        return Inertia::render('Transactions/Performance', [
+            'portfolios' => $portfolios,
+            'selectedPortfolioId' => $portfolioId,
+            'annual' => $annual,
+            'monthly' => $monthly,
+            'heatmap' => $heatmap,
+            'detailed' => $detailed,
+            'viewType' => $viewType,
+        ]);
+    }
+
+    /**
+     * Muestra la vista de análisis inmersivo de Distribución (Allocation).
+     */
+    public function allocation(Request $request)
+    {
+        $user = Auth::user();
+        $portfolioId = $request->input('portfolio_id', 'aggregated');
+        
+        $portfolios = $this->getUserPortfolios($user);
+        $assets = $this->getUserAssets($user, $portfolioId);
+
+        // Precalculamos las plusvalías simples para enviarlas al frontend
+        // para que puedan totalizarse según las agrupaciones dinámicas.
+        $assets->each(function($asset) {
+            $asset->total_pl = $asset->current_value - $asset->total_invested;
+            if ($asset->marketAsset) {
+                $asset->type = $asset->marketAsset->type;
+                $asset->sector = $asset->marketAsset->sector;
+                $asset->industry = $asset->marketAsset->industry;
+                $asset->region = $asset->marketAsset->region;
+                $asset->country = $asset->marketAsset->country;
+                $asset->currency_code = $asset->marketAsset->currency_code;
+            }
+        });
+
+        return Inertia::render('Transactions/Allocation', [
+            'portfolios' => $portfolios,
+            'selectedPortfolioId' => $portfolioId,
+            'assets' => $assets
+        ]);
     }
 
     /**

@@ -32,15 +32,149 @@ class MarketDataService
         $this->fundService = $fundService;
     }
 
-    public function getStockGainers() { return $this->stockService->getTopGainers(); }
-    public function getStockLosers() { return $this->stockService->getTopLosers(); }
-    public function getStockActive() { return $this->stockService->getMostActive(); }
+    public function getStockService()
+    {
+        return $this->stockService;
+    }
+
+    public function getStockGainers() { 
+        $data = $this->stockService->getTopGainers();
+        return array_map([$this, 'enrichStockLogo'], $data);
+    }
+    
+    public function getStockLosers() { 
+        $data = $this->stockService->getTopLosers();
+        return array_map([$this, 'enrichStockLogo'], $data);
+    }
+    
+    public function getStockActive() { 
+        $data = $this->stockService->getMostActive();
+        return array_map([$this, 'enrichStockLogo'], $data);
+    }
+
+    private function enrichStockLogo($item) {
+        $symbol = strtoupper($item['symbol']);
+        $item['image'] = "https://financialmodelingprep.com/image-stock/{$symbol}.png";
+        return $item;
+    }
+
+    /**
+     * Asegura que un activo esté en la base de datos local si existe en las APIs.
+     * Útil para evitar errores 404 en activos nuevos.
+     */
+    public function ensureAssetSynced($ticker)
+    {
+        $ticker = strtoupper(trim($ticker));
+        $marketAsset = MarketAsset::where('ticker', $ticker)->orWhere('isin', $ticker)->first();
+        
+        if ($marketAsset) return $marketAsset;
+
+        // Intentar buscar en FMP (Stock/ETF)
+        $profile = $this->stockService->getProfile($ticker);
+        if ($profile && isset($profile['symbol'])) {
+            return $this->syncAsset(
+                $profile['symbol'], 
+                (strpos(strtoupper($profile['companyName'] ?? ''), 'ETF') !== false) ? 'etf' : 'stock',
+                $profile['companyName'] ?? $ticker,
+                $profile['currency'] ?? 'USD'
+            );
+        }
+
+        // Intentar buscar en Crypto (CoinGecko)
+        $cryptoResults = $this->cryptoService->search($ticker);
+        if (!empty($cryptoResults)) {
+             foreach ($cryptoResults as $res) {
+                  if (strtoupper($res['symbol']) === $ticker) {
+                       return $this->syncAsset($res['symbol'], 'crypto', $res['name'], 'USD', null, $res['id']);
+                  }
+             }
+        }
+
+        return null;
+    }
+
+    /**
+     * Obtiene el perfil detallado de un activo (sector, descripción, etc).
+     */
+    public function getAssetProfile(MarketAsset $marketAsset)
+    {
+        try {
+            switch ($marketAsset->type) {
+                case 'crypto':
+                    // Para cripto podríamos añadir más info de CoinGecko si fuera necesario
+                    return [
+                        'description' => "Criptomoneda: {$marketAsset->name} ({$marketAsset->ticker})",
+                        'sector' => 'Criptoactivos',
+                        'industry' => 'Blockchain',
+                        'mcap' => 0,
+                    ];
+                case 'stock':
+                case 'etf':
+                case 'fund':
+                    $profile = $this->stockService->getProfile($marketAsset->ticker);
+                    $data = [
+                        'description' => $profile['description'] ?? 'Sin descripción disponible.',
+                        'sector' => $profile['sector'] ?? 'Otros',
+                        'industry' => $profile['industry'] ?? 'General',
+                        'mcap' => $profile['mktCap'] ?? 0,
+                        'market_cap' => $profile['mktCap'] ?? 0, // Doble mapeo por si acaso
+                        'image' => $profile['image'] ?? "https://financialmodelingprep.com/image-stock/{$marketAsset->ticker}.png",
+                        'companyName' => $profile['companyName'] ?? $marketAsset->name,
+                        'ter' => $profile['expenseRatio'] ?? null,
+                    ];
+
+                    // Si es ETF, añadir distribuciones para el Mapa de Calor
+                    if ($marketAsset->type === 'etf' || ($profile['sector'] ?? '') === 'ETF') {
+                        $data['sectorWeightings'] = $this->stockService->getEtfSectorWeightings($marketAsset->ticker);
+                        $data['countryWeightings'] = $this->stockService->getEtfCountryWeightings($marketAsset->ticker);
+                        
+                        // Si el TER no vino en el perfil general, intentar buscarlo específico
+                        if (!isset($data['ter'])) {
+                             $etfInfo = $this->stockService->getEtfInfo($marketAsset->ticker);
+                             $data['ter'] = $etfInfo['expenseRatio'] ?? null;
+                        }
+                    }
+
+                    return $data;
+                default:
+                    return null;
+            }
+        } catch (\Exception $e) {
+            Log::error("Error al obtener perfil de activo: " . $e->getMessage());
+            return null;
+        }
+    }
+
     public function getCryptoTrending() { return $this->cryptoService->getTrendingCoins(); }
     public function getCryptoTop($limit = 10) { return $this->cryptoService->getTopByMarketCap($limit); }
 
-    /**
-     * Attempts to find a market asset by name if ticker/ISIN are missing.
-     */
+    public function getChartData($marketAssetOrTicker, $days = 365)
+    {
+        $marketAsset = $marketAssetOrTicker instanceof MarketAsset 
+            ? $marketAssetOrTicker 
+            : MarketAsset::where('ticker', $marketAssetOrTicker)->first();
+
+        if (!$marketAsset) return [];
+
+        try {
+            switch ($marketAsset->type) {
+                case 'crypto':
+                    // CoinGecko market_chart returns days from now
+                    $identifier = $marketAsset->api_id ?? strtolower($marketAsset->name);
+                    return $this->cryptoService->getChartData($identifier, $days);
+                case 'stock':
+                case 'etf':
+                case 'fund':
+                default:
+                    // FMP has a full historical endpoint which we'll filter
+                    return $this->stockService->getHistoricalData($marketAsset->ticker, $days);
+            }
+        } catch (\Exception $e) {
+            Log::error("Chart data error for {$marketAsset->ticker}: " . $e->getMessage());
+            return [];
+        }
+    }
+
     private function searchAndLinkByName(Asset $asset)
     {
         if (!$asset->name) return null;
@@ -301,7 +435,7 @@ class MarketDataService
         $localResults = $localQuery->limit(10)->get();
 
         // Map local results to standard format
-        $results = $localResults->map(function ($asset) {
+        $results = collect($localResults->map(function ($asset) {
             return [
                 'id' => $asset->id,
                 'ticker' => $asset->ticker,
@@ -312,7 +446,7 @@ class MarketDataService
                 'isin' => $asset->isin,
                 'api_id' => $asset->api_id,
             ];
-        });
+        })->toArray());
 
         // 2. API Search (if needed or to supplement)
         // Only if query is long enough to be specific

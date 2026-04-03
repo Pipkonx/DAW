@@ -24,17 +24,32 @@ const { isPrivacyMode } = usePrivacy();
 const showModal = ref(false);
 const editingAccount = ref(null);
 
-// Chart Options
+// Chart Options Modernized
 const chartOptions = {
     responsive: true,
     maintainAspectRatio: false,
-    cutout: '70%',
+    layout: {
+        padding: 20
+    },
+    cutout: '75%',
     plugins: {
         legend: {
-            position: 'right',
-            labels: { boxWidth: 12, usePointStyle: true, color: '#94a3b8' }
+            position: 'bottom',
+            labels: { 
+                boxWidth: 12, 
+                usePointStyle: true, 
+                pointStyle: 'circle',
+                color: '#64748b',
+                font: { size: 12, weight: '500' },
+                padding: 20
+            }
         },
         tooltip: {
+            backgroundColor: 'rgba(15, 23, 42, 0.9)',
+            padding: 12,
+            cornerRadius: 10,
+            displayColors: true,
+            usePointStyle: true,
             callbacks: {
                 label: function(context) {
                     let label = context.label || '';
@@ -45,22 +60,34 @@ const chartOptions = {
                     if (label) {
                         label += ': ';
                     }
-                    return label + new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(value) + ' (' + percentage + '%)';
+                    return ` ${label}${new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(value)} (${percentage}%)`;
                 }
             }
         }
     }
 };
 
-const chartData = computed(() => ({
-    labels: ['Líquido (Bancos)', 'Invertido (Activos)'],
-    datasets: [{
-        data: [props.aggregated.liquid_balance, props.aggregated.invested_balance],
-        backgroundColor: ['#3b82f6', '#8b5cf6'],
-        borderWidth: 0,
-        hoverOffset: 4
-    }]
-}));
+const chartData = computed(() => {
+    const rawData = [
+        { label: 'Líquido (Bancos)', value: props.aggregated.liquid_balance, color: '#0ea5e9' },
+        { label: 'Invertido (Activos)', value: props.aggregated.invested_balance, color: '#6366f1' }
+    ].sort((a, b) => b.value - a.value);
+
+    return {
+        labels: rawData.map(d => d.label),
+        datasets: [{
+            data: rawData.map(d => d.value),
+            backgroundColor: rawData.map(d => d.color),
+            borderWidth: 0,
+            hoverOffset: 15,
+            borderRadius: 10,
+            spacing: 5
+        }]
+    };
+});
+
+
+
 
 const form = useForm({
     name: '',
@@ -145,14 +172,11 @@ const formatPercent = (value) => {
                 
                 <!-- Resumen y Proyecciones -->
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    <!-- Balance Actual con Gráfico -->
-                    <div class="bg-white dark:bg-slate-800 overflow-hidden shadow-sm sm:rounded-lg p-6 flex flex-col justify-between border border-slate-200 dark:border-slate-700">
+                    <!-- Balance Actual con Gráfico (Simplificado) -->
+                    <div class="bg-white dark:bg-slate-800 overflow-hidden shadow-sm sm:rounded-lg p-6 flex flex-col justify-center border border-slate-200 dark:border-slate-700 h-48">
                         <div>
-                            <h3 class="text-sm font-medium text-slate-500 dark:text-slate-400">Patrimonio Total</h3>
-                            <p class="mt-2 text-3xl font-bold text-slate-900 dark:text-white">{{ isPrivacyMode ? '****' : formatCurrency(aggregated.current_balance) }}</p>
-                        </div>
-                        <div class="h-32 relative mt-4" :class="{ 'blur-sm select-none': isPrivacyMode }">
-                             <DoughnutChart :data="chartData" :options="chartOptions" />
+                            <h3 class="text-sm font-medium text-slate-500 dark:text-slate-400 uppercase tracking-widest text-center">Patrimonio Total</h3>
+                            <p class="mt-4 text-4xl font-black text-blue-900 dark:text-white text-center">{{ isPrivacyMode ? '****' : formatCurrency(aggregated.current_balance) }}</p>
                         </div>
                     </div>
 

@@ -11,7 +11,10 @@ use Illuminate\Support\Facades\DB;
 class DashboardService
 {
     /**
-     * Get consolidated portfolio data with current values and yields.
+     * Obtiene los datos consolidados de las carteras con sus valores actuales y rendimientos.
+     * 
+     * @param int $userId ID del usuario
+     * @return \Illuminate\Support\Collection
      */
     public function getPortfoliosData($userId)
     {
@@ -51,7 +54,11 @@ class DashboardService
     }
 
     /**
-     * Get historical net worth data for the last X months.
+     * Obtiene el historial del patrimonio neto (Efectivo + Inversiones) de los últimos X meses.
+     * 
+     * @param int $userId ID del usuario
+     * @param int $months Número de meses a recuperar
+     * @return array Contiene labels, values (valor absoluto) y yields (rendimiento %)
      */
     public function getNetWorthHistory($userId, $months = 6)
     {
@@ -60,7 +67,7 @@ class DashboardService
         $yields = [];
         $now = Carbon::now();
 
-        // Obtener todos los activos del usuario para procesar sus transacciones una sola vez
+        // Obtenemos todos los activos y transacciones del usuario
         $assets = Asset::where('user_id', $userId)->get();
         $allTransactions = Transaction::where('user_id', $userId)
             ->orderBy('date', 'asc')
@@ -72,6 +79,7 @@ class DashboardService
             $date = $now->copy()->subMonths($i)->endOfMonth();
             $labels[] = $date->format('M');
             
+            // Cálculo del efectivo histórico basado en flujos de caja
             $cash = Transaction::where('user_id', $userId)
                 ->where('date', '<=', $date)
                 ->selectRaw("SUM(CASE 
@@ -80,43 +88,24 @@ class DashboardService
                     ELSE 0 END) as cash")
                 ->value('cash') ?? 0;
 
-            $totalAssetsValue = 0;
-            $totalAssetsCost = 0;
+            // Cálculo de valoración de activos en el punto temporal 'date'
+            $snapshot = $this->calculateAssetsSnapshot($assets, $allTransactions, $date);
 
-            foreach ($assets as $asset) {
-                $assetTxs = $allTransactions->get($asset->id, collect())->filter(fn($t) => $t->date <= $date);
-                
-                $qty = 0;
-                $costBasis = 0;
-                
-                foreach ($assetTxs as $tx) {
-                    if (in_array($tx->type, ['buy', 'transfer_in', 'gift', 'reward'])) {
-                        $costBasis += $tx->quantity * $tx->price_per_unit;
-                        $qty += $tx->quantity;
-                    } elseif (in_array($tx->type, ['sell', 'transfer_out'])) {
-                        if ($qty > 0) {
-                            $avg = $costBasis / $qty;
-                            $costBasis -= $avg * $tx->quantity;
-                        }
-                        $qty -= $tx->quantity;
-                    }
-                }
-
-                if ($qty > 0) {
-                    $totalAssetsValue += $qty * ($asset->current_price ?? 0);
-                    $totalAssetsCost += $costBasis;
-                }
-            }
-
-            $values[] = round($cash + $totalAssetsValue, 2);
-            $yields[] = $totalAssetsCost > 0 ? round((($totalAssetsValue - $totalAssetsCost) / $totalAssetsCost) * 100, 2) : 0;
+            $values[] = round($cash + $snapshot['totalValue'], 2);
+            $yields[] = $snapshot['totalCost'] > 0 
+                ? round((($snapshot['totalValue'] - $snapshot['totalCost']) / $snapshot['totalCost']) * 100, 2) 
+                : 0;
         }
 
         return compact('labels', 'values', 'yields');
     }
 
     /**
-     * Get historical valuation for each portfolio + orphans.
+     * Obtiene la valoración histórica individual para cada cartera (incluyendo activos sin cartera).
+     * 
+     * @param int $userId ID del usuario
+     * @param int $months Número de meses
+     * @return array Mapa de ID de cartera => historial de valores y rendimientos
      */
     public function getPortfolioHistory($userId, $months = 6)
     {
@@ -124,69 +113,111 @@ class DashboardService
         $history = [];
         $now = Carbon::now();
 
-        // Pre-cargar activos y transacciones
+        // Pre-cargar activos y transacciones agrupados
         $allAssets = Asset::where('user_id', $userId)->get()->groupBy('portfolio_id');
         $allTransactions = Transaction::where('user_id', $userId)
             ->orderBy('date', 'asc')
             ->get()
             ->groupBy('asset_id');
 
-        $calculateHistory = function($portfolioId) use ($months, $now, $allAssets, $allTransactions) {
+        $processPortfolio = function($portfolioId) use ($months, $now, $allAssets, $allTransactions) {
             $valHistory = [];
             $yieldHistory = [];
             $assets = $allAssets->get($portfolioId, collect());
 
             for ($i = $months - 1; $i >= 0; $i--) {
                 $date = $now->copy()->subMonths($i)->endOfMonth();
-                $totalVal = 0;
-                $totalCost = 0;
+                
+                $snapshot = $this->calculateAssetsSnapshot($assets, $allTransactions, $date);
 
-                foreach ($assets as $asset) {
-                    $assetTxs = $allTransactions->get($asset->id, collect())->filter(fn($t) => $t->date <= $date);
-                    $qty = 0;
-                    $costBasis = 0;
-
-                    foreach ($assetTxs as $tx) {
-                        if (in_array($tx->type, ['buy', 'transfer_in', 'gift', 'reward'])) {
-                            $costBasis += $tx->quantity * $tx->price_per_unit;
-                            $qty += $tx->quantity;
-                        } elseif (in_array($tx->type, ['sell', 'transfer_out'])) {
-                            if ($qty > 0) {
-                                $avg = $costBasis / $qty;
-                                $costBasis -= $avg * $tx->quantity;
-                            }
-                            $qty -= $tx->quantity;
-                        }
-                    }
-
-                    if ($qty > 0) {
-                        $totalVal += $qty * ($asset->current_price ?? 0);
-                        $totalCost += $costBasis;
-                    }
-                }
-                $valHistory[] = round($totalVal, 2);
-                $yieldHistory[] = $totalCost > 0 ? round((($totalVal - $totalCost) / $totalCost) * 100, 2) : 0;
+                $valHistory[] = round($snapshot['totalValue'], 2);
+                $yieldHistory[] = $snapshot['totalCost'] > 0 
+                    ? round((($snapshot['totalValue'] - $snapshot['totalCost']) / $snapshot['totalCost']) * 100, 2) 
+                    : 0;
             }
             return ['values' => $valHistory, 'yields' => $yieldHistory];
         };
 
         foreach ($portfolios as $p) {
-            $history[$p->id] = $calculateHistory($p->id);
+            $history[$p->id] = $processPortfolio($p->id);
         }
 
-        // Orphans (Sin Cartera)
-        $history['orphan'] = $calculateHistory(null);
+        // Procesar activos sin cartera asociada (Huerfanos)
+        $history['orphan'] = $processPortfolio(null);
 
         return $history;
     }
 
+    /**
+     * Calcula la valoración (Value) y el coste base (Cost) de un conjunto de activos
+     * en una fecha específica, utilizando el historial de transacciones (WAC).
+     * 
+     * @param \Illuminate\Support\Collection $assets
+     * @param \Illuminate\Support\Collection $allTransactions
+     * @param \Carbon\Carbon $date
+     * @return array ['totalValue' => float, 'totalCost' => float]
+     */
+    private function calculateAssetsSnapshot($assets, $allTransactions, $date)
+    {
+        $totalValue = 0;
+        $totalCost = 0;
+
+        foreach ($assets as $asset) {
+            // Filtramos las transacciones hasta la fecha de corte
+            $assetTxs = $allTransactions->get($asset->id, collect())->filter(fn($t) => $t->date <= $date);
+            
+            $quantity = 0;
+            $costBasis = 0;
+
+            foreach ($assetTxs as $tx) {
+                if (in_array($tx->type, ['buy', 'transfer_in', 'gift', 'reward'])) {
+                    // Compra o entrada: incrementa cantidad y coste base
+                    $costBasis += $tx->quantity * $tx->price_per_unit;
+                    $quantity += $tx->quantity;
+                } elseif (in_array($tx->type, ['sell', 'transfer_out'])) {
+                    // Venta o salida: reduce cantidad y coste base proporcionalmente (WAC)
+                    if ($quantity > 0) {
+                        $averagePrice = $costBasis / $quantity;
+                        $costBasis -= $averagePrice * $tx->quantity;
+                    }
+                    $quantity -= $tx->quantity;
+                }
+            }
+
+            // Solo sumamos si el usuario aún posee el activo en esa fecha
+            if ($quantity > 0) {
+                // Usamos el precio actual como estimación, ya que no tenemos histórico de precios diario
+                $totalValue += $quantity * ($asset->current_price ?? 0);
+                $totalCost += $costBasis;
+            }
+        }
+
+        return [
+            'totalValue' => $totalValue,
+            'totalCost' => $totalCost
+        ];
+    }
+
+    /**
+     * Formatea los datos de los activos para su envío al frontend.
+     * 
+     * @param \Illuminate\Support\Collection $assets
+     * @return \Illuminate\Support\Collection
+     */
     private function formatAssets($assets)
     {
         return $assets->map(fn($a) => [
-            'id' => $a->id, 'name' => $a->name, 'ticker' => $a->ticker, 'type' => $a->type,
-            'quantity' => $a->quantity, 'current_price' => $a->current_price, 'avg_buy_price' => $a->avg_buy_price,
-            'current_value' => $a->current_value, 'profit_loss_pct' => $a->profit_loss_percentage,
-            'color' => $a->color, 'logo' => $a->logo,
+            'id' => $a->id, 
+            'name' => $a->name, 
+            'ticker' => $a->ticker, 
+            'type' => $a->type,
+            'quantity' => $a->quantity, 
+            'current_price' => $a->current_price, 
+            'avg_buy_price' => $a->avg_buy_price,
+            'current_value' => $a->current_value, 
+            'profit_loss_pct' => $a->profit_loss_percentage,
+            'color' => $a->color, 
+            'logo' => $a->logo,
         ]);
     }
 }

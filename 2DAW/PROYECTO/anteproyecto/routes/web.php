@@ -16,6 +16,10 @@ use App\Http\Controllers\MarketDataController;
 use App\Http\Controllers\AiAnalystController;
 use App\Http\Controllers\TransactionActionController;
 use App\Http\Controllers\TransactionExportController;
+use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\SocialController;
+use App\Http\Controllers\MarketAssetController;
+use App\Http\Controllers\FamousPortfolioController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -59,6 +63,14 @@ Route::get('/transactions', [TransactionController::class, 'index'])
     ->middleware(['auth', 'verified'])
     ->name('transactions.index');
 
+Route::get('/transactions/performance', [TransactionController::class, 'performance'])
+    ->middleware(['auth', 'verified'])
+    ->name('transactions.performance');
+
+Route::get('/transactions/allocation', [TransactionController::class, 'allocation'])
+    ->middleware(['auth', 'verified'])
+    ->name('transactions.allocation');
+
 Route::post('/transactions', [TransactionActionController::class, 'store'])
     ->middleware(['auth'])
     ->name('transactions.store');
@@ -75,12 +87,12 @@ Route::delete('/transactions/{transaction}', [TransactionActionController::class
     ->middleware(['auth'])
     ->name('transactions.destroy');
 
-    // Análisis de Gastos
-    Route::get('/expenses', [ExpenseController::class, 'index'])->name('expenses.index');
+// Análisis de Gastos
+Route::get('/expenses', [ExpenseController::class, 'index'])->name('expenses.index');
 
-    // Analista IA (Nuevo)
-    Route::get('/ai-analyst', [AiAnalystController::class, 'index'])->name('ai-analyst.index');
-    Route::get('/api/ai-analyst/report', [AiAnalystController::class, 'generateReport'])->name('ai-analyst.report');
+// Analista IA (Nuevo)
+Route::get('/ai-analyst', [AiAnalystController::class, 'index'])->name('ai-analyst.index');
+Route::get('/api/ai-analyst/report', [AiAnalystController::class, 'generateReport'])->name('ai-analyst.report');
 
 // Rutas de Perfil de Usuario (Autenticadas)
 Route::middleware(['auth', 'verified'])->group(function () {
@@ -101,7 +113,19 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::put('/portfolios/{portfolio}', [PortfolioController::class, 'update'])->name('portfolios.update');
     Route::delete('/portfolios/{portfolio}', [PortfolioController::class, 'destroy'])->name('portfolios.destroy');
 
-    // Rutas de Activos
+    // Rutas de Activos y Social
+    Route::get('/assets/{ticker}', [MarketAssetController::class, 'show'])->name('assets.show');
+    Route::get('/api/assets/{ticker}/chart', [MarketAssetController::class, 'getChartRange'])->name('assets.chart-data');
+
+    Route::get('/famous-portfolios/{slug}', [FamousPortfolioController::class, 'show'])->name('famous-portfolios.show');
+
+    Route::get('/feed', [SocialController::class, 'index'])->name('social.feed');
+    Route::post('/social/post', [SocialController::class, 'storePost'])->name('social.post');
+    Route::post('/social/comment/{post}', [SocialController::class, 'storeComment'])->name('social.comment');
+    Route::post('/social/like', [SocialController::class, 'toggleLike'])->name('social.like');
+    Route::post('/social/repost/{post}', [SocialController::class, 'toggleRepost'])->name('social.repost');
+    Route::post('/social/report', [SocialController::class, 'reportContent'])->name('social.report');
+
     Route::delete('/assets/bulk-destroy', [App\Http\Controllers\AssetController::class, 'bulkDestroy'])->name('assets.bulk-destroy');
     Route::put('/assets/{asset}', [App\Http\Controllers\AssetController::class, 'update'])->name('assets.update');
     Route::delete('/assets/{asset}', [App\Http\Controllers\AssetController::class, 'destroy'])->name('assets.destroy');
@@ -119,6 +143,28 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::patch('/categories/{category}/toggle', [CategoryController::class, 'toggleActive'])->name('categories.toggle');
 });
 
+// Panel de Administración (Protegido por Middleware Admin)
+Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
+
+    // Gestión de Usuarios
+    Route::post('/users/{user}/toggle-admin', [AdminController::class, 'toggleAdmin'])->name('users.toggle-admin');
+    Route::delete('/users/{user}', [AdminController::class, 'deleteUser'])->name('users.delete');
+
+    // Backups
+    Route::post('/backup', [AdminController::class, 'generateBackup'])->name('backup.generate');
+    Route::get('/backup/download/{filename}', [AdminController::class, 'downloadBackup'])->name('backup.download');
+    Route::delete('/backup/{filename}', [AdminController::class, 'deleteBackup'])->name('backup.delete');
+    Route::post('/backup/restore/{filename}', [AdminController::class, 'restoreBackup'])->name('backup.restore');
+    Route::post('/backup/import', [AdminController::class, 'importBackup'])->name('backup.import');
+    Route::post('/backup/restore-direct', [AdminController::class, 'restoreDirect'])->name('backup.restore.direct');
+
+    // Mantenimiento de Sistema
+    Route::post('/system/optimize', [AdminController::class, 'optimizeDb'])->name('system.optimize');
+    Route::post('/system/clear-cache', [AdminController::class, 'clearCache'])->name('system.clear-cache');
+    Route::get('/system/logs', [AdminController::class, 'getSystemLogs'])->name('system.logs');
+});
+
 // Rutas de Autenticación con Google (Socialite)
 Route::get('/auth/google', [GoogleAuthController::class, 'redirect'])->name('google.login');
 Route::get('/auth/google/callback', [GoogleAuthController::class, 'callback'])->name('google.callback');
@@ -134,4 +180,5 @@ Route::controller(LegalController::class)->group(function () {
     Route::get('/legal-notice', 'notice')->name('legal.notice');
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
+require __DIR__ . '/auth.php';

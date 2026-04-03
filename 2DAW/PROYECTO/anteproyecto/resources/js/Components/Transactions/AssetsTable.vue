@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed } from 'vue';
-import { router } from '@inertiajs/vue3';
+import { router, Link } from '@inertiajs/vue3';
 import TextInput from '@/Components/TextInput.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import { formatCurrency, formatPercent } from '@/Utils/formatting';
@@ -62,7 +62,7 @@ const onDeleteAsset = (asset) => {
 
 const assetFilter = ref('');
 
-// Period Selector State
+// Estado del Selector de Periodo
 const selectedPeriod = ref('all'); // '1d', '1w', '1m', 'ytd', '1y', 'all'
 const periods = [
     { value: '1d', label: '1D' },
@@ -74,7 +74,7 @@ const periods = [
 ];
 
 const filteredAssets = computed(() => {
-    // Just simple search filter
+    // Filtro de búsqueda simple
     if (!assetFilter.value) return props.assets;
     const lower = assetFilter.value.toLowerCase();
     return props.assets.filter(a => 
@@ -106,10 +106,11 @@ const onAddTransaction = () => {
     emit('add-transaction');
 };
 
-// Mock function to simulate P/L change based on period (Since we don't have historical data for all periods yet)
-// In a real app, this would fetch or compute historical performance
+// Función simulada para representar el cambio de P/L según el periodo 
+// (A falta de datos históricos completos para todos los periodos)
+// En una app real, esto consultaría el historial de precios.
 const getAssetPerformance = (asset) => {
-    // If period is 'all' (Max), use the total profit/loss
+    // Si el periodo es 'all' (Max), usamos la plusvalía total acumulada
     if (selectedPeriod.value === 'all') {
         return {
             value: asset.profit_loss,
@@ -117,10 +118,9 @@ const getAssetPerformance = (asset) => {
         };
     }
     
-    // For other periods, we would ideally need historical data points.
-    // For now, we will just show the total P/L as a placeholder or 0 if not available,
-    // but the UI is prepared for the switch.
-    // TODO: Implement historical performance calculation per asset
+    // Para otros periodos, lo ideal sería tener puntos de datos históricos.
+    // Por ahora, mostramos el P/L total como marcador de posición.
+    // TODO: Implementar cálculo de rendimiento histórico detallado por activo.
     return {
         value: asset.profit_loss, // Placeholder
         percentage: asset.profit_loss_percentage // Placeholder
@@ -193,15 +193,15 @@ const getAssetPerformance = (asset) => {
                             />
                         </td>
                         <td class="px-6 py-4">
-                            <div class="flex items-center space-x-4">
-                                <div v-if="asset.logo" class="w-10 h-10 rounded-full overflow-hidden bg-slate-100 dark:bg-slate-700 flex items-center justify-center shadow-sm">
+                            <Link :href="route('assets.show', asset.ticker || asset.isin)" class="flex items-center space-x-4 group/asset">
+                                <div v-if="asset.logo" class="w-10 h-10 rounded-full overflow-hidden bg-slate-100 dark:bg-slate-700 flex items-center justify-center shadow-sm group-hover/asset:ring-2 group-hover/asset:ring-blue-500 transition-all">
                                     <img :src="asset.logo" class="w-full h-full object-cover" @error="asset.logo = null" />
                                 </div>
-                                <div v-else class="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold text-white shadow-sm" :style="{ backgroundColor: asset.color || '#3b82f6' }">
+                                <div v-else class="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold text-white shadow-sm group-hover/asset:ring-2 group-hover/asset:ring-blue-500 transition-all" :style="{ backgroundColor: asset.color || '#3b82f6' }">
                                     {{ asset.ticker ? asset.ticker.substring(0,2) : asset.name.substring(0,2) }}
                                 </div>
                                 <div>
-                                    <div class="font-bold text-slate-900 text-base dark:text-white">{{ asset.name }}</div>
+                                    <div class="font-bold text-slate-900 text-base dark:text-white group-hover/asset:text-blue-600 dark:group-hover/asset:text-blue-400 transition-colors">{{ asset.name }}</div>
                                     <div class="text-sm text-slate-500 dark:text-slate-400 flex items-center gap-2">
                                         <span v-if="asset.ticker && asset.ticker !== asset.isin" class="font-medium text-slate-700 dark:text-slate-300">{{ asset.ticker }}</span>
                                         <span v-if="asset.isin" class="text-xs text-slate-400">{{ asset.isin }}</span>
@@ -210,7 +210,7 @@ const getAssetPerformance = (asset) => {
                                         </span>
                                     </div>
                                 </div>
-                            </div>
+                            </Link>
                         </td>
                         <td class="px-6 py-4 text-right">
                             <div class="font-medium text-slate-900 dark:text-white">{{ isPrivacyMode ? '****' : formatCurrency(asset.current_price) }}</div>

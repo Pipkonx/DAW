@@ -7,25 +7,22 @@ import { formatCurrency } from '@/Utils/formatting';
  */
 export function useExpenseCharts(props) {
     
-    // Trend Chart (Line Chart)
+    // Trend Chart (Line Chart -> Area Chart Premium)
     const trendChartData = computed(() => ({
         labels: props.charts.trend.labels,
         datasets: [
             {
                 label: 'Saldo Acumulado',
                 data: props.charts.trend.balance,
-                borderColor: '#3b82f6', // Blue 500
-                backgroundColor: (context) => {
-                    const ctx = context.chart.ctx;
-                    const gradient = ctx.createLinearGradient(0, 0, 0, 300);
-                    gradient.addColorStop(0, 'rgba(59, 130, 246, 0.2)');
-                    gradient.addColorStop(1, 'rgba(59, 130, 246, 0.0)');
-                    return gradient;
-                },
+                borderColor: '#6366f1', // Indigo 500
+                backgroundColor: 'rgba(99, 102, 241, 0.15)',
+                borderWidth: 3,
                 pointBackgroundColor: '#ffffff',
-                pointBorderColor: '#3b82f6',
+                pointBorderColor: '#6366f1',
                 pointBorderWidth: 2,
-                tension: 0.4,
+                pointRadius: 0,
+                pointHoverRadius: 6,
+                tension: 0.5,
                 fill: true,
             }
         ]
@@ -34,6 +31,7 @@ export function useExpenseCharts(props) {
     const trendChartOptions = {
         responsive: true,
         maintainAspectRatio: false,
+        layout: { padding: 20 },
         interaction: {
             mode: 'index',
             intersect: false,
@@ -41,95 +39,148 @@ export function useExpenseCharts(props) {
         plugins: {
             legend: { display: false },
             tooltip: {
+                backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                padding: 12,
+                cornerRadius: 10,
                 callbacks: {
-                    label: (context) => `Saldo: ${formatCurrency(context.parsed.y)}`
+                    label: (context) => ` Saldo: ${formatCurrency(context.parsed.y)}`
                 }
             }
         },
         scales: {
             y: {
                 beginAtZero: false,
-                grid: { color: 'rgba(148, 163, 184, 0.1)' },
-                ticks: { font: { size: 10 }, color: '#94a3b8' }
+                grid: { color: 'rgba(148, 163, 184, 0.05)', drawBorder: false },
+                ticks: { font: { size: 10, weight: '500' }, color: '#94a3b8' }
             },
             x: {
                 grid: { display: false },
-                ticks: { font: { size: 10 }, color: '#94a3b8', maxTicksLimit: 10 }
+                ticks: { font: { size: 10, weight: '500' }, color: '#94a3b8', maxTicksLimit: 10 }
             }
         }
     };
 
-    // Category Chart (Doughnut)
+    // Category Chart (Doughnut Moderno - Paleta Azul y Ordenado)
     const categoryChartData = computed(() => {
-        const colors = ['#f43f5e', '#fb923c', '#fbbf24', '#a3e635', '#34d399', '#22d3ee', '#818cf8', '#e879f9'];
+        const labels = props.charts.categories?.labels || [];
+        const data = props.charts.categories?.data || [];
+        
+        // Crear array de objetos para ordenar
+        const combined = labels.map((label, i) => ({
+            label: label,
+            value: data[i] || 0
+        })).sort((a, b) => b.value - a.value);
+
+        const colors = [
+            '#8b5cf6', '#ec4899', '#f43f5e', '#f97316', 
+            '#eab308', '#10b981', '#14b8a6', '#0ea5e9'
+        ];
+
         return {
-            labels: props.charts.categories.labels,
+            labels: combined.map(c => c.label),
             datasets: [{
-                data: props.charts.categories.data,
+                data: combined.map(c => c.value),
                 backgroundColor: colors,
                 borderWidth: 0,
-                hoverOffset: 4
+                hoverOffset: 15,
+                borderRadius: 8,
+                spacing: 3
             }]
         };
     });
 
+
     const categoryChartOptions = {
         responsive: true,
         maintainAspectRatio: false,
+        layout: { padding: 20 },
         plugins: {
-            legend: { position: 'right', labels: { usePointStyle: true, font: { size: 11 } } }
+            legend: { 
+                position: 'right', 
+                labels: { 
+                    usePointStyle: true, 
+                    pointStyle: 'circle',
+                    font: { size: 11, weight: '500' },
+                    color: '#64748b',
+                    padding: 15
+                } 
+            },
+            tooltip: {
+                backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                padding: 12,
+                cornerRadius: 10
+            }
         },
-        cutout: '70%'
+        cutout: '75%'
     };
 
-    // Monthly Chart (Bar Chart)
+    // Monthly Chart (Bar Chart Premium - Paleta Azul Contrastada)
     const monthlyChartData = computed(() => ({
         labels: props.charts.monthly.labels,
         datasets: [
             {
                 label: 'Ingresos',
                 data: props.charts.monthly.income,
-                backgroundColor: '#10b981',
-                borderRadius: 4,
+                backgroundColor: '#0ea5e9', // Sky 500 (Vibrante)
+                borderRadius: 6,
+                hoverBackgroundColor: '#0284c7'
             },
             {
                 label: 'Gastos',
                 data: props.charts.monthly.expense,
-                backgroundColor: '#f43f5e',
-                borderRadius: 4,
+                backgroundColor: '#1e1b4b', // Indigo 900 (Contraste oscuro)
+                borderRadius: 6,
+                hoverBackgroundColor: '#312e81'
             },
             {
                 label: 'Ahorro',
                 data: props.charts.monthly.savings,
-                backgroundColor: '#3b82f6',
-                borderRadius: 4,
+                backgroundColor: '#6366f1', // Indigo 500
+                borderRadius: 6,
+                hoverBackgroundColor: '#4f46e5'
             }
         ]
     }));
 
+
     const monthlyChartOptions = {
         responsive: true,
         maintainAspectRatio: false,
+        layout: { padding: 20 },
         plugins: {
-            legend: { position: 'top', align: 'end' },
+            legend: { 
+                position: 'top', 
+                align: 'end',
+                labels: {
+                    usePointStyle: true,
+                    pointStyle: 'circle',
+                    padding: 15,
+                    font: { size: 11, weight: '500' },
+                    color: '#64748b'
+                }
+            },
             tooltip: {
+                backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                padding: 12,
+                cornerRadius: 10,
                 callbacks: {
-                    label: (context) => `${context.dataset.label}: ${formatCurrency(context.parsed.y)}`
+                    label: (context) => ` ${context.dataset.label}: ${formatCurrency(context.parsed.y)}`
                 }
             }
         },
         scales: {
             y: {
                 beginAtZero: true,
-                grid: { color: 'rgba(148, 163, 184, 0.1)' },
-                ticks: { font: { size: 10 }, color: '#94a3b8' }
+                grid: { color: 'rgba(148, 163, 184, 0.05)', drawBorder: false },
+                ticks: { font: { size: 10, weight: '500' }, color: '#94a3b8' }
             },
             x: {
                 grid: { display: false },
-                ticks: { font: { size: 10 }, color: '#94a3b8' }
+                ticks: { font: { size: 10, weight: '500' }, color: '#94a3b8' }
             }
         }
     };
+
 
     return {
         trendChartData,

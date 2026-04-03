@@ -55,9 +55,25 @@ class MarketDataController extends Controller
             $asset = MarketAsset::where('ticker', $ticker)->first();
             
             if (!$asset) {
-                 // Try to find it via service search if not in DB
-                 $results = $this->marketData->search($ticker);
-                 $asset = $results->firstWhere('ticker', $ticker);
+                // Try to find it via service search if not in DB
+                $results = $this->marketData->search($ticker);
+                $searchResult = $results->firstWhere('ticker', $ticker);
+                
+                if ($searchResult) {
+                    if (isset($searchResult['id']) && $searchResult['id']) {
+                        $asset = MarketAsset::find($searchResult['id']);
+                    } else {
+                        // It's an API result, sync it to get a local record
+                        $asset = $this->marketData->syncAsset(
+                            $searchResult['ticker'], 
+                            $searchResult['type'], 
+                            $searchResult['name'], 
+                            $searchResult['currency'] ?? 'EUR',
+                            $searchResult['isin'] ?? null,
+                            $searchResult['api_id'] ?? null
+                        );
+                    }
+                }
             }
         }
 

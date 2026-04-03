@@ -91,6 +91,10 @@
                         'dividend' => 'Dividendo',
                         'reward' => 'Recompensa',
                         'gift' => 'Regalo',
+                        'income' => 'Ingreso',
+                        'expense' => 'Gasto',
+                        'transfer_in' => 'Transf. Entrante',
+                        'transfer_out' => 'Transf. Saliente',
                         default => ucfirst($tx->type)
                     };
                     $assetName = $tx->asset ? ($tx->asset->ticker . ' - ' . $tx->asset->name) : ($tx->portfolio ? 'Cartera: ' . $tx->portfolio->name : 'N/A');
@@ -100,8 +104,8 @@
                     <td><span class="type-badge {{ $typeClass }}">{{ $typeName }}</span></td>
                     <td>{{ $assetName }}</td>
                     <td class="text-right">{{ $tx->quantity != 0 ? rtrim(rtrim(number_format($tx->quantity, 8, ',', '.'), '0'), ',') : '-' }}</td>
-                    <td class="text-right">{{ $tx->price != 0 ? number_format($tx->price, 2, ',', '.') . ' €' : '-' }}</td>
-                    <td class="text-right">{{ number_format($tx->total, 2, ',', '.') }} €</td>
+                    <td class="text-right">{{ $tx->price_per_unit != 0 ? number_format($tx->price_per_unit, 2, ',', '.') . ' €' : '-' }}</td>
+                    <td class="text-right">{{ number_format($tx->amount, 2, ',', '.') }} €</td>
                 </tr>
             @endforeach
         </tbody>

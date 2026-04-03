@@ -127,6 +127,8 @@ const filterTypes = computed(() => {
             ...common,
             { value: 'income', label: 'Ingresos', icon: 'M12 4v16m8-8H4' },
             { value: 'expense', label: 'Gastos', icon: 'M20 12H4' },
+            { value: 'buy', label: 'Compra Activo', icon: 'M12 4v16m8-8H4' },
+            { value: 'sell', label: 'Venta Activo', icon: 'M20 12H4' },
             { value: 'transfer_in', label: 'Transf. Entrante', icon: 'M13 7l5 5m0 0l-5 5m5-5H6' },
             { value: 'transfer_out', label: 'Transf. Saliente', icon: 'M11 17l-5-5m0 0l5-5m-5 5h12' },
         ];
@@ -311,9 +313,11 @@ const getAmountClass = (type) => {
         case 'dividend':
         case 'gift':
         case 'reward':
+        case 'sell':
             return 'text-emerald-600 dark:text-emerald-400';
         case 'expense':
         case 'transfer_out':
+        case 'buy':
             return 'text-rose-600 dark:text-rose-400';
         default:
             return 'text-slate-800 dark:text-white';

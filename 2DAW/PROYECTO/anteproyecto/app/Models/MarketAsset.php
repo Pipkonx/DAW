@@ -18,10 +18,40 @@ class MarketAsset extends Model
         'currency_code',
         'sector',
         'logo_url',
+        'ter',
+        'volume',
+        'is_distributing',
+        'country',
+    ];
+
+    protected $casts = [
+        'ter' => 'float',
+        'volume' => 'float',
+        'is_distributing' => 'boolean',
     ];
 
     public function assets()
     {
         return $this->hasMany(Asset::class);
+    }
+
+    public function posts()
+    {
+        return $this->hasMany(Post::class);
+    }
+
+    /**
+     * Get the asset type label in Spanish
+     */
+    public function getTypeLabelAttribute(): string
+    {
+        return match($this->type) {
+            'stock'  => 'Acciones',
+            'etf'    => 'ETF',
+            'crypto' => 'Criptomonedas',
+            'fund'   => 'Fondos de inversión',
+            'bond'   => 'Bonos',
+            default  => 'Otros',
+        };
     }
 }

@@ -30,36 +30,35 @@ const form = useForm({
     type: 'expense',
     amount: '',
     date: new Date().toISOString().substr(0, 10),
-    time: '', // New field
-    time: '', // New field
+    time: '', // Nuevo campo para hora
     category_id: null,
-    category_name: '', // Free Text Category
+    category_name: '', // Categoría de texto libre
     description: '',
-    asset_name: '', // Acts as Ticker/Symbol
-    asset_full_name: '', // New field for display name
+    asset_name: '', // Actúa como Ticker/Símbolo
+    asset_full_name: '', // Nuevo campo para nombre completo
     asset_type: 'stock',
-    market_asset_id: null, // Link to global market asset
-    isin: '', // New ISIN field
+    market_asset_id: null, // Enlace al activo de mercado global
+    isin: '', // Nuevo campo ISIN
     quantity: '',
     price_per_unit: '',
     portfolio_id: '',
-    fees: '', // New field
-    exchange_fees: '', // New field
-    tax: '', // New field
+    fees: '', // Nuevo campo: Comisiones de compra/venta
+    exchange_fees: '', // Nuevo campo: Comisiones de cambio de divisa
+    tax: '', // Nuevo campo: Impuestos
     currency_code: 'EUR',
-    logo_url: '', // Store logo URL if available
+    logo_url: '', // Almacena la URL del logo si está disponible
 });
 
-// State for Search & Price
+// Estado para Búsqueda y Precios
 const searchResults = ref([]);
 const isSearching = ref(false);
 const showSuggestions = ref(false);
 const isFetchingPrice = ref(false);
-const isFormLoading = ref(false); // To avoid auto-fetching during modal open/edit
+const isFormLoading = ref(false); // Para evitar peticiones automáticas durante la carga del modal
 const priceError = ref(null);
 const priceSource = ref(null);
 const lastEditedField = ref(null);
-const showCategoryDropdown = ref(false); // Dropdown for categories
+const showCategoryDropdown = ref(false); // Desplegable para categorías
 
 const findCategoryNameById = (id) => {
     for (const cat of props.categories) {
@@ -73,7 +72,7 @@ const findCategoryNameById = (id) => {
     return '';
 };
 
-// Debounced Search Function
+// Función de Búsqueda con Debounce
 const performSearch = _.debounce(async (query) => {
     if (!query || query.length < 2) {
         searchResults.value = [];
@@ -84,7 +83,7 @@ const performSearch = _.debounce(async (query) => {
         const response = await axios.get(route('market.search'), { 
             params: { 
                 query,
-                // Remove type restriction to allow searching across all asset types
+                // Eliminamos restricción de tipo para permitir búsqueda global
                 // type: form.asset_type 
             } 
         });
@@ -97,19 +96,19 @@ const performSearch = _.debounce(async (query) => {
     }
 }, 300);
 
-// Watch for input changes to trigger search
+// Vigilante para cambios en la entrada que disparan la búsqueda
 watch(() => form.asset_name, (val) => {
     if (showSuggestions.value) performSearch(val);
 });
 
-// Watch for asset type changes to re-trigger search if input exists
+// Vigilante para cambios de tipo de activo que redisparan la búsqueda
 watch(() => form.asset_type, () => {
     if (form.asset_name && form.asset_name.length >= 2) {
         performSearch(form.asset_name);
     }
 });
 
-// Also search by ISIN
+// Búsqueda por ISIN
 watch(() => form.isin, (val) => {
     if (val && val.length > 5 && !isFormLoading.value) performSearch(val);
 });
@@ -125,13 +124,13 @@ const selectAsset = (asset) => {
     
     showSuggestions.value = false;
     
-    // Trigger price fetch
+    // Disparar obtención de precio
     fetchPrice();
 };
 
-// Fetch Historical Price
+// Obtener Precio Histórico
 const fetchPrice = async () => {
-    // Remove strict isTrade check to allow fetching if user has selected asset/date
+    // Permitir obtención si hay activo y fecha seleccionados
     if ((!form.asset_name && !form.market_asset_id) || !form.date || isFormLoading.value) return;
     
     isFetchingPrice.value = true;
@@ -158,7 +157,7 @@ const fetchPrice = async () => {
             if (response.data.currency) {
                 form.currency_code = response.data.currency;
             }
-            // Recalculate based on new price if we have quantity or amount
+            // Recalcular basado en el nuevo precio si tenemos cantidad o importe
             if (form.quantity && lastEditedField.value !== 'amount') {
                  form.amount = parseFloat((form.quantity * form.price_per_unit).toFixed(2));
             } else if (form.amount && lastEditedField.value !== 'quantity') {
@@ -166,9 +165,9 @@ const fetchPrice = async () => {
             }
         }
     } catch (error) {
-        // Only log if it's NOT a 404 (Expected if price is not available)
+        // Solo loguear si NO es un 404 (Esperado si no hay precio disponible)
         if (error.response?.status !== 404) {
-            console.error('Price fetch error:', error);
+            console.error('Error al obtener precio:', error);
         }
         priceError.value = "No se encontró precio para esta fecha. Ingrese manualmente.";
     } finally {
@@ -176,32 +175,32 @@ const fetchPrice = async () => {
     }
 };
 
-// Watch for Date changes to re-fetch price
+// Vigilante para cambios de fecha
 watch(() => form.date, () => {
     if (form.asset_name) fetchPrice();
 });
 
-// Watch for Market Asset ID changes (selection)
+// Vigilante para cambios en el activo seleccionado
 watch(() => form.market_asset_id, (val) => {
     if (val) fetchPrice();
 });
 
-// Watch for Type changes (if switching to buy/sell)
+// Vigilante para cambios de tipo (si cambia a compra/venta)
 watch(() => form.type, (newType) => {
     if (['buy', 'sell'].includes(newType) && form.asset_name && form.date) {
         fetchPrice();
     }
 });
 
-// Auto-calculation logic
+// Lógica de Autocalculo
 const calculateFromAmount = () => {
     if (!form.price_per_unit || form.price_per_unit <= 0) return;
     if (!form.amount) {
         form.quantity = '';
         return;
     }
-    // Amount / Price = Quantity
-    // Use more precision for crypto/stocks
+    // Importe / Precio = Cantidad
+    // Usar más precisión para criptos/acciones
     form.quantity = parseFloat((form.amount / form.price_per_unit).toFixed(8));
 };
 
@@ -211,7 +210,7 @@ const calculateFromQuantity = () => {
         form.amount = '';
         return;
     }
-    // Quantity * Price = Amount
+    // Cantidad * Precio = Importe
     let total = form.quantity * form.price_per_unit;
     
     const fees = parseFloat(form.fees || 0);
@@ -221,16 +220,16 @@ const calculateFromQuantity = () => {
     if (form.type === 'buy' || form.type === 'expense') {
         total += fees + exchange_fees + tax;
     } else {
-        // For sell, dividend, reward, income - fees/tax reduce the net amount received
+        // Para ventas, dividendos, etc - comisiones e impuestos reducen el neto recibido
         total -= (fees + exchange_fees + tax);
     }
 
-    // Standard currency rounding
+    // Redondeo estándar de moneda
     form.amount = parseFloat(total.toFixed(2));
 };
 
 const calculateFromPrice = () => {
-    // If price changes manually, update the field that wasn't last edited by user
+    // Si el precio cambia manualmente, actualizar el campo que NO fue editado por el usuario
     if (!form.price_per_unit) return;
     
     if (lastEditedField.value === 'quantity' && form.quantity) {
@@ -238,12 +237,12 @@ const calculateFromPrice = () => {
     } else if (lastEditedField.value === 'amount' && form.amount) {
         calculateFromAmount();
     } else if (form.quantity) {
-        // Default to updating amount if no clear preference
+        // Por defecto actualizar importe si no hay preferencia clara
         calculateFromQuantity();
     }
 };
 
-// Watchers for auto-calculation
+// Vigilantes para autocalculo
 watch(() => form.amount, (val) => {
     if (lastEditedField.value === 'amount') {
         calculateFromAmount();
@@ -261,13 +260,13 @@ watch(() => form.price_per_unit, (val) => {
 });
 
 watch(() => [form.fees, form.exchange_fees, form.tax], () => {
-    // Only update if we have base data
+    // Solo actualizar si tenemos datos base
     if (form.quantity && form.price_per_unit) {
         calculateFromQuantity();
     }
 });
 
-// Category Logic (Existing)
+// Lógica de Categorías (Pre-existente)
 const mostUsedCategoryId = computed(() => {
     if (isInvestment.value) return null;
     const type = form.type === 'income' ? 'income' : 'expense';
@@ -297,16 +296,16 @@ const preselectCategory = (type) => {
     }
 };
 
-// Reset or populate form
+// Resetear o poblar formulario
 watch(() => props.show, (newVal) => {
     if (newVal) {
-        isFormLoading.value = true; // Block auto-fetchers
+        isFormLoading.value = true; // Bloquea vigilantes automáticos
         searchResults.value = [];
         showSuggestions.value = false;
         priceError.value = null;
         
         if (props.transaction && props.transaction.id) {
-            // Edit Mode
+            // Modo Edición
             form.type = props.transaction.type;
             form.amount = props.transaction.amount;
             form.date = props.transaction.date.substring(0, 10);
@@ -320,7 +319,7 @@ watch(() => props.show, (newVal) => {
             }
             form.description = props.transaction.description;
             
-            // Populate Asset Data from Relation
+            // Poblar datos del activo desde relación
             if (props.transaction.asset) {
                 form.asset_name = props.transaction.asset.ticker || props.transaction.asset.name;
                 form.asset_full_name = props.transaction.asset.name;
@@ -330,7 +329,7 @@ watch(() => props.show, (newVal) => {
             } else {
                 form.asset_name = '';
                 form.asset_full_name = '';
-                form.asset_type = 'stock'; // Default
+                form.asset_type = 'stock'; // Por defecto
                 form.market_asset_id = null;
                 form.isin = '';
             }
@@ -342,7 +341,7 @@ watch(() => props.show, (newVal) => {
             form.tax = props.transaction.tax || '';
             form.currency_code = props.transaction.currency || 'EUR';
         } else {
-            // Create Mode
+            // Modo Creación
             form.reset();
             form.clearErrors();
             form.date = new Date().toISOString().substr(0, 10);
@@ -352,7 +351,7 @@ watch(() => props.show, (newVal) => {
             else if (props.portfolios.length > 0) form.portfolio_id = props.portfolios[0].id;
         }
 
-        // Delay unsetting isFormLoading to allow all watchers to run
+        // Retardo para liberar isFormLoading y permitir que corran los vigilantes
         setTimeout(() => {
             isFormLoading.value = false;
         }, 50);
@@ -371,10 +370,15 @@ const submit = () => {
         onSuccess: () => {
             form.reset();
             emit('close');
-            // Force reset to first page to see the newly added transaction
-            router.reload({
-                data: { page: 1 },
-                preserveScroll: true,
+            
+            // Forzar navegación al inicio del listado para ver la nueva transacción
+            // Usamos router.get para asegurar que volvemos a la página 1 y limpiamos parámetros de paginación
+            const params = { ...route().params };
+            delete params.page; // Eliminar página actual para ir a la 1
+            
+            router.get(window.location.pathname, params, {
+                preserveScroll: false,
+                preserveState: false // Resetear estado local de componentes (como TransactionHistory)
             });
         },
     });
@@ -400,7 +404,21 @@ const close = () => {
     showCategoryDropdown.value = false;
 };
 
-// Computed properties
+// Manejadores de retraso para el cierre de dropdowns (evitan interferencias con clics en sugerencias)
+const handleAssetBlur = () => {
+    setTimeout(() => {
+        showSuggestions.value = false;
+    }, 200);
+    fetchPrice();
+};
+
+const handleCategoryBlur = () => {
+    setTimeout(() => {
+        showCategoryDropdown.value = false;
+    }, 200);
+};
+
+// Propiedades computadas
 const isInvestment = computed(() => ['buy', 'sell', 'dividend', 'reward'].includes(form.type));
 const isTrade = computed(() => ['buy', 'sell', 'reward'].includes(form.type));
 const availableCategories = computed(() => {
@@ -448,7 +466,7 @@ const selectCategory = (cat) => {
     showCategoryDropdown.value = false;
 };
 
-// Check id dynamically typing
+// Comprobar coincidencia exacta de categoría al escribir
 watch(() => form.category_name, (newVal) => {
     if (newVal) {
         const exact = filteredCategoriesList.value.find(c => c.name.toLowerCase() === newVal.toLowerCase());
@@ -588,7 +606,7 @@ const getTypeLabel = (type) => {
                                     v-model="form.asset_name"
                                     @input="showSuggestions = true"
                                     @focus="showSuggestions = true"
-                                    @blur="() => { setTimeout(() => showSuggestions = false, 200); fetchPrice(); }"
+                                    @blur="handleAssetBlur"
                                     placeholder="Ej: AAPL, Bitcoin, ES01..."
                                     autocomplete="off"
                                     :disabled="!!transaction?.id"
@@ -811,7 +829,7 @@ const getTypeLabel = (type) => {
                             class="mt-1 block w-full dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                             v-model="form.category_name"
                             @focus="showCategoryDropdown = true"
-                            @blur="() => { setTimeout(() => showCategoryDropdown = false, 200); }"
+                            @blur="handleCategoryBlur"
                             placeholder="Ej: Gasolina, Supermercado..."
                             autocomplete="off"
                         />

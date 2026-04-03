@@ -3,6 +3,7 @@ import { ref, computed } from 'vue';
 import DoughnutChart from '@/Components/Charts/DoughnutChart.vue';
 import { formatCurrency } from '@/Utils/formatting';
 import { usePrivacy } from '@/Composables/usePrivacy';
+import { Link } from '@inertiajs/vue3';
 
 const { isPrivacyMode } = usePrivacy();
 
@@ -25,28 +26,29 @@ const allocationLabels = {
     asset: 'Posición Individual'
 };
 
-// Generate blue monochromatic palette
-const bluePalette = [
-    '#1e3a8a', // blue-900
-    '#1d4ed8', // blue-700
-    '#2563eb', // blue-600
-    '#3b82f6', // blue-500
-    '#60a5fa', // blue-400
-    '#93c5fd', // blue-300
-    '#bfdbfe', // blue-200
-    '#dbeafe', // blue-100
+// Modern Vibrant Chart Palette (Dark mode friendly)
+const modernPalette = [
+    '#3b82f6', '#10b981', '#8b5cf6', '#f59e0b', 
+    '#ef4444', '#0ea5e9', '#f97316', '#6366f1',
+    '#ec4899', '#14b8a6', '#84cc16', '#a855f7',
+    '#06b6d4', '#eab308', '#f43f5e', '#64748b'
 ];
 
-const allocationChartData = computed(() => {
+const sortedAllocations = computed(() => {
     const data = props.allocations[allocationType.value] || [];
-    
+    return [...data].sort((a, b) => b.value - a.value);
+});
+
+const allocationChartData = computed(() => {
     return {
-        labels: data.map(d => d.label),
+        labels: sortedAllocations.value.map(d => d.label),
         datasets: [{
-            data: data.map(d => d.value),
-            backgroundColor: data.map((d, index) => bluePalette[index % bluePalette.length]),
+            data: sortedAllocations.value.map(d => d.value),
+            backgroundColor: sortedAllocations.value.map((d, index) => modernPalette[index % modernPalette.length]),
             borderWidth: 0,
-            hoverOffset: 4
+            hoverOffset: 15,
+            borderRadius: 10,
+            spacing: 5
         }]
     };
 });
@@ -54,18 +56,20 @@ const allocationChartData = computed(() => {
 const hoveredItem = ref(null);
 
 const totalAmount = computed(() => {
-    const data = props.allocations[allocationType.value] || [];
-    return data.reduce((sum, item) => sum + item.value, 0);
+    return sortedAllocations.value.reduce((sum, item) => sum + item.value, 0);
 });
 
 const allocationChartOptions = {
     responsive: true,
     maintainAspectRatio: false,
+    layout: {
+        padding: 20
+    },
     cutout: '75%',
     onHover: (event, elements) => {
         if (elements && elements.length > 0) {
             const index = elements[0].index;
-            const data = props.allocations[allocationType.value][index];
+            const data = sortedAllocations.value[index];
             const total = totalAmount.value;
             const percentage = ((data.value / total) * 100).toFixed(2);
             
@@ -77,7 +81,7 @@ const allocationChartOptions = {
 
             // Apply transparency to other segments
             const dataset = event.chart.data.datasets[0];
-            const originalColors = props.allocations[allocationType.value].map((d, i) => bluePalette[i % bluePalette.length]);
+            const originalColors = sortedAllocations.value.map((d, i) => modernPalette[i % modernPalette.length]);
             
             dataset.backgroundColor = originalColors.map((color, i) => {
                 return i === index ? color : color + '4D'; // 4D is approx 30% opacity
@@ -89,7 +93,7 @@ const allocationChartOptions = {
                 
                 // Reset colors
                 const dataset = event.chart.data.datasets[0];
-                dataset.backgroundColor = props.allocations[allocationType.value].map((d, i) => bluePalette[i % bluePalette.length]);
+                dataset.backgroundColor = sortedAllocations.value.map((d, i) => modernPalette[i % modernPalette.length]);
                 event.chart.update();
             }
         }
@@ -101,6 +105,8 @@ const allocationChartOptions = {
          tooltip: { enabled: false }
      }
  };
+
+
 </script>
 
 <template>
@@ -109,14 +115,20 @@ const allocationChartOptions = {
             <div class="flex justify-between items-center mb-4">
                 <h3 class="text-lg font-bold text-slate-800 dark:text-white">Distribución</h3>
                 
-                <select 
-                    v-model="allocationType"
-                    class="text-xs border-slate-200 rounded-lg text-slate-600 focus:border-blue-500 focus:ring-blue-500 py-1 pl-2 pr-8 dark:bg-slate-700 dark:border-slate-600 dark:text-slate-300"
-                >
-                    <option v-for="(label, key) in allocationLabels" :key="key" :value="key">
-                        {{ label }}
-                    </option>
-                </select>
+                <div class="flex items-center gap-4">
+                    <select 
+                        v-model="allocationType"
+                        class="text-xs border-slate-200 rounded-lg text-slate-600 focus:border-blue-500 focus:ring-blue-500 py-1 pl-2 pr-8 dark:bg-slate-700 dark:border-slate-600 dark:text-slate-300"
+                    >
+                        <option v-for="(label, key) in allocationLabels" :key="key" :value="key">
+                            {{ label }}
+                        </option>
+                    </select>
+
+                    <Link :href="route('transactions.allocation')" class="text-xs font-semibold text-blue-600 hover:text-blue-500 hover:underline dark:text-blue-400 dark:hover:text-blue-300">
+                        ver más
+                    </Link>
+                </div>
             </div>
         </div>
 

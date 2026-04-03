@@ -9,11 +9,13 @@ class GeminiService
 {
     protected $apiKey;
     protected $model = 'gemini-3.1-flash-lite-preview';
+    protected $apiService;
     protected $baseUrl = 'https://generativelanguage.googleapis.com/v1beta/models/';
 
-    public function __construct()
+    public function __construct(ApiService $apiService)
     {
         $this->apiKey = config('services.gemini.key') ?? env('GEMINI_API_KEY');
+        $this->apiService = $apiService;
     }
 
     /**
@@ -78,6 +80,7 @@ class GeminiService
                 }
 
                 if ($response->successful()) {
+                    $this->apiService->trackRequest('Gemini');
                     $data = $response->json();
                     return $data['candidates'][0]['content']['parts'][0]['text'] ?? 'No response from AI.';
                 }
@@ -158,6 +161,8 @@ class GeminiService
                     $onChunk("Error al comunicarse con la IA: $statusCode. Por favor, espera un minuto e intenta de nuevo.");
                     return;
                 }
+
+                $this->apiService->trackRequest('Gemini');
 
                 $body = $response->getBody();
                 $buffer = '';

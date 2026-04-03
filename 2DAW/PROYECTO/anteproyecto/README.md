@@ -44,8 +44,29 @@ He diseñado el sistema priorizando la modularidad y la escalabilidad:
 | **Servicio de Datos** | `app/Services/MarketDataService.php` | Gateway centralizado para obtención de precios. |
 | **Lógica de Mercado** | `app/Services/MarketData/FundService.php` | Motor de Scraping con sistema de fallbacks. |
 | **Modelo Financiero** | `app/Models/Asset.php` | Recalculación de métricas y estados de vinculación. |
-| **Procesos Background** | `app/Jobs/UpdatePricesJob.php` | Tareas programadas de actualización de mercado. |
+| **Analítica** | `app/Services/Analysis/PerformanceService.php` | Cálculo matemático de rentabilidades (Algoritmo WAC). |
 | **Routing** | `routes/web.php` | Definición de los 35+ endpoints del sistema. |
+
+---
+
+---
+
+## 🏗️ Ingeniería de Software y Buenas Prácticas
+
+El proyecto ha sido refactorizado bajo estándares de desarrollo senior, priorizando la mantenibilidad y la escalabilidad.
+
+### 1. Principio de Responsabilidad Única (SRP)
+Hemos descompuesto componentes masivos en piezas granulares. Por ejemplo, el `Dashboard.vue` (originalmente de +800 líneas) se ha dividido en subcomponentes especializados:
+- `KpiSection.vue`: Gestión exclusiva de indicadores financieros.
+- `EvolutionSection.vue`: Orquestación de gráficos complejos.
+- `RecentTransactions.vue`: Listado con lógica de filtrado y scroll.
+
+### 2. Don't Repeat Yourself (DRY)
+Toda la lógica de formateo y visualización se ha centralizado en utilidades globales:
+- `resources/js/Utils/formatting.js`: Un solo punto de verdad para formatear moneda, porcentajes y colores de tendencia.
+
+### 3. Principios SOLID en Backend
+Los servicios de análisis (`DashboardService`, `PerformanceService`) aplican inversión de dependencias y segregación de interfaces para facilitar el testing unitario y la expansión futura de algoritmos financieros.
 
 ---
 

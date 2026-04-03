@@ -7,6 +7,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import PortfolioHeader from '@/Components/Transactions/PortfolioHeader.vue';
 import EvolutionChart from '@/Components/Transactions/EvolutionChart.vue';
 import AllocationChart from '@/Components/Transactions/AllocationChart.vue';
+import PerformanceBreakdown from '@/Components/Transactions/PerformanceBreakdown.vue';
 import AssetsTable from '@/Components/Transactions/AssetsTable.vue';
 import TransactionHistory from '@/Components/Transactions/TransactionHistory.vue';
 import ExportModal from '@/Components/Transactions/ExportModal.vue';
@@ -204,36 +205,43 @@ const confirmExport = ({ format, start_date, end_date }) => {
                 <div v-else class="space-y-8">
                     <!-- Charts Grid -->
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                        <div class="lg:col-span-2">
+                        <div class="lg:col-span-2 space-y-8">
                             <EvolutionChart 
                                 :summary="summary"
                                 :chart="chart"
                                 :filters="filters"
                                 @update:timeframe="switchTimeframe"
                             />
+
+                            <!-- Assets Table -->
+                            <AssetsTable 
+                                :assets="assets"
+                                :selected-asset-id="selectedAssetId"
+                                @filter-asset="filterByAsset"
+                                @add-transaction="openNewTransaction"
+                                @delete-asset="deleteAsset"
+                            />
+
+                            <!-- Transaction History -->
+                            <TransactionHistory 
+                                :transactions="transactions"
+                                @edit="openEditTransaction"
+                                @export="openExportModal"
+                            />
                         </div>
-                        <div>
+                        <div class="space-y-8">
                             <AllocationChart 
                                 :allocations="allocations"
+                            />
+                            
+                            <!-- Nueva Sección de Rendimiento Detallado -->
+                            <PerformanceBreakdown 
+                                :detailed="summary.detailed"
+                                :annual="summary.annual"
                             />
                         </div>
                     </div>
 
-                    <!-- Assets Table -->
-                    <AssetsTable 
-                        :assets="assets"
-                        :selected-asset-id="selectedAssetId"
-                        @filter-asset="filterByAsset"
-                        @add-transaction="openNewTransaction"
-                        @delete-asset="deleteAsset"
-                    />
-
-                    <!-- Transaction History -->
-                    <TransactionHistory 
-                        :transactions="transactions"
-                        @edit="openEditTransaction"
-                        @export="openExportModal"
-                    />
                 </div>
 
             </div>

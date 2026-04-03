@@ -25,7 +25,9 @@ class DashboardController extends Controller
     }
 
     /**
-     * Display the main dashboard with financial summaries.
+     * Muestra el panel de control principal con los resúmenes financieros consolidados.
+     * 
+     * @return \Inertia\Response
      */
     public function index()
     {
@@ -53,8 +55,9 @@ class DashboardController extends Controller
 
         // Ahorros en planificación financiera (Cuentas remuneradas, etc)
         $bankBalance = BankAccount::where('user_id', $user->id)->sum('balance') ?? 0;
-
         $history = $this->dashboardService->getNetWorthHistory($user->id);
+
+        $filter = request('filter', 'all');
 
         return Inertia::render('Dashboard', [
             'summary' => [
@@ -75,16 +78,18 @@ class DashboardController extends Controller
             'charts' => [
                 'netWorthLabels' => $history['labels'],
                 'netWorthData' => $history['values'],
+                'netWorthYields' => $history['yields'],
                 'portfolioHistory' => $this->dashboardService->getPortfolioHistory($user->id),
                 'allocation' => [
                     'labels' => ['Invertido', 'Liquidez'],
                     'values' => [
                         (float)$investmentsTotalValue,
-                        (float)$cashFlow,
+                        (float)max(0, $cashFlow),
                     ]
                 ]
             ],
-            'recentTransactions' => $this->getRecentTransactions($user->id),
+            'recentTransactions' => $this->getRecentTransactions($user->id, $filter),
+            'currentFilter' => $filter,
             'allAssetsList' => Asset::where('user_id', $user->id)->select('id', 'name', 'ticker')->get(),
             'categories' => $this->expenseService->getHierarchicalCategories($user->id),
         ]);
@@ -111,27 +116,71 @@ class DashboardController extends Controller
         return $data;
     }
 
-    private function getRecentTransactions($userId)
+    /**
+     * Obtiene transacciones recientes formateadas para el listado del panel.
+     */
+    private function getRecentTransactions($userId, $filter = 'all')
     {
-        return Transaction::where('user_id', $userId)->with(['asset.marketAsset', 'category'])
-            ->orderBy('date', 'desc')->take(20)->get()->map(fn($tx) => [
-                'id' => $tx->id, 'type' => $tx->type, 'amount' => (float)$tx->amount, 'date' => $tx->date->format('Y-m-d'),
-                'display_date' => $tx->date->format('d.m'), 'category' => $tx->category ? $tx->category->name : 'Sin categoría',
-                'category_id' => $tx->category_id, 'description' => $tx->description, 'asset_name' => $tx->asset?->name,
-                'quantity' => $tx->quantity, 'price_per_unit' => $tx->price_per_unit, 'asset_logo' => $tx->asset?->logo,
-            ]);
+        $query = Transaction::where('user_id', $userId)->with(['asset.marketAsset', 'category']);
+
+        if ($filter === 'income') {
+            $query->whereIn('type', ['income', 'reward', 'dividend', 'gift', 'transfer_in']);
+        } elseif ($filter === 'expense') {
+            $query->whereIn('type', ['expense', 'transfer_out']);
+        } elseif ($filter === 'investment') {
+            $query->whereIn('type', ['buy', 'sell']);
+        }
+
+        return $query->orderBy('date', 'desc')->orderBy('created_at', 'desc')->take(20)->get()->map(fn($tx) => [
+            'id' => $tx->id, 
+            'type' => $tx->type, 
+            'amount' => (float)$tx->amount, 
+            'date' => $tx->date->format('Y-m-d'),
+            'display_date' => $tx->date->format('d.m'), 
+            'category' => $tx->category ? $tx->category->name : 'Sin categoría',
+            'category_id' => $tx->category_id, 
+            'description' => $tx->description, 
+            'asset_name' => $tx->asset?->name,
+            'quantity' => $tx->quantity, 
+            'price_per_unit' => $tx->price_per_unit, 
+            'asset_logo' => $tx->asset?->logo,
+        ]);
     }
 
+    /**
+     * Endpoint API para el scroll infinito de transacciones.
+     */
     public function getTransactions(Request $request)
     {
         $user = Auth::user();
-        return Transaction::where('user_id', $user->id)->with(['asset.marketAsset', 'category'])
-            ->orderBy('date', 'desc')->offset($request->input('offset', 0))->limit($request->input('limit', 20))
+        $filter = $request->input('filter', 'all');
+
+        $query = Transaction::where('user_id', $user->id)->with(['asset.marketAsset', 'category']);
+
+        if ($filter === 'income') {
+            $query->whereIn('type', ['income', 'reward', 'dividend', 'gift', 'transfer_in']);
+        } elseif ($filter === 'expense') {
+            $query->whereIn('type', ['expense', 'transfer_out']);
+        } elseif ($filter === 'investment') {
+            $query->whereIn('type', ['buy', 'sell']);
+        }
+
+        return $query->orderBy('date', 'desc')->orderBy('created_at', 'desc')
+            ->offset($request->input('offset', 0))
+            ->limit($request->input('limit', 20))
             ->get()->map(fn($tx) => [
-                'id' => $tx->id, 'type' => $tx->type, 'amount' => (float)$tx->amount, 'date' => $tx->date->format('Y-m-d'),
-                'display_date' => $tx->date->format('d.m'), 'category' => $tx->category ? $tx->category->name : 'Sin categoría',
-                'category_id' => $tx->category_id, 'description' => $tx->description, 'asset_name' => $tx->asset?->name,
-                'quantity' => $tx->quantity, 'price_per_unit' => $tx->price_per_unit, 'asset_logo' => $tx->asset?->logo,
+                'id' => $tx->id, 
+                'type' => $tx->type, 
+                'amount' => (float)$tx->amount, 
+                'date' => $tx->date->format('Y-m-d'),
+                'display_date' => $tx->date->format('d.m'), 
+                'category' => $tx->category ? $tx->category->name : 'Sin categoría',
+                'category_id' => $tx->category_id, 
+                'description' => $tx->description, 
+                'asset_name' => $tx->asset?->name,
+                'quantity' => $tx->quantity, 
+                'price_per_unit' => $tx->price_per_unit, 
+                'asset_logo' => $tx->asset?->logo,
             ]);
     }
 }

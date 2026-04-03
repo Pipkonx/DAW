@@ -7,6 +7,7 @@ import NavLink from '@/Components/NavLink.vue';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
 import Breadcrumbs from '@/Components/Breadcrumbs.vue';
 import Toast from '@/Components/Toast.vue';
+import AssetSearch from '@/Components/AssetSearch.vue';
 import { Link, usePage } from '@inertiajs/vue3';
 import { usePrivacy } from '@/Composables/usePrivacy';
 
@@ -64,53 +65,61 @@ onMounted(() => {
                                 </Link>
                             </div>
 
-                            <!-- Enlaces de navegación (Desktop) -->
-                            <div
-                                class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex"
-                            >
-                                <NavLink
-                                    :href="route('dashboard')"
-                                    :active="route().current('dashboard')"
-                                    class="text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300"
-                                >
-                                    Dashboard
+                            <!-- Enlaces de navegación (Desktop) con Submenús -->
+                            <div class="hidden space-x-4 sm:-my-px sm:ms-10 sm:flex items-center">
+                                <!-- Patrimonio -->
+                                <Dropdown align="left" width="48">
+                                    <template #trigger>
+                                        <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-bold rounded-md text-slate-500 dark:text-slate-400 bg-transparent hover:text-slate-700 dark:hover:text-slate-300 focus:outline-none transition ease-in-out duration-150">
+                                            Patrimonio
+                                            <svg class="ms-2 -me-0.5 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                            </svg>
+                                        </button>
+                                    </template>
+                                    <template #content>
+                                        <DropdownLink :href="route('dashboard')">Panel General</DropdownLink>
+                                        <DropdownLink :href="route('transactions.index')">Patrimonio Neto</DropdownLink>
+                                        <DropdownLink :href="route('expenses.index')">Análisis de Gastos</DropdownLink>
+                                        <DropdownLink :href="route('financial-planning.index')">Planificación</DropdownLink>
+                                    </template>
+                                </Dropdown>
+
+                                <!-- Mercados -->
+                                <Dropdown align="left" width="48">
+                                    <template #trigger>
+                                        <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-bold rounded-md text-slate-500 dark:text-slate-400 bg-transparent hover:text-slate-700 dark:hover:text-slate-300 focus:outline-none transition ease-in-out duration-150">
+                                            Mercados
+                                            <svg class="ms-2 -me-0.5 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                            </svg>
+                                        </button>
+                                    </template>
+                                    <template #content>
+                                        <DropdownLink :href="route('markets.index')">Explorar Mercados</DropdownLink>
+                                        <DropdownLink :href="route('ai-analyst.index')">Analista IA</DropdownLink>
+                                    </template>
+                                </Dropdown>
+
+                                <!-- Social -->
+                                <NavLink :href="route('social.feed')" :active="route().current('social.feed')">
+                                    Feed
                                 </NavLink>
+                                
                                 <NavLink
-                                    :href="route('expenses.index')"
-                                    :active="route().current('expenses.index')"
-                                    class="text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300"
+                                    v-if="$page.props.auth.user.is_admin"
+                                    :href="route('admin.dashboard')"
+                                    :active="route().current('admin.dashboard*')"
+                                    class="text-amber-600 dark:text-amber-400 font-bold hover:text-amber-700"
                                 >
-                                    Análisis de Gastos
-                                </NavLink>
-                                <NavLink
-                                    :href="route('transactions.index')"
-                                    :active="route().current('transactions.index')"
-                                    class="text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300"
-                                >
-                                    Patrimonio Neto
-                                </NavLink>
-                                <NavLink
-                                    :href="route('financial-planning.index')"
-                                    :active="route().current('financial-planning.index')"
-                                    class="text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300"
-                                >
-                                    Planificación
-                                </NavLink>
-                                <NavLink
-                                    :href="route('markets.index')"
-                                    :active="route().current('markets.index')"
-                                    class="text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300"
-                                >
-                                    Mercados
-                                </NavLink>
-                                <NavLink
-                                    :href="route('ai-analyst.index')"
-                                    :active="route().current('ai-analyst.index')"
-                                    class="text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300"
-                                >
-                                    Analista IA
+                                    Admin
                                 </NavLink>
                             </div>
+                        </div>
+
+                        <!-- Barra de Búsqueda Centrada (Desktop) -->
+                        <div class="hidden sm:flex flex-1 items-center justify-center px-8">
+                            <AssetSearch />
                         </div>
 
                         <!-- Menú de usuario (Desktop) -->
@@ -279,6 +288,14 @@ onMounted(() => {
                             :active="route().current('ai-analyst.index')"
                         >
                             Analista IA
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink
+                            v-if="$page.props.auth.user.is_admin"
+                            :href="route('admin.dashboard')"
+                            :active="route().current('admin.dashboard*')"
+                            class="text-amber-600 dark:text-amber-400 font-bold"
+                        >
+                            Administración
                         </ResponsiveNavLink>
                     </div>
 

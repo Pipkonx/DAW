@@ -54,15 +54,9 @@ const performanceChartData = computed(() => {
     if (chartMode.value === 'value') {
         dataPoints = props.chart.data;
         label = 'Valor de Cartera';
-        color = '#3b82f6'; // Blue
-        bgColor = (ctx) => {
-            const canvas = ctx.chart.ctx;
-            const gradient = canvas.createLinearGradient(0, 0, 0, 400);
-            gradient.addColorStop(0, 'rgba(59, 130, 246, 0.2)');
-            gradient.addColorStop(1, 'rgba(59, 130, 246, 0)');
-            return gradient;
-        };
-        borderColor = '#3b82f6';
+        color = '#6366f1'; // Indigo 500
+        bgColor = 'rgba(99, 102, 241, 0.15)';
+        borderColor = '#6366f1';
     } else {
         // Calculate Performance %: (Value - Invested) / Invested * 100
         dataPoints = props.chart.data.map((val, i) => {
@@ -71,16 +65,11 @@ const performanceChartData = computed(() => {
             return ((val - invested) / invested) * 100;
         });
         label = 'Rendimiento (%)';
-        color = '#10b981'; // Emerald
-        bgColor = (ctx) => {
-            const canvas = ctx.chart.ctx;
-            const gradient = canvas.createLinearGradient(0, 0, 0, 400);
-            gradient.addColorStop(0, 'rgba(16, 185, 129, 0.2)');
-            gradient.addColorStop(1, 'rgba(16, 185, 129, 0)');
-            return gradient;
-        };
-        borderColor = '#10b981';
+        color = '#0ea5e9'; // Sky 500
+        bgColor = 'rgba(14, 165, 233, 0.15)';
+        borderColor = '#0ea5e9';
     }
+
 
     return {
         labels: props.chart.labels,
@@ -89,13 +78,14 @@ const performanceChartData = computed(() => {
             data: dataPoints,
             borderColor: borderColor,
             backgroundColor: bgColor,
-            borderWidth: 3, // Increased for better visibility
-            tension: 0.4,
+            borderWidth: 3,
+            tension: 0.5, // Más suave
             fill: true,
-            pointRadius: chartMode.value === 'performance' ? 2 : 0, // Show points in performance mode
+            pointRadius: 0, // Ocultar puntos por defecto
             pointHoverRadius: 6,
             pointHoverBackgroundColor: '#ffffff',
             pointHoverBorderWidth: 2,
+            pointHoverBorderColor: borderColor
         }]
     };
 });
@@ -103,53 +93,72 @@ const performanceChartData = computed(() => {
 const performanceChartOptions = computed(() => ({
     responsive: true,
     maintainAspectRatio: false,
+    layout: {
+        padding: {
+            top: 20,
+            bottom: 20,
+            left: 10,
+            right: 15
+        }
+    },
     plugins: {
         legend: { display: false },
         tooltip: {
             enabled: true,
             mode: 'index',
             intersect: false,
-            backgroundColor: 'rgba(255, 255, 255, 0.9)',
-            titleColor: '#1e293b',
-            titleFont: { size: 13, weight: '600' },
-            bodyColor: 'transparent',
-            borderColor: '#e2e8f0',
+            backgroundColor: 'rgba(15, 23, 42, 0.9)', // Slate 900
+            titleColor: '#f8fafc',
+            titleFont: { size: 14, weight: '600' },
+            bodyColor: '#f8fafc',
+            padding: 12,
+            cornerRadius: 10,
+            displayColors: true,
+            usePointStyle: true,
+            borderColor: 'rgba(255, 255, 255, 0.1)',
             borderWidth: 1,
-            displayColors: false,
-            padding: 10,
             callbacks: {
-                title: (context) => {
-                    return context[0].label;
-                },
-                label: () => {
-                    return null; // Return null to completely remove the label line
+                label: (context) => {
+                    const label = context.dataset.label || '';
+                    const value = context.parsed.y;
+                    if (chartMode.value === 'performance') {
+                        return ` ${label}: ${value >= 0 ? '+' : ''}${value.toFixed(2)}%`;
+                    }
+                    return ` ${label}: ${formatCurrency(value)}`;
                 }
             }
         }
     },
     scales: {
         y: {
-            grid: { color: 'rgba(148, 163, 184, 0.1)' },
+            grid: { 
+                color: 'rgba(148, 163, 184, 0.05)',
+                drawBorder: false 
+            },
             ticks: { 
                 color: '#94a3b8',
+                font: { size: 10, weight: '500' },
+                maxTicksLimit: 6,
                 callback: (val) => {
                     if (chartMode.value === 'value') {
-                        return new Intl.NumberFormat('es-ES', { notation: "compact", compactDisplay: "short" }).format(val);
+                        if (val >= 1000) return (val / 1000).toFixed(1) + 'k€';
+                        return val + '€';
                     } else {
-                        return val.toFixed(1) + '%';
+                        return (val >= 0 ? '+' : '') + val.toFixed(1) + '%';
                     }
                 }
             }
         },
         x: {
             grid: { display: false },
-            ticks: { maxTicksLimit: 8, color: '#94a3b8' }
+            ticks: { maxTicksLimit: 8, color: '#94a3b8', font: { size: 10 } }
         }
     },
     interaction: {
         mode: 'index',
         intersect: false,
     },
+
     onHover: (event, elements) => {
         if (elements && elements.length > 0) {
             const index = elements[0].index;

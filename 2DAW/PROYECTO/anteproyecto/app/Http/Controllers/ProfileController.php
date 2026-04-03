@@ -80,3 +80,37 @@ class ProfileController extends Controller
         return Redirect::to('/');
     }
 }
+            // Eliminar banner antiguo si existe
+            if ($user->banner_path) {
+                Storage::disk('public')->delete($user->banner_path);
+            }
+            $validated['banner_path'] = $request->file('banner')->store('banners', 'public');
+        }
+
+        $user->update($validated);
+
+        return back()->with('success', 'Perfil actualizado correctamente.');
+    }
+
+    /**
+     * Alternar seguimiento de un usuario.
+     */
+    public function toggleFollow(User $user)
+    {
+        $currentUser = Auth::user();
+
+        if ($currentUser->id === $user->id) {
+            return back()->with('error', 'No puedes seguirte a ti mismo.');
+        }
+
+        if ($currentUser->following()->where('followed_id', $user->id)->exists()) {
+            $currentUser->following()->detach($user->id);
+            $message = 'Has dejado de seguir a ' . $user->name;
+        } else {
+            $currentUser->following()->attach($user->id);
+            $message = 'Ahora sigues a ' . $user->name;
+        }
+
+        return back()->with('success', $message);
+    }
+}

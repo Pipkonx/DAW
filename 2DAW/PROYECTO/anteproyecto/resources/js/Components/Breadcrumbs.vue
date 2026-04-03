@@ -13,6 +13,16 @@ const breadcrumbMap = {
         { label: 'Dashboard', href: route('dashboard') },
         { label: 'Patrimonio Neto', href: route('transactions.index') }
     ],
+    'transactions.performance': [
+        { label: 'Dashboard', href: route('dashboard') },
+        { label: 'Patrimonio Neto', href: route('transactions.index') },
+        { label: 'Rendimiento', href: route('transactions.performance') }
+    ],
+    'transactions.allocation': [
+        { label: 'Dashboard', href: route('dashboard') },
+        { label: 'Patrimonio Neto', href: route('transactions.index') },
+        { label: 'Distribución', href: route('transactions.allocation') }
+    ],
     'expenses.index': [
         { label: 'Dashboard', href: route('dashboard') },
         { label: 'Análisis de Gastos', href: route('expenses.index') }
