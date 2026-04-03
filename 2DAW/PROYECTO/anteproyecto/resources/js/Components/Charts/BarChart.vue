@@ -10,11 +10,13 @@ import {
   Tooltip,
   Legend,
   BarElement,
+  LineElement,
+  PointElement,
   CategoryScale,
   LinearScale
 } from 'chart.js'
 
-ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale)
+ChartJS.register(Title, Tooltip, Legend, BarElement, LineElement, PointElement, CategoryScale, LinearScale)
 
 const props = defineProps({
   data: {

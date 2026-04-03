@@ -63,7 +63,7 @@ class TransactionController extends Controller
                 'data' => $chartData['data'],
                 'invested' => $chartData['invested'],
                 'period_pl_value' => $chartData['period_pl_value'],
-                'period_pl_percent' => is_nan($chartData['period_pl_percent']) ? 0 : $chartData['period_pl_percent'],
+                'period_pl_percent' => is_nan($chartData['period_pl_percent']) || is_infinite($chartData['period_pl_percent']) ? 0 : $chartData['period_pl_percent'],
             ],
             'allocations' => $allocations,
             'filters' => ['timeframe' => $timeframe],
@@ -99,12 +99,8 @@ class TransactionController extends Controller
         
         $assets = $query->get();
         
-        // Autocorrección: Recalcular métricas si detectamos inconsistencias
-        $assets->each(function ($asset) {
-            if ($asset->quantity > 0 && $asset->avg_buy_price == 0 && $asset->transactions()->exists()) {
-                $asset->recalculateMetrics();
-            }
-        });
+        // NOTA: La recalculación automática se ha movido a los eventos de modelo (Observers) 
+        // para evitar latencia excesiva (~7s) en cada carga de página.
 
         if ($portfolioId === 'aggregated') {
             $assets = $assets->groupBy('ticker')->map(function ($groupedAssets) {

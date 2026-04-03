@@ -1,392 +1,100 @@
 <script setup>
-import { ref, onMounted } from 'vue';
-import ApplicationLogo from '@/Components/ApplicationLogo.vue';
-import Dropdown from '@/Components/Dropdown.vue';
-import DropdownLink from '@/Components/DropdownLink.vue';
-import NavLink from '@/Components/NavLink.vue';
-import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
-import Breadcrumbs from '@/Components/Breadcrumbs.vue';
-import Toast from '@/Components/Toast.vue';
-import AssetSearch from '@/Components/AssetSearch.vue';
-import { Link, usePage } from '@inertiajs/vue3';
+import { ref, onMounted, watch } from 'vue';
+import { usePage } from '@inertiajs/vue3';
 import { usePrivacy } from '@/Composables/usePrivacy';
 import { useToast } from '@/Composables/useToast';
-import { watch } from 'vue';
+import Navbar from './Partials/Navbar.vue';
+import MobileMenu from './Partials/MobileMenu.vue';
+import Toast from '@/Components/Toast.vue';
+import Breadcrumbs from '@/Components/Breadcrumbs.vue';
 import Footer from '@/Components/Footer.vue';
 import AdSlot from '@/Components/AdSense/AdSlot.vue';
 import AdBlockDetector from '@/Components/AdSense/AdBlockDetector.vue';
 
 const { isPrivacyMode, togglePrivacyMode } = usePrivacy();
 const { activeToasts, showToast, removeToast } = useToast();
-
 const page = usePage();
 
-// Watch for flash messages from Inertia
+// Gestión de notificaciones Flash de Inertia
 watch(() => page.props.flash, (flash) => {
     if (flash?.success) showToast(flash.success, 'success');
     if (flash?.error) showToast(flash.error, 'error');
 }, { deep: true, immediate: true });
 
 const showingNavigationDropdown = ref(false);
-const isDark = ref(true); // Default to dark
+const isDark = ref(true);
 
+/**
+ * Alterna entre modo claro y oscuro, persistiendo la preferencia en localStorage.
+ */
 const toggleTheme = () => {
     isDark.value = !isDark.value;
-    if (isDark.value) {
-        document.documentElement.classList.add('dark');
-        localStorage.setItem('theme', 'dark');
-    } else {
-        document.documentElement.classList.remove('dark');
-        localStorage.setItem('theme', 'light');
-    }
+    document.documentElement.classList.toggle('dark', isDark.value);
+    localStorage.setItem('theme', isDark.value ? 'dark' : 'light');
 };
 
 onMounted(() => {
-    // Check local storage or default to dark
-    if (localStorage.theme === 'light') {
-        isDark.value = false;
-        document.documentElement.classList.remove('dark');
-    } else {
-        isDark.value = true;
-        document.documentElement.classList.add('dark');
-    }
+    isDark.value = localStorage.theme !== 'light';
+    document.documentElement.classList.toggle('dark', isDark.value);
 });
 </script>
 
 <template>
-    <div>
+    <div class="min-h-screen bg-slate-50 dark:bg-slate-900 transition-colors duration-300">
+        <!-- Sistema Global de Notificaciones (Toasts) -->
         <div class="fixed top-5 right-5 z-[200] flex flex-col gap-3 pointer-events-none w-80">
             <Toast 
                 v-for="toast in activeToasts" 
                 :key="toast.id" 
-                :message="toast.message" 
-                :type="toast.type"
-                :duration="toast.duration"
+                v-bind="toast"
                 @close="removeToast(toast.id)"
             />
         </div>
-        <!-- 
-            AuthenticatedLayout: Plantilla principal para usuarios logueados (Dashboard, Perfil).
-            bg-slate-50: Fondo base coherente con el estilo Fintech global.
-        -->
-        <div class="min-h-screen bg-slate-50 dark:bg-slate-900 transition-colors duration-300">
-            <!-- 
-                Barra de navegación:
-            -->
-            <nav
-                class="border-b border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 backdrop-blur-md sticky top-0 z-50 transition-colors duration-300"
-            >
-                <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                    <div class="flex h-16 justify-between">
-                        <div class="flex">
-                            <!-- Logo -->
-                            <div class="flex shrink-0 items-center">
-                                <Link :href="route('dashboard')">
-                                    <ApplicationLogo
-                                        class="block h-9 w-auto fill-current text-slate-800 dark:text-slate-200"
-                                    />
-                                </Link>
-                            </div>
 
-                            <!-- Enlaces de navegación (Desktop) con Submenús -->
-                            <div class="hidden space-x-4 sm:-my-px sm:ms-10 sm:flex items-center">
-                                <!-- Patrimonio -->
-                                <Dropdown align="left" width="48">
-                                    <template #trigger>
-                                        <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-bold rounded-md text-slate-500 dark:text-slate-400 bg-transparent hover:text-slate-700 dark:hover:text-slate-300 focus:outline-none transition ease-in-out duration-150">
-                                            Patrimonio
-                                            <svg class="ms-2 -me-0.5 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                                            </svg>
-                                        </button>
-                                    </template>
-                                    <template #content>
-                                        <DropdownLink :href="route('dashboard')">Panel General</DropdownLink>
-                                        <DropdownLink :href="route('transactions.index')">Patrimonio Neto</DropdownLink>
-                                        <DropdownLink :href="route('expenses.index')">Análisis de Gastos</DropdownLink>
-                                        <DropdownLink :href="route('financial-planning.index')">Planificación</DropdownLink>
-                                    </template>
-                                </Dropdown>
+        <!-- Barra de Navegación Principal (Escritorio) -->
+        <Navbar 
+            :is-dark="isDark"
+            :is-privacy-mode="isPrivacyMode"
+            :showing-navigation-dropdown="showingNavigationDropdown"
+            @toggle-theme="toggleTheme"
+            @toggle-privacy="togglePrivacyMode"
+            @toggle-mobile-menu="showingNavigationDropdown = !showingNavigationDropdown"
+        />
 
-                                <!-- Mercados -->
-                                <Dropdown align="left" width="48">
-                                    <template #trigger>
-                                        <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-bold rounded-md text-slate-500 dark:text-slate-400 bg-transparent hover:text-slate-700 dark:hover:text-slate-300 focus:outline-none transition ease-in-out duration-150">
-                                            Mercados
-                                            <svg class="ms-2 -me-0.5 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                                            </svg>
-                                        </button>
-                                    </template>
-                                    <template #content>
-                                        <DropdownLink :href="route('markets.index')">Explorar Mercados</DropdownLink>
-                                        <DropdownLink :href="route('ai-analyst.index')">Analista IA</DropdownLink>
-                                    </template>
-                                </Dropdown>
+        <!-- Menú Desplegable (Móvil) -->
+        <MobileMenu :showing-navigation-dropdown="showingNavigationDropdown" />
 
-                                <!-- Social -->
-                                <NavLink :href="route('social.feed')" :active="route().current('social.feed')">
-                                    Feed
-                                </NavLink>
-                                
-                                <NavLink
-                                    v-if="$page.props.auth.user.is_admin"
-                                    :href="route('admin.dashboard')"
-                                    :active="route().current('admin.dashboard*')"
-                                    class="text-amber-600 dark:text-amber-400 font-bold hover:text-amber-700"
-                                >
-                                    Admin
-                                </NavLink>
-                            </div>
-                        </div>
+        <!-- Cabecera de Página y Navegación de Migas (Breadcrumbs) -->
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <Breadcrumbs />
+        </div>
 
-                        <!-- Barra de Búsqueda Centrada (Desktop) -->
-                        <div class="hidden sm:flex flex-1 items-center justify-center px-8">
-                            <AssetSearch />
-                        </div>
+        <header v-if="$slots.header" class="bg-white dark:bg-slate-800 shadow transition-colors duration-300">
+            <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+                <slot name="header" />
+            </div>
+        </header>
 
-                        <!-- Menú de usuario (Desktop) -->
-                        <div class="hidden sm:ms-6 sm:flex sm:items-center gap-4">
-                            <!-- Privacy Toggle -->
-                            <button 
-                                @click="togglePrivacyMode" 
-                                class="p-2 rounded-full text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-700 focus:outline-none transition-colors"
-                                :title="isPrivacyMode ? 'Mostrar valores' : 'Ocultar valores'"
-                            >
-                                <!-- Eye Off Icon (Hidden) -->
-                                <svg v-if="isPrivacyMode" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-                                  <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88" />
-                                </svg>
-                                <!-- Eye Icon (Visible) -->
-                                <svg v-else xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-                                  <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
-                                  <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                </svg>
-                            </button>
-
-                            <!-- Theme Toggle -->
-                            <button 
-                                @click="toggleTheme" 
-                                class="p-2 rounded-full text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-700 focus:outline-none transition-colors"
-                                :title="isDark ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'"
-                            >
-                                <!-- Sun Icon -->
-                                <svg v-if="isDark" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-                                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />
-                                </svg>
-                                <!-- Moon Icon -->
-                                <svg v-else xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-                                  <path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" />
-                                </svg>
-                            </button>
-
-                            <!-- Dropdown de configuración -->
-                            <div class="relative ms-3">
-                                <Dropdown align="right" width="48">
-                                    <template #trigger>
-                                        <button
-                                            type="button"
-                                            class="flex items-center rounded-full border-2 border-transparent focus:outline-none focus:border-slate-300 dark:focus:border-slate-600 transition duration-150 ease-in-out"
-                                        >
-                                            <img 
-                                                v-if="$page.props.auth.user.avatar" 
-                                                :src="$page.props.auth.user.avatar" 
-                                                :alt="$page.props.auth.user.name"
-                                                class="h-8 w-8 rounded-full object-cover"
-                                            />
-                                            <div 
-                                                v-else 
-                                                class="h-8 w-8 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-slate-500 dark:text-slate-400"
-                                            >
-                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-                                                  <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A9.793 9.793 0 0017.666 16c-.715-.827-1.572-1.555-2.558-2.023A6.244 6.244 0 0110 12.862a6.244 6.244 0 01-5.108 1.115A9.783 9.783 0 004.501 20.118z" />
-                                                </svg>
-                                            </div>
-                                        </button>
-                                    </template>
-
-                                    <template #content>
-                                        <div class="block px-4 py-2 text-xs text-slate-400">
-                                            {{ $page.props.auth.user.name }}
-                                        </div>
-                                        <DropdownLink :href="route('profile.edit')">
-                                            Perfil
-                                        </DropdownLink>
-                                        <a :href="route('anteproyecto.download')" class="block w-full px-4 py-2 text-start text-sm leading-5 text-slate-700 dark:text-slate-300 transition duration-150 ease-in-out hover:bg-slate-100 dark:hover:bg-slate-700 focus:bg-slate-100 dark:focus:bg-slate-700 focus:outline-none" download>
-                                            Descargar Anteproyecto
-                                        </a>
-                                        <div class="border-t border-slate-100 dark:border-slate-700"></div>
-                                        <DropdownLink :href="route('logout')" method="post" as="button">
-                                            Cerrar Sesión
-                                        </DropdownLink>
-                                    </template>
-                                </Dropdown>
-                            </div>
-                        </div>
-
-                        <!-- Botón menú hamburguesa (Móvil) -->
-                        <div class="-me-2 flex items-center sm:hidden">
-                            <button
-                                @click="
-                                    showingNavigationDropdown =
-                                        !showingNavigationDropdown
-                                "
-                                class="inline-flex items-center justify-center rounded-md p-2 text-slate-400 transition duration-150 ease-in-out hover:bg-slate-100 hover:text-slate-500 focus:bg-slate-100 focus:text-slate-500 focus:outline-none dark:hover:bg-slate-700 dark:hover:text-slate-300 dark:focus:bg-slate-700 dark:focus:text-slate-300"
-                            >
-                                <svg
-                                    class="h-6 w-6"
-                                    stroke="currentColor"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path
-                                        :class="{
-                                            hidden: showingNavigationDropdown,
-                                            'inline-flex':
-                                                !showingNavigationDropdown,
-                                        }"
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="M4 6h16M4 12h16M4 18h16"
-                                    />
-                                    <path
-                                        :class="{
-                                            hidden: !showingNavigationDropdown,
-                                            'inline-flex':
-                                                showingNavigationDropdown,
-                                        }"
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="M6 18L18 6M6 6l12 12"
-                                    />
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Menú de navegación responsive (Móvil) -->
-                <div
-                    :class="{
-                        block: showingNavigationDropdown,
-                        hidden: !showingNavigationDropdown,
-                    }"
-                    class="sm:hidden bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 shadow-lg transition-colors duration-300"
-                >
-                    <div class="space-y-1 pb-3 pt-2">
-                        <ResponsiveNavLink
-                            :href="route('dashboard')"
-                            :active="route().current('dashboard')"
-                        >
-                            Dashboard
-                        </ResponsiveNavLink>
-                        <ResponsiveNavLink
-                            :href="route('expenses.index')"
-                            :active="route().current('expenses.index')"
-                        >
-                            Análisis de Gastos
-                        </ResponsiveNavLink>
-                        <ResponsiveNavLink
-                            :href="route('transactions.index')"
-                            :active="route().current('transactions.index')"
-                        >
-                            Patrimonio Neto
-                        </ResponsiveNavLink>
-                        <ResponsiveNavLink
-                            :href="route('financial-planning.index')"
-                            :active="route().current('financial-planning.index')"
-                        >
-                            Planificación
-                        </ResponsiveNavLink>
-                        <ResponsiveNavLink
-                            :href="route('markets.index')"
-                            :active="route().current('markets.index')"
-                        >
-                            Mercados
-                        </ResponsiveNavLink>
-                        <ResponsiveNavLink
-                            :href="route('ai-analyst.index')"
-                            :active="route().current('ai-analyst.index')"
-                        >
-                            Analista IA
-                        </ResponsiveNavLink>
-                        <ResponsiveNavLink
-                            v-if="$page.props.auth.user.is_admin"
-                            :href="route('admin.dashboard')"
-                            :active="route().current('admin.dashboard*')"
-                            class="text-amber-600 dark:text-amber-400 font-bold"
-                        >
-                            Administración
-                        </ResponsiveNavLink>
-                    </div>
-
-                    <!-- Opciones de usuario responsive -->
-                    <div class="border-t border-slate-200 dark:border-slate-700 pb-1 pt-4">
-                        <div class="px-4">
-                            <div
-                                class="text-base font-medium text-slate-800 dark:text-slate-200"
-                            >
-                                {{ $page.props.auth.user.name }}
-                            </div>
-                            <div class="text-sm font-medium text-slate-500 dark:text-slate-400">
-                                {{ $page.props.auth.user.email }}
-                            </div>
-                        </div>
-
-                        <div class="mt-3 space-y-1">
-                            <ResponsiveNavLink :href="route('profile.edit')">
-                                Perfil
-                            </ResponsiveNavLink>
-                            <a :href="route('anteproyecto.download')" class="block w-full ps-3 pe-4 py-2 border-l-4 border-transparent text-start text-base font-medium text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 hover:border-slate-300 dark:hover:border-slate-600 focus:outline-none focus:text-slate-800 dark:focus:text-slate-200 focus:bg-slate-50 dark:focus:bg-slate-800 focus:border-slate-300 dark:focus:border-slate-600 transition duration-150 ease-in-out" download>
-                                Descargar Anteproyecto
-                            </a>
-                            <ResponsiveNavLink
-                                :href="route('logout')"
-                                method="post"
-                                as="button"
-                            >
-                                Cerrar Sesión
-                            </ResponsiveNavLink>
-                        </div>
-                    </div>
-                </div>
-            </nav>
-
-            <!-- Cabecera de página (opcional) -->
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-                <Breadcrumbs />
+        <!-- Contenido Principal de la Aplicación -->
+        <main>
+            <!-- Espacio publicitario superior -->
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
+                <AdSlot slot-id="7890123456" />
             </div>
 
-            <header
-                class="bg-white dark:bg-slate-800 shadow transition-colors duration-300"
-                v-if="$slots.header"
-            >
-                <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-                    <slot name="header" />
-                </div>
-            </header>
+            <!-- Inyección de contenido de página específica -->
+            <slot />
 
-            <!-- Contenido principal -->
-            <main>
-                <!-- Anuncio Superior -->
-                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
-                    <AdSlot slot-id="7890123456" />
-                </div>
+            <!-- Espacio publicitario inferior -->
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
+                <AdSlot slot-id="8901234567" />
+            </div>
+        </main>
 
-                <slot />
+        <!-- Pie de página global -->
+        <Footer />
 
-                <!-- Anuncio Inferior -->
-                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
-                    <AdSlot slot-id="8901234567" />
-                </div>
-            </main>
-
-            <!-- Footer for Authenticated Users -->
-            <Footer />
-        </div>
-        <!-- AdBlock / Brave Detection (Total Block) -->
+        <!-- Detector de Bloqueadores de Publicidad (Solo usuarios no-premium) -->
         <AdBlockDetector v-if="!$page.props.auth.user?.is_premium" />
     </div>
 </template>

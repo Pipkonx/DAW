@@ -104,7 +104,7 @@ class MarketAssetController extends Controller
 
         return Inertia::render('Assets/Show', [
             'marketAsset' => array_merge($marketAsset->toArray(), $profile ?? [], [
-                'current_price' => $price,
+                'current_price' => (float)$price,
                 'type_label' => $marketAsset->type_label,
                 'logo_url' => $profile['image'] ?? "https://financialmodelingprep.com/image-stock/{$marketAsset->ticker}.png",
             ]),

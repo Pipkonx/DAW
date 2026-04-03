@@ -109,6 +109,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::post('/profile/subscription/renew', [ProfileController::class, 'renewSubscription'])->name('profile.subscription.renew');
+    Route::post('/profile/subscription/cancel', [ProfileController::class, 'cancelSubscription'])->name('profile.subscription.cancel');
 
     // Rutas de Carteras
     Route::post('/portfolios/preview-import', [PortfolioController::class, 'previewImport'])->name('portfolios.preview-import');

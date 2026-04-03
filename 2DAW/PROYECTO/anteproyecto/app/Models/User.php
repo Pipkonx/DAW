@@ -130,5 +130,15 @@ class User extends Authenticatable implements MustVerifyEmail
         
         return 'Activa (Auto-renovable)';
     }
+
+    public function isFollowing($userId)
+    {
+        return $this->following()->where('followed_id', $userId)->exists();
+    }
+
+    public function hasBlocked($userId)
+    {
+        return $this->blockedUsers()->where('blocked_id', $userId)->exists();
+    }
 }
 

@@ -50,7 +50,11 @@ class ExpenseController extends Controller
         $availableYears = $this->getAvailableYears($user->id);
 
         // Fetch Data via Service
-        $monthlyData = $this->expenseService->getMonthlyStats($user->id, $startDate, $endDate);
+        $yearStart = Carbon::create($year)->startOfYear();
+        $yearEnd = Carbon::create($year)->endOfYear();
+        if ($yearEnd->gt(Carbon::now())) $yearEnd = Carbon::now()->endOfDay();
+
+        $monthlyData = $this->expenseService->getMonthlyStats($user->id, $yearStart, $yearEnd);
         $topExpenses = $this->expenseService->getTopItems($user->id, $startDate, $endDate, ['expense', 'transfer_out']);
         $topIncome = $this->expenseService->getTopItems($user->id, $startDate, $endDate, ['income', 'transfer_in', 'dividend', 'gift', 'reward']);
 
@@ -130,28 +134,58 @@ class ExpenseController extends Controller
 
     private function getTrendChartData($userId, $startDate, $endDate)
     {
+        $days = $startDate->diffInDays($endDate);
+        // Si el rango es mayor a 90 días, agrupamos por meses para evitar saturar el frontend
+        $groupByMonth = $days > 90;
+
         $txs = Transaction::where('user_id', $userId)
             ->whereBetween('date', [$startDate, $endDate])
-            ->selectRaw('DATE(date) as day, type, amount')
+            ->selectRaw($groupByMonth ? 'YEAR(date) as year, MONTH(date) as month, type, amount' : 'DATE(date) as day, type, amount')
             ->orderBy('date')
-            ->get()
-            ->groupBy('day');
+            ->get();
 
-        $labels = []; $balance = []; $currentBalance = 0;
+        $labels = []; $balance = []; 
         $current = $startDate->copy();
 
-        while ($current->lte($endDate)) {
-            $dateStr = $current->format('Y-m-d');
-            $labels[] = $current->format('d M');
-            if ($txs->has($dateStr)) {
-                foreach ($txs[$dateStr] as $tx) {
-                    if (in_array($tx->type, ['income', 'transfer_in', 'dividend', 'gift', 'reward'])) $currentBalance += $tx->amount;
-                    else $currentBalance -= $tx->amount;
-                }
-            }
-            $balance[] = $currentBalance;
-            $current->addDay();
+        // Calcular balance inicial antes del periodo
+        $initialTxs = Transaction::where('user_id', $userId)->where('date', '<', $startDate)->select('type', 'amount')->get();
+        $currentBalance = 0;
+        foreach ($initialTxs as $tx) {
+            if (in_array($tx->type, ['income', 'transfer_in', 'dividend', 'gift', 'reward'])) $currentBalance += (float)$tx->amount;
+            else $currentBalance -= (float)$tx->amount;
         }
+
+        if ($groupByMonth) {
+            $current = $current->startOfMonth();
+            while ($current->lte($endDate)) {
+                $year = $current->year; $month = $current->month;
+                $monthTxs = $txs->filter(fn($t) => $t->year == $year && $t->month == $month);
+                
+                foreach ($monthTxs as $tx) {
+                    if (in_array($tx->type, ['income', 'transfer_in', 'dividend', 'gift', 'reward'])) $currentBalance += (float)$tx->amount;
+                    else $currentBalance -= (float)$tx->amount;
+                }
+                
+                $labels[] = ucfirst($current->translatedFormat('M y'));
+                $balance[] = round($currentBalance, 2);
+                $current->addMonth();
+            }
+        } else {
+            while ($current->lte($endDate)) {
+                $dateStr = $current->format('Y-m-d');
+                $dayTxs = $txs->filter(fn($t) => $t->day == $dateStr);
+                
+                foreach ($dayTxs as $tx) {
+                    if (in_array($tx->type, ['income', 'transfer_in', 'dividend', 'gift', 'reward'])) $currentBalance += (float)$tx->amount;
+                    else $currentBalance -= (float)$tx->amount;
+                }
+                
+                $labels[] = $current->format('d M');
+                $balance[] = round($currentBalance, 2);
+                $current->addDay();
+            }
+        }
+
         return compact('labels', 'balance');
     }
 

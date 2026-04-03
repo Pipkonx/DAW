@@ -98,10 +98,13 @@ class DashboardController extends Controller
 
     private function getExpenseRangesData($userId, $now)
     {
+        $firstTx = Transaction::where('user_id', $userId)->orderBy('date', 'asc')->first();
+        $allStart = $firstTx ? Carbon::parse($firstTx->date) : $now->copy()->subYear();
+
         $ranges = [
             'month' => [$now->copy()->startOfMonth(), $now->copy()->endOfMonth()],
             'year' => [$now->copy()->startOfYear(), $now->copy()->endOfYear()],
-            'all' => [Carbon::parse('1970-01-01'), $now->copy()->endOfDay()],
+            'all' => [$allStart->startOfDay(), $now->copy()->endOfDay()],
         ];
 
         $data = [];

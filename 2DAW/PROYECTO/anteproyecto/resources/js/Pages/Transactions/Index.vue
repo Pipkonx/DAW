@@ -166,7 +166,7 @@ const confirmExport = ({ format, start_date, end_date }) => {
     <AuthenticatedLayout>
         <template #header>
             <PortfolioHeader 
-                v-if="portfolios.length > 0"
+                v-if="portfolios.length > 0 || assets.length > 0"
                 :portfolios="portfolios"
                 :selected-portfolio-id="selectedPortfolioId"
                 @switch="switchPortfolio"
@@ -182,7 +182,7 @@ const confirmExport = ({ format, start_date, end_date }) => {
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
                 
                 <!-- EMPTY STATE -->
-                <div v-if="portfolios.length === 0" class="flex flex-col items-center justify-center py-20 text-center">
+                <div v-if="portfolios.length === 0 && assets.length === 0" class="flex flex-col items-center justify-center py-20 text-center">
                     <div class="bg-white dark:bg-slate-800 p-8 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 max-w-md w-full">
                         <div class="w-16 h-16 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center mx-auto mb-6">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -191,7 +191,7 @@ const confirmExport = ({ format, start_date, end_date }) => {
                         </div>
                         <h3 class="text-2xl font-bold text-slate-800 dark:text-white mb-2">Comienza tu viaje</h3>
                         <p class="text-slate-500 dark:text-slate-400 mb-8">
-                            Para empezar a gestionar tus inversiones y ver tu patrimonio neto, necesitas crear tu primera cartera.
+                            Para empezar a gestionar tus inversiones y ver tu patrimonio neto, necesitas crear tu primera cartera o añadir un activo.
                         </p>
                         <button 
                             @click="openCreatePortfolioModal"
