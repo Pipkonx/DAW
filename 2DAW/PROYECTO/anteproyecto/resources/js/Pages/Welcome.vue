@@ -1,6 +1,7 @@
 <script setup>
 import { Head, Link } from '@inertiajs/vue3';
 import MainLayout from '@/Layouts/MainLayout.vue';
+import AdSlot from '@/Components/AdSense/AdSlot.vue';
 
 defineProps({
     canLogin: {
@@ -130,6 +131,11 @@ defineProps({
                 </div>
             </div>
         </section>
+
+        <!-- Espacio Publicitario (Landing) -->
+        <div class="max-w-7xl mx-auto px-6">
+            <AdSlot slot-id="1234567890" />
+        </div>
 
         <!-- Features Section -->
         <section id="features" class="py-24 bg-white dark:bg-slate-900 relative transition-colors duration-300">

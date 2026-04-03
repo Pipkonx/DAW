@@ -168,6 +168,24 @@ const displayPosts = computed(() => {
     return props.posts;
 });
 
+const getAvatarRingClasses = (tier) => {
+    switch (tier) {
+        case 'premium': return 'ring-4 ring-purple-500 ring-offset-4 dark:ring-offset-slate-800 border-transparent transition-all';
+        case 'pro': return 'ring-4 ring-indigo-500 ring-offset-4 dark:ring-offset-slate-800 border-transparent transition-all';
+        case 'basic': return 'ring-4 ring-blue-500 ring-offset-4 dark:ring-offset-slate-800 border-transparent transition-all';
+        default: return 'border-4 border-white dark:border-slate-800';
+    }
+};
+
+const getSmallAvatarRingClasses = (tier) => {
+    switch (tier) {
+        case 'premium': return 'ring-2 ring-purple-500 ring-offset-2 dark:ring-offset-slate-900 border-transparent';
+        case 'pro': return 'ring-2 ring-indigo-500 ring-offset-2 dark:ring-offset-slate-900 border-transparent';
+        case 'basic': return 'ring-2 ring-blue-500 ring-offset-2 dark:ring-offset-slate-900 border-transparent';
+        default: return 'border border-slate-200 dark:border-slate-700';
+    }
+};
+
 </script>
 
 <template>
@@ -186,7 +204,7 @@ const displayPosts = computed(() => {
                     
                     <div class="px-8 pb-8 relative">
                         <div class="flex justify-between items-end -mt-16 mb-4">
-                            <img :src="profileUser.avatar || `https://ui-avatars.com/api/?name=${profileUser.name}`" class="w-32 h-32 rounded-3xl object-cover border-4 border-white dark:border-slate-800 shadow-2xl bg-white" />
+                            <img :src="profileUser.avatar || `https://ui-avatars.com/api/?name=${profileUser.name}`" :class="['w-32 h-32 rounded-3xl object-cover shadow-2xl bg-white relative z-10', getAvatarRingClasses(profileUser.tier)]" />
                             
                             <div class="flex gap-3 relative">
                                 <!-- Menú Compartir Perfil -->
@@ -237,15 +255,38 @@ const displayPosts = computed(() => {
                         </div>
 
                         <div>
-                            <h1 class="text-3xl font-black text-slate-900 dark:text-white flex items-center gap-3">
+                            <h1 class="text-3xl font-black text-slate-900 dark:text-white flex items-center gap-3 flex-wrap">
                                 {{ profileUser.name }}
-                                <span v-if="profileUser.is_admin" class="bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-[10px] uppercase px-2 py-1 rounded-lg">Admin</span>
+                                <span v-if="profileUser.is_admin" class="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 text-[10px] uppercase px-2 py-1 rounded-lg font-black tracking-widest shadow-sm">Admin</span>
+                                
+                                <span v-if="profileUser.tier === 'premium'" class="bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 border border-purple-200 dark:border-purple-800 text-[10px] uppercase px-2 py-1 rounded-lg font-black tracking-widest flex items-center gap-1 shadow-sm">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
+                                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                    </svg>
+                                    Premium
+                                </span>
+                                <span v-else-if="profileUser.tier === 'pro'" class="bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800 text-[10px] uppercase px-2 py-1 rounded-lg font-black tracking-widest flex items-center gap-1 shadow-sm">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                    </svg>
+                                    Pro
+                                </span>
+                                <span v-else-if="profileUser.tier === 'basic'" class="bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800 text-[10px] uppercase px-2 py-1 rounded-lg font-black tracking-widest flex items-center gap-1 shadow-sm">
+                                    Básico
+                                </span>
                             </h1>
                             <p class="text-slate-500 font-bold mb-4 flex items-center gap-2">
                                 @{{ profileUser.username || `user_${profileUser.id}` }}
                                 <span class="text-[10px] text-slate-400 font-medium normal-case flex items-center gap-1 before:content-['•'] before:mr-1">
                                     Miembro desde {{ profileUser.joined_at }}
                                 </span>
+                            </p>
+                            
+                            <p v-if="isOwnProfile && $page.props.auth.user.tier !== 'none'" class="inline-flex items-center gap-2 mb-4 mt-1 px-3 py-1.5 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 text-xs font-bold rounded-xl border border-indigo-100 dark:border-indigo-800/50">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                </svg>
+                                Membresía: {{ $page.props.auth.user.subscription_status }}
                             </p>
                             
                             <p class="text-slate-700 dark:text-slate-300 mb-6 max-w-2xl text-sm leading-relaxed whitespace-pre-wrap">
@@ -325,7 +366,7 @@ const displayPosts = computed(() => {
                         <div class="flex items-start justify-between mb-4">
                             <div class="flex items-center gap-3">
                                 <Link :href="route('social.profile', post.user.username)" class="hover:opacity-80 transition-opacity">
-                                    <img :src="post.user.avatar || `https://ui-avatars.com/api/?name=${post.user.name}`" class="w-12 h-12 rounded-full border-2 border-slate-100 dark:border-slate-700 object-cover" />
+                                    <img :src="post.user.avatar || `https://ui-avatars.com/api/?name=${post.user.name}`" :class="['w-12 h-12 rounded-full object-cover', getSmallAvatarRingClasses(post.user.tier)]" />
                                 </Link>
                                 <div>
                                     <div class="text-sm font-bold text-slate-800 dark:text-white flex items-center gap-2">
@@ -464,7 +505,7 @@ const displayPosts = computed(() => {
                             <div class="space-y-6 mb-6">
                                 <div v-for="comment in post.comments" :key="comment.id" class="space-y-4">
                                     <div class="flex gap-3 group/comment">
-                                        <img :src="`https://ui-avatars.com/api/?name=${comment.user.name}`" class="w-8 h-8 rounded-full shadow-sm" />
+                                        <img :src="comment.user.avatar || `https://ui-avatars.com/api/?name=${comment.user.name}`" :class="['w-8 h-8 rounded-full shadow-sm object-cover', getSmallAvatarRingClasses(comment.user.tier)]" />
                                         <div class="flex-grow">
                                             <div class="bg-slate-50 dark:bg-slate-900/50 rounded-2xl p-4 border border-slate-100 dark:border-slate-700 group-hover/comment:border-slate-200 transition-colors">
                                                 <div class="flex justify-between items-center mb-1">
@@ -488,7 +529,7 @@ const displayPosts = computed(() => {
                                 </div>
                             </div>
                             <div class="flex gap-3">
-                                <img :src="$page.props.auth.user.avatar || `https://ui-avatars.com/api/?name=${$page.props.auth.user.name}`" class="w-8 h-8 rounded-full border border-slate-100" />
+                                <img :src="$page.props.auth.user.avatar || `https://ui-avatars.com/api/?name=${$page.props.auth.user.name}`" :class="['w-8 h-8 rounded-full object-cover', getSmallAvatarRingClasses($page.props.auth.user.tier)]" />
                                 <div class="flex-grow relative">
                                     <input 
                                         type="text" 

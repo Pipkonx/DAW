@@ -53,4 +53,12 @@ return [
         'key' => env('COINGECKO_API_KEY'),
     ],
 
+    'stripe' => [
+        'key' => env('STRIPE_KEY'),
+        'secret' => env('STRIPE_SECRET'),
+        'price_basic' => env('STRIPE_PRICE_BASIC', 'price_...'),
+        'price_pro' => env('STRIPE_PRICE_PRO', 'price_...'),
+        'price_premium' => env('STRIPE_PRICE_PREMIUM', 'price_...'),
+    ],
+
 ];

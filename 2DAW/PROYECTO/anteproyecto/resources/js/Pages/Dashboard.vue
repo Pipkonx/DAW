@@ -18,6 +18,7 @@ import PortfoliosSection from '@/Components/Dashboard/PortfoliosSection.vue';
 import ExpensesSection from '@/Components/Dashboard/ExpensesSection.vue';
 import EvolutionSection from '@/Components/Dashboard/EvolutionSection.vue';
 import RecentTransactions from '@/Components/Dashboard/RecentTransactions.vue';
+import UpgradePlanWidget from '@/Components/Dashboard/UpgradePlanWidget.vue';
 
 // Otros Componentes
 import TransactionModal from '@/Components/TransactionModal.vue';
@@ -175,7 +176,7 @@ const editTransaction = (transaction) => {
 
             <!-- Sección 2: Análisis de Distribución y Gastos (Fila Superior) -->
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
+                <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 items-stretch">
                     <!-- 2.1. Distribución Global (Invertido vs Líquido) -->
                     <GlobalDistribution 
                         :allocation="charts.allocation" 
@@ -191,6 +192,11 @@ const editTransaction = (transaction) => {
                         :is-privacy-mode="isPrivacyMode"
                         class="h-full"
                     />
+
+                    <!-- 2.3. Upgrade Widget (Solo si no es premium) -->
+                    <div v-if="!$page.props.auth.user.is_premium" class="xl:col-span-1 md:col-span-2 xl:block">
+                        <UpgradePlanWidget class="h-full" />
+                    </div>
                 </div>
             </div>
 

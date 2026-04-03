@@ -6,11 +6,12 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Cashier\Billable;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, Billable;
 
     /**
      * The attributes that are mass assignable.
@@ -36,6 +37,11 @@ class User extends Authenticatable implements MustVerifyEmail
     protected $hidden = [
         'password',
         'remember_token',
+    ];
+
+    protected $appends = [
+        'tier',
+        'subscription_status',
     ];
 
     protected function casts(): array
@@ -98,6 +104,31 @@ class User extends Authenticatable implements MustVerifyEmail
     public function blockedUsers()
     {
         return $this->belongsToMany(User::class, 'blocks', 'blocker_id', 'blocked_id')->withTimestamps();
+    }
+
+    public function getTierAttribute()
+    {
+        $sub = $this->subscription('default');
+        if (!$sub || !$sub->active()) return 'none';
+        
+        $priceId = $sub->stripe_price;
+        if ($priceId === config('services.stripe.price_premium')) return 'premium';
+        if ($priceId === config('services.stripe.price_pro')) return 'pro';
+        if ($priceId === config('services.stripe.price_basic')) return 'basic';
+        
+        return 'none';
+    }
+
+    public function getSubscriptionStatusAttribute()
+    {
+        $sub = $this->subscription('default');
+        if (!$sub || !$sub->active()) return 'Sin plan activo';
+        
+        if ($sub->onGracePeriod()) {
+            return 'Se cancela el ' . $sub->ends_at->format('d/m/Y');
+        }
+        
+        return 'Activa (Auto-renovable)';
     }
 }
 

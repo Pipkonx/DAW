@@ -17,6 +17,7 @@ use App\Http\Controllers\AiAnalystController;
 use App\Http\Controllers\TransactionActionController;
 use App\Http\Controllers\TransactionExportController;
 use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\Admin\AdminReportController;
 use App\Http\Controllers\Admin\AdminAnalyticsController;
 use App\Http\Controllers\SocialController;
@@ -121,7 +122,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('/famous-portfolios/{slug}', [FamousPortfolioController::class, 'show'])->name('famous-portfolios.show');
 
-    Route::get('/feed', [SocialController::class, 'index'])->name('social.feed');
+    Route::get('/social/feed', [SocialController::class, 'index'])->name('social.feed');
     Route::post('/social/post', [SocialController::class, 'storePost'])->name('social.post');
     Route::put('/social/post/{post}', [SocialController::class, 'updatePost'])->name('social.update');
     Route::delete('/social/post/{post}', [SocialController::class, 'deletePost'])->name('social.delete');
@@ -153,6 +154,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::put('/categories/{category}', [CategoryController::class, 'update'])->name('categories.update');
     Route::delete('/categories/{category}', [CategoryController::class, 'destroy'])->name('categories.destroy');
     Route::patch('/categories/{category}/toggle', [CategoryController::class, 'toggleActive'])->name('categories.toggle');
+
+    // Rutas de Suscripción (Pagos)
+    Route::get('/plans', [SubscriptionController::class, 'index'])->name('subscription.index');
+    Route::post('/subscribe', [SubscriptionController::class, 'subscribe'])->name('subscription.subscribe');
 });
 
 // Panel de Administración (Protegido por Middleware Admin)
@@ -161,6 +166,7 @@ Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.'
 
     // Gestión de Usuarios
     Route::post('/users/{user}/toggle-admin', [AdminController::class, 'toggleAdmin'])->name('users.toggle-admin');
+    Route::post('/users/{user}/update-subscription', [AdminController::class, 'updateSubscription'])->name('users.update-subscription');
     Route::delete('/users/{user}', [AdminController::class, 'deleteUser'])->name('users.delete');
 
     // Backups

@@ -3,17 +3,20 @@
 namespace App\Services\Analysis;
 
 use App\Models\Transaction;
+use App\Models\Asset;
+use App\Services\Analysis\Concerns\ManagesAssetState;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 
+/**
+ * Servicio central para cálculos de rendimiento y analítica financiera.
+ */
 class PerformanceService
 {
+    use ManagesAssetState;
+
     /**
      * Calcula la distribución de activos (Asset Allocation) agrupada por un campo específico.
-     * 
-     * @param \Illuminate\Support\Collection $assets
-     * @param string $field Campo base para agrupar (ej. sector, moneda, tipo)
-     * @return \Illuminate\Support\Collection
      */
     public function getAllocation($assets, $field)
     {
@@ -29,36 +32,25 @@ class PerformanceService
 
     /**
      * Genera los datos para el gráfico de rendimiento y calcula la plusvalía del periodo seleccionado.
-     * 
-     * @param int $userId
-     * @param array $assetIds IDs de los activos a incluir
-     * @param string $timeframe Rango temporal (1M, 3M, 1Y, MAX...)
-     * @param float $currentTotalValue Valor actual de mercado
-     * @return array
      */
     public function getChartData($userId, $assetIds, $timeframe, $currentTotalValue)
     {
         $endDate = Carbon::now();
         $startDate = $this->getStartDate($userId, $assetIds, $timeframe);
 
-        // Obtenemos TODAS las transacciones para trazar el historial de coste base (WAC) 
-        // correctamente desde el origen de los tiempos.
         $allTransactions = Transaction::where('user_id', $userId)
             ->whereIn('asset_id', $assetIds)
             ->orderBy('date', 'asc')
             ->orderBy('created_at', 'asc')
             ->get();
             
-        // Agrupamos por fecha para optimizar la iteración diaria
         $transactionsByDate = $allTransactions->groupBy(fn($t) => substr($t->date, 0, 10));
-        
         $period = CarbonPeriod::create($startDate, '1 day', $endDate);
         
-        // Estado temporal de cada activo (cantidad y coste base)
         $assetsState = [];
-        $assets = \App\Models\Asset::whereIn('id', $assetIds)->get()->keyBy('id');
+        $assets = Asset::whereIn('id', $assetIds)->get()->keyBy('id');
         
-        // 1. Procesamos transacciones ANTERIORES a la fecha de inicio para establecer el punto inicial
+        // 1. Establecer el punto base anterior a la fecha de inicio
         foreach ($allTransactions as $tx) {
             $txDate = Carbon::parse($tx->date);
             if ($txDate->lt($startDate)) {
@@ -66,39 +58,26 @@ class PerformanceService
             }
         }
         
-        // 2. Iteramos por cada día del periodo calculando valoraiones diarias
+        // 2. Iteración diaria para construir el histórico
         $dataPoints = [];
         foreach ($period as $date) {
             $dateStr = $date->format('Y-m-d');
             
-            // Actualizamos estado con las transacciones de hoy
             if (isset($transactionsByDate[$dateStr])) {
                 foreach ($transactionsByDate[$dateStr] as $tx) {
                     $this->updateAssetState($assetsState, $tx);
                 }
             }
             
-            // Calculamos valor total y coste base en este punto temporal
-            $dailyValue = 0;
-            $dailyCost = 0;
-
-            foreach ($assetsState as $assetId => $state) {
-                if ($state['qty'] > 0) {
-                    $asset = $assets->get($assetId);
-                    // Usamos current_price (estimación) a falta de histórico diario de precios Spot
-                    $dailyValue += $state['qty'] * ($asset->current_price ?? 0);
-                    $dailyCost += $state['costBasis'];
-                }
-            }
+            $valuation = $this->calculateCurrentValuation($assetsState, $assets);
 
             $dataPoints[] = [
                 'x' => $dateStr,
-                'y' => round($dailyValue, 2),
-                'invested' => round($dailyCost, 2)
+                'y' => round($valuation['value'], 2),
+                'invested' => round($valuation['cost'], 2)
             ];
         }
 
-        // Calculamos el rendimiento del periodo (Plusvalía absoluta y relativa)
         $performance = $this->calculatePeriodPerformance($dataPoints);
 
         return [
@@ -108,43 +87,6 @@ class PerformanceService
             'period_pl_value' => $performance['value'],
             'period_pl_percent' => $performance['percent'],
         ];
-    }
-
-    /**
-     * Actualiza el estado de cantidad y coste base de un activo usando el método WAC.
-     * 
-     * EL ALGORITMO WAC (Weighted Average Cost - Coste Medio Ponderado):
-     * 1. Las COMPRAS (buy) incrementan la cantidad y el coste base en la cantidad pagada.
-     * 2. Las VENTAS (sell) reducen la cantidad y el coste base de forma proporcional. 
-     *    El coste base se reduce restando (Precio Medio de Compra x Cantidad Vendida).
-     * Esto asegura que las plusvalías se calculen correctamente tras múltiples ciclos de compra/venta.
-     */
-    private function updateAssetState(&$state, $tx)
-    {
-        $assetId = $tx->asset_id;
-
-        if (!isset($state[$assetId])) {
-            $state[$assetId] = ['qty' => 0, 'costBasis' => 0];
-        }
-        
-        if (in_array($tx->type, ['buy', 'transfer_in', 'gift', 'reward'])) {
-            // Entrada de activos: Incremento lineal del coste
-            $state[$assetId]['costBasis'] += $tx->quantity * $tx->price_per_unit;
-            $state[$assetId]['qty'] += $tx->quantity;
-        } elseif (in_array($tx->type, ['sell', 'transfer_out'])) {
-            // Salida de activos: Reducción proporcional según coste medio previo
-            if ($state[$assetId]['qty'] > 0) {
-                $averageCost = $state[$assetId]['costBasis'] / $state[$assetId]['qty'];
-                $state[$assetId]['costBasis'] -= $averageCost * $tx->quantity;
-            }
-            $state[$assetId]['qty'] -= $tx->quantity;
-            
-            // Sanitización por errores de redondeo
-            if ($state[$assetId]['qty'] < 0.00000001) {
-                $state[$assetId]['qty'] = 0;
-                $state[$assetId]['costBasis'] = 0;
-            }
-        }
     }
 
     /**
@@ -173,9 +115,7 @@ class PerformanceService
     }
 
     /**
-     * Calcula la plusvalía (valor y porcentaje) lograda durante el periodo seleccionado.
-     * 
-     * NOTA: El rendimiento se basa en la diferencia de plusvalías entre el primer y último punto.
+     * Calcula la plusvalía (valor y porcentaje) de un periodo dado.
      */
     private function calculatePeriodPerformance(array $dataPoints)
     {
@@ -186,13 +126,10 @@ class PerformanceService
         $profitPercent = 0;
 
         if ($firstPoint && $lastPoint) {
-            // Plusvalía inicial y final (Valor - Coste)
             $startPL = $firstPoint['y'] - $firstPoint['invested'];
             $endPL = $lastPoint['y'] - $lastPoint['invested'];
-            
             $profitValue = $endPL - $startPL;
             
-            // Rentabilidad relativa sobre el valor total inicial
             $denominator = $firstPoint['y'] > 0 ? $firstPoint['y'] : ($firstPoint['invested'] > 0 ? $firstPoint['invested'] : 1);
             $profitPercent = ($profitValue / $denominator) * 100;
         }
@@ -204,19 +141,16 @@ class PerformanceService
     }
 
     /**
-     * Calcula un desglose detallado de métricas de rendimiento.
+     * Desglose detallado de métricas (dividendos, comisiones, ROI real).
      */
     public function getDetailedBreakdown($userId, $assetIds, $year = null)
     {
-        $transactionsQuery = Transaction::where('user_id', $userId)
-            ->whereIn('asset_id', $assetIds);
-
+        $transactionsQuery = Transaction::where('user_id', $userId)->whereIn('asset_id', $assetIds);
         if ($year) {
             $transactionsQuery->whereYear('date', '<=', $year);
         }
         $transactions = $transactionsQuery->orderBy('date', 'asc')->get();
-
-        $assets = \App\Models\Asset::whereIn('id', $assetIds)->get()->keyBy('id');
+        $assets = Asset::whereIn('id', $assetIds)->get()->keyBy('id');
 
         $yearTransactions = $year ? $transactions->filter(fn($t) => Carbon::parse($t->date)->year == $year) : $transactions;
 
@@ -234,35 +168,22 @@ class PerformanceService
 
         if ($year) {
             $txsBeforeYear = $transactions->filter(fn($t) => Carbon::parse($t->date)->year < $year);
-            foreach ($txsBeforeYear as $tx) {
-                $this->updateAssetState($assetsState, $tx);
-            }
-            foreach ($assetsState as $assetId => $state) {
-                if ($state['qty'] > 0) {
-                    $asset = $assets->get($assetId);
-                    $valueAtStart += $state['qty'] * ($asset->current_price ?? 0);
-                    $costAtStart += $state['costBasis'];
-                }
-            }
+            foreach ($txsBeforeYear as $tx) { $this->updateAssetState($assetsState, $tx); }
+            $valuationAtStart = $this->calculateCurrentValuation($assetsState, $assets);
+            $valueAtStart = $valuationAtStart['value'];
+            $costAtStart = $valuationAtStart['cost'];
+
             $capitalInvertidoYear = $yearTransactions->whereIn('type', ['buy'])->sum('amount');
             $capitalInvertido = $costAtStart + $capitalInvertidoYear;
         } else {
             $capitalInvertido = $transactions->whereIn('type', ['buy'])->sum('amount');
         }
 
-        foreach ($yearTransactions as $tx) {
-            $this->updateAssetState($assetsState, $tx);
-        }
+        foreach ($yearTransactions as $tx) { $this->updateAssetState($assetsState, $tx); }
         
-        $costAtEnd = 0;
-        $valueAtEnd = 0;
-        foreach ($assetsState as $assetId => $state) {
-            if ($state['qty'] > 0) {
-                $asset = $assets->get($assetId);
-                $valueAtEnd += $state['qty'] * ($asset->current_price ?? 0);
-                $costAtEnd += $state['costBasis'];
-            }
-        }
+        $valuationAtEnd = $this->calculateCurrentValuation($assetsState, $assets);
+        $valueAtEnd = $valuationAtEnd['value'];
+        $costAtEnd = $valuationAtEnd['cost'];
 
         if ($year) {
             $totalPLAtEnd = $valueAtEnd - $costAtEnd;
@@ -292,62 +213,36 @@ class PerformanceService
     }
 
     /**
-     * Obtiene el rendimiento anualizado (Plusvalía absoluta por año).
-     * Calcula el diferencial de (Valor Total - Coste Base) entre el inicio y fin de cada año.
+     * Rendimiento anualizado acumulativo.
      */
     public function getAnnualPerformance($userId, $assetIds)
     {
-        $transactions = Transaction::where('user_id', $userId)
-            ->whereIn('asset_id', $assetIds)
-            ->orderBy('date', 'asc')
-            ->get();
-
+        $transactions = Transaction::where('user_id', $userId)->whereIn('asset_id', $assetIds)->orderBy('date', 'asc')->get();
         if ($transactions->isEmpty()) {
             return ['labels' => [Carbon::now()->year], 'data' => [0]];
         }
 
         $years = $transactions->pluck('date')->map->year->unique()->sort();
-        $assets = \App\Models\Asset::whereIn('id', $assetIds)->get()->keyBy('id');
+        $assets = Asset::whereIn('id', $assetIds)->get()->keyBy('id');
         
         $annualData = [];
         $assetsState = [];
         $totalPLAtEndOfPreviousYear = 0;
 
         foreach ($years as $year) {
-            // 1. Procesar transacciones hasta el final de este año (31 Dic)
             foreach ($transactions as $tx) {
                 if (Carbon::parse($tx->date)->year <= $year) {
                     $this->updateAssetState($assetsState, $tx);
-                    // IMPORTANTE: También necesitamos rastrear dividendos y ventas realizadas como P/L histórico
                 }
             }
             
-            // 2. Calcular Valor y Coste al final del año
-            $valueAtEnd = 0;
-            $costAtEnd = 0;
-            foreach ($assetsState as $assetId => $state) {
-                if ($state['qty'] > 0) {
-                    $asset = $assets->get($assetId);
-                    $valueAtEnd += $state['qty'] * ($asset->current_price ?? 0);
-                    $costAtEnd += $state['costBasis'];
-                }
-            }
-
-            // 3. Plusvalía acumulada al final de este año
-            $totalPLAtEnd = $valueAtEnd - $costAtEnd;
+            $valuation = $this->calculateCurrentValuation($assetsState, $assets);
+            $totalPLAtEnd = $valuation['value'] - $valuation['cost'];
             
-            // 4. Rendimiento del año = PL_actual - PL_anterior
             $yearPerformance = $totalPLAtEnd - $totalPLAtEndOfPreviousYear;
-            
-            $annualData[] = [
-                'year' => $year,
-                'value' => (float) $yearPerformance
-            ];
-
-            // Preparar para el siguiente año
+            $annualData[] = ['year' => $year, 'value' => (float) $yearPerformance];
             $totalPLAtEndOfPreviousYear = $totalPLAtEnd;
-            // Reiniciamos el estado para recalcular correctamente o seguimos acumulando (WAC acumula)
-            $assetsState = []; // Reset para evitar duplicar transacciones en la siguiente iteración
+            $assetsState = []; // Reiniciamos para la siguiente iteración de acumulación totalizada
         }
 
         return [
@@ -357,7 +252,7 @@ class PerformanceService
     }
 
     /**
-     * Obtiene el rendimiento mensual detallado de un año concreto. 
+     * Desglose mensual para un año concreto. 
      */
     public function getMonthlyPerformance($userId, $assetIds, $year)
     {
@@ -371,68 +266,36 @@ class PerformanceService
             return ['labels' => [], 'data' => []];
         }
 
-        $assets = \App\Models\Asset::whereIn('id', $assetIds)->get()->keyBy('id');
+        $assets = Asset::whereIn('id', $assetIds)->get()->keyBy('id');
         $months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
         
         $monthlyData = [];
         $assetsState = [];
-        $totalPLAtEndOfPreviousPeriod = 0;
-
-        // 1. Establecer el punto inicial (P/L acumulado al final del año anterior)
+        
+        // 1. Establecer punto inicial al cierre del año anterior
         $txsBeforeYear = $transactions->filter(fn($t) => Carbon::parse($t->date)->year < $year);
-        foreach ($txsBeforeYear as $tx) {
-            $this->updateAssetState($assetsState, $tx);
-        }
+        foreach ($txsBeforeYear as $tx) { $this->updateAssetState($assetsState, $tx); }
+        $valuationStart = $this->calculateCurrentValuation($assetsState, $assets);
+        $totalPLAtEndOfPreviousPeriod = $valuationStart['value'] - $valuationStart['cost'];
 
-        $valueAtStart = 0;
-        $costAtStart = 0;
-        foreach ($assetsState as $assetId => $state) {
-            if ($state['qty'] > 0) {
-                $asset = $assets->get($assetId);
-                $valueAtStart += $state['qty'] * ($asset->current_price ?? 0);
-                $costAtStart += $state['costBasis'];
-            }
-        }
-        $totalPLAtEndOfPreviousPeriod = $valueAtStart - $costAtStart;
-
-        // 2. Calcular mes a mes del año seleccionado
+        // 2. Cálculos mensuales
         for ($m = 1; $m <= 12; $m++) {
             $txsOfMonth = $transactions->filter(fn($t) => Carbon::parse($t->date)->year == $year && Carbon::parse($t->date)->month == $m);
-            foreach ($txsOfMonth as $tx) {
-                $this->updateAssetState($assetsState, $tx);
-            }
+            foreach ($txsOfMonth as $tx) { $this->updateAssetState($assetsState, $tx); }
 
-            $valueAtMonthEnd = 0;
-            $costAtMonthEnd = 0;
-            foreach ($assetsState as $assetId => $state) {
-                if ($state['qty'] > 0) {
-                    $asset = $assets->get($assetId);
-                    $valueAtMonthEnd += $state['qty'] * ($asset->current_price ?? 0);
-                    $costAtMonthEnd += $state['costBasis'];
-                }
-            }
-
-            $totalPLAtMonthEnd = $valueAtMonthEnd - $costAtMonthEnd;
+            $valuationMonth = $this->calculateCurrentValuation($assetsState, $assets);
+            $totalPLAtMonthEnd = $valuationMonth['value'] - $valuationMonth['cost'];
             $monthPerformance = $totalPLAtMonthEnd - $totalPLAtEndOfPreviousPeriod;
 
             $monthlyData[] = (float) $monthPerformance;
             $totalPLAtEndOfPreviousPeriod = $totalPLAtMonthEnd;
-
-            // Si es un mes futuro del año actual y no hay datos, podríamos detenernos o poner 0
-            if ($year == Carbon::now()->year && $m > Carbon::now()->month) {
-                // Opcional: Break o llenar con 0
-            }
         }
 
-        return [
-            'labels' => $months,
-            'data' => $monthlyData,
-        ];
+        return ['labels' => $months, 'data' => $monthlyData];
     }
 
     /**
-     * Obtiene los datos para el Mapa de Calor (Heatmap) de rendimiento.
-     * Retorna una matriz [Año][Mes] = Rendimiento.
+     * Datos para el Mapa de Calor (Heatmap).
      */
     public function getHeatmapData($userId, $assetIds)
     {
@@ -442,12 +305,9 @@ class PerformanceService
 
         foreach ($years as $year) {
             $monthly = $this->getMonthlyPerformance($userId, $assetIds, $year);
-            $heatmap[] = [
-                'year' => $year,
-                'months' => $monthly['data']
-            ];
+            $heatmap[] = ['year' => $year, 'months' => $monthly['data']];
         }
 
-        return array_reverse($heatmap); // Años más recientes primero
+        return array_reverse($heatmap);
     }
 }

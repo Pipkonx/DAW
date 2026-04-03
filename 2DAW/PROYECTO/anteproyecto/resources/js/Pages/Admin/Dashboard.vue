@@ -19,6 +19,13 @@ const importForm = useForm({
     backup_file: null,
 });
 
+const subForm = useForm({
+    tier: 'none',
+    days: 30,
+});
+
+const activeUserForSub = ref(null);
+
 const systemLogs = ref('');
 const loadingLogs = ref(false);
 
@@ -48,6 +55,19 @@ const deleteUser = (user) => {
     if (confirm(`¿ELIMINAR DEFINITIVAMENTE A ${user.name}? Esta acción borrará todos sus datos y transacciones.`)) {
         form.delete(route('admin.users.delete', user.id), { preserveScroll: true });
     }
+};
+
+const openSubModal = (user) => {
+    activeUserForSub.value = user;
+    subForm.tier = user.tier || 'none';
+    subForm.days = 30; // default for UI
+};
+
+const updateSubscription = () => {
+    subForm.post(route('admin.users.update-subscription', activeUserForSub.value.id), {
+        preserveScroll: true,
+        onSuccess: () => activeUserForSub.value = null
+    });
 };
 
 const optimizeDb = () => {
@@ -130,21 +150,56 @@ const fetchLogs = async () => {
                         <div class="text-xs font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-1">Usuarios Totales</div>
                         <div class="text-3xl font-bold text-slate-800 dark:text-white">{{ stats.users }}</div>
                     </div>
-                    <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700">
-                        <div class="text-xs font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-1">Tamaño Base de Datos</div>
-                        <div class="text-3xl font-bold text-blue-600 dark:text-blue-400">{{ stats.db_size }}</div>
+                    <div class="bg-gradient-to-br from-emerald-500 to-teal-500 p-6 rounded-2xl shadow-sm border border-emerald-400 text-white relative overflow-hidden">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-24 w-24 absolute -right-4 -bottom-4 text-white/10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <div class="relative z-10">
+                            <div class="text-[10px] font-black uppercase tracking-widest text-emerald-100 mb-1 flex items-center justify-between">
+                                Ingresos Estimados (MRR)
+                                <span class="bg-white/20 px-2 py-0.5 rounded text-white">{{ stats.premium_users + stats.pro_users }} subs</span>
+                            </div>
+                            <div class="text-3xl font-bold">
+                                ${{ ((stats.premium_users * 9.99) + (stats.pro_users * 4.99)).toFixed(2) }}<span class="text-sm opacity-80 font-medium tracking-normal">/mes</span>
+                            </div>
+                        </div>
                     </div>
                     <div class="md:col-span-2 bg-slate-800 dark:bg-blue-600 p-6 rounded-2xl shadow-lg flex items-center justify-between group overflow-hidden relative">
                         <div class="relative z-10">
                             <div class="text-xs font-black uppercase tracking-widest text-blue-200 mb-2 italic">Mantenimiento Global</div>
-                            <div class="flex gap-3">
-                                <button @click="clearCache" class="px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-xl text-sm font-bold border border-white/20 transition-all">Limpiar Caché</button>
-                                <button @click="optimizeDb" class="px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-xl text-sm font-bold border border-white/20 transition-all">Optimizar DB</button>
+                            <div class="flex flex-wrap gap-2">
+                                <button @click="clearCache" class="flex items-center gap-2 px-3 py-1.5 bg-white/10 hover:bg-white/20 text-white rounded-lg text-xs font-bold border border-white/20 transition-all shrink-0">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                                    </svg>
+                                    Caché
+                                </button>
+                                <button @click="optimizeDb" class="flex items-center gap-2 px-3 py-1.5 bg-white/10 hover:bg-white/20 text-white rounded-lg text-xs font-bold border border-white/20 transition-all shrink-0">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                    </svg>
+                                    Optimizar DB
+                                </button>
                                 
-                                <Link :href="route('admin.reports.index')" class="px-4 py-2 bg-rose-500 hover:bg-rose-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-rose-500/20 transition-all ml-2">Ver Reportes</Link>
-                                <Link :href="route('admin.analytics')" class="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-emerald-500/20 transition-all ml-2">Ver Analíticas</Link>
+                                <Link :href="route('admin.reports.index')" class="flex items-center gap-2 px-3 py-1.5 bg-rose-500 hover:bg-rose-600 text-white rounded-lg text-xs font-bold shadow-lg shadow-rose-500/20 transition-all shrink-0">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                    </svg>
+                                    Reportes
+                                </Link>
+                                <Link :href="route('admin.analytics')" class="flex items-center gap-2 px-3 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg text-xs font-bold shadow-lg shadow-emerald-500/20 transition-all shrink-0">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                                    </svg>
+                                    Analíticas
+                                </Link>
                                 
-                                <button @click="fetchLogs" class="px-4 py-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-indigo-500/20 transition-all ml-2">Ver Logs</button>
+                                <button @click="fetchLogs" class="flex items-center gap-2 px-3 py-1.5 bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg text-xs font-bold shadow-lg shadow-indigo-500/20 transition-all shrink-0">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                                    </svg>
+                                    Logs
+                                </button>
                             </div>
                         </div>
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-24 w-24 absolute -right-4 -bottom-4 text-white/10 group-hover:rotate-12 transition-transform duration-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -341,12 +396,12 @@ const fetchLogs = async () => {
 
                 <!-- Centro de Control de Backups -->
                 <div class="bg-white dark:bg-slate-800 rounded-3xl shadow-xl overflow-hidden border border-slate-100 dark:border-slate-700 mt-8">
-                    <div class="p-8 border-b border-slate-50 dark:border-slate-700 md:flex md:items-center md:justify-between">
-                        <div>
-                            <h3 class="text-2xl font-bold text-slate-800 dark:text-white mb-2">Copias de Seguridad (Backup)</h3>
-                            <p class="text-slate-500 dark:text-slate-400 text-sm italic">Gestión de snapshots. Los backups preventivos se crean automáticamente antes de restaurar.</p>
+                    <div class="px-8 py-6 border-b border-slate-50 dark:border-slate-700 lg:flex lg:items-center lg:justify-between gap-4">
+                        <div class="mb-4 lg:mb-0">
+                            <h3 class="text-xl font-black text-slate-800 dark:text-white mb-1">Copias de Seguridad (Backup)</h3>
+                            <p class="text-slate-500 dark:text-slate-400 text-xs italic font-medium">Gestión de snapshots. Los backups preventivos se crean automáticamente antes de restaurar.</p>
                         </div>
-                        <div class="flex flex-wrap items-center gap-3 mt-4 md:mt-0">
+                        <div class="flex flex-wrap items-center gap-2">
                             <!-- Input para importar -->
                             <input type="file" id="backup-upload" class="hidden" @change="handleImport" accept=".sqlite">
                             <input type="file" id="backup-direct-restore" class="hidden" @change="handleDirectRestore" accept=".sqlite">
@@ -354,39 +409,39 @@ const fetchLogs = async () => {
                             <button 
                                 @click="triggerFileInput"
                                 :disabled="importForm.processing"
-                                class="flex items-center gap-2 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 px-4 py-2 rounded-lg text-sm font-bold transition-all active:scale-95"
+                                class="flex items-center gap-1.5 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all active:scale-95"
                                 title="Subir archivo a la lista de backups"
                             >
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-3.5 h-3.5">
                                   <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" />
                                 </svg>
-                                Solo Subir
+                                Subir
                             </button>
 
                             <button 
                                 @click="() => document.getElementById('backup-direct-restore').click()"
-                                class="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg text-sm font-bold transition-all shadow-lg shadow-emerald-500/10 active:scale-95"
+                                class="flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all shadow-lg shadow-emerald-500/10 active:scale-95"
                                 title="Subir y aplicar base de datos inmediatamente"
                             >
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-3.5 h-3.5">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                                 </svg>
-                                Restauración Directa
+                                Restaurar
                             </button>
 
                             <button 
                                 @click="generateBackup"
                                 :disabled="form.processing"
-                                class="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-400 text-white px-4 py-2 rounded-lg text-sm font-bold transition-all shadow-lg shadow-blue-500/10 active:scale-95"
+                                class="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-400 text-white px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all shadow-lg shadow-blue-500/10 active:scale-95"
                             >
-                                <svg v-if="!form.processing" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
+                                <svg v-if="!form.processing" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-3.5 h-3.5">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
-                                <svg v-else class="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                                <svg v-else class="animate-spin h-3.5 w-3.5 text-white" fill="none" viewBox="0 0 24 24">
                                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
                                 </svg>
-                                Generar Snapshot
+                                Snapshot
                             </button>
                         </div>
                     </div>
@@ -455,7 +510,8 @@ const fetchLogs = async () => {
                                 <tr>
                                     <th class="px-8 py-4 text-xs font-black uppercase tracking-widest text-slate-400">Usuario</th>
                                     <th class="px-8 py-4 text-xs font-black uppercase tracking-widest text-slate-400">Email</th>
-                                    <th class="px-8 py-4 text-xs font-black uppercase tracking-widest text-slate-400">Rol</th>
+                                    <th class="px-8 py-4 text-xs font-black uppercase tracking-widest text-slate-400">Plan</th>
+                                    <th class="px-8 py-4 text-xs font-black uppercase tracking-widest text-slate-400 text-center">Rol</th>
                                     <th class="px-8 py-4 text-xs font-black uppercase tracking-widest text-slate-400 text-right">Acciones</th>
                                 </tr>
                             </thead>
@@ -463,18 +519,36 @@ const fetchLogs = async () => {
                                 <tr v-for="user in users" :key="user.id" class="hover:bg-slate-50/50 dark:hover:bg-slate-700/50 transition-colors">
                                     <td class="px-8 py-4">
                                         <div class="flex items-center gap-3">
-                                            <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold text-xs">
+                                            <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold text-xs" :class="{'ring-2 ring-purple-500': user.tier === 'premium', 'ring-2 ring-indigo-500': user.tier === 'pro', 'ring-2 ring-blue-400': user.tier === 'basic'}">
                                                 {{ user.name.substring(0,2).toUpperCase() }}
                                             </div>
-                                            <span class="font-bold text-slate-800 dark:text-white">{{ user.name }}</span>
+                                            <div>
+                                                <div class="font-bold text-slate-800 dark:text-white">{{ user.name }}</div>
+                                                <div class="text-[10px] text-slate-400 font-bold uppercase tracking-widest" v-if="user.tier !== 'none'">{{ user.subscription_status }}</div>
+                                            </div>
                                         </div>
                                     </td>
                                     <td class="px-8 py-4 text-slate-500 dark:text-slate-400">{{ user.email }}</td>
                                     <td class="px-8 py-4">
+                                        <span v-if="user.tier === 'premium'" class="px-3 py-1 bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400 text-[10px] font-black uppercase rounded-full">Premium</span>
+                                        <span v-else-if="user.tier === 'pro'" class="px-3 py-1 bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400 text-[10px] font-black uppercase rounded-full">Pro</span>
+                                        <span v-else-if="user.tier === 'basic'" class="px-3 py-1 bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 text-[10px] font-black uppercase rounded-full">Basic</span>
+                                        <span v-else class="px-3 py-1 bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400 text-[10px] font-black uppercase rounded-full">No</span>
+                                    </td>
+                                    <td class="px-8 py-4 text-center">
                                         <span v-if="user.is_admin" class="px-3 py-1 bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 text-[10px] font-black uppercase rounded-full">Administrador</span>
-                                        <span v-else class="px-3 py-1 bg-slate-100 dark:bg-slate-800 text-slate-500 text-[10px] font-black uppercase rounded-full">Usuario</span>
+                                        <span v-else class="px-3 py-1 bg-slate-100 dark:bg-slate-800 text-slate-500 text-[10px] font-black uppercase rounded-full border border-slate-200 dark:border-slate-700">Usuario</span>
                                     </td>
                                     <td class="px-8 py-4 text-right flex justify-end gap-2">
+                                        <button 
+                                            @click="openSubModal(user)"
+                                            class="p-2 text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg transition-colors"
+                                            title="Modificar Plan de Suscripción"
+                                        >
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                                              <path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z" />
+                                            </svg>
+                                        </button>
                                         <button 
                                             @click="toggleAdmin(user)"
                                             class="p-2 text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
@@ -501,5 +575,58 @@ const fetchLogs = async () => {
 
             </div>
         </div>
+
+        <!-- Modal de Suscripción Manual -->
+        <div v-if="activeUserForSub" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
+            <div class="bg-white dark:bg-slate-800 w-full max-w-md rounded-3xl shadow-2xl overflow-hidden border border-slate-100 dark:border-slate-700 animate-in zoom-in-95 duration-200">
+                <div class="p-6 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center">
+                    <h3 class="text-xl font-bold text-slate-800 dark:text-white flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        Administrar Plan
+                    </h3>
+                    <button @click="activeUserForSub = null" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300">
+                        <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                
+                <div class="p-6 space-y-6">
+                    <div>
+                        <p class="text-sm font-bold text-slate-800 dark:text-white mb-2">Usuario: {{ activeUserForSub.name }}</p>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">Modifica directamente los datos de membresía en el sistema.</p>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-[10px] font-black uppercase text-slate-500 dark:text-slate-400 mb-2">Nivel de Plan (Tier)</label>
+                            <select v-model="subForm.tier" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm p-3 focus:ring-2 focus:ring-indigo-500 dark:text-white outline-none transition-shadow">
+                                <option value="none">Sin plan (Anular)</option>
+                                <option value="basic">Básico</option>
+                                <option value="pro">Pro</option>
+                                <option value="premium">Premium</option>
+                            </select>
+                        </div>
+                        <div v-if="subForm.tier !== 'none'">
+                            <label class="block text-[10px] font-black uppercase text-slate-500 dark:text-slate-400 mb-2">Días de concesión</label>
+                            <input type="number" v-model="subForm.days" min="1" max="1000" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm p-3 focus:ring-2 focus:ring-indigo-500 dark:text-white outline-none transition-shadow" />
+                            <p class="mt-1 text-[10px] text-slate-400 font-bold italic">La suscripción auto-caducará pasada esta cifra de días si no se renueva.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="p-6 bg-slate-50 dark:bg-slate-900/50 flex justify-end gap-3 border-t border-slate-100 dark:border-slate-700">
+                    <button @click="activeUserForSub = null" class="px-5 py-2.5 rounded-xl font-bold text-xs uppercase tracking-widest text-slate-600 hover:bg-slate-200 dark:text-slate-300 dark:hover:bg-slate-700 transition-colors">
+                        Cancelar
+                    </button>
+                    <button @click="updateSubscription()" :disabled="subForm.processing" class="px-6 py-2.5 rounded-xl font-black text-xs uppercase tracking-widest text-white transition-all active:scale-95 shadow-lg flex items-center justify-center gap-2 min-w-[120px]" :class="subForm.tier === 'none' ? 'bg-rose-500 shadow-rose-500/20 hover:bg-rose-600' : 'bg-indigo-600 shadow-indigo-500/20 hover:bg-indigo-700'">
+                        {{ subForm.tier === 'none' ? 'Anular Plan' : 'Guardar' }}
+                    </button>
+                </div>
+            </div>
+        </div>
+
     </AuthenticatedLayout>
 </template>

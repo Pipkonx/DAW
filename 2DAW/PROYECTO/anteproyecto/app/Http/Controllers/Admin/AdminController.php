@@ -13,6 +13,8 @@ use App\Models\Asset;
 use App\Models\Transaction;
 use App\Models\Report;
 use App\Services\ApiService;
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class AdminController extends Controller
 {
@@ -45,7 +47,9 @@ class AdminController extends Controller
                 'assets' => Asset::count(),
                 'transactions' => Transaction::count(),
                 'db_size' => $this->getDbSize(),
-                'cache_enabled' => config('cache.default') !== 'array'
+                'cache_enabled' => config('cache.default') !== 'array',
+                'premium_users' => DB::table('subscriptions')->where('stripe_status', 'active')->where('stripe_price', config('services.stripe.price_premium'))->count(),
+                'pro_users' => DB::table('subscriptions')->where('stripe_status', 'active')->where('stripe_price', config('services.stripe.price_pro'))->count(),
             ],
             'api_health' => $this->checkApiHealth(),
             'api_consumption' => $apiService->getConsumptionData(),
@@ -99,6 +103,56 @@ class AdminController extends Controller
 
         $user->delete();
         return back()->with('success', 'Usuario eliminado correctamente.');
+    }
+
+    /**
+     * Modifica el plan de suscripción de un usuario y los días restantes.
+     */
+    public function updateSubscription(Request $request, User $user)
+    {
+        $request->validate([
+            'tier' => 'required|in:none,basic,pro,premium',
+            'days' => 'nullable|integer|min:1|max:3650'
+        ]);
+
+        $tier = $request->tier;
+        $days = $request->days ?: 30; // 30 días por defecto si se activa manual
+
+        if ($tier === 'none') {
+            DB::table('subscriptions')->where('user_id', $user->id)->delete();
+            return back()->with('success', 'Suscripción anulada exitosamente.');
+        }
+
+        $priceId = null;
+        if ($tier === 'premium') $priceId = config('services.stripe.price_premium', 'price_premium_id');
+        if ($tier === 'pro') $priceId = config('services.stripe.price_pro', 'price_pro_id');
+        if ($tier === 'basic') $priceId = config('services.stripe.price_basic', 'price_basic_id');
+
+        $exists = DB::table('subscriptions')->where('user_id', $user->id)->first();
+        $endsAt = Carbon::now()->addDays($days);
+
+        if ($exists) {
+            DB::table('subscriptions')->where('user_id', $user->id)->update([
+                'stripe_status' => 'active',
+                'stripe_price' => $priceId,
+                'ends_at' => $endsAt,
+                'updated_at' => now(),
+            ]);
+        } else {
+            DB::table('subscriptions')->insert([
+                'user_id' => $user->id,
+                'name' => 'default',
+                'stripe_id' => 'manual_' . uniqid(),
+                'stripe_status' => 'active',
+                'stripe_price' => $priceId,
+                'quantity' => 1,
+                'ends_at' => $endsAt,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+
+        return back()->with('success', 'Plan ' . ucfirst($tier) . ' concedido por ' . $days . ' días.');
     }
 
     /**

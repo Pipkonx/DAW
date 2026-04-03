@@ -22,7 +22,7 @@ class TransactionController extends Controller
     }
 
     /**
-     * Display the Net Worth / Transactions dashboard.
+     * Muestra el panel de control de Patrimonio Neto / Transacciones.
      */
     public function index(Request $request)
     {
@@ -31,7 +31,7 @@ class TransactionController extends Controller
         $assetId = $request->input('asset_id');
         $timeframe = $request->input('timeframe', 'MAX');
 
-        // Initial Data Fetching
+        // Obtención de datos iniciales
         $firstTransaction = Transaction::where('user_id', $user->id)->orderBy('date', 'asc')->first();
         $minDate = $firstTransaction ? Carbon::parse($firstTransaction->date)->format('Y-m-d') : Carbon::now()->format('Y-m-d');
 
@@ -39,15 +39,15 @@ class TransactionController extends Controller
         $assets = $this->getUserAssets($user, $portfolioId);
         $assetIds = $assets->pluck('id');
 
-        // KPI Summaries
+        // Resúmenes de KPI
         $summary = $this->calculateSummary($assets, $user->id);
 
-        // Transactions History (Paginated)
+        // Historial de Transacciones (Paginado)
         $transactions = $this->getTransactionsQuery($user, $portfolioId, $assetId, $assetIds)
             ->paginate(15)
             ->withQueryString();
 
-        // Analytical Data (Performance & Allocations)
+        // Datos Analíticos (Rendimiento y Asignaciones)
         $chartData = $this->performanceService->getChartData($user->id, $assetIds->toArray(), $timeframe, $summary['current_value']);
         $allocations = $this->getAllocations($assets);
 
@@ -71,6 +71,9 @@ class TransactionController extends Controller
         ]);
     }
 
+    /**
+     * Obtiene los portafolios del usuario con su valoración total.
+     */
     private function getUserPortfolios($user)
     {
         $portfolios = Portfolio::where('user_id', $user->id)
@@ -86,6 +89,9 @@ class TransactionController extends Controller
         });
     }
 
+    /**
+     * Obtiene los activos del usuario filtrados por portafolio.
+     */
     private function getUserAssets($user, $portfolioId)
     {
         $query = Asset::where('user_id', $user->id)->with('marketAsset');
@@ -93,7 +99,7 @@ class TransactionController extends Controller
         
         $assets = $query->get();
         
-        // Self-healing: Recalcular métricas si detectamos inconsistencias
+        // Autocorrección: Recalcular métricas si detectamos inconsistencias
         $assets->each(function ($asset) {
             if ($asset->quantity > 0 && $asset->avg_buy_price == 0 && $asset->transactions()->exists()) {
                 $asset->recalculateMetrics();
@@ -120,6 +126,9 @@ class TransactionController extends Controller
         return $assets;
     }
 
+    /**
+     * Calcula el resumen de patrimonio y métricas de rendimiento.
+     */
     private function calculateSummary($assets, $userId)
     {
         $totalInvested = $assets->sum('total_invested');
@@ -146,13 +155,13 @@ class TransactionController extends Controller
     }
 
     /**
-     * Display the detailed Performance dashboard.
+     * Muestra el panel detallado de Rendimiento.
      */
     public function performance(Request $request)
     {
         $user = Auth::user();
         $portfolioId = $request->input('portfolio_id', 'aggregated');
-        $viewType = $request->input('view', 'MAX'); // MAX or specific year
+        $viewType = $request->input('view', 'MAX'); // MAX o un año específico
 
         $portfolios = $this->getUserPortfolios($user);
         $assets = $this->getUserAssets($user, $portfolioId);
@@ -183,7 +192,7 @@ class TransactionController extends Controller
     }
 
     /**
-     * Muestra la vista de análisis inmersivo de Distribución (Allocation).
+     * Muestra la vista de análisis de Distribución (Allocation).
      */
     public function allocation(Request $request)
     {
@@ -215,7 +224,7 @@ class TransactionController extends Controller
     }
 
     /**
-     * Reusable transaction query logic.
+     * Lógica reutilizable para la consulta de transacciones.
      */
     public function getTransactionsQuery($user, $portfolioId, $assetId, $assetIds)
     {
@@ -239,6 +248,9 @@ class TransactionController extends Controller
         return $query->orderBy('date', 'desc')->orderBy('created_at', 'desc');
     }
 
+    /**
+     * Obtiene los datos de asignación por diferentes criterios.
+     */
     private function getAllocations($assets)
     {
         return [

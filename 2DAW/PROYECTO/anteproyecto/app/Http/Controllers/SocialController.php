@@ -24,12 +24,33 @@ class SocialController extends Controller
 
     public function index(Request $request)
     {
-        $filter = $request->query('tab', 'recent'); // recent, following, best
-        
+        $filter = $request->query('tab', 'recent');
+        $featuredPostId = $request->query('post');
+        $featuredPost = null;
+
         $userId = Auth::id();
         $blockedIds = \DB::table('blocks')
             ->where('blocker_id', $userId)
             ->pluck('blocked_id');
+
+        // Si se solicita un post específico (Deep-linking)
+        if ($featuredPostId) {
+            $featuredPost = Post::with(['user', 'marketAsset', 'likes', 'comments' => function($q) use ($blockedIds) {
+                $q->whereNull('parent_id')
+                  ->whereNotIn('user_id', $blockedIds)
+                  ->with(['user', 'likes', 'replies' => function($sq) use ($blockedIds) {
+                      $sq->whereNotIn('user_id', $blockedIds)
+                        ->with(['user', 'likes'])->latest();
+                  }])
+                  ->latest();
+            }])
+            ->withCount(['likes', 'comments', 'reposts'])
+            ->find($featuredPostId);
+
+            if (!$featuredPost) {
+                session()->flash('error', 'La publicación que buscas ya no está disponible o ha sido eliminada.');
+            }
+        }
 
         $postsQuery = Post::with(['user', 'marketAsset', 'likes', 'comments' => function($q) use ($blockedIds) {
                 $q->whereNull('parent_id')
@@ -165,8 +186,27 @@ class SocialController extends Controller
             ['name' => 'Cathie Wood', 'slug' => 'cathie-wood', 'avatar' => 'https://ui-avatars.com/api/?name=CW', 'desc' => 'ARK Invest Founder', 'change' => -1.2],
         ], 0, 4);
 
+        // Enriquecer el post destacado si existe
+        if ($featuredPost) {
+            $featuredPost->reactions_summary = $featuredPost->likes->groupBy('type')->map->count();
+            $myFeaturedReaction = $featuredPost->likes->where('user_id', $userId)->first();
+            $featuredPost->user_reaction = $myFeaturedReaction ? $myFeaturedReaction->type : null;
+            $featuredPost->is_liked = !!$featuredPost->user_reaction;
+            $featuredPost->is_reposted = $featuredPost->reposts()->where('user_id', $userId)->exists();
+            $featuredPost->is_bookmarked = $featuredPost->bookmarks()->where('user_id', $userId)->exists();
+            $featuredPost->created_at_human = $featuredPost->created_at->diffForHumans();
+            
+            $featuredPost->comments->each(function($comment) use ($userId) {
+                $comment->created_at_human = $comment->created_at->diffForHumans();
+                $comment->replies->each(function($reply) use ($userId) {
+                    $reply->created_at_human = $reply->created_at->diffForHumans();
+                });
+            });
+        }
+
         return Inertia::render('Feed/Index', [
             'posts' => $posts,
+            'featuredPost' => $featuredPost,
             'topGainers' => array_slice($topGainers, 0, 5),
             'topLosers' => array_slice($topLosers, 0, 5),
             'trends' => $trends,

@@ -13,6 +13,8 @@ import { usePrivacy } from '@/Composables/usePrivacy';
 import { useToast } from '@/Composables/useToast';
 import { watch } from 'vue';
 import Footer from '@/Components/Footer.vue';
+import AdSlot from '@/Components/AdSense/AdSlot.vue';
+import AdBlockDetector from '@/Components/AdSense/AdBlockDetector.vue';
 
 const { isPrivacyMode, togglePrivacyMode } = usePrivacy();
 const { activeToasts, showToast, removeToast } = useToast();
@@ -368,11 +370,23 @@ onMounted(() => {
 
             <!-- Contenido principal -->
             <main>
+                <!-- Anuncio Superior -->
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
+                    <AdSlot slot-id="7890123456" />
+                </div>
+
                 <slot />
+
+                <!-- Anuncio Inferior -->
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
+                    <AdSlot slot-id="8901234567" />
+                </div>
             </main>
 
             <!-- Footer for Authenticated Users -->
             <Footer />
         </div>
+        <!-- AdBlock / Brave Detection (Total Block) -->
+        <AdBlockDetector v-if="!$page.props.auth.user?.is_premium" />
     </div>
 </template>

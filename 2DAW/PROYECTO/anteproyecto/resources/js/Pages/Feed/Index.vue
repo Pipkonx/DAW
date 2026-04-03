@@ -9,6 +9,7 @@ const { showToast } = useToast();
 
 const props = defineProps({
     posts: Object,
+    featuredPost: Object,
     topGainers: Array,
     topLosers: Array,
     trends: Array,
@@ -22,6 +23,28 @@ const postForm = useForm({
     market_asset_id: null,
     image: null,
 });
+
+const featuredModalOpen = ref(false);
+const postToShowInModal = ref(null);
+
+import { onMounted } from 'vue';
+
+onMounted(() => {
+    if (props.featuredPost) {
+        postToShowInModal.value = props.featuredPost;
+        featuredModalOpen.value = true;
+    }
+});
+
+const closeFeaturedModal = () => {
+    featuredModalOpen.value = false;
+    postToShowInModal.value = null;
+    
+    // Limpiar el parámetro 'post' de la URL sin recargar la página
+    const url = new URL(window.location.href);
+    url.searchParams.delete('post');
+    window.history.replaceState({}, '', url);
+};
 
 const imagePreview = ref(null);
 const fileInput = ref(null);
@@ -204,6 +227,15 @@ const blockUser = (user) => {
     };
 };
 
+const getAvatarRingClasses = (tier) => {
+    switch (tier) {
+        case 'premium': return 'ring-2 ring-purple-500 ring-offset-2 dark:ring-offset-slate-900 border-transparent';
+        case 'pro': return 'ring-2 ring-indigo-500 ring-offset-2 dark:ring-offset-slate-900 border-transparent';
+        case 'basic': return 'ring-2 ring-blue-500 ring-offset-2 dark:ring-offset-slate-900 border-transparent';
+        default: return 'border border-slate-200 dark:border-slate-700';
+    }
+};
+
 </script>
 
 <template>
@@ -233,7 +265,7 @@ const blockUser = (user) => {
                             
                             <!-- Foto superpuesta -->
                             <div class="-mt-10 mb-4 relative z-10 px-4">
-                                <img :src="$page.props.auth.user.avatar || `https://ui-avatars.com/api/?name=${$page.props.auth.user.name}`" class="w-20 h-20 rounded-2xl mx-auto border-4 border-white dark:border-slate-800 bg-white object-cover shadow-lg" />
+                                <img :src="$page.props.auth.user.avatar || `https://ui-avatars.com/api/?name=${$page.props.auth.user.name}`" :class="['w-20 h-20 rounded-2xl mx-auto bg-white object-cover shadow-lg', getAvatarRingClasses($page.props.auth.user.tier)]" />
                                 <h3 class="mt-2 text-lg font-black text-slate-800 dark:text-white leading-tight">{{ $page.props.auth.user.name }}</h3>
                                 <p class="text-xs text-slate-500 font-bold italic">@{{ $page.props.auth.user.username || `user_${$page.props.auth.user.id}` }}</p>
                             </div>
@@ -306,7 +338,7 @@ const blockUser = (user) => {
                         <!-- Create Post -->
                         <div class="bg-white dark:bg-slate-800 rounded-3xl p-6 shadow-xl border border-slate-100 dark:border-slate-700 border-b-4 border-b-blue-500">
                             <div class="flex items-start gap-4">
-                                <img :src="$page.props.auth.user.avatar || `https://ui-avatars.com/api/?name=${$page.props.auth.user.name}`" class="w-12 h-12 rounded-2xl object-cover border-2 border-slate-100 dark:border-slate-700" />
+                                <img :src="$page.props.auth.user.avatar || `https://ui-avatars.com/api/?name=${$page.props.auth.user.name}`" :class="['w-12 h-12 rounded-2xl object-cover', getAvatarRingClasses($page.props.auth.user.tier)]" />
                                 <div class="flex-grow">
                                     <textarea 
                                         v-model="postForm.content"
@@ -375,7 +407,7 @@ const blockUser = (user) => {
                                 <div class="flex items-start justify-between mb-4">
                                     <div class="flex items-center gap-3">
                                         <Link :href="route('social.profile', post.user.username)" class="hover:opacity-80 transition-opacity">
-                                            <img :src="post.user.avatar || `https://ui-avatars.com/api/?name=${post.user.name}`" class="w-10 h-10 rounded-full border border-slate-100 dark:border-slate-700" />
+                                            <img :src="post.user.avatar || `https://ui-avatars.com/api/?name=${post.user.name}`" :class="['w-10 h-10 rounded-full object-cover', getAvatarRingClasses(post.user.tier)]" />
                                         </Link>
                                         <div>
                                             <div class="text-sm font-bold text-slate-800 dark:text-white flex items-center gap-2">
@@ -558,7 +590,7 @@ const blockUser = (user) => {
                                     <div class="space-y-6 mb-6">
                                         <div v-for="comment in post.comments" :key="comment.id" class="space-y-4">
                                             <div class="flex gap-3 group/comment">
-                                                <img :src="`https://ui-avatars.com/api/?name=${comment.user.name}`" class="w-8 h-8 rounded-full shadow-sm" />
+                                                <img :src="comment.user.avatar || `https://ui-avatars.com/api/?name=${comment.user.name}`" :class="['w-8 h-8 rounded-full shadow-sm object-cover', getAvatarRingClasses(comment.user.tier)]" />
                                                 <div class="flex-grow">
                                                     <div class="bg-slate-50 dark:bg-slate-900/50 rounded-2xl p-4 border border-slate-100 dark:border-slate-700 group-hover/comment:border-slate-200 transition-colors">
                                                         <div class="flex justify-between items-center mb-1">
@@ -597,7 +629,7 @@ const blockUser = (user) => {
                                         </div>
                                     </div>
                                     <div class="flex gap-3">
-                                        <img :src="$page.props.auth.user.avatar || `https://ui-avatars.com/api/?name=${$page.props.auth.user.name}`" class="w-8 h-8 rounded-full border border-slate-100" />
+                                        <img :src="$page.props.auth.user.avatar || `https://ui-avatars.com/api/?name=${$page.props.auth.user.name}`" :class="['w-8 h-8 rounded-full object-cover', getAvatarRingClasses($page.props.auth.user.tier)]" />
                                         <div class="flex-grow relative">
                                             <input 
                                                 type="text" 
@@ -717,7 +749,7 @@ const blockUser = (user) => {
                                 <template v-if="activeCreatorsTab === 'popular'">
                                     <Link v-for="(creator, idx) in topCreators" :key="'pop-' + creator.id" :href="route('social.profile', creator.username || creator.id)" class="flex items-start gap-4 group cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700/50 p-2 -mx-2 rounded-2xl transition-all">
                                         <div class="relative">
-                                            <img :src="creator.avatar || `https://ui-avatars.com/api/?name=${creator.name}`" class="w-10 h-10 rounded-xl object-cover border border-slate-100 dark:border-slate-700" />
+                                            <img :src="creator.avatar || `https://ui-avatars.com/api/?name=${creator.name}`" :class="['w-10 h-10 rounded-xl object-cover', getAvatarRingClasses(creator.tier)]" />
                                             <div class="absolute -bottom-1 -right-1 w-5 h-5 bg-indigo-600 text-white text-[8px] font-black rounded-lg flex items-center justify-center border-2 border-white dark:border-slate-800 shadow-sm">
                                                 #{{ idx + 1 }}
                                             </div>
@@ -735,7 +767,7 @@ const blockUser = (user) => {
                                 <template v-if="activeCreatorsTab === 'active'">
                                     <Link v-for="(creator, idx) in $page.props.activeCreators" :key="'act-' + creator.id" :href="route('social.profile', creator.username || creator.id)" class="flex items-start gap-4 group cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700/50 p-2 -mx-2 rounded-2xl transition-all">
                                         <div class="relative">
-                                            <img :src="creator.avatar || `https://ui-avatars.com/api/?name=${creator.name}`" class="w-10 h-10 rounded-xl object-cover border border-slate-100 dark:border-slate-700" />
+                                            <img :src="creator.avatar || `https://ui-avatars.com/api/?name=${creator.name}`" :class="['w-10 h-10 rounded-xl object-cover', getAvatarRingClasses(creator.tier)]" />
                                             <div class="absolute -bottom-1 -right-1 w-5 h-5 bg-emerald-500 text-white text-[8px] font-black rounded-lg flex items-center justify-center border-2 border-white dark:border-slate-800 shadow-sm">
                                                 #{{ idx + 1 }}
                                             </div>
@@ -754,6 +786,74 @@ const blockUser = (user) => {
                         </div>
                     </div>
 
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Featured Post Modal (Deep-linking) -->
+        <div v-if="featuredModalOpen && postToShowInModal" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm overflow-y-auto">
+            <div class="bg-white dark:bg-slate-800 rounded-3xl w-full max-w-2xl my-8 relative shadow-2xl border border-slate-100 dark:border-slate-700 animate-in zoom-in-95 duration-200">
+                <!-- Close Button -->
+                <button @click="closeFeaturedModal" class="absolute -top-12 right-0 md:-right-12 p-3 bg-white/10 hover:bg-white/20 text-white rounded-full backdrop-blur-md transition-all">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+
+                <div class="p-6 md:p-8">
+                    <!-- Post Header -->
+                    <div class="flex items-start justify-between mb-6">
+                        <div class="flex items-center gap-4">
+                            <img :src="postToShowInModal.user.avatar || `https://ui-avatars.com/api/?name=${postToShowInModal.user.name}`" :class="['w-12 h-12 rounded-full object-cover', getAvatarRingClasses(postToShowInModal.user.tier)]" />
+                            <div>
+                                <div class="text-base font-black text-slate-800 dark:text-white flex items-center gap-2">
+                                    {{ postToShowInModal.user.name }}
+                                    <span v-if="postToShowInModal.user.is_admin" class="bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-[8px] font-black uppercase px-2 py-0.5 rounded italic">Admin</span>
+                                </div>
+                                <div class="text-xs text-slate-400 font-bold uppercase tracking-widest">{{ postToShowInModal.created_at_human  }}</div>
+                            </div>
+                        </div>
+                        <div v-if="postToShowInModal.market_asset" class="px-4 py-1.5 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-100 dark:border-blue-800">
+                            <span class="text-xs font-black text-blue-600 dark:text-blue-400">${{ postToShowInModal.market_asset.ticker }}</span>
+                        </div>
+                    </div>
+
+                    <!-- Post Content -->
+                    <div class="prose prose-slate dark:prose-invert max-w-none mb-6">
+                        <p class="text-slate-700 dark:text-slate-200 text-lg leading-relaxed whitespace-pre-wrap">{{ postToShowInModal.content }}</p>
+                    </div>
+
+                    <!-- Post Image -->
+                    <img v-if="postToShowInModal.image_path" :src="`/storage/${postToShowInModal.image_path}`" class="w-full rounded-2xl mb-8 border border-slate-100 dark:border-slate-700 shadow-xl" />
+
+                    <!-- Reactions and Actions -->
+                    <div class="flex items-center gap-6 pt-6 border-t border-slate-100 dark:border-slate-700">
+                        <button 
+                            @click="toggleLike(postToShowInModal.id, '👍', 'post')"
+                            class="flex items-center gap-2 group"
+                        >
+                            <span v-if="postToShowInModal.user_reaction" class="text-xl">{{ postToShowInModal.user_reaction }}</span>
+                            <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-slate-400 group-hover:text-rose-500 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                            </svg>
+                            <span class="text-sm font-bold text-slate-500">{{ postToShowInModal.is_liked ? 'Reaccionado' : 'Me gusta' }}</span>
+                        </button>
+
+                        <div class="flex items-center gap-2 text-slate-400">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                            </svg>
+                            <span class="text-sm font-bold">{{ postToShowInModal.comments_count || 0 }}</span>
+                        </div>
+                    </div>
+
+                    <!-- Botón para ver en el feed completo -->
+                    <div class="mt-8">
+                        <button @click="closeFeaturedModal" class="w-full py-4 bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-black rounded-2xl shadow-xl hover:scale-[1.02] transition-transform uppercase tracking-widest text-xs">
+                            Continuar Explorando el Feed
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
