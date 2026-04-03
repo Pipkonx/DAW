@@ -31,13 +31,17 @@ class ExpenseController extends Controller
         $categories = $this->expenseService->getHierarchicalCategories($user->id);
         $year = $request->input('year', Carbon::now()->year);
         
+        // Calculamos la fecha de la primera transacción para que el análisis sea completo por defecto
+        $firstTransaction = Transaction::where('user_id', $user->id)->orderBy('date', 'asc')->first();
+        $minDate = $firstTransaction ? Carbon::parse($firstTransaction->date)->startOfDay() : Carbon::now()->startOfYear();
+
         $startDate = $request->input('start_date') 
             ? Carbon::parse($request->input('start_date'))->startOfDay() 
-            : Carbon::createFromDate($year, 1, 1)->startOfDay();
+            : $minDate;
             
         $endDate = $request->input('end_date') 
             ? Carbon::parse($request->input('end_date'))->endOfDay() 
-            : Carbon::createFromDate($year, 12, 31)->endOfDay();
+            : Carbon::now()->endOfDay();
 
         if ($startDate->gt($endDate)) {
             $temp = $startDate; $startDate = $endDate; $endDate = $temp;

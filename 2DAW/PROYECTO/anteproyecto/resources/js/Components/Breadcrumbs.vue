@@ -39,6 +39,20 @@ const breadcrumbMap = {
         { label: 'Dashboard', href: route('dashboard') },
         { label: 'Perfil', href: route('profile.edit') }
     ],
+    'admin.dashboard': [
+        { label: 'Dashboard', href: route('dashboard') },
+        { label: 'Administración', href: route('admin.dashboard') }
+    ],
+    'admin.analytics': [
+        { label: 'Dashboard', href: route('dashboard') },
+        { label: 'Administración', href: route('admin.dashboard') },
+        { label: 'Analíticas', href: route('admin.analytics') }
+    ],
+    'admin.reports.index': [
+        { label: 'Dashboard', href: route('dashboard') },
+        { label: 'Administración', href: route('admin.dashboard') },
+        { label: 'Moderación', href: route('admin.reports.index') }
+    ],
     // Añadir más rutas según sea necesario
 };
 

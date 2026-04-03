@@ -179,9 +179,14 @@ const setRange = (range) => {
                         </tr>
                     </tbody>
                 </table>
-                <!-- Enlace al análisis completo -->
                 <div class="px-4 py-3 bg-slate-50/50 dark:bg-slate-800/50 border-t border-slate-100 dark:border-slate-700 text-center">
-                    <Link :href="route('expenses.index')" class="text-xs font-bold text-blue-600 dark:text-blue-400 hover:text-blue-700 uppercase tracking-widest flex items-center justify-center gap-2 transition-colors">
+                    <Link 
+                        :href="route('expenses.index', { 
+                            start_date: props.expenses.ranges[props.range].start, 
+                            end_date: props.expenses.ranges[props.range].end 
+                        })" 
+                        class="text-xs font-bold text-blue-600 dark:text-blue-400 hover:text-blue-700 uppercase tracking-widest flex items-center justify-center gap-2 transition-colors"
+                    >
                         Ver análisis detallado
                         <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
                     </Link>

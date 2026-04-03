@@ -56,7 +56,7 @@ class AdminController extends Controller
             'global_activity' => Transaction::with(['user', 'asset'])
                 ->orderBy('date', 'desc')
                 ->orderBy('created_at', 'desc')
-                ->limit(20)
+                ->limit(5)
                 ->get()
                 ->map(fn($tx) => [
                     'id' => $tx->id,
@@ -174,6 +174,9 @@ class AdminController extends Controller
 
             // Aplicar restauración
             File::copy($backupPath, $dbPath);
+            
+            // Limpiar tras el backup preventivo
+            $this->cleanOldBackups();
 
             return back()->with('success', 'Base de datos restaurada con éxito. Se ha creado una copia preventiva: ' . $preventiveName);
         } catch (\Exception $e) {
@@ -279,6 +282,9 @@ class AdminController extends Controller
 
         $filename = 'backup-' . now()->format('Y-m-d-His') . '.sqlite';
         File::copy($databasePath, $backupDir . '/' . $filename);
+        
+        // Limpiar copias antiguas excedentes
+        $this->cleanOldBackups();
 
         return back()->with('success', 'Copia de seguridad ' . $filename . ' generada con éxito.');
     }
@@ -330,6 +336,9 @@ class AdminController extends Controller
 
         $filename = 'imported-' . now()->format('Y-m-d-His') . '.sqlite';
         $file->move($backupDir, $filename);
+        
+        // Limpiar tras importación
+        $this->cleanOldBackups();
 
         return back()->with('success', 'Copia de seguridad importada con éxito: ' . $filename);
     }
@@ -361,10 +370,31 @@ class AdminController extends Controller
         // 2. Sobrescribir base de datos actual
         File::copy($file->getRealPath(), $databasePath);
 
-        // 3. Limpiar caché para evitar inconsistencias
+        // 3. Limpiar tras el backup preventivo e importación
+        $this->cleanOldBackups();
+
+        // 4. Limpiar caché para evitar inconsistencias
         Artisan::call('cache:clear');
 
         return back()->with('success', 'Base de datos restaurada directamente con éxito. El sistema ha sido actualizado.');
+    }
+
+    /**
+     * Limpia las copias de seguridad antiguas, manteniendo solo las 5 más recientes.
+     */
+    private function cleanOldBackups()
+    {
+        $backupDir = storage_path('app/backups');
+        if (!File::exists($backupDir)) return;
+
+        $files = File::glob($backupDir . '/*.sqlite');
+        if (count($files) > 5) {
+            // Ordenar por fecha de modificación ascendente (más viejos primero)
+            array_multisort(array_map('filemtime', $files), SORT_ASC, $files);
+            
+            // Borrar los que sobran
+            File::delete(array_slice($files, 0, count($files) - 5));
+        }
     }
 
     /**

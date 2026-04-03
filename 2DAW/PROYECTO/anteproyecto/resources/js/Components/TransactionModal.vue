@@ -297,64 +297,96 @@ const preselectCategory = (type) => {
 };
 
 // Resetear o poblar formulario
-watch(() => props.show, (newVal) => {
-    if (newVal) {
-        isFormLoading.value = true; // Bloquea vigilantes automáticos
-        searchResults.value = [];
-        showSuggestions.value = false;
-        priceError.value = null;
+// Función para inicializar el formulario (Creación o Edición)
+const initForm = () => {
+    isFormLoading.value = true; // Bloquea vigilantes automáticos durante la carga
+    searchResults.value = [];
+    showSuggestions.value = false;
+    priceError.value = null;
+    if (props.transaction && props.transaction.id) {
+        // MODO EDICIÓN
+        form.type = props.transaction.type || 'expense';
+        form.amount = props.transaction.amount ?? '';
         
-        if (props.transaction && props.transaction.id) {
-            // Modo Edición
-            form.type = props.transaction.type;
-            form.amount = props.transaction.amount;
-            form.date = props.transaction.date.substring(0, 10);
-            form.time = props.transaction.time ? props.transaction.time.substring(0, 5) : '';
-            form.category_id = props.transaction.category_id;
-            
-            if (form.category_id) {
-                form.category_name = findCategoryNameById(form.category_id);
-            } else {
-                form.category_name = props.transaction.category?.name || ''; 
-            }
-            form.description = props.transaction.description;
-            
-            // Poblar datos del activo desde relación
-            if (props.transaction.asset) {
-                form.asset_name = props.transaction.asset.ticker || props.transaction.asset.name;
-                form.asset_full_name = props.transaction.asset.name;
-                form.asset_type = props.transaction.asset.type;
-                form.market_asset_id = props.transaction.asset.market_asset_id;
-                form.isin = props.transaction.asset.isin || '';
-            } else {
-                form.asset_name = '';
-                form.asset_full_name = '';
-                form.asset_type = 'stock'; // Por defecto
-                form.market_asset_id = null;
-                form.isin = '';
-            }
-
-            form.quantity = props.transaction.quantity || '';
-            form.price_per_unit = props.transaction.price_per_unit || '';
-            form.fees = props.transaction.fees || '';
-            form.exchange_fees = props.transaction.exchange_fees || '';
-            form.tax = props.transaction.tax || '';
-            form.currency_code = props.transaction.currency || 'EUR';
+        // Formateo seguro de fecha (YYYY-MM-DD)
+        if (props.transaction.date) {
+            const dateStr = String(props.transaction.date);
+            form.date = dateStr.includes('T') ? dateStr.split('T')[0] : dateStr.substring(0, 10);
         } else {
-            // Modo Creación
-            form.reset();
-            form.clearErrors();
-            form.date = new Date().toISOString().substr(0, 10);
-            if (props.transaction && props.transaction.type) form.type = props.transaction.type;
-            if (!['buy', 'sell', 'dividend', 'reward', 'gift'].includes(form.type)) preselectCategory(form.type);
-            if (props.defaultPortfolioId && props.defaultPortfolioId !== 'aggregated') form.portfolio_id = props.defaultPortfolioId;
-            else if (props.portfolios.length > 0) form.portfolio_id = props.portfolios[0].id;
+            form.date = new Date().toISOString().substring(0, 10);
+        }
+        
+        // Formateo seguro de hora (HH:mm)
+        if (props.transaction.time) {
+            form.time = String(props.transaction.time).substring(0, 5);
+        } else {
+            form.time = '';
         }
 
-        // Retardo para liberar isFormLoading y permitir que corran los vigilantes
-        setTimeout(() => {
-            isFormLoading.value = false;
-        }, 50);
+        form.category_id = props.transaction.category_id || null;
+        
+        if (form.category_id) {
+            form.category_name = findCategoryNameById(form.category_id);
+        } else {
+            // Soportar tanto objeto anidado como string plano (Dashboard)
+            form.category_name = typeof props.transaction.category === 'object' 
+                ? props.transaction.category?.name 
+                : (props.transaction.category || ''); 
+        }
+        form.description = props.transaction.description || '';
+        
+        // Poblar datos del activo
+        if (props.transaction.asset) {
+            form.asset_name = props.transaction.asset.ticker || props.transaction.asset.name;
+            form.asset_full_name = props.transaction.asset.name;
+            form.asset_type = props.transaction.asset.type;
+            form.market_asset_id = props.transaction.asset.market_asset_id;
+            form.isin = props.transaction.asset.isin || '';
+        } else if (props.transaction.asset_name) {
+            form.asset_name = props.transaction.asset_name;
+            form.asset_full_name = props.transaction.asset_name;
+            form.asset_type = props.transaction.asset_type || 'stock';
+            form.market_asset_id = props.transaction.market_asset_id || null;
+        } else {
+            form.asset_name = '';
+            form.asset_full_name = '';
+            form.asset_type = 'stock';
+            form.market_asset_id = null;
+            form.isin = '';
+        }
+
+        form.quantity = props.transaction.quantity ?? '';
+        form.price_per_unit = props.transaction.price_per_unit ?? '';
+        form.fees = props.transaction.fees ?? '';
+        form.exchange_fees = props.transaction.exchange_fees ?? '';
+        form.tax = props.transaction.tax ?? '';
+        form.currency_code = props.transaction.currency || props.transaction.currency_code || 'EUR';
+    } else {
+        // MODO CREACIÓN
+        form.reset();
+        form.clearErrors();
+        form.date = new Date().toISOString().substr(0, 10);
+        if (props.transaction && props.transaction.type) form.type = props.transaction.type;
+        if (!['buy', 'sell', 'dividend', 'reward', 'gift'].includes(form.type)) preselectCategory(form.type);
+        if (props.defaultPortfolioId && props.defaultPortfolioId !== 'aggregated') form.portfolio_id = props.defaultPortfolioId;
+        else if (props.portfolios.length > 0) form.portfolio_id = props.portfolios[0].id;
+    }
+
+    // Retardo para liberar isFormLoading y permitir que corran los vigilantes de autocalculo
+    setTimeout(() => {
+        isFormLoading.value = false;
+    }, 100);
+};
+
+// Inicializar al montar (importante para v-if)
+onMounted(() => {
+    if (props.show) initForm();
+});
+
+// Vigilante para cambios en la visibilidad o en la transacción a editar
+watch(() => [props.show, props.transaction?.id], ([newShow, newId], [oldShow, oldId]) => {
+    if (newShow && (newShow !== oldShow || newId !== oldId)) {
+        initForm();
     }
 });
 
@@ -365,21 +397,22 @@ const submit = () => {
     const method = props.transaction?.id ? 'put' : 'post';
     
     form[method](route(routeName, routeParams), {
-        preserveState: true,
+        preserveState: false, // Forzamos recarga para que componentes como TransactionHistory reinicien su estado interno
         preserveScroll: true,
         onSuccess: () => {
-            form.reset();
             emit('close');
             
-            // Forzar navegación al inicio del listado para ver la nueva transacción
-            // Usamos router.get para asegurar que volvemos a la página 1 y limpiamos parámetros de paginación
-            const params = { ...route().params };
-            delete params.page; // Eliminar página actual para ir a la 1
-            
-            router.get(window.location.pathname, params, {
-                preserveScroll: false,
-                preserveState: false // Resetear estado local de componentes (como TransactionHistory)
-            });
+            // Si estamos en una página con paginación, volvemos a la 1 para asegurar consistencia
+            // Pero solo si realmente hay un parámetro de página en la URL actual
+            if (route().params.page) {
+                const params = { ...route().params };
+                delete params.page;
+                router.get(window.location.pathname, params, {
+                    preserveScroll: true,
+                    preserveState: false,
+                    replace: true
+                });
+            }
         },
     });
 };
@@ -390,8 +423,15 @@ const deleteTransaction = () => {
     }
 
     form.delete(route('transactions.destroy', props.transaction.id), {
+        preserveState: false,
         onSuccess: () => {
             emit('close');
+            // Al eliminar también conviene volver a la pág 1 para recalcular el listado correctamente
+            if (route().params.page) {
+                const params = { ...route().params };
+                delete params.page;
+                router.get(window.location.pathname, params);
+            }
         },
     });
 };

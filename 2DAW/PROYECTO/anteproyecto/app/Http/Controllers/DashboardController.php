@@ -80,6 +80,7 @@ class DashboardController extends Controller
                 'netWorthData' => $history['values'],
                 'netWorthYields' => $history['yields'],
                 'portfolioHistory' => $this->dashboardService->getPortfolioHistory($user->id),
+                'annualPerformance' => $this->dashboardService->getAnnualPerformance($user->id),
                 'allocation' => [
                     'labels' => ['Invertido', 'Liquidez'],
                     'values' => [
@@ -106,6 +107,8 @@ class DashboardController extends Controller
         $data = [];
         foreach ($ranges as $key => $dates) {
             $data[$key] = [
+                'start' => $dates[0]->format('Y-m-d'),
+                'end' => $dates[1]->format('Y-m-d'),
                 'total' => (float) Transaction::where('user_id', $userId)->where('type', 'expense')->whereBetween('date', $dates)->sum('amount'),
                 'byCategory' => Transaction::where('transactions.user_id', $userId)->where('transactions.type', 'expense')->whereBetween('transactions.date', $dates)
                     ->leftJoin('categories', 'transactions.category_id', '=', 'categories.id')

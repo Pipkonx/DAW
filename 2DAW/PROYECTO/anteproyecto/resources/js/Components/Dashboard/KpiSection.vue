@@ -42,13 +42,17 @@ const props = defineProps({
                     <InfoTooltip text="Suma total de Inversiones + Efectivo/Ahorros." />
                 </div>
                 <h3 class="text-3xl font-bold text-slate-900 dark:text-white leading-tight">{{ isPrivacyMode ? '****' : formatCurrency(summary.netWorth) }}</h3>
-                <div class="mt-1 flex items-center text-sm font-medium" :class="(summary.investmentsTotal - summary.investmentsCost) >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'">
-                    <span v-if="!isPrivacyMode">
-                        {{ (summary.investmentsTotal - summary.investmentsCost) >= 0 ? '▲' : '▼' }} 
-                        {{ formatCurrency(Math.abs(summary.investmentsTotal - summary.investmentsCost)) }} 
-                        ({{ (summary.investmentsYield || 0).toFixed(2) }}%)
-                    </span>
-                    <span v-else>****</span>
+                <div class="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1">
+                    <div class="flex items-center text-sm font-bold" :class="(summary.investmentsTotal - summary.investmentsCost) >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'">
+                        <span v-if="!isPrivacyMode" class="flex items-center gap-1">
+                            {{ (summary.investmentsTotal - summary.investmentsCost) >= 0 ? '▲' : '▼' }} 
+                            {{ formatCurrency(Math.abs(summary.investmentsTotal - summary.investmentsCost)) }}
+                        </span>
+                        <span v-else>****</span>
+                    </div>
+                    <div v-if="!isPrivacyMode" class="px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-tighter" :class="(summary.investmentsYield || 0) >= 0 ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400'">
+                        {{ (summary.investmentsYield || 0).toFixed(2) }}%
+                    </div>
                 </div>
                 <div class="mt-4 pt-4 border-t border-slate-50 dark:border-slate-700/50 flex items-center text-xs">
                     <span class="text-slate-500 dark:text-slate-400">Efectivo/Ahorros: </span>

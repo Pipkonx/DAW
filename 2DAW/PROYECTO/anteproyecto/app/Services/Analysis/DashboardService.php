@@ -67,26 +67,26 @@ class DashboardService
         $yields = [];
         $now = Carbon::now();
 
-        // Obtenemos todos los activos y transacciones del usuario
-        $assets = Asset::where('user_id', $userId)->get();
-        $allTransactions = Transaction::where('user_id', $userId)
+        // 1. Pre-cargar TODAS las transacciones relevantes para el cálculo de efectivo histórico (una sola consulta)
+        $cashTxs = Transaction::where('user_id', $userId)
+            ->where('date', '<=', $now->copy()->endOfMonth())
             ->orderBy('date', 'asc')
-            ->orderBy('created_at', 'asc')
-            ->get()
-            ->groupBy('asset_id');
+            ->get();
+
+        // 2. Pre-cargar activos y sus transacciones agrupadas (una sola consulta para activos)
+        $assets = Asset::where('user_id', $userId)->get();
+        $allTransactions = $cashTxs->groupBy('asset_id');
 
         for ($i = $months - 1; $i >= 0; $i--) {
             $date = $now->copy()->subMonths($i)->endOfMonth();
             $labels[] = $date->format('M');
             
-            // Cálculo del efectivo histórico basado en flujos de caja
-            $cash = Transaction::where('user_id', $userId)
-                ->where('date', '<=', $date)
-                ->selectRaw("SUM(CASE 
-                    WHEN type IN ('income', 'sell', 'dividend', 'gift', 'reward', 'transfer_in') THEN amount 
-                    WHEN type IN ('expense', 'buy', 'transfer_out') THEN -amount 
-                    ELSE 0 END) as cash")
-                ->value('cash') ?? 0;
+            // Cálculo del efectivo histórico en memoria (acumulado hasta $date)
+            $cash = $cashTxs->filter(fn($tx) => $tx->date <= $date)->sum(function ($tx) {
+                if (in_array($tx->type, ['income', 'sell', 'dividend', 'gift', 'reward', 'transfer_in'])) return $tx->amount;
+                if (in_array($tx->type, ['expense', 'buy', 'transfer_out'])) return -$tx->amount;
+                return 0;
+            });
 
             // Cálculo de valoración de activos en el punto temporal 'date'
             $snapshot = $this->calculateAssetsSnapshot($assets, $allTransactions, $date);
@@ -219,5 +219,40 @@ class DashboardService
             'color' => $a->color, 
             'logo' => $a->logo,
         ]);
+    }
+
+    /**
+     * Obtiene el rendimiento anual condensado para el gráfico de barras vertical.
+     * 
+     * @param int $userId ID del usuario
+     * @return array { labels: string[], data: float[] }
+     */
+    public function getAnnualPerformance($userId)
+    {
+        $now = Carbon::now();
+        $startYear = Transaction::where('user_id', $userId)->min('date');
+        $startYear = $startYear ? Carbon::parse($startYear)->year : $now->year - 1;
+        
+        $labels = [];
+        $data = [];
+
+        $allAssets = Asset::where('user_id', $userId)->get();
+        $allTxs = Transaction::where('user_id', $userId)
+            ->where('date', '<=', $now)
+            ->get()
+            ->groupBy('asset_id');
+
+        for ($year = $startYear; $year <= $now->year; $year++) {
+            $labels[] = (string)$year;
+            $date = Carbon::create($year)->endOfYear();
+            if ($year == $now->year) $date = $now;
+
+            $snapshot = $this->calculateAssetsSnapshot($allAssets, $allTxs, $date);
+            $profit = $snapshot['totalValue'] - $snapshot['totalCost'];
+            
+            $data[] = round($profit, 2);
+        }
+
+        return ['labels' => $labels, 'data' => $data];
     }
 }

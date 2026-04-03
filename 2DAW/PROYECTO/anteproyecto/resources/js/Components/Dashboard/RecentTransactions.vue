@@ -151,7 +151,7 @@ const edit = (tx) => emit('edit', tx);
                                         alt="logo" 
                                         @error="transaction.asset_logo = null"
                                     />
-                                    <span>{{ transaction.description || transaction.asset_name || '-' }}</span>
+                                    <span>{{ transaction.description || transaction.asset_name || transaction.category || '-' }}</span>
                                 </div>
                             </td>
                             <td class="px-6 py-4 text-slate-500 dark:text-slate-400">{{ transaction.category || '-' }}</td>

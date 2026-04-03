@@ -61,9 +61,21 @@ const getReportableTypeLabel = (type) => {
 
     <AuthenticatedLayout>
         <template #header>
-            <h2 class="font-semibold text-xl text-slate-800 dark:text-white leading-tight">
-                Moderación de Reportes
-            </h2>
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <h2 class="font-black text-2xl text-slate-800 dark:text-white leading-tight">
+                        Moderación de Reportes
+                    </h2>
+                    <p class="text-xs text-slate-500 font-bold uppercase tracking-widest mt-1">Gestión de Seguridad & Protección a la Comunidad</p>
+                </div>
+                
+                <div class="flex items-center gap-6 px-6 py-3 bg-slate-100 dark:bg-slate-800/50 rounded-2xl border border-slate-200 dark:border-slate-700">
+                    <div class="flex items-center gap-2">
+                        <div class="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div>
+                        <span class="text-[10px] font-black uppercase tracking-tighter text-slate-600">Comunidad Protegida</span>
+                    </div>
+                </div>
+            </div>
         </template>
 
         <div class="py-12 bg-slate-50 dark:bg-slate-900 min-h-screen">

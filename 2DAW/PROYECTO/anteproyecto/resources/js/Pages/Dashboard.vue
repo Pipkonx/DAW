@@ -250,7 +250,7 @@ const editTransaction = (transaction) => {
             v-if="showModal" 
             :show="showModal" 
             :transaction="editingTransaction"
-            :assets="allAssetsList" 
+            :portfolios="portfolios" 
             :categories="categories"
             @close="showModal = false" 
         />

@@ -40,19 +40,22 @@ watch(() => props.filters, (newFilters) => {
     dateFilters.value.end_date = newFilters.end_date;
 }, { deep: true });
 
-// Cargar filtros persistidos al montar
+// Cargar filtros persistidos al montar solo si no hay nada en la URL
 onMounted(() => {
     const queryParams = new URLSearchParams(window.location.search);
     const hasUrlFilters = queryParams.has('start_date') || queryParams.has('end_date');
     
-    const savedStart = localStorage.getItem('expenses_filter_start');
-    const savedEnd = localStorage.getItem('expenses_filter_end');
-    
-    // Si no hay filtros en la URL pero sí en localStorage, aplicarlos
-    if (!hasUrlFilters && (savedStart || savedEnd)) {
-        dateFilters.value.start_date = savedStart || dateFilters.value.start_date;
-        dateFilters.value.end_date = savedEnd || dateFilters.value.end_date;
-        applyFilters();
+    // Si no hay filtros en la URL, los props iniciales ya vienen con el default del servidor.
+    // Solo aplicamos localStorage si realmente queremos sobreescribir ese default inicial.
+    if (!hasUrlFilters) {
+        const savedStart = localStorage.getItem('expenses_filter_start');
+        const savedEnd = localStorage.getItem('expenses_filter_end');
+        
+        if (savedStart || savedEnd) {
+            dateFilters.value.start_date = savedStart || dateFilters.value.start_date;
+            dateFilters.value.end_date = savedEnd || dateFilters.value.end_date;
+            // No llamamos a applyFilters() aquí para evitar la doble carga inicial que rompe la reactividad del Modal
+        }
     }
 });
 
@@ -183,16 +186,17 @@ const handleFileUpload = (event) => {
         <div class="py-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
             
             <!-- 1. TARJETAS DE RESUMEN (KPIs) -->
-            <SummaryCards :summary="summary" :is-privacy-mode="isPrivacyMode" />
+            <SummaryCards :key="`summary-${JSON.stringify(summary)}`" :summary="summary" :is-privacy-mode="isPrivacyMode" />
 
             <!-- 2. GRÁFICOS -->
-            <ExpenseChartsSection :charts="charts" :summary="summary" :is-privacy-mode="isPrivacyMode" />
+            <ExpenseChartsSection :key="`charts-${JSON.stringify(charts)}`" :charts="charts" :summary="summary" :is-privacy-mode="isPrivacyMode" />
 
             <!-- 3. TOP GASTOS, INGRESOS & HISTORIAL -->
             <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
                 <!-- Historial (3/4 ancho, Izquierda) -->
                 <div class="lg:col-span-3 space-y-4 order-2 lg:order-1">
                     <TransactionHistory 
+                        :key="`history-${transactions.data.map(t => t.id).join('-')}`"
                         :transactions="transactions" 
                         filter-mode="expenses" 
                         @edit="editTransaction"

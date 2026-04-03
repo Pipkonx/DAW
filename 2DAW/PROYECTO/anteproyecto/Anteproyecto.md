@@ -9,138 +9,144 @@
 ## 1. Resumen Ejecutivo
 **Wealth Manager** nació de una frustración personal: tener activos repartidos por tres brokers, dos bancos y un exchange de cripto, y no tener ni idea de cuánto dinero tenía realmente. Este proyecto es mi solución a ese "caos" financiero. A diferencia de las apps que solo anotan gastos, he construido un sistema que "bucea" en internet (Web Scraping) y lee documentos (OCR) para que el usuario no tenga que picar datos a mano. Es una herramienta diseñada por un desarrollador para cualquier persona que quiera tomar el control total de su patrimonio.
 
+La plataforma no solo consolida datos, sino que aplica algoritmos de ingeniería financiera para normalizar precios de mercado en tiempo real, calcular rentabilidades ponderadas y ofrecer una visión holística de la salud financiera del usuario.
+
 ---
 
 ## 2. Objetivos del Proyecto
 
 ### 2.1. Objetivos Técnicos
-*   **Automatización Real**: Desarrollar un motor en `app/Http/Controllers/PortfolioController.php` capaz de interpretar extractos bancarios en PDF y capturas de pantalla con una precisión elevada, para que el usuario se olvide del Excel.
-*   **Abstracción de Datos**: Crear una capa de servicios en `app/Services/MarketDataService.php` que unifique fuentes como Morningstar o CoinGecko bajo una misma interfaz.
-*   **Cómputo Preciso**: Implementar el Costo Promedio Ponderado (WAC) para que el beneficio (P/L) sea real, manejando las compras y ventas de forma matemática en el modelo `app/Models/Asset.php`.
+*   **Automatización Real**: Desarrollar un motor en `app/Http/Controllers/PortfolioController.php` capaz de interpretar extractos bancarios en PDF y capturas de pantalla con una precisión elevada (superior al 90%), reduciendo drásticamente el error humano en la entrada de datos.
+*   **Abstracción de Datos**: Crear una capa de servicios en `app/Services/MarketDataService.php` que unifique fuentes heterogéneas (Morningstar, CoinGecko, EODHD) bajo una misma interfaz fluida y desacoplada del proveedor final.
+*   **Cómputo Preciso**: Implementar el algoritmo de **Costo Promedio Ponderado (WAC)** y el cálculo de **TWR (Time-Weighted Return)** para que el beneficio (P/L) refleje fielmente la realidad económica, manejando eventos corporativos como splits o dividendos.
+*   **Reactividad de Vanguardia**: Lograr una experiencia de usuario fluida mediante el uso de **Inertia.js** y **Vue 3**, minimizando las recargas de página y los tiempos de latencia percibidos.
 
 ### 2.2. Objetivos de Usuario
-*   **Ahorro de Tiempo**: Reducir la carga de datos manual en un 70%.
-*   **Visión 360º**: Ver de un vistazo cuánto peso tiene la tecnología o el sector inmobiliario en tu cartera gracias a los gráficos en `resources/js/Components/Charts/AssetAllocationChart.vue`.
+*   **Ahorro de Tiempo**: Reducir el tiempo dedicado a la gestión de carteras en un 75% respecto a métodos manuales.
+*   **Visión 360º**: Ofrecer una granularidad total sobre la exposición por sectores, industrias, regiones y divisas, permitiendo una toma de decisiones informada.
+*   **Seguridad y Privacidad**: Implementar un "Modo Privacidad" que permita al usuario revisar sus cuentas en entornos públicos sin exponer cifras sensibles.
 
 ---
 
 ## 3. Justificación Tecnológica
 
-### 3.1. Arquitectura: Laravel + Inertia
-Elegí **Laravel 12** no solo porque es el estándar industrial, sino por cómo maneja los procesos pesados en segundo plano con `app/Jobs/UpdatePricesJob.php`. Para el frontend, usar **Inertia.js** fue un acierto: me permitió trabajar en Vue 3 con la sencillez de no tener que gestionar una API REST separada ni complicarme con tokens JWT para la sesión principal, ya que todo se gestiona de forma segura con las cookies de Laravel.
+### 3.1. Arquitectura: Laravel 12 + Inertia + Vue 3
+La elección del stack no fue casual. **Laravel 12** ofrece una base sólida para el backend con su ORM Eloquent y un sistema de colas robusto. **Inertia.js** actúa como el puente perfecto: nos permite construir una aplicación de tipo SPA (Single Page Application) sin la complejidad de gestionar una API REST/GraphQL por separado, manteniendo toda la lógica de rutas y controladores en el servidor.
 
-### 3.2. Las herramientas que me salvaron la vida
-*   **`smalot/pdfparser`**: Probé varias, pero esta es la única que no "rompía" las tablas de los extractos bancarios al leer el PDF.
-*   **`symfony/dom-crawler`**: Vital para el scraping en `app/Services/MarketData/FundService.php`. Morningstar tiene un HTML muy enrevesado y esta librería me permitió navegarlo con XPath de forma precisa.
-*   **`laravel/socialite`**: Implementar el login con Google en `app/Http/Controllers/Auth/GoogleAuthController.php` fue sorprendentemente rápido gracias a este paquete oficial.
+### 3.2. Ecosistema de Librerías Críticas
+*   **`smalot/pdfparser`**: Vital para la extracción de texto estructurado de PDFs de inversión.
+*   **`symfony/dom-crawler` y `guzzlehttp/guzzle`**: La combinación maestra para el scraping resiliente.
+*   **`laravel/socialite`**: Gestión segura de identidades mediante Google OAuth.
+*   **`tightenco/ziggy`**: Permite usar las rutas de Laravel directamente en los componentes de Vue de forma tipada.
+*   **`chart.js`**: El motor gráfico que da vida a la telemetría financiera.
 
 ---
 
-## 4. Diseño y Modelado de Datos
+## 4. Arquitectura de Sistema y Flujo de Datos
 
-### 4.1. El corazón de la base de datos
+### 4.1. Diagrama de Lógica de Importación (OCR/PDF)
+```mermaid
+graph TD
+    A[Usuario sube archivo] --> B{¿Es PDF?}
+    B -- Sí --> C[PDFParser Service]
+    B -- No --> D[OCR.space API Service]
+    C --> E[Extractor de Patrones RegEx]
+    D --> E
+    E --> F[Normalizador de Transacciones]
+    F --> G[Previsualización en Pantalla]
+    G --> H[Confirmación del Usuario]
+    H --> I[Cálculo de WAC en Asset Model]
+    I --> J[Persistencia en DB]
+```
+
+### 4.2. El corazón de la base de datos
 He diseñado el esquema en `database/migrations/` buscando que nada se pierda y que la integridad sea total. Las relaciones principales que sostienen la lógica son:
-*   **User → Portfolio**: Un usuario puede tener múltiples carteras (ej. "Inversión Largo Plazo" y "Trading") gestionadas en `app/Models/Portfolio.php`.
-*   **Portfolio → Asset**: Cada cartera agrupa diversos activos financieros, definidos en el modelo `app/Models/Asset.php].
-*   **Asset → Transaction**: Un activo vive a través de sus movimientos; todas las compras y ventas se registran y vinculan en `app/Models/Transaction.php`.
-
-Esta estructura me permite que, si borras una transacción, el activo sepa automáticamente que debe recalcular su cantidad y precio medio.
+*   **User → Portfolio**: Relación One-to-Many. Permite segmentar carteras por estrategia (Trading, Dividendos, Indexados).
+*   **Portfolio → Asset**: Un activo financiero puede pertenecer a varios portafolios de forma independiente.
+*   **Asset → Transaction**: El historial completo de vida de un activo. Cada transacción recalculas las métricas `cost_basis` y `balance`.
+*   **Asset ↔ MarketData**: Vinculación mediante Tickers (AAPL, BTC, etc.) para la obtención automatizada de precios.
 
 ---
 
 ## 5. Ingeniería de Software y Calidad de Código
 
-Para este proyecto, se ha seguido un enfoque de desarrollo profesional aplicando patrones y principios que garantizan la longevidad del sistema.
+### 5.1. Principios SOLID y Patrones de Diseño
+Para este proyecto, se ha seguido un enfoque de desarrollo senior:
+- **Service Pattern**: Toda la lógica de negocio pesada vive en `app/Services`. Los controladores solo orquestan la petición y la respuesta.
+- **Factory/Strategy Pattern** en `MarketDataService`: Dependiendo del tipo de activo (Crypto, Stock, Fund), se utiliza un proveedor de datos distinto de forma transparente para el resto del sistema.
+- **Inversión de Dependencias**: El sistema depende de abstracciones, no de implementaciones concretas de APIs de mercado.
 
-### 5.1. Principio de Responsabilidad Única (SRP)
-Se ha evitado la creación de "God Objects" (clases o archivos que lo hacen todo).
-- **Frontend**: El Dashboard se ha modularizado en componentes como `KpiSection.vue` y `EvolutionSection.vue`. Esto permite que un cambio en la lógica de visualización de gráficos no afecte a la tabla de transacciones.
-- **Backend**: El `DashboardService.php` se encarga solo de orquestar datos, delegando el cálculo matemático complejo al `PerformanceService.php`.
-
-### 5.2. Don't Repeat Yourself (DRY)
-Se ha centralizado la lógica redundante para evitar errores de inconsistencia:
-- Se ha creado `resources/js/Utils/formatting.js` para unificar el formato de moneda y porcentajes en toda la aplicación. Antes, un cambio en el formato del Euro requería editar 5 archivos; ahora se hace en uno solo.
-
-### 5.3. Principios SOLID
-- **S**egregación: Los servicios están especializados.
-- **L**iskov/Sustitución: Los modelos de activos (`Asset`) pueden manejar diferentes tipos (cripto, stocks, fondos) manteniendo la misma interfaz de métodos.
+### 5.2. Mantenibilidad y Modularización
+- **Componentización Extrema**: En `resources/js/Components`, cada gráfico, tabla o tarjeta de KPI es un átomo independiente con su propia lógica de CSS (Tailwind) y JS.
+- **Centralización de Utilidades**: La lógica de formateo (monedas, fechas, colores) está centralizada en `resources/js/Utils/formatting.js`.
 
 ---
 
-## 6. Endpoints del Sistema (Routing)
+## 6. Endpoints y Routing (Estructura de la Aplicación)
 
-He mapeado todas las rutas en `routes/web.php` y `routes/auth.php`. El uso de **Inertia** hace que casi todas las peticiones `GET` devuelvan una vista enriquecida con datos.
+La aplicación se divide en áreas lógicas bien diferenciadas, gestionadas a través de controladores especializados.
 
-| Endpoint | Método | Controlador | Propósito |
-| :--- | :--- | :--- | :--- |
-| `/dashboard` | `GET` | `DashboardController@index` | Vista principal con KPIs y gráficos. |
-| `/transactions` | `GET` | `TransactionController@index` | Historial completo de movimientos. |
-| `/transactions` | `POST` | `TransactionController@store` | Motor de cálculo de WAC y guardado. |
-| `/portfolios/preview-import`| `POST` | `PortfolioController@previewImport`| **El núcleo**: Procesa archivos y OCR. |
-| `/api/market/search` | `GET` | `MarketDataController@search` | Búsqueda en tiempo real (APIs + Scraping). |
-| `/api/market/price` | `GET` | `MarketDataController@getPrice` | Obtención del último precio de mercado. |
-| `/expenses` | `GET` | `ExpenseController@index` | Análisis de ahorro y gastos. |
-| `/auth/google` | `GET` | `GoogleAuthController@redirect` | Login social con Google. |
-| `/profile` | `PATCH` | `ProfileController@update` | Gestión de configuración del usuario. |
+| Área | Controller | Responsabilidades |
+| :--- | :--- | :--- |
+| **Núcleo** | `DashboardController` | Orquestación de KPIs globales y estados del patrimonio. |
+| **Operativa** | `TransactionController` | CRUD de movimientos y motor de cálculo de plusvalías. |
+| **Importación** | `PortfolioController` | Procesamiento de OCR, PDF y vinculación manual. |
+| **Inteligencia** | `AnalystController` | Integración con IA para informes personalizados de cartera. |
+| **Administración** | `AdminController` | Telemetría del sistema, monitorización de APIs y backups. |
 
 ---
 
-## 6. Implementación de Funcionalidades Core
+## 7. Desafíos Técnicos Superados
 
-### 6.1. Web Scraping: Esquema de Fallbacks
-En `app/Services/MarketData/FundService.php`, me encontré con que los fondos de inversión son difíciles de seguir. Mi solución fue un sistema de "salvavidas":
-1.  Busco en **Morningstar.es** (para fondos de España).
-2.  Si no lo encuentro, salto a **JustETF**.
-3.  Si ambos fallan, intento en **Financial Times**.
-Esto garantiza que casi nunca te quedes sin ver el valor de tu cartera.
+### 7.1. El Reto del Scraping Resiliente
+ मॉर्निंगस्टार (Morningstar) y otros portales financieros cambian su estructura HTML frecuentemente. Se ha implementado un sistema de **Fallbacks en Cascada**:
+1. Intenta obtener el precio de una API premium.
+2. Si falla (o no existe el activo), aplica Scraping con XPath específico.
+3. Si el Scraping devuelve error, busca en un proveedor de respaldo.
+4. Como última instancia, mantiene el precio anterior y marca el activo como "Requiere Revisión".
 
-### 6.2. La "magia" del OCR
-El mayor reto fue el reconocimiento de imágenes en `app/Http/Controllers/PortfolioController.php:353`. El texto que devuelve la API de OCR.space suele ser un caos de líneas sueltas. Diseñé una **Máquina de Estados** que va leyendo línea a línea:
-*   Si ve una fecha, activa el modo `SCANNING`.
-*   Si ve un nombre reconocido, busca su vinculación en la tabla `market_assets`.
-*   Si ve un monto con el símbolo `€`, cierra la transacción.
-Fue frustrante al principio porque los números europeos (uso de comas) daban errores, pero lo solucioné con un helper de limpieza de strings.
+### 7.2. Normalización de Datos OCR
+El OCR no es perfecto. Suele confundir `8` con `B` o `0` con `O`. He implementado un motor de limpieza basado en expresiones regulares y comparativas de Levenshtein para asegurar que los nombres de los activos coincidan con nuestra base de datos maestra de tickers.
 
 ---
 
-## 7. Desafíos y Aprendizaje Real
+## 8. Guía de Instalación y Despliegue
 
-### 7.1. El lío de los formatos numéricos
-Uno de los mayores dolores de cabeza fue que cada fuente ( Morningstar, FT, el OCR) escribía los números como quería: `1,200.50`, `1.200,50` o `1200.50`. Tuve que crear una lógica de normalización en el controlador para que el sistema no interpretara que tenía millones de euros cuando solo eran miles (¡ojalá!).
+### Requisitos Previos
+- PHP 8.2+ e Composer.
+- Node.js 18+ y NPM.
+- SQLite o MySQL para la base de datos.
+- Clave de API de OCR.space (gratuita).
 
-### 7.2. Rendimiento y Caching
-Al principio, cargar el dashboard era lento porque el sistema iba a buscar los precios de todos los activos a internet cada vez. Lo solucioné usando `Cache::remember` en los servicios y creando un proceso en segundo plano que refresca los precios a las 6:00 AM (`routes/console.php:13`).
-
----
-
-## 8. Guía de Instalación en Entorno Local
-
-Si quieres probar el sistema tú mismo, sigue estos pasos:
-
-1.  **Clonado y Backend**:
-    ```bash
-    git clone https://github.com/usuario/nombre-repo.git
-    cd nombre-repo
-    composer install
-    ```
-2.  **Frontend**:
-    ```bash
-    npm install
-    ```
-3.  **Configuración**:
-    `cp .env.example .env` y genera la clave con `php artisan key:generate`. Configura tu DB y, muy importante, tus claves `EODHD_API_KEY` para los bonos en el `.env`.
-4.  **Base de Datos**:
-    ```bash
-    php artisan migrate --seed
-    ```
-    He configurado `database/seeders/MarketAssetSeeder.php` para inyectar las categorías base y algunos activos de prueba para que no veas el dashboard vacío.
-5.  **Ejecución**:
-    En terminales separadas: `php artisan serve` y `npm run dev`.
+### Pasos de Instalación
+1. **Clonar**: `git clone [...]`
+2. **Backend**: `composer install`
+3. **Frontend**: `npm install`
+4. **Configurar**: `cp .env.example .env` y rellenar variables.
+5. **Base de Datos**: `php artisan migrate --seed`. El seed inyecta activos de mercado reales para pruebas instantáneas.
+6. **Lanzar**: `php artisan serve` y `npm run dev`.
 
 ---
 
-## 9. Conclusiones
-Este proyecto me ha enseñado que el mayor valor de una aplicación no es solo que funcione, sino que resuelva un problema real de forma automática. He pasado de anotar mis inversiones en una libreta a tener un sistema que lo hace por mí. Ha sido un reto técnico enorme, especialmente el scraping, pero ver los gráficos de rentabilidad actualizados automáticamente hace que todo el esfuerzo haya valido la pena.
+## 9. Seguridad y Auditoría
+- **Sanitización Total**: Laravel se encarga de prevenir inyección SQL y XSS por defecto.
+- **Políticas de Acceso (Policies)**: Se ha implementado `PortfolioPolicy` para asegurar que ningún usuario pueda acceder a los datos de otro mediante manipulación de IDs en las rutas.
+- **Copias de Seguridad**: El sistema de administración permite realizar snapshots de la DB antes de cambios críticos.
+
+---
+
+## 10. Conclusiones y Futuro (Roadmap)
+Wealth Manager es un proyecto vivo. Lo que empezó como un script de Python para leer un Excel ha evolucionado en una plataforma de gestión financiera robusta.
+
+**Próximos pasos en el Roadmap:**
+- [ ] **Módulo de Rebalanceo**: Alertas automáticas cuando una clase de activo se desvía de su peso objetivo.
+- [ ] **Integración PSD2**: Conexión directa con bancos mediante APIs oficiales (Open Banking).
+- [ ] **App Móvil Nativa**: Uso de Capacitor para convertir el frontend de Vue en una aplicación móvil.
+
+---
+**Firmado:**  
+Rafael, Desarrollador Principal.
+os automáticamente hace que todo el esfuerzo haya valido la pena.
 
 ---
 **Firmado:**  

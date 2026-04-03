@@ -33,12 +33,17 @@ const hasMore = ref(true);
 
 // Initialize transactions
 watch(() => props.transactions, (newVal) => {
+    if (!newVal) return;
+    
     if (newVal.current_page === 1) {
-        allTransactions.value = newVal.data;
-    } else {
+        allTransactions.value = [...newVal.data];
+        page.value = 1;
+        hasMore.value = !!newVal.next_page_url;
+    } else if (newVal.current_page > page.value) {
         allTransactions.value = [...allTransactions.value, ...newVal.data];
+        page.value = newVal.current_page;
+        hasMore.value = !!newVal.next_page_url;
     }
-    hasMore.value = !!newVal.next_page_url;
 }, { immediate: true });
 
 const loadMore = () => {
@@ -198,23 +203,24 @@ const filteredTransactions = computed(() => {
         }];
     }
 
-    const groups = {};
+    const groupsData = {};
     filtered.forEach(tx => {
         const date = new Date(tx.date);
-        // Capitalize first letter properly: Febrero 2026
         const monthYear = date.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
         const formattedMonthYear = monthYear.charAt(0).toUpperCase() + monthYear.slice(1);
         
-        if (!groups[formattedMonthYear]) {
-            groups[formattedMonthYear] = [];
+        if (!groupsData[formattedMonthYear]) {
+            groupsData[formattedMonthYear] = [];
         }
-        groups[formattedMonthYear].push(tx);
+        groupsData[formattedMonthYear].push(tx);
     });
     
-    return Object.keys(groups).map(key => ({
+    // Convertir a array y asegurar que los grupos están ordenados por la fecha de su primera transacción
+    return Object.keys(groupsData).map(key => ({
         monthYear: key,
-        items: groups[key]
-    }));
+        items: groupsData[key],
+        latestDate: groupsData[key][0]?.date || ''
+    })).sort((a, b) => new Date(b.latestDate) - new Date(a.latestDate));
 });
 
 const getShortDate = (dateStr) => {
@@ -503,7 +509,7 @@ const onExport = (format) => {
                                     <!-- Detalles -->
                                     <div class="flex flex-col">
                                         <span class="font-bold text-slate-900 dark:text-white text-sm">
-                                            {{ tx.asset ? tx.asset.name : (tx.description || '-') }}
+                                            {{ tx.asset ? tx.asset.name : (tx.description || tx.category || '-') }}
                                         </span>
                                         <span class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                                             {{ getSubtitle(tx) }}

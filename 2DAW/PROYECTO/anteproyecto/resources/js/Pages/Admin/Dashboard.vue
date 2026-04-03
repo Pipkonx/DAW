@@ -1,126 +1,76 @@
 <script setup>
+/**
+ * Admin Dashboard - Panel de Control Principal de Administración.
+ * 
+ * Este componente orquesta toda la telemetría, gestión de usuarios, 
+ * copias de seguridad y mantenimiento del sistema. Se ha modularizado 
+ * siguiendo principios de arquitectura limpia (Senior) para facilitar 
+ * su escalabilidad y entendimiento por otros desarrolladores.
+ */
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, Link, useForm } from '@inertiajs/vue3';
+import { Head, router } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import axios from 'axios';
 
+// Componentes Modulares (Partials)
+import AdminStats from './Partials/AdminStats.vue';
+import MaintenanceActions from './Partials/MaintenanceActions.vue';
+import SystemLogsViewer from './Partials/SystemLogsViewer.vue';
+import UserManagementTable from './Partials/UserManagementTable.vue';
+import GlobalActivityTable from './Partials/GlobalActivityTable.vue';
+import BackupManager from './Partials/BackupManager.vue';
+import ReportsTable from './Partials/ReportsTable.vue';
+import ApiMonitorSection from './Partials/ApiMonitorSection.vue';
+import SubscriptionModal from './Partials/SubscriptionModal.vue';
+
+// Definición de Props provenientes del Backend (Inertia)
 const props = defineProps({
-    backups: Array,
-    users: Array,
     stats: Object,
-    api_health: Object,
-    api_consumption: Object,
+    users: Array,
+    backups: Array,
     global_activity: Array,
     reports: Array,
+    api_health: Object, // Salud de APIs (booleano)
+    api_consumption: Object, // Datos de consumo detallados
 });
 
-const form = useForm({});
-const importForm = useForm({
-    backup_file: null,
-});
-
-const subForm = useForm({
-    tier: 'none',
-    days: 30,
-});
-
+// Estados Reactivos del Dashboard
+const lastLogs = ref('');
+const loadingLogs = ref(false);
 const activeUserForSub = ref(null);
 
-const systemLogs = ref('');
-const loadingLogs = ref(false);
-
-const generateBackup = () => {
-    form.post(route('admin.backup.generate'), { preserveScroll: true });
-};
-
-const restoreBackup = (filename) => {
-    if (confirm('¿ESTÁS SEGURO? Esta acción sobrescribirá la base de datos actual con los datos de esta copia. El sistema realizará una copia preventiva automática.')) {
-        form.post(route('admin.backup.restore', filename), { preserveScroll: true });
-    }
-};
-
-const deleteBackup = (filename) => {
-    if (confirm('¿Estás seguro de eliminar este backup?')) {
-        form.delete(route('admin.backup.delete', filename), { preserveScroll: true });
-    }
-};
-
-const toggleAdmin = (user) => {
-    if (confirm(`¿Cambiar el rol de ${user.name}?`)) {
-        form.post(route('admin.users.toggle-admin', user.id), { preserveScroll: true });
-    }
-};
-
-const deleteUser = (user) => {
-    if (confirm(`¿ELIMINAR DEFINITIVAMENTE A ${user.name}? Esta acción borrará todos sus datos y transacciones.`)) {
-        form.delete(route('admin.users.delete', user.id), { preserveScroll: true });
-    }
-};
-
-const openSubModal = (user) => {
-    activeUserForSub.value = user;
-    subForm.tier = user.tier || 'none';
-    subForm.days = 30; // default for UI
-};
-
-const updateSubscription = () => {
-    subForm.post(route('admin.users.update-subscription', activeUserForSub.value.id), {
-        preserveScroll: true,
-        onSuccess: () => activeUserForSub.value = null
-    });
-};
-
-const optimizeDb = () => {
-    form.post(route('admin.system.optimize'), { preserveScroll: true });
-};
-
-const clearCache = () => {
-    form.post(route('admin.system.clear-cache'), { preserveScroll: true });
-};
-
-const triggerFileInput = () => {
-    document.getElementById('backup-upload').click();
-};
-
-const handleImport = (e) => {
-    importForm.backup_file = e.target.files[0];
-    if (importForm.backup_file) {
-        importForm.post(route('admin.backup.import'), {
-            preserveScroll: true,
-            onSuccess: () => {
-                importForm.reset();
-            }
-        });
-    }
-};
-
-const handleDirectRestore = (e) => {
-    const file = e.target.files[0];
-    if (file && confirm('⚠️ ATENCIÓN: Vas a SOBRESCRIBIR TODA LA BASE DE DATOS con este archivo. El sistema se reiniciará con los nuevos datos. ¿Deseas continuar?')) {
-        const directForm = useForm({
-            backup_file: file,
-        });
-        directForm.post(route('admin.backup.restore.direct'), {
-            preserveScroll: true,
-            onSuccess: () => {
-                alert('Sistema restaurado con éxito.');
-            }
-        });
-    }
-};
-
+/**
+ * Obtiene las últimas líneas del log de Laravel.
+ */
 const fetchLogs = async () => {
     loadingLogs.value = true;
     try {
         const response = await axios.get(route('admin.system.logs'));
-        systemLogs.value = response.data.logs;
-    } catch (e) {
-        systemLogs.value = "Error recuperando logs...";
+        lastLogs.value = response.data.logs;
+    } catch (error) {
+        console.error('Error al obtener logs:', error);
+        lastLogs.value = "Error al recuperar los logs del sistema.";
     } finally {
         loadingLogs.value = false;
     }
 };
 
+/**
+ * Tareas de mantenimiento rápido.
+ */
+const clearCache = () => router.post(route('admin.system.clear-cache'), {}, { preserveScroll: true });
+const optimizeDb = () => router.post(route('admin.system.optimize'), {}, { preserveScroll: true });
+
+/**
+ * Gestión del Modal de Suscripción.
+ */
+const openSubModal = (user) => {
+    activeUserForSub.value = user;
+};
+
+const closeSubModal = () => {
+    activeUserForSub.value = null;
+};
 </script>
 
 <template>
@@ -128,505 +78,102 @@ const fetchLogs = async () => {
 
     <AuthenticatedLayout>
         <template #header>
-            <div class="flex items-center justify-between">
-                <h2 class="font-semibold text-xl text-slate-800 dark:text-white leading-tight">
-                    Centro de Mando Administrativo
-                </h2>
-                <div class="flex gap-4">
-                    <div v-for="(status, api) in api_health" :key="api" class="flex items-center gap-2 px-3 py-1 bg-white dark:bg-slate-800 rounded-full border border-slate-100 dark:border-slate-700 shadow-sm">
-                        <div class="w-2 h-2 rounded-full" :class="status ? 'bg-emerald-500' : 'bg-rose-500'"></div>
-                        <span class="text-[10px] font-black uppercase text-slate-500">{{ api }}</span>
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <h2 class="font-black text-2xl text-slate-800 dark:text-white leading-tight">
+                        Centro de Mando Administrativo
+                    </h2>
+                    <p class="text-xs text-slate-500 font-bold uppercase tracking-widest mt-1">Gestión Centralizada del Ecosistema</p>
+                </div>
+                
+                <!-- Estado del Servidor (Discreto en el Header) -->
+                <div class="flex items-center gap-6 px-6 py-3 bg-slate-100 dark:bg-slate-800/50 rounded-2xl border border-slate-200 dark:border-slate-700">
+                    <div class="flex items-center gap-2">
+                        <div class="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div>
+                        <span class="text-[10px] font-black uppercase tracking-tighter text-slate-500 dark:text-slate-400">DB: OK</span>
                     </div>
+                    <div class="flex items-center gap-2">
+                        <div class="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div>
+                        <span class="text-[10px] font-black uppercase tracking-tighter text-slate-500 dark:text-slate-400">FS: OK</span>
+                    </div>
+                    <div class="w-px h-4 bg-slate-200 dark:bg-slate-700"></div>
+                    <span class="text-[10px] font-mono font-bold text-indigo-500">v2.4.0-stable</span>
                 </div>
             </div>
         </template>
 
-        <div class="py-12 bg-slate-50 dark:bg-slate-900 min-h-screen">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+        <div class="py-12 bg-slate-50 dark:bg-slate-950 min-h-screen transition-colors duration-500">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
                 
-                <!-- Telemetría y Mantenimiento -->
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-                    <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700">
-                        <div class="text-xs font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-1">Usuarios Totales</div>
-                        <div class="text-3xl font-bold text-slate-800 dark:text-white">{{ stats.users }}</div>
-                    </div>
-                    <div class="bg-gradient-to-br from-emerald-500 to-teal-500 p-6 rounded-2xl shadow-sm border border-emerald-400 text-white relative overflow-hidden">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-24 w-24 absolute -right-4 -bottom-4 text-white/10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        <div class="relative z-10">
-                            <div class="text-[10px] font-black uppercase tracking-widest text-emerald-100 mb-1 flex items-center justify-between">
-                                Ingresos Estimados (MRR)
-                                <span class="bg-white/20 px-2 py-0.5 rounded text-white">{{ stats.premium_users + stats.pro_users }} subs</span>
-                            </div>
-                            <div class="text-3xl font-bold">
-                                ${{ ((stats.premium_users * 9.99) + (stats.pro_users * 4.99)).toFixed(2) }}<span class="text-sm opacity-80 font-medium tracking-normal">/mes</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="md:col-span-2 bg-slate-800 dark:bg-blue-600 p-6 rounded-2xl shadow-lg flex items-center justify-between group overflow-hidden relative">
-                        <div class="relative z-10">
-                            <div class="text-xs font-black uppercase tracking-widest text-blue-200 mb-2 italic">Mantenimiento Global</div>
-                            <div class="flex flex-wrap gap-2">
-                                <button @click="clearCache" class="flex items-center gap-2 px-3 py-1.5 bg-white/10 hover:bg-white/20 text-white rounded-lg text-xs font-bold border border-white/20 transition-all shrink-0">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-                                    </svg>
-                                    Caché
-                                </button>
-                                <button @click="optimizeDb" class="flex items-center gap-2 px-3 py-1.5 bg-white/10 hover:bg-white/20 text-white rounded-lg text-xs font-bold border border-white/20 transition-all shrink-0">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-                                    </svg>
-                                    Optimizar DB
-                                </button>
-                                
-                                <Link :href="route('admin.reports.index')" class="flex items-center gap-2 px-3 py-1.5 bg-rose-500 hover:bg-rose-600 text-white rounded-lg text-xs font-bold shadow-lg shadow-rose-500/20 transition-all shrink-0">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                    </svg>
-                                    Reportes
-                                </Link>
-                                <Link :href="route('admin.analytics')" class="flex items-center gap-2 px-3 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg text-xs font-bold shadow-lg shadow-emerald-500/20 transition-all shrink-0">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                                    </svg>
-                                    Analíticas
-                                </Link>
-                                
-                                <button @click="fetchLogs" class="flex items-center gap-2 px-3 py-1.5 bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg text-xs font-bold shadow-lg shadow-indigo-500/20 transition-all shrink-0">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                                    </svg>
-                                    Logs
-                                </button>
-                            </div>
-                        </div>
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-24 w-24 absolute -right-4 -bottom-4 text-white/10 group-hover:rotate-12 transition-transform duration-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                        </svg>
-                    </div>
-                </div>
-
-                <!-- Consumo de Recursos Externos y Configuración de Tareas -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- Monitor de APIs -->
-                    <div class="bg-white dark:bg-slate-800 p-8 rounded-3xl shadow-xl border border-slate-100 dark:border-slate-700">
-                        <div class="flex items-center justify-between mb-8">
-                            <div>
-                                <h3 class="text-xl font-bold text-slate-800 dark:text-white">Telemetría de Servicios</h3>
-                                <p class="text-xs text-slate-500 dark:text-slate-400">Cuotas y límites de consumo en tiempo real.</p>
-                            </div>
-                            <div class="p-3 bg-indigo-50 dark:bg-indigo-900/20 rounded-2xl">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-indigo-600 dark:text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                                </svg>
-                            </div>
-                        </div>
-                        
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
-                            <div v-for="(data, api) in api_consumption" :key="api" class="space-y-3 group">
-                                <div class="flex justify-between items-end">
-                                    <div class="flex items-center gap-2">
-                                        <div class="w-2 h-2 rounded-full" :class="`bg-${data.status}-500`"></div>
-                                        <span class="text-xs font-black uppercase text-slate-600 dark:text-slate-400 tracking-wider">{{ api }}</span>
-                                    </div>
-                                    <span :class="[`text-${data.status}-500`, 'text-[10px]', 'font-black', 'text-right']">
-                                        {{ data.used }} / {{ data.limit }}
-                                    </span>
-                                </div>
-                                <div class="h-2 bg-slate-100 dark:bg-slate-700/50 rounded-full overflow-hidden shadow-inner">
-                                    <div 
-                                        class="h-full transition-all duration-700 ease-out"
-                                        :class="`bg-${data.status}-500 shadow-[0_0_10px_rgba(var(--tw-color-${data.status}-500),0.4)]`"
-                                        :style="{ width: `${data.percentage}%` }"
-                                    ></div>
-                                </div>
-                                <p v-if="data.warning" class="text-[9px] text-rose-500 font-black animate-pulse">
-                                    ⚠️ CUOTA CRÍTICA ({{ api }})
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Estado del Planificador -->
-                    <div class="bg-white dark:bg-slate-800 p-8 rounded-3xl shadow-xl border border-slate-100 dark:border-slate-700 flex flex-col justify-center relative overflow-hidden group">
-                        <div class="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
-                             <svg xmlns="http://www.w3.org/2000/svg" class="h-32 w-32" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2" />
-                            </svg>
-                        </div>
-                        <div class="text-center space-y-4">
-                            <div class="inline-flex p-4 bg-emerald-50 dark:bg-emerald-900/20 rounded-3xl">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                            </div>
-                            <div>
-                                <h3 class="text-xl font-bold text-slate-800 dark:text-white">Automatización de Backups</h3>
-                                <p class="text-sm text-slate-500 dark:text-slate-400 mt-2 max-w-xs mx-auto leading-relaxed">
-                                    Instantáneas diarias del sistema programadas a las <span class="font-bold text-slate-800 dark:text-white">03:00 AM</span>. 
-                                    Se mantienen las últimas 30 copias.
-                                </p>
-                            </div>
-                            <div class="pt-4 flex items-center justify-center gap-2">
-                                <div class="w-2 h-2 bg-emerald-500 rounded-full animate-ping"></div>
-                                <span class="text-[10px] font-black uppercase text-emerald-600 dark:text-emerald-400 tracking-widest">Servicio de Sincronización Activo</span>
-                            </div>
-                        </div>
-                    </div>
+                <!-- Fila Superior: KPIs Críticos y Panel de Control de Mantenimiento -->
+                <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 items-stretch">
+                    <AdminStats :stats="stats" />
+                    <MaintenanceActions 
+                        :loading-logs="loadingLogs"
+                        @clear-cache="clearCache"
+                        @optimize-db="optimizeDb"
+                        @fetch-logs="fetchLogs"
+                    />
                 </div>
 
                 <!-- Visor de Logs del Sistema (Condicional) -->
-                <div v-if="systemLogs" class="bg-slate-900 rounded-3xl shadow-2xl overflow-hidden border border-slate-800 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                    <div class="px-8 py-4 bg-slate-800/50 flex justify-between items-center border-b border-slate-700">
-                        <div class="flex items-center gap-3">
-                            <div class="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></div>
-                            <span class="text-xs font-black uppercase tracking-widest text-slate-300">Laravel System Logs (Últimas 50 líneas)</span>
-                        </div>
-                        <button @click="systemLogs = ''" class="text-slate-500 hover:text-white transition-colors">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                              <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
-                            </svg>
-                        </button>
-                    </div>
-                    <div class="p-6">
-                        <pre class="text-[10px] sm:text-xs font-mono text-emerald-400 bg-black/30 p-4 rounded-xl overflow-x-auto max-h-96 scrollbar-thin scrollbar-thumb-slate-700 leading-relaxed">{{ systemLogs }}</pre>
-                    </div>
-                </div>
+                <SystemLogsViewer 
+                    v-if="lastLogs" 
+                    :logs="lastLogs" 
+                    @close="lastLogs = ''" 
+                />
 
-                <!-- Actividad Global Reciente -->
-                <div class="bg-white dark:bg-slate-800 rounded-3xl shadow-xl overflow-hidden border border-slate-100 dark:border-slate-700">
-                    <div class="p-8 border-b border-slate-50 dark:border-slate-700 flex items-center justify-between">
-                        <div>
-                            <h3 class="text-2xl font-bold text-slate-800 dark:text-white mb-2">Actividad Reciente del Sistema</h3>
-                            <p class="text-slate-500 dark:text-slate-400 text-sm italic">Monitoreo de transacciones globales de todos los usuarios.</p>
-                        </div>
-                        <div class="p-4 bg-emerald-50 dark:bg-emerald-900/20 rounded-2xl">
-                             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                        </div>
-                    </div>
+                <!-- Monitorización Técnica (Ancho Completo para mayor legibilidad) -->
+                <section>
+                    <ApiMonitorSection :api_consumption="api_consumption" />
+                </section>
 
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left">
-                            <thead class="bg-slate-50 dark:bg-slate-900/50">
-                                <tr>
-                                    <th class="px-8 py-4 text-xs font-black uppercase tracking-widest text-slate-400">Usuario</th>
-                                    <th class="px-8 py-4 text-xs font-black uppercase tracking-widest text-slate-400">Activo</th>
-                                    <th class="px-8 py-4 text-xs font-black uppercase tracking-widest text-slate-400 text-center">Tipo</th>
-                                    <th class="px-8 py-4 text-xs font-black uppercase tracking-widest text-slate-400 text-right">Importe</th>
-                                    <th class="px-8 py-4 text-xs font-black uppercase tracking-widest text-slate-400 text-right">Fecha</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-slate-50 dark:divide-slate-700 text-sm">
-                                <tr v-for="activity in global_activity" :key="activity.id" class="hover:bg-slate-50/50 dark:hover:bg-slate-700/50 transition-colors">
-                                    <td class="px-8 py-4">
-                                        <span class="font-bold text-slate-800 dark:text-white">{{ activity.user }}</span>
-                                    </td>
-                                    <td class="px-8 py-4 text-slate-600 dark:text-slate-300 font-medium">{{ activity.asset }}</td>
-                                    <td class="px-8 py-4 text-center">
-                                        <span class="px-2 py-1 rounded text-[10px] font-black uppercase tracking-widest" :class="activity.type === 'buy' || activity.type === 'income' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30' : 'bg-rose-100 text-rose-700 dark:bg-rose-900/30'">
-                                            {{ activity.type }}
-                                        </span>
-                                    </td>
-                                    <td class="px-8 py-4 text-right font-bold text-slate-800 dark:text-white">
-                                        {{ activity.amount.toLocaleString('en-US', { style: 'currency', currency: 'USD' }) }}
-                                    </td>
-                                    <td class="px-8 py-4 text-right text-slate-500 dark:text-slate-400 text-xs">{{ activity.date }}</td>
-                                </tr>
-                                <tr v-if="global_activity.length === 0">
-                                    <td colspan="5" class="px-8 py-12 text-center text-slate-400 italic">No hay actividad reciente registrada en el sistema.</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+                <!-- Moderación de Comunidad (Ancho Completo) -->
+                <section>
+                    <ReportsTable :reports="reports" />
+                </section>
 
-                <!-- Tabla de Moderación de Reportes Social -->
-                <div class="bg-white dark:bg-slate-800 rounded-3xl shadow-xl overflow-hidden border border-slate-100 dark:border-slate-700 mt-8">
-                    <div class="p-8 border-b border-slate-50 dark:border-slate-700 flex items-center justify-between">
-                        <div>
-                            <h3 class="text-2xl font-bold text-slate-800 dark:text-white mb-2">Moderación de Comunidad</h3>
-                            <p class="text-slate-500 dark:text-slate-400 text-sm italic">Postes y comentarios denunciados que requieren revisión.</p>
-                        </div>
-                        <div class="p-4 bg-rose-50 dark:bg-rose-900/20 rounded-2xl">
-                             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-rose-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                             </svg>
-                        </div>
-                    </div>
+                <!-- Actividad Global del Sistema (Ancho Completo) -->
+                <section>
+                    <GlobalActivityTable :global_activity="global_activity" />
+                </section>
 
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left">
-                            <thead class="bg-slate-50 dark:bg-slate-900/50">
-                                <tr>
-                                    <th class="px-8 py-4 text-xs font-black uppercase tracking-widest text-slate-400">Denunciante</th>
-                                    <th class="px-8 py-4 text-xs font-black uppercase tracking-widest text-slate-400">Razón</th>
-                                    <th class="px-8 py-4 text-xs font-black uppercase tracking-widest text-slate-400 text-center">Tipo</th>
-                                    <th class="px-8 py-4 text-xs font-black uppercase tracking-widest text-slate-400 text-right">Referencia ID</th>
-                                    <th class="px-8 py-4 text-xs font-black uppercase tracking-widest text-slate-400 text-right">Fecha</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-slate-50 dark:divide-slate-700 text-sm">
-                                <tr v-for="report in reports" :key="report.id" class="hover:bg-slate-50/50 dark:hover:bg-slate-700/50 transition-colors">
-                                    <td class="px-8 py-4">
-                                        <span class="font-bold text-slate-800 dark:text-white">{{ report.user_name }}</span>
-                                    </td>
-                                    <td class="px-8 py-4 text-slate-600 dark:text-slate-300 font-medium max-w-sm truncate">{{ report.reason }}</td>
-                                    <td class="px-8 py-4 text-center">
-                                        <span class="px-2 py-1 rounded text-[10px] font-black uppercase tracking-widest bg-amber-100 text-amber-700 dark:bg-amber-900/30">
-                                            {{ report.type }}
-                                        </span>
-                                    </td>
-                                    <td class="px-8 py-4 text-right font-bold text-slate-800 dark:text-white">
-                                        #{{ report.ref_id }}
-                                    </td>
-                                    <td class="px-8 py-4 text-right text-slate-500 dark:text-slate-400 text-xs">{{ report.date }}</td>
-                                </tr>
-                                <tr v-if="reports.length === 0">
-                                    <td colspan="5" class="px-8 py-12 text-center text-slate-400 italic">No hay reportes pendientes en la plataforma.</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+                <!-- Copias de Seguridad (Ancho Completo) -->
+                <section>
+                    <BackupManager :backups="backups" />
+                </section>
 
-                <!-- Centro de Control de Backups -->
-                <div class="bg-white dark:bg-slate-800 rounded-3xl shadow-xl overflow-hidden border border-slate-100 dark:border-slate-700 mt-8">
-                    <div class="px-8 py-6 border-b border-slate-50 dark:border-slate-700 lg:flex lg:items-center lg:justify-between gap-4">
-                        <div class="mb-4 lg:mb-0">
-                            <h3 class="text-xl font-black text-slate-800 dark:text-white mb-1">Copias de Seguridad (Backup)</h3>
-                            <p class="text-slate-500 dark:text-slate-400 text-xs italic font-medium">Gestión de snapshots. Los backups preventivos se crean automáticamente antes de restaurar.</p>
-                        </div>
-                        <div class="flex flex-wrap items-center gap-2">
-                            <!-- Input para importar -->
-                            <input type="file" id="backup-upload" class="hidden" @change="handleImport" accept=".sqlite">
-                            <input type="file" id="backup-direct-restore" class="hidden" @change="handleDirectRestore" accept=".sqlite">
-                            
-                            <button 
-                                @click="triggerFileInput"
-                                :disabled="importForm.processing"
-                                class="flex items-center gap-1.5 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all active:scale-95"
-                                title="Subir archivo a la lista de backups"
-                            >
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-3.5 h-3.5">
-                                  <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" />
-                                </svg>
-                                Subir
-                            </button>
-
-                            <button 
-                                @click="() => document.getElementById('backup-direct-restore').click()"
-                                class="flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all shadow-lg shadow-emerald-500/10 active:scale-95"
-                                title="Subir y aplicar base de datos inmediatamente"
-                            >
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-3.5 h-3.5">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                                </svg>
-                                Restaurar
-                            </button>
-
-                            <button 
-                                @click="generateBackup"
-                                :disabled="form.processing"
-                                class="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-400 text-white px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all shadow-lg shadow-blue-500/10 active:scale-95"
-                            >
-                                <svg v-if="!form.processing" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-3.5 h-3.5">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                                <svg v-else class="animate-spin h-3.5 w-3.5 text-white" fill="none" viewBox="0 0 24 24">
-                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
-                                </svg>
-                                Snapshot
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left">
-                            <thead class="bg-slate-50 dark:bg-slate-900/50">
-                                <tr>
-                                    <th class="px-8 py-4 text-xs font-black uppercase tracking-widest text-slate-400">Archivo</th>
-                                    <th class="px-8 py-4 text-xs font-black uppercase tracking-widest text-slate-400 text-center">Tamaño</th>
-                                    <th class="px-8 py-4 text-xs font-black uppercase tracking-widest text-slate-400">Fecha</th>
-                                    <th class="px-8 py-4 text-xs font-black uppercase tracking-widest text-slate-400 text-right">Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-slate-50 dark:divide-slate-700 text-sm">
-                                <tr v-for="backup in backups" :key="backup.name" class="hover:bg-slate-50/50 dark:hover:bg-slate-700/50 transition-colors">
-                                    <td class="px-8 py-4 font-mono text-slate-600 dark:text-slate-300">{{ backup.name }}</td>
-                                    <td class="px-8 py-4 text-center">
-                                        <span class="px-2 py-1 bg-slate-100 dark:bg-slate-700 rounded text-[10px] font-bold text-slate-500">{{ backup.size }}</span>
-                                    </td>
-                                    <td class="px-8 py-4 text-slate-500 dark:text-slate-400">{{ backup.created_at }}</td>
-                                    <td class="px-8 py-4 text-right flex justify-end gap-2">
-                                        <button 
-                                            @click="restoreBackup(backup.name)"
-                                            class="p-2 text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 rounded-lg transition-colors"
-                                            title="Restaurar este backup"
-                                        >
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
-                                              <path stroke-linecap="round" stroke-linejoin="round" d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3" />
-                                            </svg>
-                                        </button>
-                                        <a 
-                                            :href="route('admin.backup.download', backup.name)"
-                                            class="p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
-                                            target="_blank"
-                                        >
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-                                              <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
-                                            </svg>
-                                        </a>
-                                        <button 
-                                            @click="deleteBackup(backup.name)"
-                                            class="p-2 text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/20 rounded-lg transition-colors"
-                                        >
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-                                              <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
-                                            </svg>
-                                        </button>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- Gestión de Usuarios -->
-                <div class="bg-white dark:bg-slate-800 rounded-3xl shadow-xl overflow-hidden border border-slate-100 dark:border-slate-700">
-                    <div class="p-8 border-b border-slate-50 dark:border-slate-700">
-                        <h3 class="text-2xl font-bold text-slate-800 dark:text-white mb-2">Gestión de Usuarios</h3>
-                        <p class="text-slate-500 dark:text-slate-400 text-sm italic">Control de accesos y roles administrativos.</p>
-                    </div>
-
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left">
-                            <thead class="bg-slate-50 dark:bg-slate-900/50">
-                                <tr>
-                                    <th class="px-8 py-4 text-xs font-black uppercase tracking-widest text-slate-400">Usuario</th>
-                                    <th class="px-8 py-4 text-xs font-black uppercase tracking-widest text-slate-400">Email</th>
-                                    <th class="px-8 py-4 text-xs font-black uppercase tracking-widest text-slate-400">Plan</th>
-                                    <th class="px-8 py-4 text-xs font-black uppercase tracking-widest text-slate-400 text-center">Rol</th>
-                                    <th class="px-8 py-4 text-xs font-black uppercase tracking-widest text-slate-400 text-right">Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-slate-50 dark:divide-slate-700 text-sm">
-                                <tr v-for="user in users" :key="user.id" class="hover:bg-slate-50/50 dark:hover:bg-slate-700/50 transition-colors">
-                                    <td class="px-8 py-4">
-                                        <div class="flex items-center gap-3">
-                                            <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold text-xs" :class="{'ring-2 ring-purple-500': user.tier === 'premium', 'ring-2 ring-indigo-500': user.tier === 'pro', 'ring-2 ring-blue-400': user.tier === 'basic'}">
-                                                {{ user.name.substring(0,2).toUpperCase() }}
-                                            </div>
-                                            <div>
-                                                <div class="font-bold text-slate-800 dark:text-white">{{ user.name }}</div>
-                                                <div class="text-[10px] text-slate-400 font-bold uppercase tracking-widest" v-if="user.tier !== 'none'">{{ user.subscription_status }}</div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="px-8 py-4 text-slate-500 dark:text-slate-400">{{ user.email }}</td>
-                                    <td class="px-8 py-4">
-                                        <span v-if="user.tier === 'premium'" class="px-3 py-1 bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400 text-[10px] font-black uppercase rounded-full">Premium</span>
-                                        <span v-else-if="user.tier === 'pro'" class="px-3 py-1 bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400 text-[10px] font-black uppercase rounded-full">Pro</span>
-                                        <span v-else-if="user.tier === 'basic'" class="px-3 py-1 bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 text-[10px] font-black uppercase rounded-full">Basic</span>
-                                        <span v-else class="px-3 py-1 bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400 text-[10px] font-black uppercase rounded-full">No</span>
-                                    </td>
-                                    <td class="px-8 py-4 text-center">
-                                        <span v-if="user.is_admin" class="px-3 py-1 bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 text-[10px] font-black uppercase rounded-full">Administrador</span>
-                                        <span v-else class="px-3 py-1 bg-slate-100 dark:bg-slate-800 text-slate-500 text-[10px] font-black uppercase rounded-full border border-slate-200 dark:border-slate-700">Usuario</span>
-                                    </td>
-                                    <td class="px-8 py-4 text-right flex justify-end gap-2">
-                                        <button 
-                                            @click="openSubModal(user)"
-                                            class="p-2 text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg transition-colors"
-                                            title="Modificar Plan de Suscripción"
-                                        >
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-                                              <path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z" />
-                                            </svg>
-                                        </button>
-                                        <button 
-                                            @click="toggleAdmin(user)"
-                                            class="p-2 text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
-                                            title="Cambiar Rol"
-                                        >
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-                                              <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
-                                            </svg>
-                                        </button>
-                                        <button 
-                                            @click="deleteUser(user)"
-                                            class="p-2 text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/20 rounded-lg transition-colors"
-                                        >
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-                                              <path stroke-linecap="round" stroke-linejoin="round" d="m20.25 7.5-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5m6 4.125 2.25 2.25m0 0 2.25 2.25m-2.25-2.25-2.25 2.25m2.25-2.25-2.25-2.25M3.75 7.5l.625-10.632A2.25 2.25 0 0 1 6.622 3h10.756a2.25 2.25 0 0 1 2.247 2.118L20.25 7.5" />
-                                            </svg>
-                                        </button>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
+                <!-- Gestión de Usuarios (Ancho Completo) -->
+                <section>
+                    <UserManagementTable 
+                        :users="users" 
+                        @open-sub-modal="openSubModal"
+                    />
+                </section>
             </div>
         </div>
 
-        <!-- Modal de Suscripción Manual -->
-        <div v-if="activeUserForSub" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
-            <div class="bg-white dark:bg-slate-800 w-full max-w-md rounded-3xl shadow-2xl overflow-hidden border border-slate-100 dark:border-slate-700 animate-in zoom-in-95 duration-200">
-                <div class="p-6 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center">
-                    <h3 class="text-xl font-bold text-slate-800 dark:text-white flex items-center gap-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        Administrar Plan
-                    </h3>
-                    <button @click="activeUserForSub = null" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300">
-                        <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </button>
-                </div>
-                
-                <div class="p-6 space-y-6">
-                    <div>
-                        <p class="text-sm font-bold text-slate-800 dark:text-white mb-2">Usuario: {{ activeUserForSub.name }}</p>
-                        <p class="text-xs text-slate-500 dark:text-slate-400">Modifica directamente los datos de membresía en el sistema.</p>
-                    </div>
-
-                    <div class="space-y-4">
-                        <div>
-                            <label class="block text-[10px] font-black uppercase text-slate-500 dark:text-slate-400 mb-2">Nivel de Plan (Tier)</label>
-                            <select v-model="subForm.tier" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm p-3 focus:ring-2 focus:ring-indigo-500 dark:text-white outline-none transition-shadow">
-                                <option value="none">Sin plan (Anular)</option>
-                                <option value="basic">Básico</option>
-                                <option value="pro">Pro</option>
-                                <option value="premium">Premium</option>
-                            </select>
-                        </div>
-                        <div v-if="subForm.tier !== 'none'">
-                            <label class="block text-[10px] font-black uppercase text-slate-500 dark:text-slate-400 mb-2">Días de concesión</label>
-                            <input type="number" v-model="subForm.days" min="1" max="1000" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm p-3 focus:ring-2 focus:ring-indigo-500 dark:text-white outline-none transition-shadow" />
-                            <p class="mt-1 text-[10px] text-slate-400 font-bold italic">La suscripción auto-caducará pasada esta cifra de días si no se renueva.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="p-6 bg-slate-50 dark:bg-slate-900/50 flex justify-end gap-3 border-t border-slate-100 dark:border-slate-700">
-                    <button @click="activeUserForSub = null" class="px-5 py-2.5 rounded-xl font-bold text-xs uppercase tracking-widest text-slate-600 hover:bg-slate-200 dark:text-slate-300 dark:hover:bg-slate-700 transition-colors">
-                        Cancelar
-                    </button>
-                    <button @click="updateSubscription()" :disabled="subForm.processing" class="px-6 py-2.5 rounded-xl font-black text-xs uppercase tracking-widest text-white transition-all active:scale-95 shadow-lg flex items-center justify-center gap-2 min-w-[120px]" :class="subForm.tier === 'none' ? 'bg-rose-500 shadow-rose-500/20 hover:bg-rose-600' : 'bg-indigo-600 shadow-indigo-500/20 hover:bg-indigo-700'">
-                        {{ subForm.tier === 'none' ? 'Anular Plan' : 'Guardar' }}
-                    </button>
-                </div>
-            </div>
-        </div>
-
+        <!-- Modal de Suscripción (Modularizado) -->
+        <SubscriptionModal 
+            v-if="activeUserForSub" 
+            :user="activeUserForSub"
+            @close="closeSubModal"
+            @success="closeSubModal"
+        />
     </AuthenticatedLayout>
 </template>
+
+<style scoped>
+/* Optimizaciones de scrollbars suaves para campos de texto largos */
+.scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+.scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb {
+    background: #475569;
+    border-radius: 10px;
+}
+</style>

@@ -9,6 +9,8 @@ import PerformanceTimeSelector from '@/Components/Transactions/PerformanceTimeSe
 import PerformanceHeatmap from '@/Components/Transactions/PerformanceHeatmap.vue';
 import PerformanceBreakdown from '@/Components/Transactions/PerformanceBreakdown.vue';
 import AdSlot from '@/Components/AdSense/AdSlot.vue';
+import AnnualBarSection from '@/Components/Dashboard/AnnualBarSection.vue';
+import { usePrivacy } from '@/Composables/usePrivacy';
 import { formatCurrency } from '@/Utils/formatting';
 
 /**
@@ -24,8 +26,9 @@ const props = defineProps({
     viewType: [String, Number]
 });
 
+const { isPrivacyMode } = usePrivacy();
 // Estado de visualización del gráfico (barras, líneas, mapa de calor)
-const chartMode = ref('bar'); 
+const chartMode = ref('bar');
 
 /**
  * Cambia el portafolio seleccionado.
@@ -160,7 +163,7 @@ const chartOptions = computed(() => {
                         <div>
                             <h2 class="text-xl font-bold text-slate-800 dark:text-white">Análisis de Rendimiento</h2>
                             <p class="text-sm text-slate-500 dark:text-slate-400">
-                                {{ viewType === 'MAX' ? 'Histórico acumulado por años' : `Detalle mensual para el año ${viewType}` }}
+                                {{ viewType === 'MAX' ? 'Histórico acumulado por años' : `Detalle mensual para el año ${viewType || 'seleccionado'}` }}
                             </p>
                         </div>
                     </div>
@@ -178,7 +181,13 @@ const chartOptions = computed(() => {
                     </div>
                 </div>
 
-                <!-- Distribución Principal -->
+                <!-- 1. Análisis Anual Consolidado (Nuevo) -->
+                <AnnualBarSection 
+                    :data="annual" 
+                    :is-privacy-mode="isPrivacyMode" 
+                />
+
+                <!-- 2. Distribución y Detalle Principal -->
                 <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
                     
                     <!-- Lateral: Selector de Tiempo -->

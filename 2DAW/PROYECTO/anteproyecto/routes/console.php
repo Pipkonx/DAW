@@ -25,11 +25,11 @@ Schedule::call(function () {
         $filename = 'backup-auto-' . now()->format('Y-m-d-His') . '.sqlite';
         File::copy($databasePath, $backupDir . '/' . $filename);
         
-        // Mantener solo los últimos 30 backups automáticos
+        // Mantener solo los últimos 5 backups automáticos
         $files = File::glob($backupDir . '/backup-auto-*.sqlite');
-        if (count($files) > 30) {
+        if (count($files) > 5) {
             array_multisort(array_map('filemtime', $files), SORT_ASC, $files);
-            File::delete(array_slice($files, 0, count($files) - 30));
+            File::delete(array_slice($files, 0, count($files) - 5));
         }
     }
 })->dailyAt('03:00')->timezone('Europe/Madrid');
