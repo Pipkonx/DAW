@@ -1,6 +1,7 @@
 <script setup>
 import { Link } from '@inertiajs/vue3';
 import { ref, onMounted } from 'vue';
+import Footer from '@/Components/Footer.vue';
 
 // Props para controlar la visibilidad de elementos si es necesario
 defineProps({
@@ -42,8 +43,8 @@ onMounted(() => {
     <div class="min-h-screen bg-gray-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 font-sans selection:bg-blue-500 selection:text-white flex flex-col transition-colors duration-300">
         <!-- Navbar -->
         <nav class="w-full py-6 px-6 lg:px-12 flex justify-between items-center max-w-7xl mx-auto border-b border-transparent dark:border-slate-800">
-            <Link href="/" class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white hover:opacity-80 transition flex items-center gap-2">
-                Fintech<span class="text-blue-600 dark:text-blue-500">Pro</span>
+            <Link href="/" class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white hover:opacity-80 transition flex items-center gap-1 italic uppercase tracking-tighter">
+                fintech<span class="text-blue-600 dark:text-blue-500 not-italic lowercase font-black">Pro</span>
             </Link>
             
             <div class="flex items-center gap-4">
@@ -96,17 +97,6 @@ onMounted(() => {
         </main>
 
         <!-- Footer -->
-        <footer class="py-12 border-t border-slate-100 dark:border-slate-800 bg-gray-50 dark:bg-slate-900 mt-auto transition-colors duration-300">
-            <div class="max-w-7xl mx-auto px-6 lg:px-12 flex flex-col md:flex-row justify-between items-center gap-6">
-                <div class="text-slate-500 dark:text-slate-400 text-sm">
-                    &copy; 2026 FintechPro. Todos los derechos reservados.
-                </div>
-                <div class="flex gap-6 text-sm font-medium text-slate-600 dark:text-slate-400">
-                    <Link :href="route('legal.terms')" class="hover:text-blue-600 dark:hover:text-blue-400 transition">Términos y Condiciones</Link>
-                    <Link :href="route('legal.privacy')" class="hover:text-blue-600 dark:hover:text-blue-400 transition">Política de Privacidad</Link>
-                    <Link :href="route('legal.notice')" class="hover:text-blue-600 dark:hover:text-blue-400 transition">Aviso Legal</Link>
-                </div>
-            </div>
-        </footer>
+        <Footer />
     </div>
 </template>

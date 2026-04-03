@@ -10,61 +10,83 @@ import InfoTooltip from '@/Components/InfoTooltip.vue';
 
         <div class="py-12 bg-slate-50 dark:bg-slate-900 min-h-screen">
             <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
-                <div class="bg-white dark:bg-slate-800 overflow-hidden shadow-sm sm:rounded-xl border border-slate-100 dark:border-slate-700 p-8 lg:p-12">
-                    <div class="flex items-center justify-between mb-8 border-b border-slate-100 dark:border-slate-700 pb-6">
-                        <h1 class="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Aviso Legal</h1>
-                        <InfoTooltip text="La información formal sobre quiénes somos." />
+                <div class="bg-white dark:bg-slate-800 overflow-hidden shadow-sm sm:rounded-3xl border border-slate-100 dark:border-slate-700 p-8 lg:p-16">
+                    <!-- Header -->
+                    <div class="mb-12 border-b border-slate-100 dark:border-slate-700 pb-8 text-center flex flex-col items-center">
+                        <div class="w-16 h-1 bg-blue-600 mb-6 rounded-full"></div>
+                        <span class="text-slate-400 dark:text-slate-500 text-[10px] font-black uppercase tracking-[0.4em] mb-4 block">Identificación Corporativa</span>
+                        <h1 class="text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-none mb-2">Aviso Legal</h1>
                     </div>
 
-                    <div class="prose prose-slate dark:prose-invert max-w-none text-slate-600 dark:text-slate-400 space-y-8">
-                        <section class="bg-slate-50 dark:bg-slate-700/50 p-6 rounded-lg border border-slate-100 dark:border-slate-600">
-                            <div class="flex items-center gap-2 mb-3">
-                                <h2 class="text-xl font-bold text-slate-800 dark:text-slate-200 m-0">1. Datos Identificativos</h2>
-                                <InfoTooltip text="Quién está detrás de FintechPro." />
+                    <!-- Content -->
+                    <div class="prose prose-slate dark:prose-invert max-w-none text-slate-600 dark:text-slate-400 space-y-12">
+                        <!-- Section 1: Identificación -->
+                        <section class="bg-slate-50 dark:bg-slate-900/50 p-8 rounded-3xl border border-slate-100 dark:border-slate-800 relative overflow-hidden">
+                            <div class="absolute top-0 right-0 p-4 opacity-5">
+                                <svg class="w-24 h-24 text-slate-900 dark:text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
                             </div>
-                            <p class="text-sm leading-relaxed mb-4">
-                                En cumplimiento con el deber de información recogido en la normativa vigente, aquí tienes nuestros datos:
-                            </p>
-                            <ul class="list-none pl-0 space-y-2 text-sm">
-                                <li class="flex items-start"><span class="font-semibold text-slate-800 dark:text-slate-200 w-24">Titular:</span> <span>FintechPro Inc.</span></li>
-                                <li class="flex items-start"><span class="font-semibold text-slate-800 dark:text-slate-200 w-24">Domicilio:</span> <span>Calle Tecnológica 123, Madrid, España</span></li>
-                                <li class="flex items-start"><span class="font-semibold text-slate-800 dark:text-slate-200 w-24">Email:</span> <span>contacto@fintechpro.com</span></li>
-                                <li class="flex items-start"><span class="font-semibold text-slate-800 dark:text-slate-200 w-24">CIF:</span> <span>B-12345678</span></li>
-                            </ul>
+                            <div class="flex items-center gap-3 mb-6">
+                                <h2 class="text-xl font-black text-slate-800 dark:text-slate-100 m-0 uppercase tracking-tight">01. Datos Identificativos</h2>
+                                <InfoTooltip text="Información fiscal y de contacto oficial de fintechPro." />
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-y-6 gap-x-12">
+                                <div class="flex flex-col">
+                                    <span class="text-[10px] font-black text-blue-600 uppercase tracking-widest mb-1">Titular</span>
+                                    <span class="text-sm font-bold text-slate-800 dark:text-slate-200">fintechPro Intelligence Platform</span>
+                                </div>
+                                <div class="flex flex-col">
+                                    <span class="text-[10px] font-black text-blue-600 uppercase tracking-widest mb-1">Email Oficial</span>
+                                    <span class="text-sm font-bold text-slate-800 dark:text-slate-200">legal@pipkonx.com</span>
+                                </div>
+                                <div class="flex flex-col">
+                                    <span class="text-[10px] font-black text-blue-600 uppercase tracking-widest mb-1">Domicilio Fiscal</span>
+                                    <span class="text-sm font-bold text-slate-800 dark:text-slate-200">Tech District, Madrid, España</span>
+                                </div>
+                                <div class="flex flex-col">
+                                    <span class="text-[10px] font-black text-blue-600 uppercase tracking-widest mb-1">Registro</span>
+                                    <span class="text-sm font-bold text-slate-800 dark:text-slate-200">fintechPro Dev Core Team</span>
+                                </div>
+                            </div>
                         </section>
 
+                        <!-- Section 2 -->
                         <section>
-                            <h2 class="text-lg font-semibold text-slate-800 dark:text-slate-200 mb-3 flex items-center gap-2">
-                                2. Usuarios
-                            </h2>
-                            <p class="text-sm">
-                                Al entrar aquí, te conviertes en USUARIO y aceptas nuestras Condiciones Generales. Sencillo.
+                            <div class="flex items-center gap-3 mb-4">
+                                <span class="flex items-center justify-center w-8 h-8 rounded-lg bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-black">02</span>
+                                <h2 class="text-xl font-black text-slate-800 dark:text-slate-100 m-0 uppercase tracking-tight">Condición de Usuario</h2>
+                            </div>
+                            <p class="text-sm leading-relaxed m-0 font-medium">
+                                El acceso y/o uso de este portal de fintechPro atribuye la condición de USUARIO, que acepta, desde dicho acceso y/o uso, las Condiciones de Uso aquí reflejadas. Las citadas Condiciones serán de aplicación independientemente de las Condiciones Generales de Contratación que en su caso resulten de obligado cumplimiento.
                             </p>
                         </section>
 
+                        <!-- Section 3 -->
                         <section>
-                            <h2 class="text-lg font-semibold text-slate-800 dark:text-slate-200 mb-3">3. Uso del Portal</h2>
-                            <p class="text-sm">
-                                FintechPro te da acceso a mucha información y herramientas. Úsalas con responsabilidad. No seas "ese" usuario que intenta romper cosas.
+                            <div class="flex items-center gap-3 mb-4">
+                                <span class="flex items-center justify-center w-8 h-8 rounded-lg bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-black">03</span>
+                                <h2 class="text-xl font-black text-slate-800 dark:text-slate-100 m-0 uppercase tracking-tight">Responsabilidades</h2>
+                            </div>
+                            <p class="text-sm leading-relaxed m-0 font-medium">
+                                fintechPro proporciona este servicio "tal cual". Si bien realizamos nuestros mejores esfuerzos para garantizar la exactitud de los datos y el tiempo de actividad de la plataforma, no garantizamos la ausencia de errores o interrupciones técnicas. El usuario asume toda responsabilidad derivada de las decisiones tomadas tras el análisis de la información aquí disponible.
                             </p>
                         </section>
 
+                        <!-- Section 4 -->
                         <section>
-                            <h2 class="text-lg font-semibold text-slate-800 dark:text-slate-200 mb-3">4. Exclusión de Garantías y Responsabilidad</h2>
-                            <p class="text-sm">
-                                Hacemos todo lo posible para que el sitio funcione perfecto y sin virus, pero la tecnología a veces falla. No nos hacemos responsables si algo sale mal a pesar de nuestras medidas de seguridad.
+                            <div class="flex items-center gap-3 mb-4">
+                                <span class="flex items-center justify-center w-8 h-8 rounded-lg bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-black">04</span>
+                                <h2 class="text-xl font-black text-slate-800 dark:text-slate-100 m-0 uppercase tracking-tight">Jurisdicción</h2>
+                            </div>
+                            <p class="text-sm leading-relaxed m-0 font-medium italic">
+                                Para la resolución de todas las controversias o cuestiones relacionadas con el presente sitio web o de las actividades en él desarrolladas, será de aplicación la legislación española, a la que se someten expresamente las partes, siendo competentes para la resolución de todos los conflictos derivados o relacionados con su uso los Juzgados y Tribunales de Madrid.
                             </p>
                         </section>
 
-                        <section>
-                            <h2 class="text-lg font-semibold text-slate-800 dark:text-slate-200 mb-3">5. Legislación Aplicable y Jurisdicción</h2>
-                            <p class="text-sm">
-                                Nos regimos por la ley española. Si hay algún problema legal (esperemos que no), lo resolveremos en los juzgados de Madrid.
+                        <!-- Footer legal page -->
+                        <div class="mt-16 pt-8 border-t border-slate-100 dark:border-slate-800 text-center">
+                            <p class="text-[10px] font-black uppercase tracking-widest text-slate-400">
+                                Emitido: 03 de Abril de 2026 &bull; fintechPro Corporate Affairs
                             </p>
-                        </section>
-
-                        <div class="mt-10 pt-6 border-t border-slate-100 dark:border-slate-700 text-xs text-slate-400 text-center">
-                            Última actualización: 16 de Febrero de 2026
                         </div>
                     </div>
                 </div>

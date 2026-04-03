@@ -220,7 +220,7 @@ const renderMarkdown = (text) => {
                                         </div>
                                         <div>
                                             <h3 class="text-lg font-bold text-slate-900 dark:text-white">Análisis Profesional</h3>
-                                            <p class="text-[10px] text-slate-400 uppercase font-black tracking-widest">FintechPro AI Engine</p>
+                                            <p class="text-[10px] text-slate-400 uppercase font-black tracking-widest">fintechPro AI Engine</p>
                                         </div>
                                     </div>
                                     <div class="text-[10px] text-slate-400 italic">

@@ -10,8 +10,20 @@ import Toast from '@/Components/Toast.vue';
 import AssetSearch from '@/Components/AssetSearch.vue';
 import { Link, usePage } from '@inertiajs/vue3';
 import { usePrivacy } from '@/Composables/usePrivacy';
+import { useToast } from '@/Composables/useToast';
+import { watch } from 'vue';
+import Footer from '@/Components/Footer.vue';
 
 const { isPrivacyMode, togglePrivacyMode } = usePrivacy();
+const { activeToasts, showToast, removeToast } = useToast();
+
+const page = usePage();
+
+// Watch for flash messages from Inertia
+watch(() => page.props.flash, (flash) => {
+    if (flash?.success) showToast(flash.success, 'success');
+    if (flash?.error) showToast(flash.error, 'error');
+}, { deep: true, immediate: true });
 
 const showingNavigationDropdown = ref(false);
 const isDark = ref(true); // Default to dark
@@ -41,7 +53,16 @@ onMounted(() => {
 
 <template>
     <div>
-        <Toast />
+        <div class="fixed top-5 right-5 z-[200] flex flex-col gap-3 pointer-events-none w-80">
+            <Toast 
+                v-for="toast in activeToasts" 
+                :key="toast.id" 
+                :message="toast.message" 
+                :type="toast.type"
+                :duration="toast.duration"
+                @close="removeToast(toast.id)"
+            />
+        </div>
         <!-- 
             AuthenticatedLayout: Plantilla principal para usuarios logueados (Dashboard, Perfil).
             bg-slate-50: Fondo base coherente con el estilo Fintech global.
@@ -351,18 +372,7 @@ onMounted(() => {
             </main>
 
             <!-- Footer for Authenticated Users -->
-            <footer class="py-8 border-t border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 mt-auto transition-colors duration-300">
-                <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-4">
-                    <div class="text-slate-400 text-sm">
-                        &copy; 2026 FintechPro. Todos los derechos reservados.
-                    </div>
-                    <div class="flex gap-6 text-sm font-medium text-slate-500 dark:text-slate-400">
-                        <Link :href="route('legal.terms')" class="hover:text-blue-600 dark:hover:text-blue-400 transition">Términos</Link>
-                        <Link :href="route('legal.privacy')" class="hover:text-blue-600 dark:hover:text-blue-400 transition">Privacidad</Link>
-                        <Link :href="route('legal.notice')" class="hover:text-blue-600 dark:hover:text-blue-400 transition">Aviso Legal</Link>
-                    </div>
-                </div>
-            </footer>
+            <Footer />
         </div>
     </div>
 </template>

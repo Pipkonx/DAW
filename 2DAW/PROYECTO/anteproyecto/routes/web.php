@@ -17,6 +17,8 @@ use App\Http\Controllers\AiAnalystController;
 use App\Http\Controllers\TransactionActionController;
 use App\Http\Controllers\TransactionExportController;
 use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\Admin\AdminReportController;
+use App\Http\Controllers\Admin\AdminAnalyticsController;
 use App\Http\Controllers\SocialController;
 use App\Http\Controllers\MarketAssetController;
 use App\Http\Controllers\FamousPortfolioController;
@@ -121,10 +123,20 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('/feed', [SocialController::class, 'index'])->name('social.feed');
     Route::post('/social/post', [SocialController::class, 'storePost'])->name('social.post');
+    Route::put('/social/post/{post}', [SocialController::class, 'updatePost'])->name('social.update');
+    Route::delete('/social/post/{post}', [SocialController::class, 'deletePost'])->name('social.delete');
     Route::post('/social/comment/{post}', [SocialController::class, 'storeComment'])->name('social.comment');
     Route::post('/social/like', [SocialController::class, 'toggleLike'])->name('social.like');
     Route::post('/social/repost/{post}', [SocialController::class, 'toggleRepost'])->name('social.repost');
+    Route::post('/social/bookmark/{post}', [SocialController::class, 'toggleBookmark'])->name('social.bookmark');
+    Route::post('/social/pin/{post}', [SocialController::class, 'togglePin'])->name('social.pin');
     Route::post('/social/report', [SocialController::class, 'reportContent'])->name('social.report');
+
+    // Muro de Usuario y Perfil Social
+    Route::get('/perfil/{username?}', [ProfileController::class, 'show'])->name('social.profile');
+    Route::patch('/profile/social', [ProfileController::class, 'updateSocial'])->name('profile.social.update');
+    Route::post('/profile/{user}/follow', [ProfileController::class, 'toggleFollow'])->name('profile.social.follow');
+    Route::post('/profile/{user}/block', [ProfileController::class, 'block'])->name('profile.social.block');
 
     Route::delete('/assets/bulk-destroy', [App\Http\Controllers\AssetController::class, 'bulkDestroy'])->name('assets.bulk-destroy');
     Route::put('/assets/{asset}', [App\Http\Controllers\AssetController::class, 'update'])->name('assets.update');
@@ -163,6 +175,14 @@ Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.'
     Route::post('/system/optimize', [AdminController::class, 'optimizeDb'])->name('system.optimize');
     Route::post('/system/clear-cache', [AdminController::class, 'clearCache'])->name('system.clear-cache');
     Route::get('/system/logs', [AdminController::class, 'getSystemLogs'])->name('system.logs');
+
+    // Gestión de Reportes
+    Route::get('/reports', [AdminReportController::class, 'index'])->name('reports.index');
+    Route::delete('/reports/{report}/dismiss', [AdminReportController::class, 'dismiss'])->name('reports.dismiss');
+    Route::delete('/reports/{report}/action', [AdminReportController::class, 'destroyContent'])->name('reports.action');
+
+    // Analíticas
+    Route::get('/analytics', [AdminAnalyticsController::class, 'index'])->name('analytics');
 });
 
 // Rutas de Autenticación con Google (Socialite)
@@ -180,5 +200,4 @@ Route::controller(LegalController::class)->group(function () {
     Route::get('/legal-notice', 'notice')->name('legal.notice');
 });
 
-require __DIR__ . '/auth.php';
 require __DIR__ . '/auth.php';

@@ -225,7 +225,7 @@ const openComments = (postId) => {
                         </div>
                         <div class="flex items-center gap-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
                             <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                            Vivo: FintechPro Data
+                            Vivo: fintechPro Data
                         </div>
                     </div>
                     <div class="h-[400px] p-6 relative">
@@ -316,7 +316,7 @@ const openComments = (postId) => {
                                     <p class="text-sm text-slate-500 font-medium">Distribución geográfica y por sectores</p>
                                 </div>
                                 <div class="text-[10px] font-black text-slate-300 uppercase tracking-widest flex items-center gap-2">
-                                    GRÁFICO POR <span class="text-indigo-500">fintechPro</span>
+                                    GRÁFICO POR <span class="text-indigo-500">pipkonx</span>
                                 </div>
                             </div>
                             <div v-if="marketAsset.sectorWeightings || marketAsset.countryWeightings" class="grid grid-cols-1 md:grid-cols-2 gap-12">

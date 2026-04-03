@@ -56,6 +56,14 @@ class Asset extends Model
         return $this->belongsTo(MarketAsset::class);
     }
 
+    /**
+     * Relación con los posts que mencionan este activo a través de su market_asset_id.
+     */
+    public function posts()
+    {
+        return $this->hasMany(Post::class, 'market_asset_id', 'market_asset_id');
+    }
+
     // Calcula el valor total actual del activo
     public function getCurrentValueAttribute()
     {

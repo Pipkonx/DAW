@@ -3,6 +3,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import DeleteUserForm from './Partials/DeleteUserForm.vue';
 import UpdatePasswordForm from './Partials/UpdatePasswordForm.vue';
 import UpdateProfileInformationForm from './Partials/UpdateProfileInformationForm.vue';
+import ManageBlockedUsers from './Partials/ManageBlockedUsers.vue';
 import { Head } from '@inertiajs/vue3';
 
 defineProps({
@@ -11,6 +12,10 @@ defineProps({
     },
     status: {
         type: String,
+    },
+    blockedUsers: {
+        type: Array,
+        default: () => [],
     },
 });
 </script>
@@ -43,6 +48,12 @@ defineProps({
                     class="bg-white dark:bg-slate-800 p-4 shadow-sm border border-slate-100 dark:border-slate-700 sm:rounded-xl sm:p-8"
                 >
                     <UpdatePasswordForm class="max-w-xl" />
+                </div>
+
+                <div
+                    class="bg-white dark:bg-slate-800 p-4 shadow-sm border border-slate-100 dark:border-slate-700 sm:rounded-xl sm:p-8"
+                >
+                    <ManageBlockedUsers :blocked-users="blockedUsers" class="max-w-xl" />
                 </div>
 
                 <div

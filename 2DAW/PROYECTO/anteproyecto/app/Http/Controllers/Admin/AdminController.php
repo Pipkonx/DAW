@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Artisan;
 use App\Models\User;
 use App\Models\Asset;
 use App\Models\Transaction;
+use App\Models\Report;
 use App\Services\ApiService;
 
 class AdminController extends Controller
@@ -43,7 +44,7 @@ class AdminController extends Controller
                 'users' => User::count(),
                 'assets' => Asset::count(),
                 'transactions' => Transaction::count(),
-                'db_size' => round(File::size(database_path('database.sqlite')) / 1024 / 1024, 2) . ' MB',
+                'db_size' => $this->getDbSize(),
                 'cache_enabled' => config('cache.default') !== 'array'
             ],
             'api_health' => $this->checkApiHealth(),
@@ -60,7 +61,17 @@ class AdminController extends Controller
                     'amount' => (float) $tx->amount,
                     'asset' => $tx->asset?->name ?? 'Efectivo/General',
                     'date' => $tx->date->format('d/m/Y H:i'),
-                ])
+                ]),
+            'reports' => Report::with('user', 'reportable')->latest()->take(50)->get()->map(function($report) {
+                return [
+                    'id' => $report->id,
+                    'user_name' => $report->user->name,
+                    'reason' => $report->reason,
+                    'type' => class_basename($report->reportable_type),
+                    'ref_id' => $report->reportable_id,
+                    'date' => $report->created_at->diffForHumans()
+                ];
+            })
         ]);
     }
 
@@ -117,15 +128,52 @@ class AdminController extends Controller
     }
 
     /**
-     * Optimiza la base de datos SQLite (VACUUM).
+     * Optimiza la base de datos (OPTIMIZE TABLE para MariaDB/MySQL).
      */
     public function optimizeDb()
     {
         try {
-            \DB::statement('VACUUM');
-            return back()->with('success', 'Base de datos optimizada (VACUUM ejecutado).');
+            $dbName = config('database.connections.mysql.database');
+            $tables = \DB::select('SHOW TABLES');
+            $tableKey = "Tables_in_{$dbName}";
+
+            foreach ($tables as $table) {
+                $tableName = $table->$tableKey;
+                \DB::statement("OPTIMIZE TABLE {$tableName}");
+            }
+
+            return back()->with('success', 'Base de datos optimizada (Tablas defragmentadas correctamente).');
         } catch (\Exception $e) {
-            return back()->with('error', 'Error en optimización: ' . $e->getMessage());
+            // Fallback si no es MySQL o falla algo
+            try {
+                \DB::statement('VACUUM');
+                return back()->with('success', 'Base de datos optimizada (VACUUM).');
+            } catch (\Exception $e2) {
+                return back()->with('error', 'Error en optimización: ' . $e->getMessage());
+            }
+        }
+    }
+
+    /**
+     * Calcula el tamaño de la base de datos MariaDB/MySQL.
+     */
+    private function getDbSize()
+    {
+        try {
+            $dbName = config('database.connections.mysql.database');
+            $query = "SELECT SUM(data_length + index_length) / 1024 / 1024 AS size 
+                      FROM information_schema.TABLES 
+                      WHERE table_schema = ?";
+            
+            $result = \DB::select($query, [$dbName]);
+            return round($result[0]->size, 2) . ' MB';
+        } catch (\Exception $e) {
+            // Fallback SQLite
+            try {
+                return round(File::size(database_path('database.sqlite')) / 1024 / 1024, 2) . ' MB';
+            } catch (\Exception $e2) {
+                return '0.00 MB';
+            }
         }
     }
 

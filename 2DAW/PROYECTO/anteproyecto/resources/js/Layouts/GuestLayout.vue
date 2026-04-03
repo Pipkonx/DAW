@@ -40,7 +40,7 @@ import { Link } from '@inertiajs/vue3';
                 <Link :href="route('legal.notice')" class="hover:text-blue-600 dark:hover:text-blue-400 transition">Aviso Legal</Link>
             </div>
             <div class="text-xs text-slate-400 dark:text-slate-500">
-                &copy; 2026 FintechPro. Todos los derechos reservados.
+                &copy; 2026 fintechPro &bull; Creado por Rafael Cordero. Todos los derechos reservados.
             </div>
         </div>
     </div>

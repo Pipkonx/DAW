@@ -19,31 +19,25 @@ class User extends Authenticatable implements MustVerifyEmail
      */
     protected $fillable = [
         'name',
+        'username',
         'email',
         'password',
         'google_id',
         'avatar',
+        'banner_path',
+        'bio',
+        'pinned_post_id',
         'investment_return_rate',
         'enable_tax_projection',
         'tax_rate',
         'is_admin',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
-     */
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
     protected function casts(): array
     {
         return [
@@ -75,7 +69,22 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasMany(AiAnalysis::class);
     }
-}
+
+    public function posts()
+    {
+        return $this->hasMany(Post::class);
+    }
+
+    public function reposts()
+    {
+        return $this->belongsToMany(Post::class, 'reposts')->withTimestamps();
+    }
+
+    public function bookmarks()
+    {
+        return $this->belongsToMany(Post::class, 'bookmarks')->withTimestamps();
+    }
+
     public function followers()
     {
         return $this->belongsToMany(User::class, 'followers', 'followed_id', 'follower_id')->withTimestamps();
@@ -84,6 +93,11 @@ class User extends Authenticatable implements MustVerifyEmail
     public function following()
     {
         return $this->belongsToMany(User::class, 'followers', 'follower_id', 'followed_id')->withTimestamps();
+    }
+
+    public function blockedUsers()
+    {
+        return $this->belongsToMany(User::class, 'blocks', 'blocker_id', 'blocked_id')->withTimestamps();
     }
 }
 
