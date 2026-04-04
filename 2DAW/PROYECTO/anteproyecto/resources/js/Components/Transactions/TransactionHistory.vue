@@ -1,37 +1,37 @@
 <script setup>
-import { ref, computed, watch, onMounted, onUnmounted } from 'vue';
-import { router } from '@inertiajs/vue3';
+import { computed } from 'vue';
 import { usePrivacy } from '@/Composables/usePrivacy';
 
 // COMPONENTES MODULARES (PARTIALS)
 import HistoryHeader from './Partials/HistoryHeader.vue';
 import TransactionRow from './Partials/TransactionRow.vue';
 import FilterModal from './Partials/FilterModal.vue';
+import { ref } from 'vue';
 
 /**
- * TransactionHistory - Orquestador del Historial de Operaciones.
+ * TransactionHistory - Visualizador del Historial de Operaciones.
  * 
- * Gestiona el listado infinito de transacciones, filtrado multidimensional,
- * ordenación dinámica y edición/borrado masivo.
+ * Este componente se encarga únicamente de la representación visual de las transacciones.
+ * La lógica de carga (Infinite Scroll) y estado de datos se gestiona desde el componente padre.
  */
 const props = defineProps({
-    transactions: { type: Object, required: true },
-    filterMode: { type: String, default: 'investment' } // 'investment' | 'expenses' | 'mixed'
+    transactions: { type: [Array, Object], required: true },
+    filterMode: { type: String, default: 'investment' }, // 'investment' | 'expenses' | 'mixed'
+    loading: { type: Boolean, default: false },
+    hasMore: { type: Boolean, default: true }
 });
 
-const emit = defineEmits(['export', 'edit', 'import']);
+const emit = defineEmits(['export', 'edit', 'import', 'sort', 'filter-change']);
 
 const { isPrivacyMode } = usePrivacy();
 
-// ESTADO DE DATOS E INFINITE SCROLL
-const allTransactions = ref([]);
-const page = ref(1);
-const loading = ref(false);
-const hasMore = ref(true);
-const observerTarget = ref(null);
-let observer = null;
+// Normalizar transacciones (soporta Array directo u Objeto paginado de Inertia)
+const items = computed(() => {
+    if (Array.isArray(props.transactions)) return props.transactions;
+    return props.transactions?.data || [];
+});
 
-// ESTADO DE SELECCIÓN Y FILTRADO
+// ESTADO DE SELECCIÓN Y FILTRADO (Local al componente para UI)
 const selectedTransactions = ref([]);
 const activeFilter = ref('all');
 const showFilterModal = ref(false);
@@ -40,65 +40,32 @@ const sortBy = ref('date');
 const sortDirection = ref('desc');
 
 /**
- * Inicializa y acumula transacciones del servidor para Infinite Scroll.
+ * Filtrado y Agrupación de transacciones para la vista.
  */
-watch(() => props.transactions, (newVal) => {
-    if (!newVal) return;
-    if (newVal.current_page === 1) {
-        allTransactions.value = [...newVal.data];
-        page.value = 1;
-        hasMore.value = !!newVal.next_page_url;
-    } else if (newVal.current_page > page.value) {
-        allTransactions.value = [...allTransactions.value, ...newVal.data];
-        page.value = newVal.current_page;
-        hasMore.value = !!newVal.next_page_url;
-    }
-}, { immediate: true });
-
-/**
- * Carga la siguiente página de resultados mediante Inertia.
- */
-const loadMore = () => {
-    if (loading.value || !hasMore.value) return;
-    loading.value = true;
-    page.value++;
-    
-    router.get(props.transactions.path, {
-        ...route().params,
-        page: page.value,
-    }, {
-        preserveState: true,
-        preserveScroll: true,
-        only: ['transactions'],
-        onSuccess: () => loading.value = false,
-        onError: () => loading.value = false
-    });
-};
-
-/**
- * Ciclo de vida: Inicia el observador para disparar la carga infinita.
- */
-onMounted(() => {
-    observer = new IntersectionObserver((entries) => {
-        if (entries[0].isIntersecting && hasMore.value) loadMore();
-    }, { rootMargin: '200px' });
-    if (observerTarget.value) observer.observe(observerTarget.value);
-});
-
-onUnmounted(() => { if (observer) observer.disconnect(); });
-
-// GESTIÓN DE SELECCIÓN MASIVA
 const filteredTransactions = computed(() => {
-    if (!allTransactions.value || allTransactions.value.length === 0) return [];
+    if (!items.value || items.value.length === 0) return [];
     
-    let filtered = allTransactions.value;
-    if (activeFilter.value !== 'all') filtered = filtered.filter(tx => tx.type === activeFilter.value);
+    let filtered = items.value;
+    
+    // Filtro por tipo
+    if (activeFilter.value !== 'all') {
+        filtered = filtered.filter(tx => tx.type === activeFilter.value);
+    }
+    
+    // Búsqueda por texto
     if (searchQuery.value) {
         const query = searchQuery.value.toLowerCase();
-        filtered = filtered.filter(tx => (tx.asset?.name?.toLowerCase() || '').includes(query) || (tx.description?.toLowerCase() || '').includes(query));
+        filtered = filtered.filter(tx => 
+            (tx.asset?.name?.toLowerCase() || '').includes(query) || 
+            (tx.description?.toLowerCase() || '').includes(query) ||
+            (tx.category?.toLowerCase() || '').includes(query)
+        );
     }
 
-    if (sortBy.value !== 'date') return [{ monthYear: 'Resultados Filtrados', items: filtered }];
+    // Si no estamos ordenando por fecha, devolvemos un grupo genérico
+    if (sortBy.value !== 'date') {
+        return [{ monthYear: 'Resultados', items: filtered }];
+    }
 
     // Agrupación mensual
     const groupsData = {};
@@ -127,37 +94,26 @@ const toggleAll = () => {
     selectedTransactions.value = isAllSelected.value ? [] : allIds;
 };
 
-const deleteSelected = () => {
-    if (confirm(`¿Eliminar permanentemente ${selectedTransactions.value.length} transacciones?`)) {
-        router.delete(route('transactions.bulk-destroy'), {
-            data: { ids: selectedTransactions.value },
-            preserveScroll: true,
-            onSuccess: () => selectedTransactions.value = [],
-        });
-    }
-};
-
-/**
- * Ordenación dinámica de columnas.
- */
+// Acciones
 const handleSort = (column) => {
     if (sortBy.value === column) sortDirection.value = sortDirection.value === 'asc' ? 'desc' : 'asc';
     else { sortBy.value = column; sortDirection.value = 'desc'; }
-
-    router.get(props.transactions.path, { ...route().params, sort_by: sortBy.value, direction: sortDirection.value, page: 1 }, {
-        preserveState: true,
-        preserveScroll: true,
-        only: ['transactions'],
-    });
+    emit('sort', { sortBy: sortBy.value, direction: sortDirection.value });
 };
 
-// CONFIGURACIÓN DE FILTROS DISPONIBLES
 const filterTypes = computed(() => {
     const common = [{ value: 'all', label: 'Todos', icon: 'M4 6h16M4 12h16M4 18h16' }];
     if (props.filterMode === 'expenses') {
-        return [...common, { value: 'income', label: 'Ingresos', icon: 'M12 4v16m8-8H4' }, { value: 'expense', label: 'Gastos', icon: 'M20 12H4' }, { value: 'buy', label: 'Compra', icon: 'M12 4v16m8-8H4' }];
+        return [...common, 
+            { value: 'income', label: 'Ingresos', icon: 'M12 4v16m8-8H4' }, 
+            { value: 'expense', label: 'Gastos', icon: 'M20 12H4' }
+        ];
     }
-    return [...common, { value: 'buy', label: 'Compras', icon: 'M12 4v16m8-8H4' }, { value: 'sell', label: 'Ventas', icon: 'M20 12H4' }, { value: 'dividend', label: 'Dividendos', icon: 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2' }];
+    return [...common, 
+        { value: 'buy', label: 'Compras', icon: 'M12 4v16m8-8H4' }, 
+        { value: 'sell', label: 'Ventas', icon: 'M20 12H4' }, 
+        { value: 'dividend', label: 'Dividendos', icon: 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2' }
+    ];
 });
 
 const activeFilterLabel = computed(() => filterTypes.value.find(f => f.value === activeFilter.value)?.label || 'Todos');
@@ -166,7 +122,7 @@ const activeFilterLabel = computed(() => filterTypes.value.find(f => f.value ===
 
 <template>
     <div class="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden dark:bg-slate-800 dark:border-slate-700">
-        <!-- CABECERA MODULAR (Buscador, Acciones Masivas) -->
+        <!-- CABECERA MODULAR -->
         <HistoryHeader 
             v-model:search-query="searchQuery"
             :selected-count="selectedTransactions.length"
@@ -174,7 +130,6 @@ const activeFilterLabel = computed(() => filterTypes.value.find(f => f.value ===
             :active-filter-label="activeFilterLabel"
             @clear-selection="selectedTransactions = []"
             @toggle-all="toggleAll"
-            @delete-selected="deleteSelected"
             @open-filter="showFilterModal = true"
             @import="emit('import')"
             @export="(f) => emit('export', f)"
@@ -192,13 +147,11 @@ const activeFilterLabel = computed(() => filterTypes.value.find(f => f.value ===
                 </thead>
                 <tbody class="divide-y divide-slate-100 dark:divide-slate-700/50">
                     <template v-for="group in filteredTransactions" :key="group.monthYear">
-                        <!-- Cabecera de Grupo Temporal -->
                         <tr v-if="sortBy === 'date'" class="bg-slate-50/50 dark:bg-slate-700/20">
                             <td colspan="3" class="px-6 py-3 text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">
                                 {{ group.monthYear }}
                             </td>
                         </tr>
-                        <!-- Filas de Datos -->
                         <TransactionRow 
                             v-for="tx in group.items" 
                             :key="tx.id" 
@@ -209,30 +162,29 @@ const activeFilterLabel = computed(() => filterTypes.value.find(f => f.value ===
                             @edit="(t) => emit('edit', t)"
                         />
                     </template>
-                    <!-- Estado Sin Datos -->
-                    <tr v-if="filteredTransactions.length === 0">
+                    <tr v-if="filteredTransactions.length === 0 && !loading">
                         <td colspan="3" class="px-6 py-16 text-center text-slate-400 italic dark:text-slate-500 font-bold uppercase text-[10px] tracking-widest">
-                            No se han encontrado operaciones con estos criterios.
+                            No se han encontrado operaciones.
                         </td>
                     </tr>
                 </tbody>
             </table>
         </div>
 
-        <!-- INDICADOR DE CARGA / FIN DE LISTA -->
-        <div ref="observerTarget" class="py-10 text-center text-[10px] font-black uppercase text-slate-400 dark:text-slate-600 tracking-widest">
+        <!-- INDICADOR DE CARGA (Gestionado por el padre pero visualmente aquí) -->
+        <div class="py-10 text-center text-[10px] font-black uppercase text-slate-400 dark:text-slate-600 tracking-widest">
             <span v-if="loading" class="flex items-center justify-center gap-3 animate-pulse">
                 <svg class="animate-spin h-4 w-4 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
-                Sincronizando operaciones antiguas...
+                Sincronizando operaciones...
             </span>
-            <span v-else-if="!hasMore && allTransactions.length > 0">Fin del historial de auditoría</span>
+            <span v-else-if="!hasMore && items.length > 0">Fin del historial de auditoría</span>
         </div>
     </div>
 
-    <!-- MODAL DE FILTRADO MODULAR -->
+    <!-- MODAL DE FILTRADO -->
     <FilterModal 
         :show="showFilterModal" 
         :active-filter="activeFilter" 

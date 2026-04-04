@@ -1,11 +1,12 @@
 <script setup>
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import { ref, onMounted, onUnmounted, watch } from 'vue';
 import { Head, router } from '@inertiajs/vue3';
-import { ref, onMounted, watch } from 'vue';
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import TransactionModal from '@/Components/TransactionModal.vue';
 import TransactionHistory from '@/Components/Transactions/TransactionHistory.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import { usePrivacy } from '@/Composables/usePrivacy';
+import axios from 'axios';
 
 // Components refactorizados
 import SummaryCards from '@/Components/Expenses/SummaryCards.vue';
@@ -18,45 +19,85 @@ const props = defineProps({
     filters: Object,
     summary: Object,
     charts: Object,
-    transactions: Object, // Paginado
+    transactions: Object, // Paginado inicial
     portfolios: Array,
     categories: Array,
     availableYears: Array,
     selectedYear: Number,
     yearStats: Object,
-    topExpenses: Array, // Lista completa para cliente
-    topIncome: Array,   // Lista completa para cliente
+    topExpenses: Array,
+    topIncome: Array,
 });
+
+// ESTADO DE DATOS E INFINITE SCROLL (Patrón Dashboard)
+const allTransactions = ref([...props.transactions.data]);
+const loadingMore = ref(false);
+const hasMore = ref(!!props.transactions.next_page_url);
+const currentPage = ref(1);
+const observerTarget = ref(null);
+let observer = null;
+
+/**
+ * Carga más transacciones mediante la API JSON (Axios).
+ */
+const loadMoreTransactions = async () => {
+    if (loadingMore.value || !hasMore.value) return;
+
+    loadingMore.value = true;
+    try {
+        const response = await axios.get(route('expenses.transactions'), {
+            params: { 
+                page: currentPage.value + 1,
+                start_date: dateFilters.value.start_date,
+                end_date: dateFilters.value.end_date
+            }
+        });
+
+        const paginator = response.data;
+        allTransactions.value = [...allTransactions.value, ...paginator.data];
+        currentPage.value = paginator.current_page;
+        hasMore.value = !!paginator.next_page_url;
+    } catch (error) {
+        console.error('Error al cargar más transacciones:', error);
+    } finally {
+        loadingMore.value = false;
+    }
+};
+
+// Sincronizar si los datos iniciales cambian (ej: tras aplicar filtros)
+watch(() => props.transactions, (newVal) => {
+    allTransactions.value = [...newVal.data];
+    currentPage.value = 1;
+    hasMore.value = !!newVal.next_page_url;
+}, { deep: true });
+
+// Intersection Observer para disparar la carga
+onMounted(() => {
+    observer = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting) loadMoreTransactions();
+    }, { rootMargin: '200px' });
+    
+    if (observerTarget.value) observer.observe(observerTarget.value);
+
+    // Cargar filtros persistidos
+    const queryParams = new URLSearchParams(window.location.search);
+    const hasUrlFilters = queryParams.has('start_date') || queryParams.has('end_date');
+    if (!hasUrlFilters) {
+        const savedStart = localStorage.getItem('expenses_filter_start');
+        const savedEnd = localStorage.getItem('expenses_filter_end');
+        if (savedStart || savedEnd) {
+            dateFilters.value.start_date = savedStart || dateFilters.value.start_date;
+            dateFilters.value.end_date = savedEnd || dateFilters.value.end_date;
+        }
+    }
+});
+
+onUnmounted(() => { if (observer) observer.disconnect(); });
 
 // Estado para filtros
 const dateFilters = ref({
     start_date: props.filters.start_date,
     end_date: props.filters.end_date,
-});
-
-// Sincronizar estado si los props cambian (ej: navegación con nuevos parámetros)
-watch(() => props.filters, (newFilters) => {
-    dateFilters.value.start_date = newFilters.start_date;
-    dateFilters.value.end_date = newFilters.end_date;
-}, { deep: true });
-
-// Cargar filtros persistidos al montar solo si no hay nada en la URL
-onMounted(() => {
-    const queryParams = new URLSearchParams(window.location.search);
-    const hasUrlFilters = queryParams.has('start_date') || queryParams.has('end_date');
-    
-    // Si no hay filtros en la URL, los props iniciales ya vienen con el default del servidor.
-    // Solo aplicamos localStorage si realmente queremos sobreescribir ese default inicial.
-    if (!hasUrlFilters) {
-        const savedStart = localStorage.getItem('expenses_filter_start');
-        const savedEnd = localStorage.getItem('expenses_filter_end');
-        
-        if (savedStart || savedEnd) {
-            dateFilters.value.start_date = savedStart || dateFilters.value.start_date;
-            dateFilters.value.end_date = savedEnd || dateFilters.value.end_date;
-            // No llamamos a applyFilters() aquí para evitar la doble carga inicial que rompe la reactividad del Modal
-        }
-    }
 });
 
 // Peristir cambios en los filtros
@@ -81,7 +122,7 @@ const showModal = ref(false);
 const editingTransaction = ref(null);
 
 const openTransactionModal = () => {
-    editingTransaction.value = { type: 'expense' }; // Por defecto gasto
+    editingTransaction.value = { type: 'expense' };
     showModal.value = true;
 };
 
@@ -95,47 +136,25 @@ const closeModal = () => {
     editingTransaction.value = null;
 };
 
-// CSV Import/Export Logic
+// CSV Import/Export
 const fileInput = ref(null);
-
-const triggerFileInput = () => {
-    if (fileInput.value) fileInput.value.click();
-};
+const triggerFileInput = () => { if (fileInput.value) fileInput.value.click(); };
 
 const handleExport = (format) => {
-    const params = {
-        format: format,
-        ...dateFilters.value
-    };
-    window.location.href = route('transactions.export', params);
+    window.location.href = route('transactions.export', { format, ...dateFilters.value });
 };
 
 const handleFileUpload = (event) => {
     const file = event.target.files[0];
     if (!file) return;
-
-    if (confirm(`¿Deseas importar el archivo "${file.name}"?`)) {
-        const formData = new FormData();
-        formData.append('file', file);
-
-        router.post(route('transactions.import'), formData, {
-            forceFormData: true,
-            preserveScroll: true,
-            onSuccess: () => {
-                applyFilters(); // Recargar datos
-                alert('Transacciones importadas correctamente.');
-            },
-            onError: (errors) => {
-                console.error(errors);
-                alert('Hubo un error al importar el archivo.');
-            },
-            onFinish: () => {
-                if (fileInput.value) fileInput.value.value = null;
-            }
-        });
-    } else {
-        event.target.value = null;
-    }
+    const formData = new FormData();
+    formData.append('file', file);
+    router.post(route('transactions.import'), formData, {
+        forceFormData: true,
+        preserveScroll: true,
+        onSuccess: () => { applyFilters(); alert('Importadas correctamente.'); },
+        onFinish: () => { if (fileInput.value) fileInput.value.value = null; }
+    });
 };
 </script>
 
@@ -196,13 +215,17 @@ const handleFileUpload = (event) => {
                 <!-- Historial (3/4 ancho, Izquierda) -->
                 <div class="lg:col-span-3 space-y-4 order-2 lg:order-1">
                     <TransactionHistory 
-                        :key="`history-${transactions.data.map(t => t.id).join('-')}`"
-                        :transactions="transactions" 
+                        :transactions="allTransactions" 
+                        :loading="loadingMore"
+                        :has-more="hasMore"
                         filter-mode="expenses" 
                         @edit="editTransaction"
                         @export="handleExport"
                         @import="triggerFileInput"
                     />
+
+                    <!-- Ancla para el Observer del Scroll Infinito -->
+                    <div ref="observerTarget" class="h-4"></div>
                 </div>
 
                 <!-- Input para Importar CSV -->

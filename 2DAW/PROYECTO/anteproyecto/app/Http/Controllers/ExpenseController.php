@@ -84,6 +84,24 @@ class ExpenseController extends Controller
         ]);
     }
 
+    /**
+     * Get paginated transactions as JSON.
+     */
+    public function getTransactions(Request $request)
+    {
+        $user = Auth::user();
+        
+        $startDate = $request->input('start_date') 
+            ? Carbon::parse($request->input('start_date'))->startOfDay() 
+            : Carbon::now()->startOfYear();
+            
+        $endDate = $request->input('end_date') 
+            ? Carbon::parse($request->input('end_date'))->endOfDay() 
+            : Carbon::now()->endOfDay();
+
+        return response()->json($this->getPaginatedTransactions($user->id, $startDate, $endDate, $request));
+    }
+
     private function getAvailableYears($userId)
     {
         $years = Transaction::where('user_id', $userId)->selectRaw('YEAR(date) as year')->distinct()->orderBy('year', 'desc')->pluck('year')->toArray();

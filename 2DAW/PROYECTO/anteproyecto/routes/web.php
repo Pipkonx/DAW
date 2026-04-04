@@ -92,6 +92,9 @@ Route::delete('/transactions/{transaction}', [TransactionActionController::class
 
 // Análisis de Gastos
 Route::get('/expenses', [ExpenseController::class, 'index'])->name('expenses.index');
+Route::get('/api/expenses/transactions', [ExpenseController::class, 'getTransactions'])
+    ->middleware(['auth', 'verified'])
+    ->name('expenses.transactions');
 
 // Analista IA (Nuevo)
 Route::get('/ai-analyst', [AiAnalystController::class, 'index'])->name('ai-analyst.index');
