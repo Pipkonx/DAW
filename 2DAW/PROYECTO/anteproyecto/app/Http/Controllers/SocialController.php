@@ -164,7 +164,7 @@ class SocialController extends Controller
     public function updatePost(Request $request, Post $post)
     {
         if ($post->user_id !== Auth::id()) abort(403);
-        if ($post->created_at->diffInMinutes(now()) > 15) return back()->with('error', 'Tiempo excedido.');
+        if ($post->created_at->diffInMinutes(now()) > 2) return back()->with('error', 'El tiempo de edición (2 min) ha expirado.');
 
         $validated = $request->validate(['content' => 'required|string|max:1000']);
         $post->update(['content' => $validated['content']]);

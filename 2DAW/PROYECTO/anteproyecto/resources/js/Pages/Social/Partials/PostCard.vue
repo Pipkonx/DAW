@@ -117,11 +117,11 @@ const handleLike = (emoji, isComment = false, commentId = null) => {
                             {{ post.is_pinned ? 'Desanclar' : 'Anclar al Perfil' }}
                         </button>
 
-                        <button v-if="post.user_id === auth.user.id" @click="toggleEdit" class="w-full text-left px-4 py-2 text-xs font-bold text-blue-600 hover:bg-blue-50 flex items-center gap-3">
+                        <button v-if="post.can_edit" @click="toggleEdit" class="w-full text-left px-4 py-2 text-xs font-bold text-blue-600 hover:bg-blue-50 flex items-center gap-3">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                             </svg>
-                            Editar
+                            Editar Análisis ({{ post.created_at_human }})
                         </button>
                         
                         <button v-if="post.user_id === auth.user.id" @click="emit('delete', post)" class="w-full text-left px-4 py-2 text-xs font-bold text-rose-600 hover:bg-rose-50 flex items-center gap-3">
@@ -137,7 +137,7 @@ const handleLike = (emoji, isComment = false, commentId = null) => {
 
         <!-- Contenido y Edición -->
         <div v-if="isEditing" class="space-y-4 mb-4">
-            <textarea v-model="editForm.content" rows="3" class="w-full bg-slate-50 dark:bg-slate-900 border-2 border-indigo-100 rounded-2xl p-4 text-sm focus:border-indigo-500"></textarea>
+            <textarea v-model="editForm.content" rows="3" class="w-full bg-slate-50 dark:bg-slate-900 border-2 border-indigo-100 rounded-2xl p-4 text-sm focus:border-indigo-500 text-slate-900 dark:text-slate-100"></textarea>
             <div class="flex justify-end gap-3">
                 <button @click="isEditing = false" class="px-4 py-2 text-xs font-bold text-slate-400">Cancelar</button>
                 <button @click="submitEdit" class="px-6 py-2 bg-indigo-600 text-white text-xs font-black rounded-xl shadow-lg">Guardar</button>

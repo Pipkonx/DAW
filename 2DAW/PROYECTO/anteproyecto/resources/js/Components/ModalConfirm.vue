@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, onUnmounted } from 'vue';
+import { onMounted, onUnmounted, ref, watch } from 'vue';
 
 const props = defineProps({
     show: Boolean,
@@ -23,15 +23,41 @@ const props = defineProps({
 });
 
 const emit = defineEmits(['confirm', 'cancel']);
+const dialog = ref();
+const showSlot = ref(props.show);
+
+watch(
+    () => props.show,
+    () => {
+        if (props.show) {
+            document.body.style.overflow = 'hidden';
+            showSlot.value = true;
+            dialog.value?.showModal();
+        } else {
+            document.body.style.overflow = '';
+            setTimeout(() => {
+                dialog.value?.close();
+                showSlot.value = false;
+            }, 200);
+        }
+    },
+);
+
+const close = () => {
+    emit('cancel');
+};
 
 const closeOnEscape = (e) => {
     if (e.key === 'Escape' && props.show) {
-        emit('cancel');
+        close();
     }
 };
 
 onMounted(() => document.addEventListener('keydown', closeOnEscape));
-onUnmounted(() => document.removeEventListener('keydown', closeOnEscape));
+onUnmounted(() => {
+    document.removeEventListener('keydown', closeOnEscape);
+    document.body.style.overflow = '';
+});
 
 const typeClasses = {
     danger: 'bg-rose-600 hover:bg-rose-700 shadow-rose-500/20 text-white',
@@ -49,15 +75,11 @@ const iconColors = {
 
 <template>
     <Teleport to="body">
-        <Transition
-            enter-active-class="transition ease-out duration-300"
-            enter-from-class="opacity-0"
-            enter-to-class="opacity-100"
-            leave-active-class="transition ease-in duration-200"
-            leave-from-class="opacity-100"
-            leave-to-class="opacity-0"
+        <dialog
+            class="z-[100] m-0 min-h-full min-w-full overflow-y-auto bg-transparent backdrop:bg-transparent"
+            ref="dialog"
         >
-            <div v-if="show" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
+            <div class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm" @click.self="close">
                 
                 <Transition
                     enter-active-class="transition ease-out duration-300"
@@ -67,7 +89,7 @@ const iconColors = {
                     leave-from-class="opacity-100 scale-100 translate-y-0"
                     leave-to-class="opacity-0 scale-95 translate-y-4"
                 >
-                    <div class="bg-white dark:bg-slate-800 rounded-[2.5rem] shadow-2xl border border-slate-100 dark:border-slate-700 max-w-md w-full overflow-hidden">
+                    <div v-if="showSlot" class="bg-white dark:bg-slate-800 rounded-[2.5rem] shadow-2xl border border-slate-100 dark:border-slate-700 max-w-md w-full overflow-hidden">
                         <div class="p-8 text-center">
                             
                             <!-- Icono Dinámico -->
@@ -108,6 +130,6 @@ const iconColors = {
                     </div>
                 </Transition>
             </div>
-        </Transition>
+        </dialog>
     </Teleport>
 </template>

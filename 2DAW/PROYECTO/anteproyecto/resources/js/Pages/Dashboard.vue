@@ -36,18 +36,21 @@ const props = defineProps({
     categories: Array,        // Categorías de gastos/ingresos para el modal
     unlinkedAssets: Array,    // Activos detectados pero no vinculados a mercado
     currentFilter: String,   // Filtro actual aplicado en el servidor
+    selectedMonths: [String, Number], // Rango de meses actual para el gráfico
 });
 
 // --- ESTADO REACTIVO ---
 const { isPrivacyMode } = usePrivacy();
 const showModal = ref(false);
 const editingTransaction = ref(null);
+const isUpdatingChart = ref(false);
 
 // Modos de visualización persistentes
 const chartMode = ref('global'); // 'global' (patrimonio) | 'portfolios' (por carteras)
 const displayMode = ref('value'); // 'value' (€) | 'percent' (%)
 const transactionFilter = ref('all'); // Filtro de tabla: all, income, expense, investment
 const expenseRange = ref(localStorage.getItem('dashboard_expense_range') || 'month');
+const dashboardTimeframe = ref(props.selectedMonths || 'MAX');
 
 // Guardar preferencia de rango de gastos en el navegador
 watch(expenseRange, (newRange) => {
@@ -56,10 +59,26 @@ watch(expenseRange, (newRange) => {
 
 // Recargar transacciones al cambiar el filtro
 watch(transactionFilter, (newFilter) => {
-    router.get(route('dashboard'), { filter: newFilter }, {
+    router.get(route('dashboard'), { filter: newFilter, months: dashboardTimeframe.value }, {
         preserveState: true,
         preserveScroll: true,
         only: ['recentTransactions', 'currentFilter'],
+    });
+});
+
+// Recargar gráficos al cambiar el rango de tiempo
+watch(dashboardTimeframe, (newTimeframe) => {
+    isUpdatingChart.value = true;
+    router.get(route('dashboard'), { 
+        filter: transactionFilter.value, 
+        months: newTimeframe 
+    }, {
+        preserveState: true,
+        preserveScroll: true,
+        only: ['charts', 'selectedMonths'],
+        onFinish: () => {
+            isUpdatingChart.value = false;
+        }
     });
 });
 
@@ -207,6 +226,8 @@ const editTransaction = (transaction) => {
                     :portfolios="portfolios"
                     v-model:chart-mode="chartMode"
                     v-model:display-mode="displayMode"
+                    v-model:timeframe="dashboardTimeframe"
+                    :loading="isUpdatingChart"
                     :is-privacy-mode="isPrivacyMode"
                 />
             </div>

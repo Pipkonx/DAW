@@ -163,19 +163,33 @@ class PerformanceService
      */
     public function getHeatmapData($userId, $assetIds)
     {
-        // Implementación simplificada para el mapa de calor
-        $data = Transaction::where('user_id', $userId)
+        $txs = Transaction::where('user_id', $userId)
             ->whereIn('asset_id', $assetIds)
-            ->where('date', '>=', now()->subYear())
-            ->selectRaw('date, SUM(amount) as value')
-            ->groupBy('date')
-            ->get()
-            ->map(fn($t) => [
-                'date' => $t->date->format('Y-m-d'),
-                'value' => (float)$t->value
-            ]);
-            
-        return $data;
+            ->selectRaw('YEAR(date) as year, MONTH(date) as month, 
+                         SUM(CASE WHEN type IN ("income", "dividend", "sell", "reward", "gift") THEN amount 
+                                  WHEN type IN ("expense", "buy") THEN -amount 
+                                  ELSE 0 END) as value')
+            ->groupBy('year', 'month')
+            ->orderBy('year', 'desc')
+            ->orderBy('month', 'asc')
+            ->get();
+
+        $heatmap = [];
+        $years = $txs->pluck('year')->unique();
+
+        foreach ($years as $year) {
+            $monthsData = array_fill(0, 12, 0);
+            $yearTxs = $txs->where('year', $year);
+            foreach ($yearTxs as $tx) {
+                $monthsData[$tx->month - 1] = (float)$tx->value;
+            }
+            $heatmap[] = [
+                'year' => $year,
+                'months' => $monthsData
+            ];
+        }
+
+        return $heatmap;
     }
 
     /**
@@ -210,7 +224,11 @@ class PerformanceService
     private function getStartDate($userId, $assetIds, $timeframe)
     {
         if ($timeframe === 'MAX') {
-            $firstTx = Transaction::where('user_id', $userId)->orderBy('date', 'asc')->first();
+            $query = Transaction::where('user_id', $userId);
+            if (!empty($assetIds)) {
+                $query->whereIn('asset_id', (array)$assetIds);
+            }
+            $firstTx = $query->orderBy('date', 'asc')->first();
             return $firstTx ? Carbon::parse($firstTx->date) : now()->subMonth();
         }
 

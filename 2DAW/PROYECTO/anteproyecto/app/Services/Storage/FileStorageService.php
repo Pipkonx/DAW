@@ -48,8 +48,9 @@ class FileStorageService
     /**
      * Verifica si una ruta es una URL externa (ej. Google Avatar).
      */
-    public function isExternal(string $path): bool
+    public function isExternal(?string $path): bool
     {
+        if (!$path) return false;
         return filter_var($path, FILTER_VALIDATE_URL) !== false;
     }
 }

@@ -60,12 +60,23 @@ class DashboardService
      * @param int $months Número de meses a recuperar
      * @return array Contiene labels, values (valor absoluto) y yields (rendimiento %)
      */
-    public function getNetWorthHistory($userId, $months = 6)
+    public function getNetWorthHistory($userId, $months = null)
     {
         $labels = [];
         $values = [];
         $yields = [];
         $now = Carbon::now();
+
+        if ($months === 'MAX' || $months === null || $months === '') {
+            $firstTx = Transaction::where('user_id', $userId)->orderBy('date', 'asc')->first();
+            if ($firstTx) {
+                $firstDate = Carbon::parse($firstTx->date)->startOfMonth();
+                $months = (int) $firstDate->diffInMonths($now->copy()->startOfMonth()) + 1;
+            } else {
+                $months = 6;
+            }
+        }
+        $months = min(300, max(1, (int)$months));
 
         // 1. Pre-cargar TODAS las transacciones relevantes para el cálculo de efectivo histórico (una sola consulta)
         $cashTxs = Transaction::where('user_id', $userId)
@@ -107,11 +118,22 @@ class DashboardService
      * @param int $months Número de meses
      * @return array Mapa de ID de cartera => historial de valores y rendimientos
      */
-    public function getPortfolioHistory($userId, $months = 6)
+    public function getPortfolioHistory($userId, $months = null)
     {
         $portfolios = Portfolio::where('user_id', $userId)->get();
         $history = [];
         $now = Carbon::now();
+
+        if ($months === 'MAX' || $months === null || $months === '') {
+            $firstTx = Transaction::where('user_id', $userId)->orderBy('date', 'asc')->first();
+            if ($firstTx) {
+                $firstDate = Carbon::parse($firstTx->date)->startOfMonth();
+                $months = (int) $firstDate->diffInMonths($now->copy()->startOfMonth()) + 1;
+            } else {
+                $months = 6;
+            }
+        }
+        $months = min(300, max(1, (int)$months));
 
         // Pre-cargar activos y transacciones agrupados
         $allAssets = Asset::where('user_id', $userId)->get()->groupBy('portfolio_id');

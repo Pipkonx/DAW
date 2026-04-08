@@ -13,6 +13,7 @@ const props = defineProps({
     isOwnProfile: Boolean,
     isFollowing: Boolean,
     isBlocked: Boolean,
+    joinedAt: String,
 });
 
 const emit = defineEmits(['toggle-block', 'toggle-follow']);
@@ -153,7 +154,7 @@ const getAvatarRingClasses = (tier) => {
                 <p class="text-slate-500 font-bold mb-4 flex items-center gap-2">
                     @{{ profileUser.username || `user_${profileUser.id}` }}
                     <span class="text-[10px] text-slate-400 font-medium normal-case flex items-center gap-1 before:content-['•'] before:mr-1">
-                        Miembro desde {{ profileUser.joined_at }}
+                        Miembro desde {{ joinedAt }}
                     </span>
                 </p>
                 

@@ -31,10 +31,18 @@ const props = defineProps({
     isPrivacyMode: {
         type: Boolean,
         default: false
+    },
+    timeframe: {
+        type: [String, Number],
+        default: 'MAX'
+    },
+    loading: {
+        type: Boolean,
+        default: false
     }
 });
 
-const emit = defineEmits(['update:chartMode', 'update:displayMode']);
+const emit = defineEmits(['update:chartMode', 'update:displayMode', 'update:timeframe']);
 
 // Procesamiento de datos para el gráfico de líneas (Área con Gradiente suave)
 const chartData = computed(() => {
@@ -199,6 +207,7 @@ const chartOptions = {
 // Emisión de cambios de estado
 const updateMode = (val) => emit('update:chartMode', val);
 const updateDisplay = (val) => emit('update:displayMode', val);
+const updateTimeframe = (val) => emit('update:timeframe', val);
 </script>
 
 <template>
@@ -206,7 +215,7 @@ const updateDisplay = (val) => emit('update:displayMode', val);
         <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
             <div class="flex items-center">
                 <h3 class="text-lg font-bold text-slate-800 dark:text-white">Evolución Financiera</h3>
-                <InfoTooltip text="Visualiza cómo ha crecido tu patrimonio o tus carteras en los últimos 6 meses." />
+                <InfoTooltip text="Visualiza la evolución histórica de tu patrimonio y carteras." />
             </div>
             
             <!-- Toggles y Controles -->
@@ -230,7 +239,7 @@ const updateDisplay = (val) => emit('update:displayMode', val);
                 </div>
 
                 <!-- Modo: Valor vs Rendimiento -->
-                <div class="bg-slate-100 dark:bg-slate-700 p-1 rounded-lg flex text-sm font-medium ml-0 sm:ml-4">
+                <div class="bg-slate-100 dark:bg-slate-700 p-1 rounded-lg flex text-sm font-medium mr-4">
                     <button 
                         @click="updateDisplay('value')"
                         class="px-4 py-1.5 rounded-md transition-all"
@@ -243,14 +252,38 @@ const updateDisplay = (val) => emit('update:displayMode', val);
                         class="px-4 py-1.5 rounded-md transition-all"
                         :class="displayMode === 'percent' ? 'bg-white dark:bg-slate-600 text-blue-600 dark:text-blue-400 shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'"
                     >
-                        Rendimiento
+                        %
+                    </button>
+                </div>
+
+                <!-- Tiempo: Rangos Temporales -->
+                <div class="bg-slate-100 dark:bg-slate-700 p-1 rounded-lg flex text-sm font-medium">
+                    <button 
+                        v-for="t in ['1', '6', '12', 'MAX']"
+                        :key="t"
+                        @click="updateTimeframe(t)"
+                        class="px-3 py-1.5 rounded-md transition-all uppercase"
+                        :class="timeframe == t ? 'bg-white dark:bg-slate-600 text-blue-600 dark:text-blue-400 shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'"
+                    >
+                        {{ t === 'MAX' ? 'MAX' : (t == '1' ? '1M' : (t == '6' ? '6M' : '1Y')) }}
                     </button>
                 </div>
             </div>
         </div>
 
         <div class="h-[300px] w-full relative" :class="{ 'blur-sm select-none': isPrivacyMode }">
-            <LineChart :data="chartData" :options="chartOptions" />
+            <!-- Overlay de Carga -->
+            <div v-if="loading" class="absolute inset-0 z-10 bg-white/50 dark:bg-slate-800/50 flex items-center justify-center backdrop-blur-[1px] transition-all">
+                <div class="flex flex-col items-center gap-2">
+                    <svg class="animate-spin h-8 w-8 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span class="text-xs font-bold text-blue-600 animate-pulse uppercase tracking-widest">Actualizando...</span>
+                </div>
+            </div>
+            
+            <LineChart :key="timeframe" :data="chartData" :options="chartOptions" />
         </div>
     </div>
 </template>

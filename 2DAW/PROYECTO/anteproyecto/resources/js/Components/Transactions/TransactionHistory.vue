@@ -1,12 +1,13 @@
 <script setup>
-import { computed } from 'vue';
+import { ref, computed } from 'vue';
 import { usePrivacy } from '@/Composables/usePrivacy';
+import { router } from '@inertiajs/vue3';
 
 // COMPONENTES MODULARES (PARTIALS)
 import HistoryHeader from './Partials/HistoryHeader.vue';
 import TransactionRow from './Partials/TransactionRow.vue';
 import FilterModal from './Partials/FilterModal.vue';
-import { ref } from 'vue';
+import ModalConfirm from '@/Components/ModalConfirm.vue';
 
 /**
  * TransactionHistory - Visualizador del Historial de Operaciones.
@@ -35,6 +36,7 @@ const items = computed(() => {
 const selectedTransactions = ref([]);
 const activeFilter = ref('all');
 const showFilterModal = ref(false);
+const showBulkDeleteConfirm = ref(false);
 const searchQuery = ref('');
 const sortBy = ref('date');
 const sortDirection = ref('desc');
@@ -94,6 +96,33 @@ const toggleAll = () => {
     selectedTransactions.value = isAllSelected.value ? [] : allIds;
 };
 
+/**
+ * Gestiona la selección/deselección de un elemento individual.
+ */
+const toggleSelection = (id) => {
+    const index = selectedTransactions.value.indexOf(id);
+    if (index > -1) selectedTransactions.value.splice(index, 1);
+    else selectedTransactions.value.push(id);
+};
+
+/**
+ * Ejecuta el borrado masivo de las transacciones seleccionadas.
+ */
+const deleteSelected = () => {
+    showBulkDeleteConfirm.value = true;
+};
+
+const confirmBulkDelete = () => {
+    router.delete(route('transactions.bulk-destroy'), {
+        data: { ids: selectedTransactions.value },
+        preserveScroll: true,
+        onSuccess: () => {
+            selectedTransactions.value = [];
+            showBulkDeleteConfirm.value = false;
+        },
+    });
+};
+
 // Acciones
 const handleSort = (column) => {
     if (sortBy.value === column) sortDirection.value = sortDirection.value === 'asc' ? 'desc' : 'asc';
@@ -130,9 +159,10 @@ const activeFilterLabel = computed(() => filterTypes.value.find(f => f.value ===
             :active-filter-label="activeFilterLabel"
             @clear-selection="selectedTransactions = []"
             @toggle-all="toggleAll"
+            @delete-selected="deleteSelected"
             @open-filter="showFilterModal = true"
-            @import="emit('import')"
-            @export="(f) => emit('export', f)"
+            @import="$emit('import')"
+            @export="(f) => $emit('export', f)"
         />
 
         <!-- TABLA DE RESULTADOS -->
@@ -158,8 +188,8 @@ const activeFilterLabel = computed(() => filterTypes.value.find(f => f.value ===
                             :tx="tx"
                             :is-selected="selectedTransactions.includes(tx.id)"
                             :is-privacy-mode="isPrivacyMode"
-                            @toggle="(id) => selectedTransactions.push(id)"
-                            @edit="(t) => emit('edit', t)"
+                            @toggle="toggleSelection"
+                            @edit="(t) => $emit('edit', t)"
                         />
                     </template>
                     <tr v-if="filteredTransactions.length === 0 && !loading">
@@ -191,5 +221,16 @@ const activeFilterLabel = computed(() => filterTypes.value.find(f => f.value ===
         :filter-types="filterTypes" 
         @select="(v) => activeFilter = v"
         @close="showFilterModal = false"
+    />
+
+    <!-- MODAL DE CONFIRMACIÓN DE BORRADO MASIVO -->
+    <ModalConfirm 
+        :show="showBulkDeleteConfirm"
+        title="¿Eliminar transacciones?"
+        :message="`Estás a punto de eliminar permanentemente ${selectedTransactions.length} operaciones. Esta acción no se puede deshacer.`"
+        confirm-text="Eliminar Todo"
+        type="danger"
+        @confirm="confirmBulkDelete"
+        @cancel="showBulkDeleteConfirm = false"
     />
 </template>

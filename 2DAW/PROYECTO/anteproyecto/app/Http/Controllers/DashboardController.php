@@ -55,7 +55,8 @@ class DashboardController extends Controller
 
         // Ahorros en planificación financiera (Cuentas remuneradas, etc)
         $bankBalance = BankAccount::where('user_id', $user->id)->sum('balance') ?? 0;
-        $history = $this->dashboardService->getNetWorthHistory($user->id);
+        $months = request('months', null); // default to MAX (null)
+        $history = $this->dashboardService->getNetWorthHistory($user->id, $months);
 
         $filter = request('filter', 'all');
 
@@ -79,7 +80,7 @@ class DashboardController extends Controller
                 'netWorthLabels' => $history['labels'],
                 'netWorthData' => $history['values'],
                 'netWorthYields' => $history['yields'],
-                'portfolioHistory' => $this->dashboardService->getPortfolioHistory($user->id),
+                'portfolioHistory' => $this->dashboardService->getPortfolioHistory($user->id, $months),
                 'annualPerformance' => $this->dashboardService->getAnnualPerformance($user->id),
                 'allocation' => [
                     'labels' => ['Invertido', 'Liquidez'],
@@ -93,6 +94,7 @@ class DashboardController extends Controller
             'currentFilter' => $filter,
             'allAssetsList' => Asset::where('user_id', $user->id)->select('id', 'name', 'ticker')->get(),
             'categories' => $this->expenseService->getHierarchicalCategories($user->id),
+            'selectedMonths' => $months,
         ]);
     }
 

@@ -252,7 +252,6 @@ const confirmExport = ({ format, start_date, end_date }) => {
             :show="showTransactionModal"
             :transaction="editingTransaction"
             :portfolios="portfolios"
-            :assets="assets"
             :default-portfolio-id="selectedPortfolioId !== 'aggregated' ? selectedPortfolioId : null"
             :allowed-types="['buy', 'sell', 'dividend', 'reward']"
             @close="showTransactionModal = false"

@@ -20,6 +20,7 @@ const props = defineProps({
     isOwnProfile: Boolean,
     isFollowing: Boolean,
     isBlocked: Boolean,
+    joined_at: String,
 });
 
 const activeTab = ref('all'); // Pestaña activa ('all', 'posts', 'reposts', 'bookmarks')
@@ -137,6 +138,7 @@ const handleComment = (payload) => {
                 <!-- Cabecera Modular -->
                 <ProfileHeader 
                     :profileUser="profileUser"
+                    :joinedAt="joined_at"
                     :isOwnProfile="isOwnProfile"
                     :isFollowing="isFollowing"
                     :isBlocked="isBlocked"

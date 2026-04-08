@@ -189,7 +189,7 @@ class SocialMediaService
         $post->is_pinned = $profileOwnerId && $post->id === User::find($profileOwnerId)->pinned_post_id;
         $post->created_at_human = $post->created_at->diffForHumans();
         
-        $post->can_edit = $post->user_id === $userId && $post->created_at->diffInMinutes(now()) <= 15;
+        $post->can_edit = $post->user_id === $userId && $post->created_at->diffInMinutes(now()) <= 2;
         $post->can_delete = $post->user_id === $userId;
 
         $post->comments->each(function($comment) use ($userId) {
