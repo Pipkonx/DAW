@@ -11,7 +11,8 @@ import CommunityWidget from '../Social/Partials/CommunityWidget.vue';
 import CreatePostForm from '../Social/Partials/CreatePostForm.vue';
 import FeedFilters from '../Social/Partials/FeedFilters.vue';
 import PostCard from '../Social/Partials/PostCard.vue';
-import PostModal from '../Social/Partials/PostModal.vue'; // Si existe un modal dedicado, si no se mantiene inline ligero
+import PostModal from '../Social/Partials/PostModal.vue';
+import ModalConfirm from '@/Components/ModalConfirm.vue';
 
 /**
  * Feed/Index - Orquestador del Muro Comunitario.
@@ -34,6 +35,15 @@ const props = defineProps({
 // GESTIÓN DE POST DESTACADO (DEEP-LINKING)
 const featuredModalOpen = ref(false);
 const postToShowInModal = ref(null);
+
+// Estado del Modal de Confirmación
+const confirmModal = ref({
+    show: false,
+    title: '',
+    message: '',
+    type: 'danger',
+    onConfirm: () => {}
+});
 
 onMounted(() => {
     if (props.featuredPost) {
@@ -81,6 +91,29 @@ const handleComment = (payload) => {
         parent_id: payload.parent_id 
     }, { preserveScroll: true });
 };
+
+const handleEdit = ({ id, content }) => {
+    router.put(route('social.update', id), { content }, { preserveScroll: true });
+};
+
+const handlePin = (id) => {
+    router.post(route('social.pin', id), {}, { preserveScroll: true });
+};
+
+const handleDelete = (post) => {
+    confirmModal.value = {
+        show: true,
+        title: '¿Eliminar Publicación?',
+        message: 'Esta acción borrará permanentemente tu análisis del muro.',
+        type: 'danger',
+        onConfirm: () => {
+            router.delete(route('social.delete', post.id), { 
+                preserveScroll: true,
+                onSuccess: () => confirmModal.value.show = false
+            });
+        }
+    };
+};
 </script>
 
 <template>
@@ -123,6 +156,9 @@ const handleComment = (payload) => {
                                 @repost="handleRepost"
                                 @bookmark="handleBookmark"
                                 @comment="handleComment"
+                                @edit="handleEdit"
+                                @delete="handleDelete"
+                                @pin="handlePin"
                             />
 
                             <!-- Estado Vacío del Muro -->
@@ -165,10 +201,30 @@ const handleComment = (payload) => {
                 
                 <!-- Reutilización del PostCard en modo modal si es necesario, o visualización directa -->
                 <div class="overflow-hidden rounded-3xl">
-                    <PostCard :post="postToShowInModal" :auth="$page.props.auth" />
+                    <PostCard 
+                        :post="postToShowInModal" 
+                        :auth="$page.props.auth" 
+                        @like="handleLike"
+                        @repost="handleRepost"
+                        @bookmark="handleBookmark"
+                        @comment="handleComment"
+                        @edit="handleEdit"
+                        @delete="handleDelete"
+                        @pin="handlePin"
+                    />
                 </div>
             </div>
         </div>
+
+        <!-- Modal de Confirmación Global -->
+        <ModalConfirm 
+            :show="confirmModal.show"
+            :title="confirmModal.title"
+            :message="confirmModal.message"
+            :type="confirmModal.type"
+            @confirm="confirmModal.onConfirm"
+            @cancel="confirmModal.show = false"
+        />
 
     </AuthenticatedLayout>
 </template>
