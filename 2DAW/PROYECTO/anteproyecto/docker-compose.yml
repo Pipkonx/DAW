@@ -19,10 +19,8 @@ services:
     container_name: fintechpro-mysql
     restart: unless-stopped
     environment:
-      MYSQL_DATABASE: ${DB_DATABASE:-fintechpro}
-      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-root}
-      MYSQL_PASSWORD: ${DB_PASSWORD:-password}
-      MYSQL_USER: ${DB_USERNAME:-user}
+      MYSQL_DATABASE: fintechpro
+      MYSQL_ROOT_PASSWORD: root
     ports:
       - "33066:3306"
     volumes:
