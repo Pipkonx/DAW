@@ -6,7 +6,6 @@ services:
     ports:
       - "8080:80"
     volumes:
-      - ./.env:/var/www/html/.env
       - storage:/var/www/html/storage
     depends_on:
       - mysql
