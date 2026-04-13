@@ -20,7 +20,7 @@ class TransactionActionController extends Controller
     }
 
     /**
-     * Store a new transaction.
+     * Registrar una nueva transacción manualmente.
      */
     public function store(Request $request)
     {
@@ -56,7 +56,7 @@ class TransactionActionController extends Controller
     }
 
     /**
-     * Update an existing transaction.
+     * Actualizar una transacción existente.
      */
     public function update(Request $request, Transaction $transaction)
     {
@@ -87,7 +87,7 @@ class TransactionActionController extends Controller
     }
 
     /**
-     * Delete a transaction.
+     * Eliminar una transacción.
      */
     public function destroy(Transaction $transaction)
     {
@@ -95,21 +95,22 @@ class TransactionActionController extends Controller
 
         try {
             $this->transactionService->delete($transaction);
-            return redirect()->back()->with('success', 'Transacción eliminada.');
+            return redirect()->back()->with('success', 'Transacción eliminada correctamente.');
         } catch (\Exception $e) {
             return redirect()->back()->withErrors(['error' => 'Error al eliminar: ' . $e->getMessage()]);
         }
     }
 
     /**
-     * Bulk delete transactions.
+     * Eliminación masiva de transacciones.
      */
     public function bulkDestroy(Request $request)
     {
-        $request->validate(['ids' => 'required|array']);
-        $transactions = Transaction::whereIn('id', $request->ids)->where('user_id', Auth::id())->get();
+        $ids = $request->ids;
+        $transactions = Transaction::whereIn('id', $ids)->where('user_id', Auth::id())->get();
 
         try {
+            /** @var Transaction $transaction */
             foreach ($transactions as $transaction) {
                 $this->transactionService->delete($transaction);
             }
@@ -120,7 +121,7 @@ class TransactionActionController extends Controller
     }
 
     /**
-     * Import transactions from a file.
+     * Importar transacciones desde un archivo externo (CSV/PDF).
      */
     public function import(Request $request)
     {
@@ -132,7 +133,7 @@ class TransactionActionController extends Controller
             $preview = $this->importService->previewFromFile($request->file('file'));
             
             if (empty($preview)) {
-                return redirect()->back()->withErrors(['error' => 'No se encontraron registros válidos en el archivo CSV.']);
+                return redirect()->back()->withErrors(['error' => 'No se encontraron registros válidos en el archivo.']);
             }
 
             $count = 0;
@@ -142,19 +143,22 @@ class TransactionActionController extends Controller
                     'amount' => abs($tx['amount'] ?? 0),
                     'date' => $tx['date'] ?? now()->format('Y-m-d'),
                     'asset_name' => $tx['ticker'] ?? 'Importación',
-                    'description' => 'Importado vía CSV',
+                    'description' => 'Importado vía asistente externo',
                     'quantity' => $tx['quantity'] ?? null,
                     'price_per_unit' => $tx['price_per_unit'] ?? null,
                 ]);
                 $count++;
             }
 
-            return redirect()->back()->with('success', "¡Éxito! Se han importado {$count} transacciones.");
+            return redirect()->back()->with('success', "¡Éxito! Se han importado {$count} transacciones a tu cartera.");
         } catch (\Exception $e) {
-            return redirect()->back()->withErrors(['error' => 'Error al importar archivo: ' . $e->getMessage()]);
+            return redirect()->back()->withErrors(['error' => 'Error crítico al procesar archivo: ' . $e->getMessage()]);
         }
     }
 
+    /**
+     * Generar un mensaje de éxito contextualizado según el tipo de operación.
+     */
     private function generateSuccessMessage(array $data, string $action)
     {
         $amount = number_format($data['amount'] ?? 0, 2, ',', '.') . '€';

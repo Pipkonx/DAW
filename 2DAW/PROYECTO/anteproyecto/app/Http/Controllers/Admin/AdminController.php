@@ -123,6 +123,45 @@ class AdminController extends Controller
     }
 
     /**
+     * Importar un archivo de copia de seguridad externo.
+     */
+    public function importBackup(Request $request)
+    {
+        $request->validate([
+            'backup_file' => 'required|file',
+        ]);
+
+        try {
+            $filename = $this->backupService->importExternalBackup($request->file('backup_file'));
+            return back()->with('success', "Copia externa {$filename} importada correctamente.");
+        } catch (\Exception $e) {
+            return back()->with('error', 'Error al importar: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Subir y restaurar una copia de seguridad directamente.
+     */
+    public function restoreDirect(Request $request)
+    {
+        $request->validate([
+            'backup_file' => 'required|file',
+        ]);
+
+        try {
+            // 1. Importar temporalmente
+            $filename = $this->backupService->importExternalBackup($request->file('backup_file'));
+            
+            // 2. Restaurar inmediatamente
+            $result = $this->backupService->restoreFromBackup($filename);
+            
+            return back()->with($result['status'], $result['message']);
+        } catch (\Exception $e) {
+            return back()->with('error', 'Error en restauración directa: ' . $e->getMessage());
+        }
+    }
+
+    /**
      * Optimiza y limpia el entorno del sistema.
      */
     public function clearCache()

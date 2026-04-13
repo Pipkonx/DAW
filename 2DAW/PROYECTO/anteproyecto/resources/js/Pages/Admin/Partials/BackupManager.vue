@@ -1,5 +1,7 @@
 <script setup>
+import { ref } from 'vue';
 import { useForm } from '@inertiajs/vue3';
+import ModalConfirm from '@/Components/ModalConfirm.vue';
 
 defineProps({
     backups: Array,
@@ -10,20 +12,52 @@ const importForm = useForm({
     backup_file: null,
 });
 
+// ESTADO DE MODALES
+const confirmModal = ref({
+    show: false,
+    title: '',
+    message: '',
+    type: 'warning',
+    onConfirm: () => {}
+});
+
+const openConfirm = (config) => {
+    confirmModal.value = {
+        show: true,
+        title: config.title,
+        message: config.message,
+        type: config.type || 'warning',
+        onConfirm: () => {
+            config.action();
+            closeConfirm();
+        }
+    };
+};
+
+const closeConfirm = () => {
+    confirmModal.value.show = false;
+};
+
 const generateBackup = () => {
     form.post(route('admin.backup.generate'), { preserveScroll: true });
 };
 
 const restoreBackup = (filename) => {
-    if (confirm('¿ESTÁS SEGURO? Esta acción sobrescribirá la base de datos actual con los datos de esta copia. El sistema realizará una copia preventiva automática.')) {
-        form.post(route('admin.backup.restore', filename), { preserveScroll: true });
-    }
+    openConfirm({
+        title: '¿Confirmar Restauración?',
+        message: 'Esta acción sobrescribirá la base de datos actual con los datos de esta copia. El sistema realizará una copia preventiva automática.',
+        type: 'warning',
+        action: () => form.post(route('admin.backup.restore', filename), { preserveScroll: true })
+    });
 };
 
 const deleteBackup = (filename) => {
-    if (confirm('¿Estás seguro de eliminar este backup?')) {
-        form.delete(route('admin.backup.delete', filename), { preserveScroll: true });
-    }
+    openConfirm({
+        title: '¿Eliminar Backup?',
+        message: '¿Estás seguro de eliminar permanentemente este archivo de copia de seguridad?',
+        type: 'danger',
+        action: () => form.delete(route('admin.backup.delete', filename), { preserveScroll: true })
+    });
 };
 
 const handleImport = (e) => {
@@ -40,14 +74,18 @@ const handleImport = (e) => {
 
 const handleDirectRestore = (e) => {
     const file = e.target.files[0];
-    if (file && confirm('⚠️ ATENCIÓN: Vas a SOBRESCRIBIR TODA LA BASE DE DATOS con este archivo. El sistema se reiniciará con los nuevos datos. ¿Deseas continuar?')) {
-        const directForm = useForm({
-            backup_file: file,
-        });
-        directForm.post(route('admin.backup.restore.direct'), {
-            preserveScroll: true,
-            onSuccess: () => {
-                alert('Sistema restaurado con éxito.');
+    if (file) {
+        openConfirm({
+            title: '⚠️ Restauración Directa',
+            message: 'Vas a SOBRESCRIBIR TODA LA BASE DE DATOS con este archivo externo. Esta acción es irreversible. ¿Deseas continuar?',
+            type: 'danger',
+            action: () => {
+                const directForm = useForm({
+                    backup_file: file,
+                });
+                directForm.post(route('admin.backup.restore.direct'), {
+                    preserveScroll: true
+                });
             }
         });
     }
@@ -71,8 +109,8 @@ const triggerDirectRestoreInput = () => {
             </div>
             <div class="flex flex-wrap items-center gap-2">
                 <!-- Inputs encapsulados -->
-                <input type="file" id="backup-upload" class="hidden" @change="handleImport" accept=".sqlite">
-                <input type="file" id="backup-direct-restore" class="hidden" @change="handleDirectRestore" accept=".sqlite">
+                <input type="file" id="backup-upload" class="hidden" @change="handleImport" accept=".sql">
+                <input type="file" id="backup-direct-restore" class="hidden" @change="handleDirectRestore" accept=".sql">
                 
                 <button 
                     @click="triggerFileInput"
@@ -164,4 +202,14 @@ const triggerDirectRestoreInput = () => {
             </table>
         </div>
     </div>
+
+    <!-- Modal de Confirmación Estilizado -->
+    <ModalConfirm 
+        :show="confirmModal.show"
+        :title="confirmModal.title"
+        :message="confirmModal.message"
+        :type="confirmModal.type"
+        @confirm="confirmModal.onConfirm"
+        @cancel="closeConfirm"
+    />
 </template>

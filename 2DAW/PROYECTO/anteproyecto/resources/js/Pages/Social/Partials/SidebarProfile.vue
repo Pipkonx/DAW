@@ -41,7 +41,7 @@ const getAvatarRingClasses = (tier) => {
         
         <!-- Botones de Acción Rápida -->
         <div class="px-6 pb-6 space-y-2">
-            <Link :href="route('social.profile', user.username)" class="block w-full py-2.5 bg-slate-50 dark:bg-slate-900/50 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-100 dark:border-slate-600 text-slate-600 dark:text-slate-300 text-[10px] font-black uppercase tracking-widest rounded-xl transition-colors">
+            <Link :href="route('social.profile', user.username || `user_${user.id}`)" class="block w-full py-2.5 bg-slate-50 dark:bg-slate-900/50 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-100 dark:border-slate-600 text-slate-600 dark:text-slate-300 text-[10px] font-black uppercase tracking-widest rounded-xl transition-colors">
                 Ver mi Muro
             </Link>
             <Link :href="route('profile.edit')" class="block w-full py-2.5 bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/40 text-blue-600 dark:text-blue-400 text-[10px] font-black uppercase tracking-widest rounded-xl transition-colors">

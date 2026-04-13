@@ -15,12 +15,14 @@ use Illuminate\Http\UploadedFile;
 class BackupService
 {
     protected $backupPath;
-    protected $dbPath;
+    protected $mysqlPath;
+    protected $mysqldumpPath;
 
     public function __construct()
     {
         $this->backupPath = storage_path('app/backups');
-        $this->dbPath = database_path('database.sqlite');
+        $this->mysqlPath = 'C:\xampp\mysql\bin\mysql.exe';
+        $this->mysqldumpPath = 'C:\xampp\mysql\bin\mysqldump.exe';
         
         if (!File::exists($this->backupPath)) {
             File::makeDirectory($this->backupPath, 0755, true);
@@ -28,7 +30,7 @@ class BackupService
     }
 
     /**
-     * Lista todas las copias de seguridad disponibles ordenadas por fecha.
+     * Lista todas las copias de seguridad (.sql) disponibles ordenadas por fecha.
      */
     public function listBackups(): array
     {
@@ -36,11 +38,13 @@ class BackupService
         $files = File::files($this->backupPath);
 
         foreach ($files as $file) {
-            $backups[] = [
-                'name' => $file->getFilename(),
-                'size' => round($file->getSize() / 1024, 2) . ' KB',
-                'created_at' => date('Y-m-d H:i:s', $file->getMTime()),
-            ];
+            if ($file->getExtension() === 'sql') {
+                $backups[] = [
+                    'name' => $file->getFilename(),
+                    'size' => round($file->getSize() / 1024, 2) . ' KB',
+                    'created_at' => date('Y-m-d H:i:s', $file->getMTime()),
+                ];
+            }
         }
 
         usort($backups, fn($a, $b) => strcmp($b['created_at'], $a['created_at']));
@@ -48,18 +52,27 @@ class BackupService
     }
 
     /**
-     * Genera un nuevo punto de restauración manual.
+     * Genera un nuevo volcado SQL (MySQLdump).
      */
     public function generateBackup(): string
     {
-        $filename = 'backup-' . now()->format('Y-m-d-His') . '.sqlite';
-        File::copy($this->dbPath, "{$this->backupPath}/{$filename}");
+        $filename = 'backup-' . now()->format('Y-m-d-His') . '.sql';
+        $path = "{$this->backupPath}/{$filename}";
+        
+        $command = $this->buildMysqlCommand($this->mysqldumpPath, "> " . escapeshellarg($path));
+        
+        exec($command, $output, $returnVar);
+
+        if ($returnVar !== 0) {
+            throw new \Exception("Error al generar el volcado MySQL: " . implode("\n", $output));
+        }
+
         $this->cleanOldBackups();
         return $filename;
     }
 
     /**
-     * Restaura una base de datos desde un archivo, con backup preventivo.
+     * Restaura la base de datos MySQL desde un archivo .sql.
      */
     public function restoreFromBackup(string $filename): array
     {
@@ -67,25 +80,71 @@ class BackupService
 
         if (!File::exists($target)) return ['status' => 'error', 'message' => 'Copia no encontrada.'];
 
-        // 1. Crear backup preventivo del estado ACTUAL
-        $preventive = 'pre-restore-' . now()->format('Y-m-d-His') . '.sqlite';
-        File::copy($this->dbPath, "{$this->backupPath}/{$preventive}");
+        try {
+            // 1. Crear backup preventivo del estado ACTUAL
+            $preventive = 'pre-restore-' . now()->format('Y-m-d-His') . '.sql';
+            $this->generateBackupWithName($preventive);
 
-        // 2. Sobrescribir base de datos principal
-        File::copy($target, $this->dbPath);
-        
-        $this->cleanOldBackups();
-        Artisan::call('cache:clear');
+            // 2. Ejecutar restauración vía cliente MySQL
+            $command = $this->buildMysqlCommand($this->mysqlPath, "< " . escapeshellarg($target));
+            
+            exec($command, $output, $returnVar);
 
-        return ['status' => 'success', 'message' => "Base de datos restaurada. Copia preventiva generada: {$preventive}"];
+            if ($returnVar !== 0) {
+                throw new \Exception("Error al restaurar MySQL: " . implode("\n", $output));
+            }
+            
+            // 3. Limpiar cachés
+            $this->cleanOldBackups();
+            Artisan::call('cache:clear');
+            Artisan::call('view:clear');
+
+            return [
+                'status' => 'success', 
+                'message' => "Base de datos MySQL restaurada con éxito desde {$filename}. Se generó copia preventiva: {$preventive}"
+            ];
+        } catch (\Exception $e) {
+            return [
+                'status' => 'error', 
+                'message' => 'Fallo crítico en la restauración MySQL: ' . $e->getMessage()
+            ];
+        }
     }
 
     /**
-     * Importa un archivo de backup externo y lo registra.
+     * Genera un backup con un nombre específico (para restauraciones preventivas).
+     */
+    private function generateBackupWithName(string $filename): void
+    {
+        $path = "{$this->backupPath}/{$filename}";
+        $command = $this->buildMysqlCommand($this->mysqldumpPath, "> " . escapeshellarg($path));
+        exec($command);
+    }
+
+    /**
+     * Construye el comando MySQL con credenciales de .env.
+     */
+    private function buildMysqlCommand(string $binary, string $redirection): string
+    {
+        $db = config('database.connections.mysql.database');
+        $user = config('database.connections.mysql.username');
+        $pass = config('database.connections.mysql.password');
+        
+        $cmd = escapeshellarg($binary) . " -u " . escapeshellarg($user);
+        if ($pass) {
+            $cmd .= " -p" . escapeshellarg($pass);
+        }
+        $cmd .= " " . escapeshellarg($db) . " {$redirection} 2>&1";
+        
+        return $cmd;
+    }
+
+    /**
+     * Importa un archivo .sql externo y lo registra.
      */
     public function importExternalBackup(UploadedFile $file): string
     {
-        $filename = 'imported-' . now()->format('Y-m-d-His') . '.sqlite';
+        $filename = 'imported-' . now()->format('Y-m-d-His') . '.sql';
         $file->move($this->backupPath, $filename);
         $this->cleanOldBackups();
         return $filename;
@@ -105,7 +164,7 @@ class BackupService
      */
     public function cleanOldBackups(int $limit = 5): void
     {
-        $files = File::glob("{$this->backupPath}/*.sqlite");
+        $files = File::glob("{$this->backupPath}/*.sql");
         if (count($files) > $limit) {
             array_multisort(array_map('filemtime', $files), SORT_ASC, $files);
             File::delete(array_slice($files, 0, count($files) - $limit));

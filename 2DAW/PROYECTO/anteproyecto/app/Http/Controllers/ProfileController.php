@@ -44,11 +44,21 @@ class ProfileController extends Controller
     {
         // Redirección si no se especifica usuario (ver mi propio perfil)
         if (!$username && Auth::check()) {
-            return redirect()->route('social.profile', ['username' => Auth::user()->username]);
+            $fallback = Auth::user()->username ?? ('user_' . Auth::id());
+            return redirect()->route('social.profile', ['username' => $fallback]);
         }
 
-        // Recuperación de la identidad (Búsqueda por username)
-        $user = User::where('username', $username)->firstOrFail();
+        // Búsqueda del usuario: Primero por username exacto, luego por ID si sigue el patrón user_{id}
+        $user = User::where('username', $username)->first();
+
+        if (!$user && preg_match('/^user_(\d+)$/', $username, $matches)) {
+            $user = User::where(function($q) {
+                $q->whereNull('username')->orWhere('username', '');
+            })->find($matches[1]);
+        }
+
+        if (!$user) abort(404);
+
         $authUserId = Auth::id();
 
         // Enriquecimiento de relación social

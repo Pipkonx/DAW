@@ -143,7 +143,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/social/report', [SocialController::class, 'reportContent'])->name('social.report');
 
     // Muro de Usuario y Perfil Social
-    Route::get('/perfil/{username?}', [ProfileController::class, 'show'])->name('social.profile');
+    Route::get('/perfil/{username?}', [ProfileController::class, 'show'])
+        ->name('social.profile')
+        ->where('username', '.*');
     Route::patch('/profile/social', [ProfileController::class, 'updateSocial'])->name('profile.social.update');
     Route::post('/profile/{user}/follow', [ProfileController::class, 'toggleFollow'])->name('profile.social.follow');
     Route::post('/profile/{user}/block', [ProfileController::class, 'block'])->name('profile.social.block');
