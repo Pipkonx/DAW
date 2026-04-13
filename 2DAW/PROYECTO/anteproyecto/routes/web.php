@@ -62,6 +62,10 @@ Route::get('/transactions/export', [TransactionExportController::class, 'export'
     ->middleware(['auth', 'verified'])
     ->name('transactions.export');
 
+Route::post('/transactions/import', [\App\Http\Controllers\TransactionActionController::class, 'import'])
+    ->middleware(['auth', 'verified'])
+    ->name('transactions.import');
+
 Route::get('/transactions', [TransactionController::class, 'index'])
     ->middleware(['auth', 'verified'])
     ->name('transactions.index');

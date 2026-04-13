@@ -5,15 +5,18 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Transaction;
 use App\Services\Transaction\TransactionService;
+use App\Services\Financial\ImportService;
 use Illuminate\Support\Facades\Auth;
 
 class TransactionActionController extends Controller
 {
     protected $transactionService;
+    protected $importService;
 
-    public function __construct(TransactionService $transactionService)
+    public function __construct(TransactionService $transactionService, ImportService $importService)
     {
         $this->transactionService = $transactionService;
+        $this->importService = $importService;
     }
 
     /**
@@ -113,6 +116,42 @@ class TransactionActionController extends Controller
             return redirect()->back()->with('success', 'Transacciones eliminadas masivamente.');
         } catch (\Exception $e) {
             return redirect()->back()->withErrors(['error' => 'Error en eliminación masiva: ' . $e->getMessage()]);
+        }
+    }
+
+    /**
+     * Import transactions from a file.
+     */
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|file',
+        ]);
+
+        try {
+            $preview = $this->importService->previewFromFile($request->file('file'));
+            
+            if (empty($preview)) {
+                return redirect()->back()->withErrors(['error' => 'No se encontraron registros válidos en el archivo CSV.']);
+            }
+
+            $count = 0;
+            foreach ($preview as $tx) {
+                $this->transactionService->store([
+                    'type' => $tx['type'] ?? 'expense',
+                    'amount' => abs($tx['amount'] ?? 0),
+                    'date' => $tx['date'] ?? now()->format('Y-m-d'),
+                    'asset_name' => $tx['ticker'] ?? 'Importación',
+                    'description' => 'Importado vía CSV',
+                    'quantity' => $tx['quantity'] ?? null,
+                    'price_per_unit' => $tx['price_per_unit'] ?? null,
+                ]);
+                $count++;
+            }
+
+            return redirect()->back()->with('success', "¡Éxito! Se han importado {$count} transacciones.");
+        } catch (\Exception $e) {
+            return redirect()->back()->withErrors(['error' => 'Error al importar archivo: ' . $e->getMessage()]);
         }
     }
 
