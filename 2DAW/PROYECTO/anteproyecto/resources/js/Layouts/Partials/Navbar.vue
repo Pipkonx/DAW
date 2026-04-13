@@ -106,6 +106,8 @@ defineEmits(['toggleTheme', 'togglePrivacy', 'toggleMobileMenu']);
                             <template #content>
                                 <div class="px-4 py-2 text-xs text-slate-400">{{ $page.props.auth.user.name }}</div>
                                 <DropdownLink :href="route('profile.edit')">Perfil</DropdownLink>
+                                <DropdownLink :href="route('profile.security')">Seguridad</DropdownLink>
+                                <DropdownLink :href="route('support.index')">Centro de Ayuda</DropdownLink>
                                 <a :href="route('anteproyecto.download')" class="block px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100" download>Anteproyecto</a>
                                 <div class="border-t border-slate-100 dark:border-slate-700"></div>
                                 <DropdownLink :href="route('logout')" method="post" as="button">Cerrar Sesión</DropdownLink>

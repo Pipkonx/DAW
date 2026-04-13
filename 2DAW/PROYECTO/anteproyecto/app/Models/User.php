@@ -32,11 +32,15 @@ class User extends Authenticatable implements MustVerifyEmail
         'enable_tax_projection',
         'tax_rate',
         'is_admin',
+        'google2fa_secret',
+        'onboarding_completed_at',
+        'two_factor_enabled',
     ];
 
     protected $hidden = [
         'password',
         'remember_token',
+        'google2fa_secret',
     ];
 
     protected $appends = [

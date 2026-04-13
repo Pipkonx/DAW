@@ -1,240 +1,272 @@
 <script setup>
 import { Head, Link } from '@inertiajs/vue3';
 import MainLayout from '@/Layouts/MainLayout.vue';
-import AdSlot from '@/Components/AdSense/AdSlot.vue';
+import { ref } from 'vue';
 
 defineProps({
-    canLogin: {
-        type: Boolean,
-    },
-    canRegister: {
-        type: Boolean,
-    },
-    laravelVersion: {
-        type: String,
-        required: true,
-    },
-    phpVersion: {
-        type: String,
-        required: true,
-    },
+    canLogin: { type: Boolean },
+    canRegister: { type: Boolean },
 });
+
+const faqs = ref([
+    {
+        q: '¿Es seguro vincular mi banco con FintechPro?',
+        a: 'Absolutamente. Utilizamos encriptación de grado bancario (AES-256) y nunca almacenamos tus credenciales. La conexión se realiza a través de proveedores regulados bajo la normativa PSD2.',
+        open: false
+    },
+    {
+        q: '¿Cómo funciona el analista de IA?',
+        a: 'Nuestro Analista IA procesa de forma anónima tus transacciones para detectar patrones de ahorro, diversificación y riesgos potenciales, ofreciéndote consejos personalizados basados en datos reales.',
+        open: false
+    },
+    {
+        q: '¿Qué activos puedo rastrear?',
+        a: 'Casi cualquiera: acciones, ETFs, criptomonedas, bienes inmuebles, materias primas e incluso coleccionables de lujo.',
+        open: false
+    },
+    {
+        q: '¿Es FintechPro gratuito?',
+        a: 'Ofrecemos una versión gratuita muy potente. Para inversores avanzados, nuestras suscripciones Pro y Premium desbloquean análisis TTWROR, mapas de calor y soporte prioritario.',
+        open: false
+    }
+]);
+
+const toggleFaq = (index) => {
+    faqs.value[index].open = !faqs.value[index].open;
+};
 </script>
 
 <template>
-    <Head title="Bienvenido al Futuro Financiero" />
+    <Head title="FintechPro - Control Total de tus Inversiones" />
     
     <MainLayout :can-login="canLogin" :can-register="canRegister">
         <!-- Hero Section -->
-        <section class="max-w-7xl mx-auto px-6 lg:px-12 py-16 lg:py-24">
-            <div class="grid lg:grid-cols-2 gap-12 items-center">
-                <!-- Text Content -->
-                <div class="space-y-8">
-                    <div class="inline-flex items-center px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-sm font-medium border border-blue-100 dark:border-blue-800">
-                        <span class="mr-2">🚀</span> Nueva Generación de Finanzas
+        <section class="relative pt-20 pb-32 overflow-hidden bg-white dark:bg-slate-900 transition-colors duration-500">
+            <div class="max-w-7xl mx-auto px-6 lg:px-12 grid lg:grid-cols-2 gap-16 items-center">
+                <div class="z-10 text-center lg:text-left">
+                    <div class="inline-flex items-center space-x-4 mb-6">
+                        <span class="px-3 py-1 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-sm font-bold animate-pulse">
+                            +15 B $ Seguidos
+                        </span>
+                        <span class="text-slate-500 dark:text-slate-400 text-sm font-medium">
+                            +500.000 usuarios
+                        </span>
                     </div>
                     
-                    <h1 class="text-5xl lg:text-7xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-[1.1]">
-                        Tu dinero, <br />
-                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-teal-500 dark:from-blue-400 dark:to-teal-400">
-                            inteligente.
-                        </span>
+                    <h1 class="text-5xl lg:text-7xl font-black text-slate-900 dark:text-white leading-[1.1] mb-8 tracking-tighter">
+                        Todas sus inversiones. <br/>
+                        <span class="text-blue-600">Una aplicación.</span> <br/>
+                        Control total.
                     </h1>
                     
-                    <p class="text-lg text-slate-600 dark:text-slate-300 max-w-lg leading-relaxed">
-                        Controla tus finanzas, visualiza tus inversiones y alcanza tus objetivos con nuestra plataforma todo en uno. Simple, segura y poderosa.
+                    <p class="text-xl text-slate-600 dark:text-slate-400 mb-10 max-w-xl mx-auto lg:mx-0 leading-relaxed">
+                        Reúna todas sus inversiones en una sola aplicación y obtenga información valiosa mediante un análisis detallado. Diseñado para el inversor moderno.
                     </p>
                     
-                    <div class="flex flex-col sm:flex-row gap-4 pt-4">
-                        <Link
-                            v-if="canRegister"
-                            :href="route('register')"
-                            class="inline-flex justify-center items-center px-8 py-4 text-base font-semibold text-white bg-blue-600 rounded-xl shadow-xl shadow-blue-500/20 hover:bg-blue-700 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 dark:bg-blue-600 dark:hover:bg-blue-500"
-                        >
-                            Empezar Ahora
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                        <Link :href="route('register')" class="px-10 py-5 bg-blue-600 text-white rounded-2xl font-bold text-lg shadow-2xl shadow-blue-500/30 hover:bg-blue-700 hover:-translate-y-1 transition-all duration-300">
+                            Empezar ahora
                         </Link>
-                        <a href="#features" class="inline-flex justify-center items-center px-8 py-4 text-base font-semibold text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl hover:bg-gray-50 dark:hover:bg-slate-700 hover:border-slate-300 dark:hover:border-slate-600 transition-all duration-300">
-                            Ver Características
-                        </a>
-                    </div>
-                    
-                    <div class="pt-8 flex items-center gap-4 text-sm text-slate-500 dark:text-slate-400">
-                        <div class="flex -space-x-2">
-                            <div class="w-8 h-8 rounded-full bg-gray-200 border-2 border-white dark:border-slate-900"></div>
-                            <div class="w-8 h-8 rounded-full bg-gray-300 border-2 border-white dark:border-slate-900"></div>
-                            <div class="w-8 h-8 rounded-full bg-gray-400 border-2 border-white dark:border-slate-900"></div>
-                        </div>
-                        <p>Más de 10,000 usuarios confían en nosotros</p>
                     </div>
                 </div>
 
-                <!-- Visual/Graph Placeholder -->
-                <div class="relative">
-                    <div class="absolute -inset-4 bg-gradient-to-r from-blue-100 to-teal-100 dark:from-blue-900/30 dark:to-teal-900/30 rounded-[2rem] blur-2xl opacity-50 -z-10"></div>
-                    <div class="bg-white dark:bg-slate-800 rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.1)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-slate-100 dark:border-slate-700 p-8 transform rotate-2 hover:rotate-0 transition-all duration-500">
-                        <!-- Mockup UI Header -->
-                        <div class="flex justify-between items-center mb-8">
-                            <div>
-                                <div class="text-sm text-slate-400 font-medium">Balance Total</div>
-                                <div class="text-3xl font-bold text-slate-900 dark:text-white">€24,500.00</div>
-                            </div>
-                            <div class="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 px-3 py-1 rounded-lg text-sm font-semibold">
-                                +12.5%
-                            </div>
-                        </div>
-                        
-                        <!-- Mockup Graph Area -->
-                        <div class="h-64 bg-slate-50 dark:bg-slate-700/50 rounded-xl border border-slate-100 dark:border-slate-700 flex items-center justify-center relative overflow-hidden group">
-                            <div class="absolute inset-0 flex items-end justify-around px-4 pb-4 gap-2">
-                                <div class="w-full bg-blue-200 dark:bg-blue-800 h-[40%] rounded-t-sm group-hover:h-[50%] transition-all duration-500"></div>
-                                <div class="w-full bg-blue-300 dark:bg-blue-700 h-[60%] rounded-t-sm group-hover:h-[65%] transition-all duration-500"></div>
-                                <div class="w-full bg-blue-400 dark:bg-blue-600 h-[30%] rounded-t-sm group-hover:h-[45%] transition-all duration-500"></div>
-                                <div class="w-full bg-blue-500 dark:bg-blue-500 h-[80%] rounded-t-sm group-hover:h-[85%] transition-all duration-500"></div>
-                                <div class="w-full bg-blue-600 dark:bg-blue-400 h-[55%] rounded-t-sm group-hover:h-[70%] transition-all duration-500"></div>
-                            </div>
-                        </div>
-
-                        <!-- Mockup List -->
-                        <div class="mt-8 space-y-4">
-                            <div class="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700 transition">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-10 h-10 rounded-full bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center text-orange-600 dark:text-orange-400">
-                                        ₿
-                                    </div>
-                                    <div>
-                                        <div class="font-semibold text-slate-900 dark:text-white">Bitcoin</div>
-                                        <div class="text-xs text-slate-500 dark:text-slate-400">BTC</div>
-                                    </div>
-                                </div>
-                                <div class="text-right">
-                                    <div class="font-medium text-slate-900 dark:text-white">€42,000</div>
-                                    <div class="text-xs text-green-600 dark:text-green-400">+5.2%</div>
-                                </div>
-                            </div>
-                             <div class="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700 transition">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400">
-                                        
-                                    </div>
-                                    <div>
-                                        <div class="font-semibold text-slate-900 dark:text-white">Apple Inc.</div>
-                                        <div class="text-xs text-slate-500 dark:text-slate-400">AAPL</div>
-                                    </div>
-                                </div>
-                                <div class="text-right">
-                                    <div class="font-medium text-slate-900 dark:text-white">€185.50</div>
-                                    <div class="text-xs text-green-600 dark:text-green-400">+1.2%</div>
-                                </div>
-                            </div>
-                        </div>
+                <!-- Mockup Composition -->
+                <div class="relative lg:-mr-24 scale-110 lg:scale-125 pt-20 lg:pt-0">
+                    <div class="relative w-full aspect-video z-20 transform -rotate-2 hover:rotate-0 transition-all duration-700">
+                        <img src="/images/mockups/dashboard.png" class="rounded-3xl shadow-[0_50px_100px_rgba(0,0,0,0.15)] ring-1 ring-slate-200 dark:ring-slate-800" alt="FintechPro Dashboard">
+                    </div>
+                    <!-- Floating Elements -->
+                    <div class="absolute -top-12 -right-8 w-1/2 z-30 transform rotate-6 hover:rotate-0 transition-all duration-700 delay-100">
+                        <img src="/images/mockups/portfolio.png" class="rounded-2xl shadow-2xl ring-1 ring-white/50" alt="Portfolio Analysis">
+                    </div>
+                    <div class="absolute -bottom-12 -left-8 w-1/2 z-30 transform -rotate-6 hover:rotate-0 transition-all duration-700 delay-200">
+                        <img src="/images/mockups/social.png" class="rounded-2xl shadow-2xl ring-1 ring-white/50" alt="Community Feed">
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Espacio Publicitario (Landing) -->
-        <div class="max-w-7xl mx-auto px-6">
-            <AdSlot slot-id="1234567890" />
-        </div>
-
-        <!-- Features Section -->
-        <section id="features" class="py-24 bg-white dark:bg-slate-900 relative transition-colors duration-300">
-            <div class="max-w-7xl mx-auto px-6 lg:px-12">
-                <div class="text-center max-w-3xl mx-auto mb-16">
-                    <h2 class="text-3xl font-bold text-slate-900 dark:text-white mb-4">Todo lo que necesitas para crecer</h2>
-                    <p class="text-slate-600 dark:text-slate-400">Herramientas profesionales simplificadas para inversores modernos.</p>
+        <!-- Featured In (Logos) -->
+        <section class="py-12 bg-slate-50 dark:bg-slate-900/50 border-y border-slate-100 dark:border-slate-800">
+            <div class="max-w-7xl mx-auto px-6 text-center">
+                <p class="text-sm font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-8">Destacado en:</p>
+                <div class="flex flex-wrap justify-center items-center gap-12 opacity-50 grayscale hover:grayscale-0 transition-all cursor-default">
+                    <span class="text-2xl font-serif italic font-bold text-slate-900 dark:text-white">Bloomberg</span>
+                    <span class="text-2xl font-sans font-black text-slate-900 dark:text-white uppercase tracking-tighter">FINANCIAL TIMES</span>
+                    <span class="text-2xl font-serif font-bold text-slate-900 dark:text-white">The Economist</span>
+                    <span class="text-2xl font-sans font-bold text-slate-900 dark:text-white">Forbes</span>
                 </div>
+            </div>
+        </section>
 
+        <!-- Features Grid -->
+        <section class="py-32 bg-white dark:bg-slate-900">
+            <div class="max-w-7xl mx-auto px-6">
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-12">
+                    <!-- Feature 1: Importar -->
+                    <div class="group p-8 rounded-[2rem] bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700 hover:border-blue-500 transition-all cursor-default">
+                        <div class="w-16 h-16 bg-blue-100 dark:bg-blue-900/30 rounded-2xl flex items-center justify-center text-3xl mb-8 group-hover:scale-110 transition-transform">📥</div>
+                        <h3 class="text-2xl font-bold text-slate-900 dark:text-white mb-4">Importar</h3>
+                        <p class="text-slate-600 dark:text-slate-400 leading-relaxed">Añada y realice el seguimiento de cualquier activo, incluidas acciones, ETFs, fondos, Inversiones DeFi, bienes inmuebles y más.</p>
+                        <Link href="/register" class="mt-8 inline-flex font-bold text-blue-600 items-center hover:gap-2 transition-all">Empezar ahora <span class="ml-1">→</span></Link>
+                    </div>
+
+                    <!-- Feature 2: Agregación -->
+                    <div class="group p-8 rounded-[2rem] bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700 hover:border-blue-500 transition-all">
+                        <div class="w-16 h-16 bg-blue-100 dark:bg-blue-900/30 rounded-2xl flex items-center justify-center text-3xl mb-8 group-hover:scale-110 transition-transform">🌐</div>
+                        <h3 class="text-2xl font-bold text-slate-900 dark:text-white mb-4">Agregación</h3>
+                        <p class="text-slate-600 dark:text-slate-400 leading-relaxed">Siga su patrimonio neto agregado en tiempo real vinculando todas sus cuentas en un único lugar.</p>
+                        <Link href="/register" class="mt-8 inline-flex font-bold text-blue-600 items-center">Empezar ahora <span class="ml-1">→</span></Link>
+                    </div>
+
+                    <!-- Feature 3: Rendimiento -->
+                    <div class="group p-8 rounded-[2rem] bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700 hover:border-blue-500 transition-all">
+                        <div class="w-16 h-16 bg-blue-100 dark:bg-blue-900/30 rounded-2xl flex items-center justify-center text-3xl mb-8 group-hover:scale-110 transition-transform">📈</div>
+                        <h3 class="text-2xl font-bold text-slate-900 dark:text-white mb-4">Rendimiento</h3>
+                        <p class="text-slate-600 dark:text-slate-400 leading-relaxed">La tasa TTWROR le ofrece la visión más precisa de sus beneficios reales, eliminando distorsiones externas.</p>
+                        <Link href="/register" class="mt-8 inline-flex font-bold text-blue-600 items-center">Empezar ahora <span class="ml-1">→</span></Link>
+                    </div>
+
+                    <!-- Feature 4: Dividendos -->
+                    <div class="group p-8 rounded-[2rem] bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700 hover:border-blue-500 transition-all">
+                        <div class="w-16 h-16 bg-blue-100 dark:bg-blue-900/30 rounded-2xl flex items-center justify-center text-3xl mb-8 group-hover:scale-110 transition-transform">📅</div>
+                        <h3 class="text-2xl font-bold text-slate-900 dark:text-white mb-4">Dividendos</h3>
+                        <p class="text-slate-600 dark:text-slate-400 leading-relaxed">Utilice nuestro calendario para prever flujos de caja futuros y saber exactamente cuándo cobrará sus dividendos.</p>
+                        <Link href="/register" class="mt-8 inline-flex font-bold text-blue-600 items-center">Empezar ahora <span class="ml-1">→</span></Link>
+                    </div>
+
+                    <!-- Feature 5: Analítica -->
+                    <div class="group p-8 rounded-[2rem] bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700 hover:border-blue-500 transition-all">
+                        <div class="w-16 h-16 bg-blue-100 dark:bg-blue-900/30 rounded-2xl flex items-center justify-center text-3xl mb-8 group-hover:scale-110 transition-transform">🔍</div>
+                        <h3 class="text-2xl font-bold text-slate-900 dark:text-white mb-4">Analítica</h3>
+                        <p class="text-slate-600 dark:text-slate-400 leading-relaxed">Obtenga desgloses detallados por geografía, sector y clase de activo. Visualización inteligente de carteras.</p>
+                        <Link href="/register" class="mt-8 inline-flex font-bold text-blue-600 items-center">Empezar ahora <span class="ml-1">→</span></Link>
+                    </div>
+
+                    <!-- Feature 6: Comunidad -->
+                    <div class="group p-8 rounded-[2rem] bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700 hover:border-blue-500 transition-all">
+                        <div class="w-16 h-16 bg-blue-100 dark:bg-blue-900/30 rounded-2xl flex items-center justify-center text-3xl mb-8 group-hover:scale-110 transition-transform">💬</div>
+                        <h3 class="text-2xl font-bold text-slate-900 dark:text-white mb-4">Comunidad</h3>
+                        <p class="text-slate-600 dark:text-slate-400 leading-relaxed">Información pertinente adaptada a su cartera. Aprenda de otros inversores en un entorno profesional.</p>
+                        <Link href="/register" class="mt-8 inline-flex font-bold text-blue-600 items-center">Empezar ahora <span class="ml-1">→</span></Link>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Security Section -->
+        <section class="py-32 bg-slate-900 text-white overflow-hidden relative">
+            <div class="absolute inset-0 bg-blue-600/10 blur-[120px] rounded-full translate-x-1/2 -translate-y-1/2"></div>
+            <div class="max-w-7xl mx-auto px-6 relative z-10 grid lg:grid-cols-2 items-center gap-16">
+                <div>
+                    <div class="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center text-3xl mb-8">🛡️</div>
+                    <h2 class="text-4xl lg:text-5xl font-black mb-8">Máxima protección para sus datos</h2>
+                    <p class="text-xl text-slate-400 leading-relaxed mb-8">
+                        Proteger su privacidad es tan importante como asegurar sus datos. Solo recopilamos la información necesaria, garantizando el anonimato total.
+                    </p>
+                    <ul class="space-y-4">
+                        <li class="flex items-center gap-3 text-slate-300">
+                            <span class="text-blue-500 font-bold">✓</span> Cifrado AES-256 de grado militar
+                        </li>
+                        <li class="flex items-center gap-3 text-slate-300">
+                            <span class="text-blue-500 font-bold">✓</span> Anonimización de identidad por defecto
+                        </li>
+                        <li class="flex items-center gap-3 text-slate-300">
+                            <span class="text-blue-500 font-bold">✓</span> Infraestructura Zero-Knowledge
+                        </li>
+                    </ul>
+                </div>
+                <div class="flex justify-center">
+                    <div class="w-64 h-64 bg-slate-800 rounded-full flex items-center justify-center shadow-[0_0_100px_rgba(37,99,235,0.4)] animate-bounce-slow">
+                        <span class="text-8xl">🔒</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Testimonials -->
+        <section class="py-32 bg-white dark:bg-slate-950 transition-colors duration-500">
+            <div class="max-w-7xl mx-auto px-6">
+                <h2 class="text-4xl font-black text-slate-900 dark:text-white text-center mb-24 tracking-tight">
+                    Lo que los usuarios adoran de <span class="text-blue-600">FintechPro</span>
+                </h2>
                 <div class="grid md:grid-cols-3 gap-8">
-                    <!-- Feature 1 -->
-                    <div class="p-8 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 hover:shadow-lg transition duration-300 group">
-                        <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center text-blue-600 dark:text-blue-400 mb-6 group-hover:scale-110 transition-transform">
-                            📊
+                    <div class="p-8 rounded-[2rem] bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800">
+                        <p class="text-lg text-slate-600 dark:text-slate-300 italic mb-8">"Fácil de usar y ofrece mucha información de un vistazo. Ha sido una herramienta excelente para ayudarme a tomar decisiones de inversión."</p>
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center font-bold text-orange-600">L</div>
+                            <span class="font-bold text-slate-900 dark:text-white">Lorena</span>
                         </div>
-                        <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-3">Análisis Avanzado</h3>
-                        <p class="text-slate-600 dark:text-slate-400">Gráficos interactivos y métricas detalladas de tu portafolio en tiempo real.</p>
                     </div>
-                    
-                    <!-- Feature 2 -->
-                    <div class="p-8 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 hover:shadow-lg transition duration-300 group">
-                        <div class="w-12 h-12 bg-teal-100 dark:bg-teal-900/30 rounded-xl flex items-center justify-center text-teal-600 dark:text-teal-400 mb-6 group-hover:scale-110 transition-transform">
-                            🛡️
+                    <div class="p-8 rounded-[2rem] bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800">
+                        <p class="text-lg text-slate-600 dark:text-slate-300 italic mb-8">"La comunidad de inversores de FintechPro es fantástica. He aprendido muchísimo de las discusiones y he recibido feedback valioso sobre mi portafolio."</p>
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center font-bold text-blue-600">F</div>
+                            <span class="font-bold text-slate-900 dark:text-white">Fabzy</span>
                         </div>
-                        <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-3">Seguridad Total</h3>
-                        <p class="text-slate-600 dark:text-slate-400">Tus datos están protegidos con encriptación de grado militar.</p>
                     </div>
-                    
-                    <!-- Feature 3 -->
-                    <div class="p-8 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 hover:shadow-lg transition duration-300 group">
-                        <div class="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-xl flex items-center justify-center text-purple-600 dark:text-purple-400 mb-6 group-hover:scale-110 transition-transform">
-                            📱
+                    <div class="p-8 rounded-[2rem] bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800">
+                        <p class="text-lg text-slate-600 dark:text-slate-300 italic mb-8">"El calendario de dividendos ha hecho mucho más sencilla la gestión de mi portafolio. Lo recomendaría a cualquiera que quiera seguir sus rentas."</p>
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center font-bold text-green-600">D</div>
+                            <span class="font-bold text-slate-900 dark:text-white">Donkey</span>
                         </div>
-                        <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-3">Multi-dispositivo</h3>
-                        <p class="text-slate-600 dark:text-slate-400">Accede a tu cuenta desde cualquier lugar, en cualquier dispositivo.</p>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Testimonials Section -->
-        <section class="py-24 bg-gray-50 dark:bg-slate-900/50 border-t border-slate-200 dark:border-slate-800 transition-colors duration-300">
-            <div class="max-w-7xl mx-auto px-6 lg:px-12">
-                <h2 class="text-3xl font-bold text-slate-900 dark:text-white text-center mb-16">Lo que dicen nuestros usuarios</h2>
-                <div class="grid md:grid-cols-3 gap-8">
-                    <!-- Testimonial 1 -->
-                    <div class="bg-white dark:bg-slate-800 p-8 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700">
-                        <div class="flex items-center gap-4 mb-4">
-                            <div class="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400 font-bold">MR</div>
-                            <div>
-                                <div class="font-bold text-slate-900 dark:text-white">María Rodríguez</div>
-                                <div class="text-xs text-slate-500 dark:text-slate-400">Inversora Particular</div>
-                            </div>
+        <!-- FAQs Section -->
+        <section class="py-32 bg-slate-50 dark:bg-slate-900/50">
+            <div class="max-w-3xl mx-auto px-6">
+                <h2 class="text-4xl font-black text-slate-900 dark:text-white text-center mb-16">Preguntas frecuentes</h2>
+                <div class="space-y-4">
+                    <div v-for="(faq, i) in faqs" :key="i" class="border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden bg-white dark:bg-slate-800">
+                        <button 
+                            @click="toggleFaq(i)"
+                            class="w-full flex items-center justify-between p-6 text-left hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+                        >
+                            <span class="font-bold text-slate-900 dark:text-white text-lg">{{ faq.q }}</span>
+                            <span class="text-2xl transition-transform" :class="{'rotate-45': faq.open}">+</span>
+                        </button>
+                        <div v-show="faq.open" class="p-6 pt-0 text-slate-600 dark:text-slate-400 leading-relaxed animate-fade-in-down">
+                            {{ faq.a }}
                         </div>
-                        <p class="text-slate-600 dark:text-slate-300 italic">"Desde que uso fintechPro, tengo un control total sobre mis ahorros. La visualización de datos es simplemente increíble."</p>
-                    </div>
-
-                    <!-- Testimonial 2 -->
-                    <div class="bg-white dark:bg-slate-800 p-8 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700">
-                        <div class="flex items-center gap-4 mb-4">
-                            <div class="w-12 h-12 rounded-full bg-teal-100 dark:bg-teal-900/30 flex items-center justify-center text-teal-600 dark:text-teal-400 font-bold">JP</div>
-                            <div>
-                                <div class="font-bold text-slate-900 dark:text-white">Javier Pérez</div>
-                                <div class="text-xs text-slate-500 dark:text-slate-400">Emprendedor</div>
-                            </div>
-                        </div>
-                        <p class="text-slate-600 dark:text-slate-300 italic">"La mejor herramienta para gestionar mis finanzas personales y las de mi pequeño negocio. Totalmente recomendada."</p>
-                    </div>
-
-                    <!-- Testimonial 3 -->
-                    <div class="bg-white dark:bg-slate-800 p-8 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700">
-                        <div class="flex items-center gap-4 mb-4">
-                            <div class="w-12 h-12 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center text-purple-600 dark:text-purple-400 font-bold">LG</div>
-                            <div>
-                                <div class="font-bold text-slate-900 dark:text-white">Lucía García</div>
-                                <div class="text-xs text-slate-500 dark:text-slate-400">Freelance</div>
-                            </div>
-                        </div>
-                        <p class="text-slate-600 dark:text-slate-300 italic">"Me encanta la simplicidad y el diseño. Es muy fácil de usar y me ayuda a ahorrar mes a mes sin esfuerzo."</p>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- CTA Section -->
-        <section class="py-24 bg-slate-900 dark:bg-slate-950 text-white relative overflow-hidden transition-colors duration-300">
-            <div class="absolute inset-0 bg-blue-600 opacity-20 blur-3xl rounded-full transform -translate-y-1/2 scale-150"></div>
+        <!-- Final CTA -->
+        <section class="py-24 bg-blue-600 relative overflow-hidden">
+            <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-blue-400 to-transparent opacity-30"></div>
             <div class="max-w-4xl mx-auto px-6 text-center relative z-10">
-                <h2 class="text-4xl md:text-5xl font-bold mb-6 tracking-tight">Toma el control de tu futuro financiero hoy.</h2>
-                <p class="text-lg text-slate-300 mb-10 max-w-2xl mx-auto">Únete a miles de usuarios que ya están mejorando su salud financiera con nuestra plataforma inteligente.</p>
-                
-                <Link
-                    v-if="canRegister"
-                    :href="route('register')"
-                    class="inline-flex justify-center items-center px-10 py-5 text-lg font-bold text-blue-900 bg-white rounded-full shadow-2xl hover:bg-blue-50 hover:scale-105 transition-all duration-300"
-                >
-                    Comenzar Gratis
+                <h2 class="text-4xl md:text-6xl font-black text-white mb-8 tracking-tighter">¿Listo para dominar tus finanzas?</h2>
+                <p class="text-xl text-blue-100 mb-12 max-w-2xl mx-auto">Únete a la comunidad de inversores más avanzada y toma decisiones basadas en datos reales.</p>
+                <Link :href="route('register')" class="inline-flex px-12 py-6 bg-white text-blue-600 rounded-2xl font-black text-xl shadow-2xl hover:scale-105 transition-all">
+                    Crear mi cuenta gratuita
                 </Link>
             </div>
         </section>
     </MainLayout>
 </template>
+
+<style scoped>
+.animate-bounce-slow {
+  animation: bounce 3s infinite;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(-5%); animation-timing-function: cubic-bezier(0.8, 0, 1, 1); }
+  50% { transform: translateY(0); animation-timing-function: cubic-bezier(0, 0, 0.2, 1); }
+}
+
+.animate-fade-in-down {
+  animation: fadeInDown 0.3s ease-out;
+}
+
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+</style>

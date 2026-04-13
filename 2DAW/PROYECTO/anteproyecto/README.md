@@ -28,10 +28,38 @@ Cuando las APIs tradicionales fallan o no cubren ciertos activos (especialmente 
 ### 🤖 Asistente de FAQ Inteligente
 Hemos integrado un asistente conversacional directamente en el Dashboard que resuelve dudas comunes sobre el funcionamiento de la plataforma, cálculos financieros y seguridad de los datos, mejorando la curva de aprendizaje del usuario.
 
-### ⚖️ Algoritmos Financieros Precisos
+### 🔐 Seguridad de Grado Bancario
+- **Autenticación de Doble Factor (TOTP)**: Implementación real mediante aplicaciones de autenticación (Google Authenticator, Authy).
+- **Trazabilidad de Sesiones**: Historial detallado de conexiones con detección de la sesión actual, IP y UserAgent para prevenir accesos no autorizados.
+- **Protección de Datos**: Cifrado de secretos 2FA y políticas de acceso granulares.
+
+### 🎫 Centro de Soporte Integrado
+Sistema de ticketing interno que permite la comunicación directa con el equipo técnico. Incluye gestión de estados (Abierto, Respondido, Cerrado) y prioridades para una resolución eficiente.
+
+### 🚀 Onboarding Guiado y Landing Premium
+- **Nueva Landing Page**: Rediseño minimalista de alta conversión con composición de **Mockups 3D** basados en capturas reales del producto.
+- **Flujo de Bienvenida**: Guía interactiva de 4 pasos para nuevos usuarios, facilitando la transición desde carteras manuales a la automatización de FintechPro.
+
+### ⚖️ Ecosistema Legal y Transparencia
+Sistema integral de cumplimiento legal con páginas dinámicas y coherentes:
+- **Política de Privacidad**: Detalles sobre el tratamiento de datos y privacidad.
+- **Términos de Servicio**: Marco regulatorio de suscripciones y uso de la plataforma.
+- **Aviso Legal**: Identificación corporativa completa.
+
+### ⚖️ Algoritmos Financieros Preciso
 - **Costo Promedio Ponderado (WAC)**: Motor de cálculo preciso para determinar el precio medio de compra tras múltiples operaciones.
 - **Normalización de Divisas**: Conversión automática a la divisa base del usuario para una visión unificada.
 - **Cálculo de Plusvalías**: Diferenciación entre ganancias latentes y realizadas.
+
+### 👥 Ecosistema Social y Gurús
+- **Follow & Insights**: Sigue a inversores experimentados (Gurús) para ver la composición sectorial de sus carteras sin exponer cantidades exactas.
+- **Feed Interactivo**: Publica análisis, comenta estrategias de otros usuarios y guarda (bookmark) posts técnicos.
+- **Transparencia Blindada**: Sistema de reportes de comunidad para mantener un entorno profesional y libre de spam.
+
+### 🛡️ Administración Senior y Mantenimiento
+- **Telemetría de Salud**: Monitorización en tiempo real del estado de las APIs de mercado y consumo de cuotas.
+- **Gestión de Backups**: Generación, descarga e importación de snapshots de la base de datos (SQLite) directamente desde la UI.
+- **Control de Usuarios**: Gestión de privilegios administrativos y estados de suscripción manual.
 
 ---
 
@@ -49,6 +77,8 @@ Hemos integrado un asistente conversacional directamente en el Dashboard que res
 - **Inertia.js**: Comunicación fluida entre Laravel y Vue sin API REST externa.
 - **Chart.js & Vue-Chartjs**: Motor gráfico para telemetría financiera y distribución de carteras.
 - **Axios**: Gestión de peticiones asíncronas para actualizaciones en tiempo real.
+- **PragmaRX Google2FA**: Motor estándar para la implementación de TOTP (RFC 6238).
+- **Bacon QR Code**: Generación de vectores QR para vinculación de dispositivos.
 
 ---
 
@@ -105,9 +135,10 @@ Este proyecto no es solo código; es una arquitectura diseñada para durar:
 ## 📈 Roadmap de Desarrollo
 
 - [x] **v1.0**: Lanzamiento Core, OCR y Scraping de Fondos.
-- [x] **v1.1**: Integración de IA para análisis de informes.
-- [ ] **v1.2**: Sistema de Alertas de Precios y Rebalanceo de Cartera.
-- [ ] **v1.5**: Integración directa con APIs bancarias (PSD2).
+- [x] **v1.2**: Rediseño Premium de Landing Page y Mockups reales.
+- [x] **v1.3**: Implementación de Ecosistema Legal y Seguridad 2FA avanzada.
+- [ ] **v1.5**: Sistema de Alertas de Precios y Rebalanceo de Cartera.
+- [ ] **v1.8**: Integración directa con APIs bancarias (PSD2).
 - [ ] **v2.0**: App Móvil Nativa (iOS/Android) mediante Capacitor.
 
 ---

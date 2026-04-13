@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Report;
 use App\Models\Transaction;
+use App\Models\Ticket;
 use App\Services\Admin\AdminService;
 use App\Services\Admin\BackupService;
 use App\Services\User\UserService;
@@ -57,7 +58,8 @@ class AdminController extends Controller
                 'id' => $r->id, 'user_name' => $r->user->name, 'reason' => $r->reason,
                 'type' => class_basename($r->reportable_type), 'ref_id' => $r->reportable_id,
                 'date' => $r->created_at->diffForHumans()
-            ])
+            ]),
+            'support_tickets_count' => Ticket::where('status', 'open')->count(),
         ]);
     }
 

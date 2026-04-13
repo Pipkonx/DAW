@@ -20,6 +20,7 @@ import EvolutionSection from '@/Components/Dashboard/EvolutionSection.vue';
 import RecentTransactions from '@/Components/Dashboard/RecentTransactions.vue';
 import UpgradePlanWidget from '@/Components/Dashboard/UpgradePlanWidget.vue';
 import FaqAssistant from '@/Components/Dashboard/FaqAssistant.vue';
+import WelcomeTour from '@/Components/Dashboard/WelcomeTour.vue';
 
 // Otros Componentes
 import TransactionModal from '@/Components/TransactionModal.vue';
@@ -38,6 +39,7 @@ const props = defineProps({
     unlinkedAssets: Array,    // Activos detectados pero no vinculados a mercado
     currentFilter: String,   // Filtro actual aplicado en el servidor
     selectedMonths: [String, Number], // Rango de meses actual para el gráfico
+    auth: Object,             // Autenticación (inyectado automáticamente por Inertia middleware)
 });
 
 // --- ESTADO REACTIVO ---
@@ -45,6 +47,7 @@ const { isPrivacyMode } = usePrivacy();
 const showModal = ref(false);
 const editingTransaction = ref(null);
 const isUpdatingChart = ref(false);
+const showTour = ref(false);
 
 // Modos de visualización persistentes
 const chartMode = ref('global'); // 'global' (patrimonio) | 'portfolios' (por carteras)
@@ -125,6 +128,11 @@ const loadMoreTrigger = ref(null);
 let observer = null;
 
 onMounted(() => {
+    // Verificar si se debe mostrar el tour de bienvenida
+    if (!props.auth.user.onboarding_completed_at) {
+        showTour.value = true;
+    }
+
     observer = new IntersectionObserver((entries) => {
         if (entries[0].isIntersecting) {
             loadMoreTransactions();
@@ -252,6 +260,9 @@ const editTransaction = (transaction) => {
 
         </div>
 
+        <!-- Tour de Bienvenida -->
+        <WelcomeTour :show="showTour" @close="showTour = false" />
+
         <!-- Asistente de FAQ (Antiguo accionador flotante) -->
         <FaqAssistant />
 
@@ -264,6 +275,5 @@ const editTransaction = (transaction) => {
             :categories="categories"
             @close="showModal = false" 
         />
-
     </AuthenticatedLayout>
 </template>

@@ -21,6 +21,7 @@
         "vue": "^3.4.0"
     },
     "dependencies": {
+        "@heroicons/vue": "^2.2.0",
         "chart.js": "^4.5.1",
         "lodash": "^4.17.23",
         "vue-chartjs": "^5.3.3"

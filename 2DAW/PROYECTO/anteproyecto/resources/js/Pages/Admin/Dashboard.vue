@@ -8,9 +8,10 @@
  * su escalabilidad y entendimiento por otros desarrolladores.
  */
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, router } from '@inertiajs/vue3';
+import { Head, router, Link } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import axios from 'axios';
+import { ChatBubbleLeftRightIcon } from '@heroicons/vue/24/outline';
 
 // Componentes Modulares (Partials)
 import AdminStats from './Partials/AdminStats.vue';
@@ -108,6 +109,26 @@ const closeSubModal = () => {
                 <!-- Fila Superior: KPIs Críticos y Panel de Control de Mantenimiento -->
                 <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 items-stretch">
                     <AdminStats :stats="stats" />
+                    
+                    <!-- Centro de Soporte Admin (Nuevo) -->
+                    <div class="bg-white dark:bg-slate-800 rounded-[2.5rem] p-8 shadow-xl border border-slate-100 dark:border-slate-700 flex flex-col justify-between">
+                        <div class="flex justify-between items-start">
+                            <div class="p-4 bg-indigo-50 dark:bg-indigo-900/30 rounded-2xl text-indigo-600">
+                                <ChatBubbleLeftRightIcon class="w-8 h-8" />
+                            </div>
+                            <span v-if="support_tickets_count > 0" class="px-3 py-1 bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-400 rounded-full text-[10px] font-black uppercase tracking-widest animate-bounce">
+                                {{ support_tickets_count }} Pendientes
+                            </span>
+                        </div>
+                        <div class="mt-6">
+                            <h3 class="text-xl font-black text-slate-800 dark:text-white uppercase tracking-tight leading-none">Centro de Soporte</h3>
+                            <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mt-2">Atención al cliente y tickets</p>
+                        </div>
+                        <Link :href="route('tickets.index')" class="mt-8 w-full py-4 bg-slate-900 dark:bg-slate-700 hover:bg-slate-800 text-white rounded-2xl text-center text-[10px] font-black uppercase tracking-widest transition-all shadow-xl active:scale-95">
+                            Gestionar Consultas
+                        </Link>
+                    </div>
+
                     <MaintenanceActions 
                         :loading-logs="loadingLogs"
                         @clear-cache="clearCache"

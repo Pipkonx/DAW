@@ -1,99 +1,106 @@
 <script setup>
-import { Head } from '@inertiajs/vue3';
+import { Head, Link } from '@inertiajs/vue3';
 import MainLayout from '@/Layouts/MainLayout.vue';
-import InfoTooltip from '@/Components/InfoTooltip.vue';
+
+const sections = [
+  { id: 'contratante', title: '§ 1 Parte contratante' },
+  { id: 'ambito', title: '§ 2 Ámbito de aplicación' },
+  { id: 'objeto', title: '§ 3 Objeto del contrato' },
+  { id: 'celebracion', title: '§ 4 Celebración del contrato' },
+  { id: 'obligaciones', title: '§ 5 Obligaciones del usuario' },
+  { id: 'suscripciones', title: '§ 8 Suscripciones' },
+  { id: 'desistimiento', title: '§ 14 Derecho de desistimiento' },
+  { id: 'ia', title: '§ 19 Política de IA' },
+];
 </script>
 
 <template>
+    <Head title="Términos y Condiciones - FintechPro" />
+    
     <MainLayout>
-        <Head title="Términos y Condiciones" />
+        <div class="bg-white dark:bg-slate-900 min-h-screen pt-24 pb-16">
+            <div class="max-w-4xl mx-auto px-6">
+                <nav class="flex mb-8 text-sm text-slate-500 dark:text-slate-400">
+                    <Link :href="route('welcome')" class="hover:text-blue-600 transition">Inicio</Link>
+                    <span class="mx-2">/</span>
+                    <span class="text-slate-900 dark:text-white font-medium">Términos</span>
+                </nav>
 
-        <div class="py-12 bg-slate-50 dark:bg-slate-900 min-h-screen">
-            <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
-                <div class="bg-white dark:bg-slate-800 overflow-hidden shadow-sm sm:rounded-3xl border border-slate-100 dark:border-slate-700 p-8 lg:p-16">
-                    <!-- Header -->
-                    <div class="mb-12 border-b border-slate-100 dark:border-slate-700 pb-8 text-center">
-                        <span class="text-blue-600 dark:text-blue-400 text-[10px] font-black uppercase tracking-[0.3em] mb-4 block">Contrato de Servicio</span>
-                        <h1 class="text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-none">Términos y Condiciones</h1>
-                        <p class="mt-4 text-slate-500 dark:text-slate-400 text-sm italic font-medium">Acuerdo legal para la utilización de la plataforma fintechPro</p>
-                    </div>
+                <h1 class="text-4xl font-extrabold text-slate-900 dark:text-white mb-4">Términos y Condiciones</h1>
+                <p class="text-slate-500 dark:text-slate-400 mb-12 italic text-sm">Estas condiciones regulan el uso de la aplicación FintechPro y del sitio web accesible a través de fintechpro.com.</p>
+
+                <div class="grid lg:grid-cols-[250px_1fr] gap-12">
+                    <!-- Sidebar Navigation -->
+                    <aside class="hidden lg:block sticky top-32 h-fit text-sm">
+                        <ul class="space-y-3 border-l border-slate-200 dark:border-slate-800">
+                            <li v-for="section in sections" :key="section.id">
+                                <a :href="'#' + section.id" class="block pl-4 py-1 text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:border-l hover:border-blue-600 -ml-px transition-all">
+                                    {{ section.title }}
+                                </a>
+                            </li>
+                        </ul>
+                    </aside>
 
                     <!-- Content -->
-                    <div class="prose prose-slate dark:prose-invert max-w-none text-slate-600 dark:text-slate-400 space-y-12">
-                        <!-- Section 1 -->
-                        <section class="relative">
-                            <div class="flex items-center gap-3 mb-4">
-                                <span class="flex items-center justify-center w-8 h-8 rounded-lg bg-blue-600 text-white text-xs font-black">01</span>
-                                <h2 class="text-xl font-black text-slate-800 dark:text-slate-100 m-0 uppercase tracking-tight">Introducción</h2>
-                                <InfoTooltip text="Este documento es un contrato vinculante entre tú y fintechPro." />
-                            </div>
-                            <div class="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-2xl border border-slate-100 dark:border-slate-800">
-                                <p class="text-sm leading-relaxed m-0 font-medium">
-                                    Bienvenido a <span class="text-blue-600 dark:text-blue-400 font-bold">fintechPro</span>. Al acceder y utilizar nuestra plataforma de inteligencia financiera y comunidad, el usuario declara haber leído, entendido y aceptado íntegramente los presentes términos. fintechPro se reserva el derecho de modificar estas condiciones para adaptarse a novedades legislativas o mejoras técnicas.
-                                </p>
-                            </div>
-                        </section>
-
-                        <!-- Section 2 -->
-                        <section>
-                            <div class="flex items-center gap-3 mb-4">
-                                <span class="flex items-center justify-center w-8 h-8 rounded-lg bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-black">02</span>
-                                <h2 class="text-xl font-black text-slate-800 dark:text-slate-100 m-0 uppercase tracking-tight">Utilización del Servicio</h2>
-                            </div>
-                            <p class="text-sm leading-relaxed mb-6">
-                                fintechPro proporciona herramientas de análisis de activos, carteras y comunidad social financiera. El usuario se compromete a:
-                            </p>
-                            <ul class="grid grid-cols-1 md:grid-cols-2 gap-4 list-none p-0">
-                                <li class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-100 dark:border-slate-700 flex gap-3 items-start">
-                                    <svg class="h-5 w-5 text-emerald-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" /></svg>
-                                    <span class="text-xs font-bold">Uso estrictamente lícito y ético de las herramientas.</span>
-                                </li>
-                                <li class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-100 dark:border-slate-700 flex gap-3 items-start">
-                                    <svg class="h-5 w-5 text-emerald-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" /></svg>
-                                    <span class="text-xs font-bold">Protección y confidencialidad de sus credenciales.</span>
-                                </li>
-                                <li class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-100 dark:border-slate-700 flex gap-3 items-start">
-                                    <svg class="h-5 w-5 text-emerald-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" /></svg>
-                                    <span class="text-xs font-bold">Veracidad en la información y reportes financieros.</span>
-                                </li>
-                                <li class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-100 dark:border-slate-700 flex gap-3 items-start">
-                                    <svg class="h-5 w-5 text-emerald-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" /></svg>
-                                    <span class="text-xs font-bold">Respeto a las normas de convivencia comunitaria.</span>
-                                </li>
-                            </ul>
-                        </section>
-
-                        <!-- Section 3 -->
-                        <section>
-                            <div class="flex items-center gap-3 mb-4">
-                                <span class="flex items-center justify-center w-8 h-8 rounded-lg bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-black">03</span>
-                                <h2 class="text-xl font-black text-slate-800 dark:text-slate-100 m-0 uppercase tracking-tight">Propiedad Intelectual</h2>
-                            </div>
-                            <p class="text-sm leading-relaxed">
-                                Todo el diseño, micro-interacciones, arquitectura de datos y algoritmos de IA de fintechPro son propiedad intelectual exclusiva de sus creadores. Se prohíbe cualquier intento de ingeniería inversa, copia o distribución no autorizada del código base o diseño visual.
+                    <div class="prose prose-slate dark:prose-invert max-w-none text-slate-700 dark:text-slate-300">
+                        <section id="contratante" class="mb-12">
+                            <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-4">§ 1 Parte contratante</h2>
+                            <p>
+                                Sobre la base de las presentes Condiciones Generales de Contratación (AGB), se celebra un contrato entre el cliente y:
+                                <strong>FintechPro Technologies S.L.</strong>, con domicilio social en Berlín, representada por el equipo directivo de FintechPro.
                             </p>
                         </section>
 
-                        <!-- Section 4 -->
-                        <section class="bg-amber-50/50 dark:bg-amber-900/10 p-8 rounded-3xl border border-amber-100 dark:border-amber-900/30">
-                            <div class="flex items-center gap-3 mb-4">
-                                <span class="flex items-center justify-center w-8 h-8 rounded-lg bg-amber-500 text-white text-xs font-black">04</span>
-                                <h2 class="text-xl font-black text-amber-800 dark:text-amber-200 m-0 uppercase tracking-tight">Descargo de Responsabilidad</h2>
-                            </div>
-                            <p class="text-sm leading-relaxed font-bold italic text-amber-900/70 dark:text-amber-400">
-                                IMPORTANTE: fintechPro no proporciona asesoramiento financiero regulado. Los análisis generados por la IA y la comunidad deben utilizarse únicamente con fines informativos y educativos. Todas las decisiones de inversión son responsabilidad exclusiva del usuario.
+                        <section id="ambito" class="mb-12">
+                            <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-4">§ 2 Ámbito de aplicación</h2>
+                            <p>
+                                Las presentes condiciones regulan la adquisición de servicios a través de la plataforma en línea <strong>fintechpro.com</strong>, incluidos todos los subdominios y aplicaciones móviles asociadas.
                             </p>
                         </section>
 
-                        <!-- Footer legal page -->
-                        <div class="mt-16 pt-8 border-t border-slate-100 dark:border-slate-800 text-center">
-                            <p class="text-[10px] font-black uppercase tracking-widest text-slate-400">
-                                Última revisión: 03 de Abril de 2026 &bull; fintechPro Legal Compliance
+                        <section id="objeto" class="mb-12">
+                            <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-4">§ 3 Objeto del contrato</h2>
+                            <p>
+                                FintechPro es una plataforma en línea en la que los clientes registrados pueden vincular carteras de valores y consultar información financiera detallada. La vinculación de carteras es opcional y los datos sirven con fines puramente ilustrativos para facilitar la consulta del patrimonio.
                             </p>
-                        </div>
+                        </section>
+
+                        <section id="obligaciones" class="mb-12">
+                            <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-4">§ 5 Obligaciones generales del usuario</h2>
+                            <p>
+                                El usuario se compromete a abstenerse de cualquier acción que pueda perjudicar la infraestructura de FintechPro. No está permitido el uso de software de terceros para la extracción automatizada de datos (scraping).
+                            </p>
+                        </section>
+
+                        <section id="suscripciones" class="mb-12">
+                            <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-4">§ 8 Suscripciones</h2>
+                            <p>
+                                FintechPro ofrece una versión gratuita con acceso limitado y una suscripción de pago (Membresía Pro/Premium) con acceso a todas las funciones avanzadas, incluyendo análisis detallados y alertas automatizadas.
+                            </p>
+                        </section>
+
+                        <section id="desistimiento" class="mb-12">
+                            <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-4">§ 14 Derecho de desistimiento</h2>
+                            <p>
+                                Los consumidores disponen de un derecho legal de desistimiento de 14 días naturales desde la celebración del contrato de membresía de pago.
+                            </p>
+                        </section>
+
+                        <section id="ia" class="mb-12">
+                            <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-4">§ 19 Política de uso razonable - Funciones de IA</h2>
+                            <p>
+                                El uso de las funciones basadas en inteligencia artificial de FintechPro (como el Analista IA) está sujeto a una política de uso razonable para garantizar un rendimiento óptimo para todos los usuarios.
+                            </p>
+                        </section>
                     </div>
                 </div>
             </div>
         </div>
     </MainLayout>
 </template>
+
+<style scoped>
+section {
+  scroll-margin-top: 120px;
+}
+</style>
