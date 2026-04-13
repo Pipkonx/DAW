@@ -1,1 +1,0 @@
-import{k as r}from"./app-HmCCBkgt.js";const s=r([]);function i(){return{activeToasts:s,showToast:(o,t="success",e=3e3)=>{const a=Date.now();s.value.push({id:a,message:o,type:t,duration:e})},removeToast:o=>{s.value=s.value.filter(t=>t.id!==o)}}}export{i as u};
