@@ -38,7 +38,7 @@ class CoinGeckoService
 
     public function getPrice(string $coinId)
     {
-        // Cache 10 minutes
+        // Caché de 10 minutos
         return Cache::remember("cg_price_{$coinId}", 600, function () use ($coinId) {
             try {
                 $params = ['ids' => $coinId, 'vs_currencies' => 'usd,eur'];
@@ -58,7 +58,7 @@ class CoinGeckoService
 
     public function getHistoricalPrice(string $coinId, string $date)
     {
-        // Format date to dd-mm-yyyy for CoinGecko
+        // Formatear fecha a dd-mm-yyyy para CoinGecko
         $cgDate = Carbon::parse($date)->format('d-m-Y');
 
         return Cache::rememberForever("cg_history_{$coinId}_{$date}", function () use ($coinId, $cgDate) {
@@ -70,7 +70,7 @@ class CoinGeckoService
 
                 if ($response->successful()) {
                     $data = $response->json();
-                    // Return USD and EUR price
+                    // Retornar precios en USD y EUR
                     return [
                         'usd' => $data['market_data']['current_price']['usd'] ?? null,
                         'eur' => $data['market_data']['current_price']['eur'] ?? null

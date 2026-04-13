@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\DB;
 class ExpenseService
 {
     /**
-     * Ensures the user has a local copy of system categories.
+     * Asegura que el usuario tenga una copia local de las categorías del sistema.
      */
     public function ensureUserHasCategories($userId)
     {
@@ -36,7 +36,7 @@ class ExpenseService
     }
 
     /**
-     * Fetch hierarchical categories for a user.
+     * Obtiene las categorías jerárquicas para un usuario.
      */
     public function getHierarchicalCategories($userId)
     {
@@ -53,7 +53,7 @@ class ExpenseService
     }
 
     /**
-     * Calculate monthly statistics (income vs expense) for a date range.
+     * Calcula estadísticas mensuales (ingresos vs gastos) para un rango de fechas.
      */
     public function getMonthlyStats($userId, Carbon $startDate, Carbon $endDate)
     {
@@ -103,7 +103,7 @@ class ExpenseService
     }
 
     /**
-     * Get top categories/descriptions for a range.
+     * Obtiene las categorías/descripciones principales para un rango.
      */
     public function getTopItems($userId, $startDate, $endDate, array $types)
     {

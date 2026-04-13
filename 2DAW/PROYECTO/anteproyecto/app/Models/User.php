@@ -14,7 +14,7 @@ class User extends Authenticatable implements MustVerifyEmail
     use HasFactory, Notifiable, Billable;
 
     /**
-     * The attributes that are mass assignable.
+     * Los atributos que son asignables masivamente.
      *
      * @var list<string>
      */

@@ -7,7 +7,7 @@ const selectedQuestion = ref(null);
 const faqs = [
     {
         q: "¿Cómo añado mis inversiones?",
-        a: "Para añadir una inversión, ve a la sección de 'Activos' en el menú lateral y utiliza el botón de 'Vincular' o 'Añadir Manual'. También puedes hacerlo desde la vista de cada Cartera."
+        a: "Ve a la sección 'Mi Patrimonio' dentro del menú 'Patrimonio'. Allí puedes crear una cartera nueva o añadir transacciones a tus activos existentes usando el icono '+' en la tabla de activos."
     },
     {
         q: "¿Qué es el Patrimonio Neto?",
@@ -23,7 +23,7 @@ const faqs = [
     },
     {
         q: "¿Cómo veo mis beneficios totales?",
-        a: "En la sección 'Evolución Histórica', puedes cambiar el modo a 'Porcentaje' o 'Valor' para ver cuánto ha crecido tu cartera desde el inicio o en periodos específicos."
+        a: "En el Dashboard principal tienes un resumen de tu 'Beneficio Total'. Para un análisis detallado, ve a 'Mi Patrimonio' y consulta la sección de 'Rendimiento' y los gráficos de evolución."
     }
 ];
 

@@ -75,13 +75,13 @@ const handleLike = (emoji, isComment = false, commentId = null) => {
         <div class="flex items-start justify-between mb-4">
             <div class="flex items-center gap-3">
                 <!-- Avatar del Autor -->
-                <Link :href="route('social.profile', post.user.username)" class="hover:opacity-80 transition-opacity">
+                <Link :href="route('social.profile', post.user.username || `user_${post.user.id}`)" class="hover:opacity-80 transition-opacity">
                     <img :src="post.user.avatar || `https://ui-avatars.com/api/?name=${post.user.name}`" 
                          :class="['w-12 h-12 rounded-full object-cover', getSmallAvatarRingClasses(post.user.tier)]" />
                 </Link>
                 <div>
                     <div class="text-sm font-bold text-slate-800 dark:text-white flex items-center gap-2">
-                        <Link :href="route('social.profile', post.user.username)" class="hover:underline">{{ post.user.name }}</Link>
+                        <Link :href="route('social.profile', post.user.username || `user_${post.user.id}`)" class="hover:underline">{{ post.user.name }}</Link>
                     </div>
                     <div class="text-[10px] text-slate-500 font-bold uppercase tracking-widest">{{ post.created_at_human || 'Ahora' }}</div>
                 </div>

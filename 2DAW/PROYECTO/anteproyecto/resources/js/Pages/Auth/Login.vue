@@ -7,6 +7,8 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 import GoogleLoginButton from '@/Components/GoogleLoginButton.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
+import { ref } from 'vue';
+import { EyeIcon, EyeSlashIcon } from '@heroicons/vue/24/outline';
 
 defineProps({
     canResetPassword: {
@@ -22,6 +24,8 @@ const form = useForm({
     password: '',
     remember: false,
 });
+
+const showPassword = ref(false);
 
 const submit = () => {
     form.post(route('login'), {
@@ -82,15 +86,25 @@ const submit = () => {
                     </Link>
                 </div>
                 
-                <TextInput
-                    id="password"
-                    type="password"
-                    class="mt-1 block w-full"
-                    v-model="form.password"
-                    required
-                    autocomplete="current-password"
-                    placeholder="••••••••"
-                />
+                <div class="relative">
+                    <TextInput
+                        id="password"
+                        :type="showPassword ? 'text' : 'password'"
+                        class="mt-1 block w-full pr-10"
+                        v-model="form.password"
+                        required
+                        autocomplete="current-password"
+                        placeholder="••••••••"
+                    />
+                    <button 
+                        type="button"
+                        @click="showPassword = !showPassword"
+                        class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
+                    >
+                        <EyeIcon v-if="!showPassword" class="h-5 w-5" />
+                        <EyeSlashIcon v-else class="h-5 w-5" />
+                    </button>
+                </div>
                 <InputError class="mt-2" :message="form.errors.password" />
             </div>
 

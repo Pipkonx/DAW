@@ -1,5 +1,6 @@
 <script setup>
 import { ref } from 'vue';
+import { Link } from '@inertiajs/vue3';
 import ReactionPicker from './ReactionPicker.vue';
 
 /**
@@ -53,12 +54,16 @@ const handleSubmit = () => {
             <div v-for="comment in post.comments" :key="comment.id" class="space-y-4">
                 <!-- Comentario Raíz -->
                 <div class="flex gap-3 group/comment">
-                    <img :src="comment.user.avatar || `https://ui-avatars.com/api/?name=${comment.user.name}`" 
-                         :class="['w-8 h-8 rounded-full shadow-sm object-cover', getSmallAvatarRingClasses(comment.user.tier)]" />
+                    <Link :href="route('social.profile', comment.user.username || `user_${comment.user.id}`)" class="shrink-0 hover:opacity-80 transition-opacity">
+                        <img :src="comment.user.avatar || `https://ui-avatars.com/api/?name=${comment.user.name}`" 
+                             :class="['w-8 h-8 rounded-full shadow-sm object-cover', getSmallAvatarRingClasses(comment.user.tier)]" />
+                    </Link>
                     <div class="flex-grow">
                         <div class="bg-slate-50 dark:bg-slate-900/50 rounded-2xl p-4 border border-slate-100 dark:border-slate-700">
                             <div class="flex justify-between items-center mb-1">
-                                <span class="text-xs font-black text-slate-800 dark:text-white">{{ comment.user.name }}</span>
+                                <Link :href="route('social.profile', comment.user.username || `user_${comment.user.id}`)" class="text-xs font-black text-slate-800 dark:text-white hover:underline">
+                                    {{ comment.user.name }}
+                                </Link>
                                 <span class="text-[9px] text-slate-400 font-bold uppercase tracking-widest">{{ comment.created_at_human || 'Ahora' }}</span>
                             </div>
                             <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">{{ comment.content }}</p>
@@ -89,12 +94,16 @@ const handleSubmit = () => {
                 <!-- Lista de Respuestas Anidadas (Replies) -->
                 <div v-if="comment.replies && comment.replies.length > 0" class="pl-11 space-y-4">
                     <div v-for="reply in comment.replies" :key="reply.id" class="flex gap-2 group/reply">
-                        <img :src="reply.user.avatar || `https://ui-avatars.com/api/?name=${reply.user.name}`" 
-                             :class="['w-6 h-6 rounded-full shadow-sm object-cover', getSmallAvatarRingClasses(reply.user.tier)]" />
+                        <Link :href="route('social.profile', reply.user.username || `user_${reply.user.id}`)" class="shrink-0 hover:opacity-80 transition-opacity">
+                            <img :src="reply.user.avatar || `https://ui-avatars.com/api/?name=${reply.user.name}`" 
+                                 :class="['w-6 h-6 rounded-full shadow-sm object-cover', getSmallAvatarRingClasses(reply.user.tier)]" />
+                        </Link>
                         <div class="flex-grow">
                             <div class="bg-slate-50 dark:bg-slate-900/30 rounded-2xl p-3 border border-slate-100 dark:border-slate-700">
                                 <div class="flex justify-between items-center mb-1">
-                                    <span class="text-[11px] font-black text-slate-800 dark:text-white">{{ reply.user.name }}</span>
+                                    <Link :href="route('social.profile', reply.user.username || `user_${reply.user.id}`)" class="text-[11px] font-black text-slate-800 dark:text-white hover:underline">
+                                        {{ reply.user.name }}
+                                    </Link>
                                     <span class="text-[9px] text-slate-400 font-bold uppercase tracking-widest">{{ reply.created_at_human || 'Ahora' }}</span>
                                 </div>
                                 <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">{{ reply.content }}</p>

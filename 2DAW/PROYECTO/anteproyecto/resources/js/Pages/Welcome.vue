@@ -221,16 +221,21 @@ const toggleFaq = (index) => {
             <div class="max-w-3xl mx-auto px-6">
                 <h2 class="text-4xl font-black text-slate-900 dark:text-white text-center mb-16">Preguntas frecuentes</h2>
                 <div class="space-y-4">
-                    <div v-for="(faq, i) in faqs" :key="i" class="border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden bg-white dark:bg-slate-800">
+                    <div v-for="(faq, i) in faqs" :key="i" class="border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden bg-white dark:bg-slate-800 transition-all duration-300 hover:shadow-lg">
                         <button 
                             @click="toggleFaq(i)"
-                            class="w-full flex items-center justify-between p-6 text-left hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+                            class="w-full flex items-center justify-between p-6 text-left hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors focus:outline-none"
                         >
-                            <span class="font-bold text-slate-900 dark:text-white text-lg">{{ faq.q }}</span>
-                            <span class="text-2xl transition-transform" :class="{'rotate-45': faq.open}">+</span>
+                            <span class="font-bold text-slate-900 dark:text-white text-lg pr-8">{{ faq.q }}</span>
+                            <span class="text-2xl transition-transform duration-300" :class="{'rotate-45 text-blue-600': faq.open}">+</span>
                         </button>
-                        <div v-show="faq.open" class="p-6 pt-0 text-slate-600 dark:text-slate-400 leading-relaxed animate-fade-in-down">
-                            {{ faq.a }}
+                        <div 
+                            class="transition-all duration-500 ease-in-out overflow-hidden"
+                            :style="{ maxHeight: faq.open ? '500px' : '0' }"
+                        >
+                            <div class="p-6 pt-0 text-slate-600 dark:text-slate-400 leading-relaxed">
+                                {{ faq.a }}
+                            </div>
                         </div>
                     </div>
                 </div>

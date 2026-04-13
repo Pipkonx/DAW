@@ -162,8 +162,14 @@ Este proyecto no es solo código; es una arquitectura diseñada para durar:
 ## 🔐 Acceso de Prueba (Evaluación)
 
 Para facilitar la revisión de las funcionalidades de administración, social y análisis IA:
+
+**Cuenta de Administrador (Estado Inicial):**
 - **Email:** `admin@fintechpro.com`
 - **Password:** `admin1234`
+
+**Cuenta de Prueba (5 años de historial):**
+- **Email:** `test@example.com`
+- **Password:** `password1234`
 
 ---
 

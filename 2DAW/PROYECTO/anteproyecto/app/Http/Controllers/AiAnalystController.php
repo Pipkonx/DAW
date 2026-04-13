@@ -31,7 +31,7 @@ class AiAnalystController extends Controller
             ->where('quantity', '>', 0)
             ->exists();
         
-        // Fetch all analyses for the user ordered by date descending
+        // Obtener todos los análisis del usuario ordenados por fecha descendente
         $analyses = $user->aiAnalyses()->orderBy('date', 'desc')->get();
         
         return Inertia::render('AiAnalyst/Index', [
@@ -48,7 +48,7 @@ class AiAnalystController extends Controller
      */
     public function generateReport()
     {
-        // Increase execution time for AI requests
+        // Aumentar el tiempo de ejecución para las peticiones de IA
         set_time_limit(120);
 
         $user = Auth::user();
@@ -73,7 +73,7 @@ class AiAnalystController extends Controller
 
         $today = now()->format('Y-m-d');
 
-        // Check if report already exists for today in DB
+        // Comprobar si ya existe un informe para hoy en la BD
         $existingAnalysis = $user->aiAnalyses()->where('date', $today)->first();
         if ($existingAnalysis) {
             return response()->json(['report' => $existingAnalysis->report]);
@@ -82,7 +82,7 @@ class AiAnalystController extends Controller
         try {
             $report = $this->aiAnalystService->generatePortfolioAnalysis($user);
             
-            // Only save if it's a real report (not an error message from GeminiService)
+            // Solo guardar si es un informe real (no un mensaje de error del GeminiService)
             if ($report && strpos($report, 'Error') !== 0 && strpos($report, 'Excepción') !== 0) {
                 \App\Models\AiAnalysis::create([
                     'user_id' => $user->id,

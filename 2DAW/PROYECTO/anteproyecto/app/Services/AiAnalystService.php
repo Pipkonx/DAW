@@ -18,7 +18,7 @@ class AiAnalystService
     }
 
     /**
-     * Generates a professional financial analysis for the user's portfolio.
+     * Genera un análisis financiero profesional para la cartera del usuario.
      * 
      * @param User $user
      * @return string
@@ -32,7 +32,7 @@ class AiAnalystService
     }
 
     /**
-     * Streams the professional financial analysis.
+     * Genera el análisis financiero profesional en streaming.
      */
     public function streamPortfolioAnalysis(User $user, callable $onChunk)
     {
@@ -120,7 +120,7 @@ class AiAnalystService
     }
 
     /**
-     * Builds the prompt for the AI model.
+     * Construye el prompt para el modelo de IA.
      */
     private function buildAnalysisPrompt($userName, $portfolioData, $totalInvested, $totalValue, $totalProfit, $recentContributions)
     {

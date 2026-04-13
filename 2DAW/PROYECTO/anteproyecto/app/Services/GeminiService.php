@@ -19,7 +19,7 @@ class GeminiService
     }
 
     /**
-     * Generates content using the Gemini API.
+     * Genera contenido utilizando la API de Gemini.
      * 
      * @param string $prompt
      * @return string|null
@@ -58,7 +58,7 @@ class GeminiService
 
                 $statusCode = $response->status();
 
-                // Advanced Cascading Fallback for 404 (Not Found)
+                // Sistema de Fallback en cascada avanzado para errores 404 (Modelo no encontrado)
                 if ($statusCode === 404) {
                     if ($this->model === 'gemini-3.1-flash-lite-preview') {
                         Log::warning("Gemini 3.1 not found. Falling back to 1.5-flash-8b.");
@@ -73,7 +73,7 @@ class GeminiService
 
                 if ($statusCode === 429 && $retryCount < $maxRetries) {
                     $retryCount++;
-                    Log::warning("Gemini 429 detected (Quota). Retry $retryCount/$maxRetries. Waiting $waitSeconds seconds.");
+                    Log::warning("Gemini 429 detectado (Cuota). Reintento $retryCount/$maxRetries. Esperando $waitSeconds segundos.");
                     sleep($waitSeconds);
                     $waitSeconds *= 2; 
                     continue;
@@ -102,10 +102,10 @@ class GeminiService
     }
 
     /**
-     * Streams content generation from the Gemini API.
+     * Genera contenido en streaming utilizando la API de Gemini.
      * 
      * @param string $prompt
-     * @param callable $onChunk (function that receives the text chunk)
+     * @param callable $onChunk (función que recibe el fragmento de texto)
      */
     public function streamGenerateContent(string $prompt, callable $onChunk)
     {
@@ -134,7 +134,7 @@ class GeminiService
 
                 $statusCode = $response->getStatusCode();
 
-                // Streaming Cascading Fallback for 404
+                // Sistema de Fallback en cascada para streaming en errores 404
                 if ($statusCode === 404) {
                     if ($this->model === 'gemini-3.1-flash-lite-preview') {
                         Log::warning("Gemini Stream 3.1 not found. Falling back to 1.5-flash-8b.");
@@ -149,7 +149,7 @@ class GeminiService
 
                 if ($statusCode === 429 && $retryCount < $maxRetries) {
                     $retryCount++;
-                    Log::warning("Gemini 429 detected (Quota). Retry $retryCount/$maxRetries. Waiting $waitSeconds seconds.");
+                    Log::warning("Gemini 429 detectado (Cuota). Reintento $retryCount/$maxRetries. Esperando $waitSeconds segundos.");
                     sleep($waitSeconds);
                     $waitSeconds *= 2;
                     continue;
@@ -177,7 +177,7 @@ class GeminiService
 
                         if (strpos($event, 'data: ') === 0) {
                             $jsonData = substr($event, 6);
-                            if (trim($jsonData) === '[DONE]') break 2; // Exit both loops
+                            if (trim($jsonData) === '[DONE]') break 2; // Salir de ambos bucles
 
                             $data = json_decode($jsonData, true);
                             if (isset($data['candidates'][0]['content']['parts'][0]['text'])) {
@@ -186,7 +186,7 @@ class GeminiService
                         }
                     }
                 }
-                return; // Success, exit while
+                return; // Éxito, salir del bucle while
 
             } catch (\Exception $e) {
                 if ($retryCount < $maxRetries) {

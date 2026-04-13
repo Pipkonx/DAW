@@ -163,8 +163,14 @@ El OCR no es perfecto. Suele confundir `8` con `B` o `0` con `O`. He implementad
 6. **Lanzar**: `php artisan serve` y `npm run dev`.
 
 ### 🔐 Credenciales de Acceso (Demo)
+
+**Administración (Dashboard Limpio):**
 - **Email:** `admin@fintechpro.com`
 - **Contraseña:** `admin1234`
+
+**Usuario Pro (5 años de Historial):**
+- **Email:** `test@example.com`
+- **Contraseña:** `password1234`
 
 ---
 

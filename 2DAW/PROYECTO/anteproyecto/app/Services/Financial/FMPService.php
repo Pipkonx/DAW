@@ -18,7 +18,7 @@ class FMPService
 
     public function search(string $query)
     {
-        // Cache search results for 1 day
+        // Cachear resultados de búsqueda por 1 día
         return Cache::remember("fmp_search_{$query}", 86400, function () use ($query) {
             if (empty($this->apiKey)) return [];
 
@@ -41,7 +41,7 @@ class FMPService
 
     public function getProfile(string $ticker)
     {
-        // Cache profile (logo, sector, etc) for 30 days
+        // Cachear perfil (logo, sector, etc) por 30 días
         return Cache::remember("fmp_profile_{$ticker}", 2592000, function () use ($ticker) {
             if (empty($this->apiKey)) return null;
 
@@ -62,7 +62,7 @@ class FMPService
 
     public function getPrice(string $ticker)
     {
-        // Cache price for 30 minutes to save requests
+        // Cachear precio por 30 minutos para ahorrar peticiones
         return Cache::remember("fmp_price_{$ticker}", 1800, function () use ($ticker) {
             if (empty($this->apiKey)) return null;
 
@@ -83,12 +83,12 @@ class FMPService
 
     public function getHistoricalPrice(string $ticker, string $date)
     {
-        // Cache historical permanently
+        // Cachear histórico permanentemente
         return Cache::rememberForever("fmp_history_{$ticker}_{$date}", function () use ($ticker, $date) {
             if (empty($this->apiKey)) return null;
 
             try {
-                // FMP historical daily
+                // FMP histórico diario
                 $response = Http::get("{$this->baseUrl}/historical-price-full/{$ticker}", [
                     'from' => $date,
                     'to' => $date,

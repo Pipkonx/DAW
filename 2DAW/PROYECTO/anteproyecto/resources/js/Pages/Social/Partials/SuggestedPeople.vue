@@ -48,7 +48,7 @@ const getAvatarRingClasses = (tier) => {
             <Link 
                 v-for="person in people.slice(0, 5)" 
                 :key="person.id" 
-                :href="person.tier === 'legend' ? route('famous-portfolios.show', person.id) : route('social.profile', person.username || person.id)" 
+                :href="person.tier === 'legend' ? route('famous-portfolios.show', person.id) : route('social.profile', person.username || `user_${person.id}`)" 
                 class="flex items-center gap-3 group transition-all"
             >
                 <!-- Avatar Compacto -->

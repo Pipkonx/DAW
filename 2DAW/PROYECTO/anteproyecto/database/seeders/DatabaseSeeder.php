@@ -22,8 +22,8 @@ class DatabaseSeeder extends Seeder
             MarketAssetSeeder::class,  // Datos de mercado (tickers globales, no vinculados a usuario)
         ]);
 
-        // 2. Crear usuario principal
-        $user = User::firstOrCreate(
+        // 2. Crear/Actualizar usuarios de evaluación
+        $admin = User::updateOrCreate(
             ['email' => 'admin@fintechpro.com'],
             [
                 'name' => 'Administrador',
@@ -34,11 +34,21 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
-        // 3. Limpiar datos previos de este usuario (en caso de re-seed sin migrate:fresh)
-        // Esto asegura "no agregar datos en patrimonio neto" si ya existían
-        Transaction::where('user_id', $user->id)->delete();
-        Asset::where('user_id', $user->id)->delete();
-        Portfolio::where('user_id', $user->id)->delete();
+        $testUser = User::updateOrCreate(
+            ['email' => 'test@example.com'],
+            [
+                'name' => 'Usuario de Prueba',
+                'username' => 'test_user',
+                'password' => Hash::make('password1234'),
+                'is_admin' => false,
+                'email_verified_at' => now(),
+            ]
+        );
+
+        // 3. Limpiar datos previos del administrador (en caso de re-seed sin migrate:fresh)
+        Transaction::where('user_id', $admin->id)->delete();
+        Asset::where('user_id', $admin->id)->delete();
+        Portfolio::where('user_id', $admin->id)->delete();
 
         // NO se crean Carteras, Activos ni Transacciones de ejemplo.
         // El usuario comenzará con un Dashboard "limpio" (Zero State).

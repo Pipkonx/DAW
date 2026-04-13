@@ -48,7 +48,7 @@ const getAvatarRingClasses = (tier) => {
         <div class="space-y-6">
             <!-- Opción A: Pioneros (Más Reacciones) -->
             <template v-if="activeCreatorsTab === 'popular'">
-                <Link v-for="(creator, idx) in topCreators" :key="'pop-' + creator.id" :href="route('social.profile', creator.username || creator.id)" class="flex items-start gap-4 group cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700/50 p-2 -mx-2 rounded-2xl transition-all">
+                <Link v-for="(creator, idx) in topCreators" :key="'pop-' + creator.id" :href="route('social.profile', creator.username || `user_${creator.id}`)" class="flex items-start gap-4 group cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700/50 p-2 -mx-2 rounded-2xl transition-all">
                     <div class="relative">
                         <img :src="creator.avatar || `https://ui-avatars.com/api/?name=${creator.name}`" :class="['w-10 h-10 rounded-xl object-cover', getAvatarRingClasses(creator.tier)]" />
                         <div class="absolute -bottom-1 -right-1 w-5 h-5 bg-indigo-600 text-white text-[8px] font-black rounded-lg flex items-center justify-center border-2 border-white dark:border-slate-800 shadow-sm">
@@ -67,7 +67,7 @@ const getAvatarRingClasses = (tier) => {
 
             <!-- Opción B: Colaboradores (Más Aportes esta semana) -->
             <template v-if="activeCreatorsTab === 'active'">
-                <Link v-for="(creator, idx) in activeCreators" :key="'act-' + creator.id" :href="route('social.profile', creator.username || creator.id)" class="flex items-start gap-4 group cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700/50 p-2 -mx-2 rounded-2xl transition-all">
+                <Link v-for="(creator, idx) in activeCreators" :key="'act-' + creator.id" :href="route('social.profile', creator.username || `user_${creator.id}`)" class="flex items-start gap-4 group cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700/50 p-2 -mx-2 rounded-2xl transition-all">
                     <div class="relative">
                         <img :src="creator.avatar || `https://ui-avatars.com/api/?name=${creator.name}`" :class="['w-10 h-10 rounded-xl object-cover', getAvatarRingClasses(creator.tier)]" />
                         <div class="absolute -bottom-1 -right-1 w-5 h-5 bg-emerald-500 text-white text-[8px] font-black rounded-lg flex items-center justify-center border-2 border-white dark:border-slate-800 shadow-sm">

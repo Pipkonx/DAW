@@ -33,6 +33,7 @@ const props = defineProps({
     reports: Array,
     api_health: Object, // Salud de APIs (booleano)
     api_consumption: Object, // Datos de consumo detallados
+    support_tickets_count: Number, // Recuento de tickets abiertos
 });
 
 // Estados Reactivos del Dashboard
@@ -124,7 +125,7 @@ const closeSubModal = () => {
                             <h3 class="text-xl font-black text-slate-800 dark:text-white uppercase tracking-tight leading-none">Centro de Soporte</h3>
                             <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mt-2">Atención al cliente y tickets</p>
                         </div>
-                        <Link :href="route('tickets.index')" class="mt-8 w-full py-4 bg-slate-900 dark:bg-slate-700 hover:bg-slate-800 text-white rounded-2xl text-center text-[10px] font-black uppercase tracking-widest transition-all shadow-xl active:scale-95">
+                        <Link :href="route('admin.tickets.index')" class="mt-8 w-full py-4 bg-slate-900 dark:bg-slate-700 hover:bg-slate-800 text-white rounded-2xl text-center text-[10px] font-black uppercase tracking-widest transition-all shadow-xl active:scale-95">
                             Gestionar Consultas
                         </Link>
                     </div>

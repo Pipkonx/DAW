@@ -20,7 +20,7 @@ const statusFilter = ref(props.filters.status || 'all');
 const priorityFilter = ref(props.filters.priority || 'all');
 
 const updateFilters = debounce(() => {
-    router.get(route('tickets.index'), {
+    router.get(route('admin.tickets.index'), {
         status: statusFilter.value,
         priority: priorityFilter.value,
     }, {
@@ -124,7 +124,7 @@ const getStatusClass = (status) => {
                                 </td>
                                 <td class="px-8 py-6 text-right">
                                     <Link 
-                                        :href="route('tickets.show', ticket.id)"
+                                        :href="route('admin.tickets.show', ticket.id)"
                                         class="inline-flex items-center gap-2 px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all shadow-lg shadow-indigo-500/20 active:scale-95"
                                     >
                                         Atender

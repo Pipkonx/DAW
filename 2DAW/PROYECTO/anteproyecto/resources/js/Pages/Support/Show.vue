@@ -16,7 +16,7 @@ const form = useForm({
 });
 
 const submit = () => {
-    const routeName = props.isAdminView ? 'tickets.reply' : 'support.reply';
+    const routeName = props.isAdminView ? 'admin.tickets.reply' : 'support.reply';
     form.post(route(routeName, props.ticket.id), {
         onSuccess: () => form.reset(),
     });
@@ -24,7 +24,7 @@ const submit = () => {
 
 const closeTicket = () => {
     if (confirm('¿Estás seguro de que deseas cerrar este ticket?')) {
-        form.post(route('tickets.close', props.ticket.id));
+        form.post(route('admin.tickets.close', props.ticket.id));
     }
 };
 
@@ -45,7 +45,7 @@ const formatDate = (dateString) => {
         <template #header>
             <div class="flex items-center justify-between gap-4">
                 <div class="flex items-center gap-4">
-                    <Link :href="isAdminView ? route('tickets.index') : route('support.index')" class="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-white transition-colors">
+                    <Link :href="isAdminView ? route('admin.tickets.index') : route('support.index')" class="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-white transition-colors">
                         <ArrowLeftIcon class="w-6 h-6" />
                     </Link>
                     <div class="flex-1">
