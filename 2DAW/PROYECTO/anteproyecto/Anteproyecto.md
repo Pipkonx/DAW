@@ -1,4 +1,4 @@
-# Memoria Técnica del Proyecto: Wealth Manager
+# Memoria Técnica del Proyecto: FintechPro
 
 **Autor:** Rafael  
 **Tutor:** Analista Senior de Desarrollo  
@@ -7,7 +7,7 @@
 ---
 
 ## 1. Resumen Ejecutivo
-**Wealth Manager** nació de una frustración personal: tener activos repartidos por tres brokers, dos bancos y un exchange de cripto, y no tener ni idea de cuánto dinero tenía realmente. Este proyecto es mi solución a ese "caos" financiero. A diferencia de las apps que solo anotan gastos, he construido un sistema que "bucea" en internet (Web Scraping) y lee documentos (OCR) para que el usuario no tenga que picar datos a mano. Es una herramienta diseñada por un desarrollador para cualquier persona que quiera tomar el control total de su patrimonio.
+**FintechPro** nació de una frustración personal: tener activos repartidos por tres brokers, dos bancos y un exchange de cripto, y no tener ni idea de cuánto dinero tenía realmente. Este proyecto es mi solución a ese "caos" financiero. A diferencia de las apps que solo anotan gastos, he construido un sistema que "bucea" en internet (Web Scraping) y lee documentos (OCR) para que el usuario no tenga que picar datos a mano. Es una herramienta diseñada por un desarrollador para cualquier persona que quiera tomar el control total de su patrimonio.
 
 La plataforma no solo consolida datos, sino que aplica algoritmos de ingeniería financiera para normalizar precios de mercado en tiempo real, calcular rentabilidades ponderadas y ofrecer una visión holística de la salud financiera del usuario.
 
@@ -20,6 +20,8 @@ La plataforma no solo consolida datos, sino que aplica algoritmos de ingeniería
 *   **Abstracción de Datos**: Crear una capa de servicios en `app/Services/MarketDataService.php` que unifique fuentes heterogéneas (Morningstar, CoinGecko, EODHD) bajo una misma interfaz fluida y desacoplada del proveedor final.
 *   **Cómputo Preciso**: Implementar el algoritmo de **Costo Promedio Ponderado (WAC)** y el cálculo de **TWR (Time-Weighted Return)** para que el beneficio (P/L) refleje fielmente la realidad económica, manejando eventos corporativos como splits o dividendos.
 *   **Reactividad de Vanguardia**: Lograr una experiencia de usuario fluida mediante el uso de **Inertia.js** y **Vue 3**, minimizando las recargas de página y los tiempos de latencia percibidos.
+*   **Inteligencia Social de Mercado**: Desarrollar un subsistema de "Seguimiento de Maestros" que permita a los usuarios observar carteras legendarias (13F) y tendencias de alto nivel, democratizando el acceso a estrategias profesionales.
+*   **Visualización Analytics Profunda**: Implementar motores gráficos distribuidores para el análisis de tarta/sectorial de activos, permitiendo una visión de diversificación inmediata.
 
 ### 2.2. Objetivos de Usuario
 *   **Ahorro de Tiempo**: Reducir el tiempo dedicado a la gestión de carteras en un 75% respecto a métodos manuales.
@@ -38,7 +40,8 @@ La elección del stack no fue casual. **Laravel 12** ofrece una base sólida par
 *   **`symfony/dom-crawler` y `guzzlehttp/guzzle`**: La combinación maestra para el scraping resiliente.
 *   **`laravel/socialite`**: Gestión segura de identidades mediante Google OAuth.
 *   **`tightenco/ziggy`**: Permite usar las rutas de Laravel directamente en los componentes de Vue de forma tipada.
-*   **`chart.js`**: El motor gráfico que da vida a la telemetría financiera.
+*   **`chart.js` & `vue-chartjs`**: El motor gráfico que da vida a la telemetría financiera, permitiendo el renderizado de gráficos de tarta (Pie Charts) para el análisis de diversificación.
+*   **`lucid-vue-next` & `heroicons`**: Paquetes de iconografía técnica para una interfaz consistente.
 
 ---
 
@@ -93,6 +96,8 @@ La aplicación se divide en áreas lógicas bien diferenciadas, gestionadas a tr
 | **Importación** | `PortfolioController` | Procesamiento de OCR, PDF y vinculación manual. |
 | **Inteligencia** | `AnalystController` | Integración con IA para informes personalizados de cartera. |
 | **Administración** | `AdminController` | Telemetría del sistema, monitorización de APIs y backups. |
+| **Social** | `FamousPortfolioController` | Gestión de Gurús, seguimiento de leyendas y análisis sectorial. |
+| **Muro** | `SocialController` | Feed de comunidad, posts y engagement de usuarios. |
 
 ---
 
@@ -126,6 +131,10 @@ El OCR no es perfecto. Suele confundir `8` con `B` o `0` con `O`. He implementad
 5. **Base de Datos**: `php artisan migrate --seed`. El seed inyecta activos de mercado reales para pruebas instantáneas.
 6. **Lanzar**: `php artisan serve` y `npm run dev`.
 
+### 🔐 Credenciales de Acceso (Demo)
+- **Email:** `admin@fintechpro.com`
+- **Contraseña:** `admin1234`
+
 ---
 
 ## 9. Seguridad y Auditoría
@@ -139,14 +148,10 @@ El OCR no es perfecto. Suele confundir `8` con `B` o `0` con `O`. He implementad
 Wealth Manager es un proyecto vivo. Lo que empezó como un script de Python para leer un Excel ha evolucionado en una plataforma de gestión financiera robusta.
 
 **Próximos pasos en el Roadmap:**
+- [x] **Asistente Conversacional**: Implementación de un widget de FAQ dinámico en el Dashboard para mejorar el soporte al usuario.
 - [ ] **Módulo de Rebalanceo**: Alertas automáticas cuando una clase de activo se desvía de su peso objetivo.
 - [ ] **Integración PSD2**: Conexión directa con bancos mediante APIs oficiales (Open Banking).
 - [ ] **App Móvil Nativa**: Uso de Capacitor para convertir el frontend de Vue en una aplicación móvil.
-
----
-**Firmado:**  
-Rafael, Desarrollador Principal.
-os automáticamente hace que todo el esfuerzo haya valido la pena.
 
 ---
 **Firmado:**  

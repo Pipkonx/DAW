@@ -107,8 +107,15 @@ const getAvatarRingClasses = (tier) => {
                         </div>
                     </div>
 
-                    <Link v-if="isOwnProfile" :href="route('profile.edit')" class="px-6 py-2.5 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-800 dark:text-white font-bold rounded-xl shadow-sm transition-all">
+                    <Link v-if="isOwnProfile" :href="route('profile.edit')" class="px-6 py-2.5 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-800 dark:text-white font-bold rounded-xl shadow-sm transition-all border border-slate-200 dark:border-slate-600">
                         Configurar Perfil
+                    </Link>
+
+                    <Link v-if="isOwnProfile && profileUser.tier !== 'premium' && profileUser.tier !== 'pro'" :href="route('subscription.index')" class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-lg shadow-indigo-500/30 transition-all active:scale-95 flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                          <path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd" />
+                        </svg>
+                        Pagar Membresía
                     </Link>
                     <button v-if="!isOwnProfile" @click="emit('toggle-block')" 
                             class="p-2.5 rounded-xl transition-all shadow-sm flex items-center justify-center border border-transparent" 

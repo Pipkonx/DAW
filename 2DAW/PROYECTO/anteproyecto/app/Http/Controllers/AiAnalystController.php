@@ -64,6 +64,13 @@ class AiAnalystController extends Controller
             ], 403);
         }
 
+        // Bloqueo por tipo de Membresía (Solo PRO y PREMIUM)
+        if ($user->tier !== 'pro' && $user->tier !== 'premium') {
+            return response()->json([
+                'error' => 'El Análisis Avanzado de Cartera con IA es una función exclusiva de los planes PRO y Premium. Por favor, mejora tu plan para desbloquear esta herramienta estratégica.'
+            ], 403);
+        }
+
         $today = now()->format('Y-m-d');
 
         // Check if report already exists for today in DB

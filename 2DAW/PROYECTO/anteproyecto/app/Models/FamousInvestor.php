@@ -26,4 +26,14 @@ class FamousInvestor extends Model
     {
         return $this->hasMany(FamousInvestorTrade::class);
     }
+
+    public function followers()
+    {
+        return $this->belongsToMany(User::class, 'guru_followers', 'famous_investor_id', 'user_id')->withTimestamps();
+    }
+
+    public function isFollowedBy($userId)
+    {
+        return $this->followers()->where('user_id', $userId)->exists();
+    }
 }

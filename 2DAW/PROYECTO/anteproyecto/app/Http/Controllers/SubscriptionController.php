@@ -20,26 +20,26 @@ class SubscriptionController extends Controller
             [
                 'id' => config('services.stripe.price_basic'), 
                 'name' => 'Plan Básico',
-                'description' => 'Ideal para empezar. Sin anuncios y funciones esenciales.',
+                'description' => 'Ideal para empezar. Sin anuncios y funciones esenciales de seguimiento.',
                 'price' => '4.99',
-                'features' => ['Sin anuncios', 'Análisis básico', 'Soporte por email'],
+                'features' => ['Sin anuncios', 'Métricas esenciales', 'Historial estándar', 'Soporte por email'],
                 'color' => 'blue'
             ],
             [
                 'id' => config('services.stripe.price_pro'), 
                 'name' => 'Plan Pro',
-                'description' => 'Para inversores serios. Análisis avanzado y prioridad.',
+                'description' => 'Para inversores serios. Desbloquea el poder de la Inteligencia Artificial.',
                 'price' => '14.99',
-                'features' => ['Sin anuncios', 'Análisis Avanzado (AI)', 'Alertas personalizadas', 'Soporte prioritario'],
+                'features' => ['Sin anuncios', 'Análisis Avanzado (AI) de Cartera', 'Alertas en tiempo real', 'Soporte prioritario'],
                 'color' => 'indigo',
                 'popular' => true
             ],
             [
                 'id' => config('services.stripe.price_premium'), 
                 'name' => 'Plan Premium',
-                'description' => 'La experiencia completa. Acceso total a todas las herramientas.',
+                'description' => 'La experiencia completa. Acceso total y reportes IA ilimitados.',
                 'price' => '24.99',
-                'features' => ['Sin anuncios', 'Todo lo del Plan Pro', 'Histórico ilimitado', 'VIP Support'],
+                'features' => ['Sin anuncios', 'Todo lo del Plan Pro', 'Informes IA Ilimitados', 'VIP Support 24/7'],
                 'color' => 'purple'
             ],
         ];

@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from 'vue';
-import { router } from '@inertiajs/vue3';
+import { router, Link } from '@inertiajs/vue3';
 
 /**
  * ManageSubscription - Panel de estado de membresía del usuario.
@@ -57,12 +57,19 @@ const handleCancel = () => {
 
         <!-- Sin membresía -->
         <div v-if="!subscription"
-            class="rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-700 p-10 text-center">
-            <div class="text-5xl mb-3">🔒</div>
-            <h3 class="text-base font-black text-slate-700 dark:text-slate-300 mb-1">Sin plan activo</h3>
-            <p class="text-sm text-slate-500 dark:text-slate-400">
-                Contacta con el administrador para activar un plan.
+            class="rounded-3xl border-2 border-dashed border-slate-200 dark:border-slate-700 p-12 text-center bg-slate-50/50 dark:bg-slate-900/20">
+            <div class="text-5xl mb-4">💎</div>
+            <h3 class="text-xl font-black text-slate-800 dark:text-white mb-2">Potencia tu Experiencia</h3>
+            <p class="text-sm text-slate-500 dark:text-slate-400 mb-8 max-w-sm mx-auto">
+                Desbloquea el análisis avanzado con IA, elimina anuncios y accede a carteras legendarias.
             </p>
+            <Link :href="route('subscription.index')" 
+                class="inline-flex items-center gap-2 px-8 py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-black rounded-2xl shadow-xl shadow-blue-500/20 transition-all active:scale-95">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd" />
+                </svg>
+                Ver Planes Disponibles
+            </Link>
         </div>
 
         <!-- Con membresía -->
@@ -115,6 +122,16 @@ const handleCancel = () => {
                         <div class="text-[9px] opacity-40 mt-1 text-right">Base de referencia: 30 días</div>
                     </div>
                 </div>
+            </div>
+
+            <!-- Botón de mejora (Upsell) -->
+            <div v-if="subscription.tier !== 'premium'" class="flex justify-center -mt-2 pb-2">
+                <Link :href="route('subscription.index')" class="text-[11px] font-black text-indigo-500 hover:text-indigo-600 dark:text-indigo-400 dark:hover:text-indigo-300 flex items-center gap-1.5 bg-indigo-50 dark:bg-indigo-900/30 px-5 py-2.5 rounded-2xl border border-indigo-100 dark:border-indigo-800 transition-all shadow-sm hover:shadow-md active:scale-95 uppercase tracking-widest">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd" />
+                    </svg>
+                    Cambiar o Mejorar Plan actual
+                </Link>
             </div>
 
             <!-- Cancelación -->

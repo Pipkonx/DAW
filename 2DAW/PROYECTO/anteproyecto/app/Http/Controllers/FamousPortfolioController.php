@@ -92,7 +92,7 @@ class FamousPortfolioController extends Controller
             ->with([
                 'holdings',
                 'trades' => function ($q) {
-                    $q->latest('filling_date')->take(20);
+                    $q->latest('filling_date')->take(100);
                 }
             ])
             ->first();
@@ -113,6 +113,9 @@ class FamousPortfolioController extends Controller
 
         // Calcular estadísticas básicas
         $positionsCount = count($holdings);
+        $followersCount = $investor ? $investor->followers()->count() : 0;
+        $isFollowing = auth()->check() && $investor ? $investor->isFollowedBy(auth()->id()) : false;
+        
         $lastReportDate = $investor && $investor->last_synced_at
             ? Carbon::parse($investor->last_synced_at)->format('d/m/Y')
             : 'Reciente';
@@ -121,10 +124,28 @@ class FamousPortfolioController extends Controller
             'profile' => $profileData,
             'holdings' => $holdings,
             'history' => $history,
+            'isFollowing' => $isFollowing,
             'stats' => [
                 'posiciones' => $positionsCount,
+                'seguidores' => $followersCount,
                 'last_report' => $lastReportDate,
             ]
         ]);
+    }
+
+    public function toggleFollow($slug)
+    {
+        $investor = FamousInvestor::where('slug', $slug)->firstOrFail();
+        $user = auth()->user();
+
+        if ($investor->isFollowedBy($user->id)) {
+            $investor->followers()->detach($user->id);
+            $message = 'Has dejado de seguir a ' . $investor->name;
+        } else {
+            $investor->followers()->attach($user->id);
+            $message = 'Ahora sigues a ' . $investor->name;
+        }
+
+        return back()->with('success', $message);
     }
 }

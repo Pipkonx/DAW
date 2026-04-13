@@ -96,9 +96,9 @@ const doughnutOptions = {
                 <span class="bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 p-2 rounded-lg mr-3">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
                 </span>
-                Carteras de Inversión
+                Mis Inversiones
             </h3>
-            <InfoTooltip text="Desglose de tus inversiones por cartera." />
+            <InfoTooltip text="Desglose de tus activos por cartera." />
         </div>
 
         <div v-if="sortedPortfolios.length > 0" class="grid grid-cols-1 xl:grid-cols-3 gap-8">

@@ -158,16 +158,28 @@ class StockPriceService
     {
         if ($type === 'gainers') {
             return [
-                ['symbol' => 'NVDA', 'name' => 'NVIDIA', 'price' => 880.4, 'changesPercentage' => 3.5],
-                ['symbol' => 'META', 'name' => 'Meta', 'price' => 495.2, 'changesPercentage' => 2.8]
+                ['symbol' => 'NVDA', 'name' => 'NVIDIA', 'price' => 880.4, 'changesPercentage' => 3.5, 'image' => 'https://financialmodelingprep.com/image-stock/NVDA.png'],
+                ['symbol' => 'META', 'name' => 'Meta Platforms', 'price' => 495.2, 'changesPercentage' => 2.8, 'image' => 'https://financialmodelingprep.com/image-stock/META.png'],
+                ['symbol' => 'AMZN', 'name' => 'Amazon.com', 'price' => 175.4, 'changesPercentage' => 1.9, 'image' => 'https://financialmodelingprep.com/image-stock/AMZN.png'],
+                ['symbol' => 'MSFT', 'name' => 'Microsoft', 'price' => 415.2, 'changesPercentage' => 1.2, 'image' => 'https://financialmodelingprep.com/image-stock/MSFT.png'],
+                ['symbol' => 'GOOGL', 'name' => 'Alphabet Inc.', 'price' => 152.8, 'changesPercentage' => 0.8, 'image' => 'https://financialmodelingprep.com/image-stock/GOOGL.png']
             ];
         } elseif ($type === 'losers') {
-            return [['symbol' => 'TSLA', 'name' => 'Tesla', 'price' => 190.2, 'changesPercentage' => -4.2]];
+            return [
+                ['symbol' => 'TSLA', 'name' => 'Tesla, Inc.', 'price' => 172.5, 'changesPercentage' => -4.2, 'image' => 'https://financialmodelingprep.com/image-stock/TSLA.png'],
+                ['symbol' => 'NFLX', 'name' => 'Netflix, Inc.', 'price' => 610.1, 'changesPercentage' => -2.5, 'image' => 'https://financialmodelingprep.com/image-stock/NFLX.png'],
+                ['symbol' => 'PYPL', 'name' => 'PayPal Holdings', 'price' => 62.4, 'changesPercentage' => -2.1, 'image' => 'https://financialmodelingprep.com/image-stock/PYPL.png'],
+                ['symbol' => 'INTC', 'name' => 'Intel Corp', 'price' => 42.8, 'changesPercentage' => -1.8, 'image' => 'https://financialmodelingprep.com/image-stock/INTC.png'],
+                ['symbol' => 'BA', 'name' => 'Boeing Co', 'price' => 182.2, 'changesPercentage' => -1.1, 'image' => 'https://financialmodelingprep.com/image-stock/BA.png']
+            ];
         }
         
         return [
-            ['symbol' => 'AAPL', 'name' => 'Apple', 'price' => 175.5, 'changesPercentage' => 0.5, 'volume' => 50000000],
-            ['symbol' => 'MSFT', 'name' => 'Microsoft', 'price' => 402.1, 'changesPercentage' => -0.2, 'volume' => 30000000]
+            ['symbol' => 'AAPL', 'name' => 'Apple Inc.', 'price' => 170.2, 'changesPercentage' => 0.5, 'volume' => 50000000, 'image' => 'https://financialmodelingprep.com/image-stock/AAPL.png'],
+            ['symbol' => 'BRK-B', 'name' => 'Berkshire Hathaway', 'price' => 405.1, 'changesPercentage' => -0.2, 'volume' => 30000000, 'image' => 'https://financialmodelingprep.com/image-stock/BRK-B.png'],
+            ['symbol' => 'V', 'name' => 'Visa Inc.', 'price' => 280.4, 'changesPercentage' => 0.3, 'volume' => 12000000, 'image' => 'https://financialmodelingprep.com/image-stock/V.png'],
+            ['symbol' => 'JPM', 'name' => 'JPMorgan Chase', 'price' => 188.2, 'changesPercentage' => 0.1, 'volume' => 15000000, 'image' => 'https://financialmodelingprep.com/image-stock/JPM.png'],
+            ['symbol' => 'DIS', 'name' => 'Walt Disney Co', 'price' => 112.5, 'changesPercentage' => -0.5, 'volume' => 18000000, 'image' => 'https://financialmodelingprep.com/image-stock/DIS.png']
         ];
     }
 }

@@ -11,10 +11,10 @@ defineProps({
         <div class="space-y-1 pb-3 pt-2">
             <ResponsiveNavLink :href="route('dashboard')" :active="route().current('dashboard')">Dashboard</ResponsiveNavLink>
             <ResponsiveNavLink :href="route('expenses.index')" :active="route().current('expenses.index')">Gastos</ResponsiveNavLink>
-            <ResponsiveNavLink :href="route('transactions.index')" :active="route().current('transactions.index')">Patrimonio</ResponsiveNavLink>
+            <ResponsiveNavLink :href="route('transactions.index')" :active="route().current('transactions.index')">Mi Patrimonio</ResponsiveNavLink>
             <ResponsiveNavLink :href="route('financial-planning.index')" :active="route().current('financial-planning.index')">Planificación</ResponsiveNavLink>
             <ResponsiveNavLink :href="route('markets.index')" :active="route().current('markets.index')">Mercados</ResponsiveNavLink>
-            <ResponsiveNavLink :href="route('ai-analyst.index')" :active="route().current('ai-analyst.index')">Analista IA</ResponsiveNavLink>
+            <ResponsiveNavLink :href="route('ai-analyst.index')" :active="route().current('ai-analyst.index')">Asistente IA</ResponsiveNavLink>
             <ResponsiveNavLink v-if="$page.props.auth.user.is_admin" :href="route('admin.dashboard')" :active="route().current('admin.dashboard*')" class="text-amber-600 dark:text-amber-400 font-bold">Administración</ResponsiveNavLink>
         </div>
 

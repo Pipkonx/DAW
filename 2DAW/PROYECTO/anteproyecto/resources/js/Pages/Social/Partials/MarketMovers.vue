@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { router } from '@inertiajs/vue3';
 
 /**
@@ -13,6 +13,17 @@ const props = defineProps({
 });
 
 const activeMoverType = ref('gainers'); // Estado reactivo: 'gainers' | 'losers'
+
+/**
+ * Garantiza que siempre se devuelvan exactamente 5 elementos para el renderizado.
+ * Si hay menos de 5 activos, rellena con nulls para mostrar skeletons.
+ */
+const displayMovers = computed(() => {
+    const data = (activeMoverType.value === 'gainers' ? props.topGainers : props.topLosers) || [];
+    const sliced = data.slice(0, 5);
+    const pads = Array(Math.max(0, 5 - sliced.length)).fill(null);
+    return [...sliced, ...pads];
+});
 </script>
 
 <template>
@@ -44,30 +55,45 @@ const activeMoverType = ref('gainers'); // Estado reactivo: 'gainers' | 'losers'
 
         <!-- Listado de Activos Filtrado -->
         <div class="space-y-4">
-            <div 
-                v-for="mover in (activeMoverType === 'gainers' ? topGainers : topLosers)?.slice(0, 5)" 
-                :key="mover.symbol" 
-                class="flex items-center justify-between group cursor-pointer animate-in fade-in duration-300" 
-                @click="router.get(route('assets.show', mover.symbol))"
-            >
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-slate-50 dark:bg-slate-700/50 flex items-center justify-center border border-slate-100 dark:border-slate-600 overflow-hidden">
-                        <img :src="mover.image" class="w-7 h-7 object-contain" />
+            <template v-for="(mover, index) in displayMovers" :key="mover ? mover.symbol : 'mover-skeleton-' + index">
+                <!-- Estado Real -->
+                <div 
+                    v-if="mover"
+                    class="flex items-center justify-between group cursor-pointer animate-in fade-in duration-300" 
+                    @click="router.get(route('assets.show', mover.symbol))"
+                >
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-slate-50 dark:bg-slate-700/50 flex items-center justify-center border border-slate-100 dark:border-slate-600 overflow-hidden">
+                            <img :src="mover.image" class="w-7 h-7 object-contain" />
+                        </div>
+                        <div>
+                            <div class="text-sm font-bold text-slate-800 dark:text-white group-hover:text-blue-500 transition-colors uppercase">{{ mover.symbol }}</div>
+                            <div class="text-[10px] text-slate-500 uppercase font-black tracking-tighter truncate max-w-[80px]">{{ mover.name }}</div>
+                        </div>
                     </div>
-                    <div>
-                        <div class="text-sm font-bold text-slate-800 dark:text-white group-hover:text-blue-500 transition-colors uppercase">{{ mover.symbol }}</div>
-                        <div class="text-[10px] text-slate-500 uppercase font-black tracking-tighter truncate max-w-[80px]">{{ mover.name }}</div>
+                    <div class="text-right">
+                        <div class="text-xs font-black" :class="activeMoverType === 'gainers' ? 'text-emerald-500' : 'text-rose-500'">
+                            {{ activeMoverType === 'gainers' ? '+' : '' }}{{ mover.changesPercentage?.toFixed(2) }}%
+                        </div>
+                        <div class="text-[10px] text-slate-400 font-bold tracking-tight">${{ mover.price?.toFixed(2) }}</div>
                     </div>
                 </div>
-                <div class="text-right">
-                    <div class="text-xs font-black" :class="activeMoverType === 'gainers' ? 'text-emerald-500' : 'text-rose-500'">
-                        {{ activeMoverType === 'gainers' ? '+' : '' }}{{ mover.changesPercentage?.toFixed(2) }}%
+
+                <!-- Estado Skeleton (Placeholder) -->
+                <div v-else class="flex items-center justify-between opacity-30 grayscale blur-[1px]">
+                     <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-slate-50 dark:bg-slate-700/50 border border-slate-100 dark:border-slate-600 animate-pulse"></div>
+                        <div class="space-y-1">
+                            <div class="h-3 w-8 bg-slate-200 dark:bg-slate-700 rounded animate-pulse"></div>
+                            <div class="h-2 w-12 bg-slate-100 dark:bg-slate-600 rounded animate-pulse"></div>
+                        </div>
                     </div>
-                    <div class="text-[10px] text-slate-400 font-bold tracking-tight">${{ mover.price?.toFixed(2) }}</div>
+                    <div class="text-right space-y-1">
+                        <div class="h-3 w-10 bg-slate-200 dark:bg-slate-700 rounded ml-auto animate-pulse"></div>
+                        <div class="h-2 w-8 bg-slate-100 dark:bg-slate-600 rounded ml-auto animate-pulse"></div>
+                    </div>
                 </div>
-            </div>
-            <!-- Estado Vacío -->
-            <p v-if="!(activeMoverType === 'gainers' ? topGainers : topLosers)?.length" class="text-[10px] text-slate-400 italic text-center py-4">No hay datos de mercado actuales</p>
+            </template>
         </div>
     </div>
 </template>

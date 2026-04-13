@@ -37,9 +37,9 @@ defineEmits(['toggleTheme', 'togglePrivacy', 'toggleMobileMenu']);
                                 </button>
                             </template>
                             <template #content>
-                                <DropdownLink :href="route('dashboard')">Panel General</DropdownLink>
-                                <DropdownLink :href="route('transactions.index')">Patrimonio Neto</DropdownLink>
-                                <DropdownLink :href="route('expenses.index')">Análisis de Gastos</DropdownLink>
+                                <DropdownLink :href="route('dashboard')">Dashboard</DropdownLink>
+                                <DropdownLink :href="route('transactions.index')">Mi Patrimonio</DropdownLink>
+                                <DropdownLink :href="route('expenses.index')">Gastos</DropdownLink>
                                 <DropdownLink :href="route('financial-planning.index')">Planificación</DropdownLink>
                             </template>
                         </Dropdown>
@@ -53,8 +53,8 @@ defineEmits(['toggleTheme', 'togglePrivacy', 'toggleMobileMenu']);
                                 </button>
                             </template>
                             <template #content>
-                                <DropdownLink :href="route('markets.index')">Explorar Mercados</DropdownLink>
-                                <DropdownLink :href="route('ai-analyst.index')">Analista IA</DropdownLink>
+                                <DropdownLink :href="route('markets.index')">Ver Mercados</DropdownLink>
+                                <DropdownLink :href="route('ai-analyst.index')">Asistente IA</DropdownLink>
                             </template>
                         </Dropdown>
 

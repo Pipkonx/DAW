@@ -21,9 +21,13 @@ const searchQuery = ref('');
 const filterRole = ref('all');
 const filterPlan = ref('all');
 
+// Estados de confirmación personalizada (NUEVO)
+const userInFocus = ref(null);
+const confirmingDeletion = ref(false);
+const confirmingRoleChange = ref(false);
+
 /**
  * Lógica de filtrado reactivo.
- * Filtra por nombre/email, rol y plan de suscripción simultáneamente.
  */
 const filteredUsers = computed(() => {
     return props.users.filter(user => {
@@ -41,21 +45,33 @@ const filteredUsers = computed(() => {
 });
 
 /**
- * Cambia el rol de administrador de un usuario.
+ * Inicia el proceso de cambio de rol (Abre modal).
  */
-const toggleAdmin = (user) => {
-    if (confirm(`¿Cambiar el rol de ${user.name}?`)) {
-        form.post(route('admin.users.toggle-admin', user.id), { preserveScroll: true });
-    }
+const initiateRoleChange = (user) => {
+    userInFocus.value = user;
+    confirmingRoleChange.value = true;
+};
+
+const executeRoleChange = () => {
+    form.post(route('admin.users.toggle-admin', userInFocus.value.id), { 
+        preserveScroll: true,
+        onFinish: () => { confirmingRoleChange.value = false; userInFocus.value = null; }
+    });
 };
 
 /**
- * Elimina un usuario permanentemente.
+ * Inicia el proceso de eliminación (Abre modal).
  */
-const deleteUser = (user) => {
-    if (confirm(`¿ELIMINAR DEFINITIVAMENTE A ${user.name}? Esta acción borrará todos sus datos y transacciones.`)) {
-        form.delete(route('admin.users.delete', user.id), { preserveScroll: true });
-    }
+const initiateDeletion = (user) => {
+    userInFocus.value = user;
+    confirmingDeletion.value = true;
+};
+
+const executeDeletion = () => {
+    form.delete(route('admin.users.delete', userInFocus.value.id), { 
+        preserveScroll: true,
+        onFinish: () => { confirmingDeletion.value = false; userInFocus.value = null; }
+    });
 };
 
 /**
@@ -67,7 +83,7 @@ const openSubModal = (user) => {
 </script>
 
 <template>
-    <div class="bg-white dark:bg-slate-800 rounded-3xl shadow-xl overflow-hidden border border-slate-100 dark:border-slate-700 mt-8">
+    <div class="bg-white dark:bg-slate-800 rounded-3xl shadow-xl overflow-hidden border border-slate-100 dark:border-slate-700 mt-8 relative">
         <div class="p-8 border-b border-slate-50 dark:border-slate-700 flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div>
                 <h3 class="text-2xl font-bold text-slate-800 dark:text-white mb-1">Gestión de Usuarios</h3>
@@ -113,7 +129,7 @@ const openSubModal = (user) => {
         </div>
 
         <div class="overflow-x-auto">
-            <table class="w-full text-left">
+            <table class="w-full text-left border-collapse">
                 <thead class="bg-slate-50 dark:bg-slate-900/50">
                     <tr>
                         <th class="px-8 py-4 text-xs font-black uppercase tracking-widest text-slate-400">Usuario</th>
@@ -158,7 +174,7 @@ const openSubModal = (user) => {
                                 </svg>
                             </button>
                             <button 
-                                @click="toggleAdmin(user)"
+                                @click="initiateRoleChange(user)"
                                 class="p-2 text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
                                 title="Cambiar Rol"
                             >
@@ -167,8 +183,9 @@ const openSubModal = (user) => {
                                 </svg>
                             </button>
                             <button 
-                                @click="deleteUser(user)"
+                                @click="initiateDeletion(user)"
                                 class="p-2 text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/20 rounded-lg transition-colors"
+                                title="Eliminar Usuario"
                             >
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="m20.25 7.5-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5m6 4.125 2.25 2.25m0 0 2.25 2.25m-2.25-2.25-2.25 2.25m2.25-2.25-2.25-2.25M3.75 7.5l.625-10.632A2.25 2.25 0 0 1 6.622 3h10.756a2.25 2.25 0 0 1 2.247 2.118L20.25 7.5" />
@@ -178,6 +195,50 @@ const openSubModal = (user) => {
                     </tr>
                 </tbody>
             </table>
+        </div>
+
+        <!-- MODAL DE CONFIRMACIÓN DE ELIMINACIÓN -->
+        <div v-if="confirmingDeletion" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
+            <div class="bg-white dark:bg-slate-800 rounded-[2.5rem] p-8 max-w-md w-full shadow-2xl border border-rose-100 dark:border-rose-900/30 animate-in zoom-in-95 duration-200">
+                <div class="w-16 h-16 bg-rose-100 dark:bg-rose-900/40 rounded-3xl flex items-center justify-center text-rose-600 mb-6 mx-auto">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                </div>
+                <h3 class="text-2xl font-black text-slate-900 dark:text-white text-center mb-2 uppercase">¡Zona de Riesgo!</h3>
+                <p class="text-slate-600 dark:text-slate-400 text-center text-sm mb-8">
+                    ¿Estás seguro de que deseas eliminar permanentemente a <span class="font-bold text-slate-900 dark:text-white">{{ userInFocus?.name }}</span>? 
+                    Esta acción destruirá todos sus datos, carteras y transacciones sin posibilidad de retorno.
+                </p>
+                <div class="flex gap-4">
+                    <button @click="confirmingDeletion = false" class="flex-1 py-3 text-sm font-black text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700/50 rounded-2xl transition-all">Cancelar</button>
+                    <button @click="executeDeletion" class="flex-1 py-3 text-sm font-black text-white bg-rose-600 hover:bg-rose-700 rounded-2xl shadow-lg shadow-rose-500/30 transition-all active:scale-95">
+                        Sí, Borrar Todo
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODAL DE CAMBIO DE ROL -->
+        <div v-if="confirmingRoleChange" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
+            <div class="bg-white dark:bg-slate-800 rounded-[2.5rem] p-8 max-w-md w-full shadow-2xl border border-indigo-100 dark:border-indigo-900/30 animate-in zoom-in-95 duration-200">
+                <div class="w-16 h-16 bg-indigo-100 dark:bg-indigo-900/40 rounded-3xl flex items-center justify-center text-indigo-600 mb-6 mx-auto">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                    </svg>
+                </div>
+                <h3 class="text-2xl font-black text-slate-900 dark:text-white text-center mb-2 uppercase">Jerarquía de Acceso</h3>
+                <p class="text-slate-600 dark:text-slate-400 text-center text-sm mb-8">
+                    ¿Quieres cambiar el rol de <span class="font-bold text-slate-900 dark:text-white">{{ userInFocus?.name }}</span> a 
+                    <span class="font-black text-indigo-500 uppercase">{{ userInFocus?.is_admin ? 'Usuario Estándar' : 'Administrador Maestro' }}</span>?
+                </p>
+                <div class="flex gap-4">
+                    <button @click="confirmingRoleChange = false" class="flex-1 py-3 text-sm font-black text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700/50 rounded-2xl transition-all">No, Volver</button>
+                    <button @click="executeRoleChange" class="flex-1 py-3 text-sm font-black text-white bg-indigo-600 hover:bg-indigo-700 rounded-2xl shadow-lg shadow-indigo-500/30 transition-all active:scale-95">
+                        Confirmar Cambio
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 </template>

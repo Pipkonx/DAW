@@ -24,10 +24,12 @@ class DatabaseSeeder extends Seeder
 
         // 2. Crear usuario principal
         $user = User::firstOrCreate(
-            ['email' => 'corderorafa0@gmail.com'],
+            ['email' => 'admin@fintechpro.com'],
             [
-                'name' => 'Rafael Cordero',
-                'password' => Hash::make('password'),
+                'name' => 'Administrador',
+                'username' => 'admin_pro',
+                'password' => Hash::make('admin1234'),
+                'is_admin' => true,
                 'email_verified_at' => now(),
             ]
         );

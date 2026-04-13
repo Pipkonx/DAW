@@ -130,6 +130,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/api/assets/{ticker}/chart', [MarketAssetController::class, 'getChartRange'])->name('assets.chart-data');
 
     Route::get('/famous-portfolios/{slug}', [FamousPortfolioController::class, 'show'])->name('famous-portfolios.show');
+    Route::post('/famous-portfolios/{slug}/follow', [FamousPortfolioController::class, 'toggleFollow'])->name('famous-portfolios.follow');
 
     Route::get('/social/feed', [SocialController::class, 'index'])->name('social.feed');
     Route::post('/social/post', [SocialController::class, 'storePost'])->name('social.post');

@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { router } from '@inertiajs/vue3';
 
 /**
@@ -16,9 +16,25 @@ const props = defineProps({
 const activeTrendTab = ref('negotiated'); // 'negotiated' | 'volume' | 'social'
 
 /**
+ * Garantiza que siempre se devuelvan exactamente 5 elementos para el renderizado.
+ * Rellena con nulls para mostrar skeletons si es necesario.
+ */
+const displayPulse = computed(() => {
+    let data = [];
+    if (activeTrendTab.value === 'negotiated') data = props.mostActive || [];
+    else if (activeTrendTab.value === 'volume') data = [...(props.mostActive || [])].sort((a,b) => (b.business_volume || 0) - (a.business_volume || 0));
+    else if (activeTrendTab.value === 'social') data = props.trends || [];
+    
+    const sliced = data.slice(0, 5);
+    const pads = Array(Math.max(0, 5 - sliced.length)).fill(null);
+    return [...sliced, ...pads];
+});
+
+/**
  * Formatea números grandes (K, M, B) para una mejor visualización en widgets.
  */
 const formatCompactNumber = (number) => {
+    if (!number) return '0';
     if (number >= 1000000000) return (number / 1000000000).toFixed(1) + 'B';
     if (number >= 1000000) return (number / 1000000).toFixed(1) + 'M';
     if (number >= 1000) return (number / 1000).toFixed(1) + 'K';
@@ -43,53 +59,35 @@ const formatCompactNumber = (number) => {
 
         <!-- Listado Dinámico según la Pestaña Activa -->
         <div class="space-y-5">
-            <!-- Caso A: Más Negociados (Volumen de Acciones) -->
-            <template v-if="activeTrendTab === 'negotiated'">
-                <div v-for="asset in mostActive" :key="'neg-' + asset.ticker" class="flex items-center gap-3 group cursor-pointer" @click="router.get(route('assets.show', asset.ticker))">
+            <template v-for="(asset, index) in displayPulse" :key="asset ? (asset.ticker || asset.id) : 'pulse-skeleton-' + index">
+                <!-- Estado Real -->
+                <div v-if="asset" class="flex items-center gap-3 group cursor-pointer animate-in fade-in slide-in-from-right-2 duration-300" @click="router.get(route('assets.show', asset.ticker))">
                     <div class="w-9 h-9 rounded-xl bg-slate-50 dark:bg-slate-700 flex items-center justify-center border border-slate-100 dark:border-slate-600 overflow-hidden shrink-0">
-                        <img :src="asset.logo" class="w-6 h-6 object-contain" />
+                        <img :src="asset.logo || asset.image" class="w-6 h-6 object-contain" />
                     </div>
                     <div class="flex-grow min-w-0">
                         <div class="text-[13px] font-bold text-slate-800 dark:text-white truncate group-hover:text-blue-600 transition-colors uppercase">{{ asset.ticker }}</div>
-                        <div class="flex items-center justify-between">
-                            <span class="text-[10px] text-slate-400 font-bold uppercase">{{ formatCompactNumber(asset.volume) }} acciones</span>
-                            <span class="text-[10px] font-black" :class="asset.change >= 0 ? 'text-emerald-500' : 'text-rose-500'">{{ asset.change >= 0 ? '+' : '' }}{{ asset.change.toFixed(2) }}%</span>
+                        <div class="flex justify-between items-center mt-0.5">
+                            <span v-if="activeTrendTab === 'social'" class="text-[10px] text-slate-400 font-bold uppercase">{{ asset.count }} menciones</span>
+                            <span v-else class="text-[10px] text-slate-400 font-bold uppercase">{{ formatCompactNumber(asset.volume) }} acciones</span>
+                            
+                            <span v-if="activeTrendTab === 'social'" class="text-[10px] text-indigo-500 font-black">+{{ asset.change }}%</span>
+                            <span v-else class="text-[10px] font-black" :class="(asset.change || 0) >= 0 ? 'text-emerald-500' : 'text-rose-500'">{{ (asset.change || 0) >= 0 ? '+' : '' }}{{ (asset.change || 0).toFixed(2) }}%</span>
                         </div>
                     </div>
                 </div>
-            </template>
 
-            <!-- Caso B: Mayor Volumen de Negocio ($) -->
-            <template v-if="activeTrendTab === 'volume'">
-                <div v-for="asset in [...mostActive].sort((a,b) => (b.business_volume || 0) - (a.business_volume || 0))" :key="'vol-' + asset.ticker" class="flex items-center gap-3 group cursor-pointer" @click="router.get(route('assets.show', asset.ticker))">
-                    <div class="w-9 h-9 rounded-xl bg-slate-50 dark:bg-slate-700 flex items-center justify-center border border-slate-100 dark:border-slate-600 overflow-hidden shrink-0">
-                        <img :src="asset.logo" class="w-6 h-6 object-contain" />
-                    </div>
-                    <div class="flex-grow min-w-0">
-                        <div class="text-[13px] font-bold text-slate-800 dark:text-white truncate group-hover:text-blue-600 transition-colors uppercase">{{ asset.ticker }}</div>
-                        <div class="flex items-center justify-between">
-                            <span class="text-[10px] text-blue-500 font-black tracking-tighter">${{ formatCompactNumber(asset.business_volume || 0) }}</span>
-                            <span class="text-[9px] text-slate-400 font-bold uppercase">{{ formatCompactNumber(asset.volume) }} vol.</span>
+                <!-- Estado Skeleton (Placeholder) -->
+                <div v-else class="flex items-center gap-3 opacity-20 grayscale blur-[0.5px]">
+                    <div class="w-9 h-9 rounded-xl bg-slate-50 dark:bg-slate-700 border border-slate-100 dark:border-slate-600 shrink-0 animate-pulse"></div>
+                    <div class="flex-grow space-y-1.5">
+                        <div class="h-3 w-12 bg-slate-200 dark:bg-slate-700 rounded animate-pulse"></div>
+                        <div class="flex justify-between items-center">
+                            <div class="h-2.5 w-20 bg-slate-100 dark:bg-slate-600 rounded animate-pulse"></div>
+                            <div class="h-2.5 w-8 bg-slate-200 dark:bg-slate-700 rounded animate-pulse"></div>
                         </div>
                     </div>
                 </div>
-            </template>
-
-            <!-- Caso C: Tendencias Sociales (Menciones en Pipkonx) -->
-            <template v-if="activeTrendTab === 'social'">
-                <div v-for="trend in trends" :key="'soc-' + trend.ticker" class="flex items-center gap-4 group cursor-pointer" @click="router.get(route('assets.show', trend.ticker))">
-                    <div class="w-9 h-9 rounded-xl bg-slate-50 dark:bg-slate-700 flex items-center justify-center border border-slate-100 dark:border-slate-600 overflow-hidden shrink-0">
-                        <img :src="trend.logo" class="w-6 h-6 object-contain" />
-                    </div>
-                    <div class="flex-grow min-w-0">
-                        <div class="text-[13px] font-bold text-slate-800 dark:text-white truncate group-hover:text-blue-600 transition-colors">{{ trend.name }}</div>
-                        <div class="flex items-center justify-between">
-                            <span class="text-[10px] text-slate-400 font-bold uppercase">{{ trend.count }} menciones</span>
-                            <span class="text-[10px] text-indigo-500 font-black">+{{ trend.change }}%</span>
-                        </div>
-                    </div>
-                </div>
-                <p v-if="trends.length === 0" class="text-[10px] text-slate-400 italic text-center py-4">Sin actividad social reciente</p>
             </template>
         </div>
     </div>

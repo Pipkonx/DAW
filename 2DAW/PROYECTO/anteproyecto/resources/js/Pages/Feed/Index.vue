@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { Head, router } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 
@@ -12,6 +12,7 @@ import CreatePostForm from '../Social/Partials/CreatePostForm.vue';
 import FeedFilters from '../Social/Partials/FeedFilters.vue';
 import PostCard from '../Social/Partials/PostCard.vue';
 import PostModal from '../Social/Partials/PostModal.vue';
+import SuggestedPeople from '../Social/Partials/SuggestedPeople.vue';
 import ModalConfirm from '@/Components/ModalConfirm.vue';
 
 /**
@@ -114,6 +115,19 @@ const handleDelete = (post) => {
         }
     };
 };
+// GESTIÓN DE LEYENDAS DE LA INVERSIÓN (GURUS)
+const marketLegends = computed(() => {
+    const legends = [
+        { id: 'cathie-wood', name: 'Cathie Wood', avatar: 'https://unavatar.io/twitter/ARKInvest', tier: 'legend', gain: 2.45 },
+        { id: 'michael-burry', name: 'Michael Burry', avatar: 'https://unavatar.io/twitter/michaeljburry', tier: 'legend', gain: -1.20 },
+        { id: 'bill-ackman', name: 'Bill Ackman', avatar: 'https://unavatar.io/twitter/BillAckman', tier: 'legend', gain: 0.85 },
+        { id: 'bill-gates', name: 'Bill Gates', avatar: 'https://unavatar.io/twitter/BillGates', tier: 'legend', gain: 1.12 },
+        { id: 'warren-buffett', name: 'Warren Buffett', avatar: 'https://unavatar.io/twitter/WarrenBuffett', tier: 'legend', gain: 0.42 },
+    ];
+
+    // Ordenar de mayor a menor ganancia
+    return legends.sort((a, b) => b.gain - a.gain);
+});
 </script>
 
 <template>
@@ -135,6 +149,7 @@ const handleDelete = (post) => {
                     <aside class="hidden lg:block space-y-8 sticky top-24">
                         <SidebarProfile :user="$page.props.auth.user" />
                         <MarketMovers :top-gainers="topGainers" :top-losers="topLosers" />
+                        <SuggestedPeople :people="marketLegends" title="Gurus del Mercado" />
                     </aside>
 
                     <!-- COLUMNA CENTRAL: El Corazón del Feed -->

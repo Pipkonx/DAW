@@ -1,11 +1,11 @@
-# 💰 Wealth Manager: Gestión Patrimonial Inteligente
+# 💰 FintechPro: Gestión Patrimonial Inteligente
 
 [![Laravel Version](https://img.shields.io/badge/Laravel-12.x-red.svg)](https://laravel.com)
 [![Vue Version](https://img.shields.io/badge/Vue-3.x-green.svg)](https://vuejs.org)
 [![Tailwind](https://img.shields.io/badge/Tailwind-3.x-blue.svg)](https://tailwindcss.com)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-**Wealth Manager** es una plataforma de ingeniería financiera de alto rendimiento diseñada para centralizar, automatizar y analizar activos heterogéneos (Acciones, ETFs, Criptomonedas, Fondos de Inversión, Bonos y Efectivo). 
+**FintechPro** es una plataforma de ingeniería financiera de alto rendimiento diseñada para centralizar, automatizar y analizar activos heterogéneos (Acciones, ETFs, Criptomonedas, Fondos de Inversión, Bonos y Efectivo). 
 
 Olvídate de las hojas de cálculo manuales: este ecosistema utiliza motores de **Web Scraping resiliente**, **OCR avanzado** y **Parsing logístico de PDFs** para mantener tu patrimonio actualizado en tiempo real con una intervención manual mínima.
 
@@ -25,6 +25,9 @@ Lógica dedicada para el parseo de extractos bancarios en PDF mediante `smalot/p
 ### 🕵️ Scraping con Sistema de Fallback
 Cuando las APIs tradicionales fallan o no cubren ciertos activos (especialmente fondos de inversión), entra en juego nuestro motor de scraping basado en **XPath** que consulta Morningstar, JustETF y Financial Times de forma secuencial.
 
+### 🤖 Asistente de FAQ Inteligente
+Hemos integrado un asistente conversacional directamente en el Dashboard que resuelve dudas comunes sobre el funcionamiento de la plataforma, cálculos financieros y seguridad de los datos, mejorando la curva de aprendizaje del usuario.
+
 ### ⚖️ Algoritmos Financieros Precisos
 - **Costo Promedio Ponderado (WAC)**: Motor de cálculo preciso para determinar el precio medio de compra tras múltiples operaciones.
 - **Normalización de Divisas**: Conversión automática a la divisa base del usuario para una visión unificada.
@@ -43,8 +46,31 @@ Cuando las APIs tradicionales fallan o no cubren ciertos activos (especialmente 
 ### Frontend Moderno
 - **Vue 3 (Composition API)**: Reactividad eficiente y componentes modulares de alta cohesión.
 - **Tailwind CSS**: Diseño UI premium, minimalista y totalmente responsivo.
-- **Chart.js**: Visualización de datos financiera interactiva.
-- **HeroIcons & Lucid**: Set de iconos vectoriales para una interfaz limpia.
+- **Inertia.js**: Comunicación fluida entre Laravel y Vue sin API REST externa.
+- **Chart.js & Vue-Chartjs**: Motor gráfico para telemetría financiera y distribución de carteras.
+- **Axios**: Gestión de peticiones asíncronas para actualizaciones en tiempo real.
+
+---
+
+## 🎨 Identidad Visual y Diseño Premium
+
+FintechPro ha sido diseñado bajo una estética **High-Finance Dashboard**, priorizando la legibilidad técnica y una experiencia de usuario inmersiva.
+
+### 🔴 Paleta de Colores (Brand System)
+- **Principal**: `Indigo-600` (`#4f46e5`) - Acciones primarias y marca corporativa.
+- **Superficies (Dark Mode)**: `Slate-950` (`#020617`) - Fondo inmersivo para reducir la fatiga visual.
+- **Estados Financieros**: 
+    - `Emerald-500` (`#10b981`) - Ganancias (Bullish).
+    - `Rose-500` (`#ef4444`) - Pérdidas (Bearish).
+    - `Amber-500` (`#f59e0b`) - Alertas y Tiers Legend.
+- **Textos**: Gradientes de `Slate-50` a `Slate-400` para jerarquía visual técnica.
+
+### 📐 Tipografía y Activos
+- **Fuentes**: `Inter` y `Outfit` (sans-serif) para una legibilidad óptima de datos numéricos.
+- **Iconografía**: 
+    - **Lucid Icons**: Para una estética técnica y minimalista.
+    - **HeroIcons**: Para acciones core de la interfaz.
+- **Avatares**: Integración con **UI-Avatars** para la generación dinámica de perfiles maestros de gurús.
 
 ---
 
@@ -90,7 +116,7 @@ Este proyecto no es solo código; es una arquitectura diseñada para durar:
 
 1.  **Clonado y Dependencias**:
     ```bash
-    git clone https://github.com/tu-usuario/wealth-manager.git
+    git clone https://github.com/tu-usuario/fintechpro.git
     composer install && npm install
     ```
 2.  **Entorno**:
@@ -99,6 +125,14 @@ Este proyecto no es solo código; es una arquitectura diseñada para durar:
     `php artisan migrate --seed`
 4.  **Ejecución**:
     `php artisan serve` y `npm run dev` en terminales separadas.
+
+---
+
+## 🔐 Acceso de Prueba (Evaluación)
+
+Para facilitar la revisión de las funcionalidades de administración, social y análisis IA:
+- **Email:** `admin@fintechpro.com`
+- **Password:** `admin1234`
 
 ---
 

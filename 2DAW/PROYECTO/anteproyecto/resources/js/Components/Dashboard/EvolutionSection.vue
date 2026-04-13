@@ -214,8 +214,8 @@ const updateTimeframe = (val) => emit('update:timeframe', val);
     <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700">
         <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
             <div class="flex items-center">
-                <h3 class="text-lg font-bold text-slate-800 dark:text-white">Evolución Financiera</h3>
-                <InfoTooltip text="Visualiza la evolución histórica de tu patrimonio y carteras." />
+                <h3 class="text-lg font-bold text-slate-800 dark:text-white">Mi Evolución</h3>
+                <InfoTooltip text="Visualiza la evolución histórica de tu patrimonio e inversiones." />
             </div>
             
             <!-- Toggles y Controles -->
