@@ -26,6 +26,21 @@ class GoogleAuthController extends Controller
             if ($user) {
                 // Si existe, loguear
                 Auth::login($user);
+                
+                // --- INTEGRACIÓN 2FA ---
+                if ($user->google2fa_secret) {
+                    $userId = $user->id;
+                    Auth::guard('web')->logout();
+                    session()->invalidate();
+                    session()->regenerateToken();
+                    session()->put('auth.2fa.id', $userId);
+                    return redirect()->route('login.2fa');
+                }
+                // -----------------------
+
+                // Registrar actividad de seguridad
+                $this->logActivity($user);
+
                 return redirect()->intended('dashboard');
             }
 
@@ -39,6 +54,21 @@ class GoogleAuthController extends Controller
                     'avatar' => $googleUser->avatar,
                 ]);
                 Auth::login($user);
+
+                // --- INTEGRACIÓN 2FA ---
+                if ($user->google2fa_secret) {
+                    $userId = $user->id;
+                    Auth::guard('web')->logout();
+                    session()->invalidate();
+                    session()->regenerateToken();
+                    session()->put('auth.2fa.id', $userId);
+                    return redirect()->route('login.2fa');
+                }
+                // -----------------------
+
+                // Registrar actividad de seguridad
+                $this->logActivity($user);
+
                 return redirect()->intended('dashboard');
             }
 
@@ -53,11 +83,42 @@ class GoogleAuthController extends Controller
             ]);
 
             Auth::login($newUser);
+
+            // Registrar actividad de seguridad
+            $this->logActivity($newUser);
+
             return redirect()->intended('dashboard');
 
         } catch (\Exception $e) {
             // Manejar error (cancelación, etc.)
             return redirect()->route('login')->with('error', 'Error al iniciar sesión con Google: ' . $e->getMessage());
         }
+    }
+
+    /**
+     * Registra la actividad de inicio de sesión con metadatos enriquecidos.
+     */
+    protected function logActivity($user)
+    {
+        $ip = request()->ip();
+        $location = \Stevebauman\Location\Facades\Location::get($ip);
+        $agent = new \Jenssegers\Agent\Agent();
+        $agent->setUserAgent(request()->userAgent());
+        
+        $browser = $agent->browser();
+
+        \App\Models\LoginActivity::create([
+            'user_id' => $user->id,
+            'ip_address' => $ip,
+            'city' => $location ? $location->cityName : 'Local',
+            'country' => $location ? $location->countryName : 'Reserved',
+            'user_agent' => request()->userAgent(),
+            'browser' => $browser,
+            'browser_version' => $agent->version($browser),
+            'os' => $agent->platform(),
+            'device' => $agent->device(),
+            'session_id' => session()->getId(),
+            'type' => 'login'
+        ]);
     }
 }

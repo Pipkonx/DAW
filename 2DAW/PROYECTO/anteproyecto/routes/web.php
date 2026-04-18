@@ -15,6 +15,7 @@ use App\Http\Controllers\MarketController;
 use App\Http\Controllers\MarketDataController;
 use App\Http\Controllers\AiAnalystController;
 use App\Http\Controllers\TransactionActionController;
+use App\Http\Controllers\TransactionImportController;
 use App\Http\Controllers\TransactionExportController;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\SubscriptionController;
@@ -65,9 +66,9 @@ Route::get('/transactions/export', [TransactionExportController::class, 'export'
     ->middleware(['auth', 'verified'])
     ->name('transactions.export');
 
-Route::post('/transactions/import', [\App\Http\Controllers\TransactionActionController::class, 'import'])
-    ->middleware(['auth', 'verified'])
-    ->name('transactions.import');
+Route::post('/transactions/preview-import', [TransactionImportController::class, 'previewImport'])->name('transactions.preview-import');
+Route::post('/transactions/bulk-store', [TransactionImportController::class, 'bulkStore'])->name('transactions.bulk-store');
+Route::post('/transactions/import', [TransactionActionController::class, 'import'])->name('transactions.import');
 
 Route::get('/transactions', [TransactionController::class, 'index'])
     ->middleware(['auth', 'verified'])
@@ -174,13 +175,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/plans', [SubscriptionController::class, 'index'])->name('subscription.index');
     Route::post('/subscribe', [SubscriptionController::class, 'subscribe'])->name('subscription.subscribe');
 
-    // Rutas de 2FA Login (Cerradas pero con acceso temporal por sesión)
-    Route::get('/login/2fa', [TwoFactorChallengeController::class, 'create'])->name('login.2fa');
-    Route::post('/login/2fa', [TwoFactorChallengeController::class, 'store'])->name('login.2fa.store');
-
-    // Rutas de Seguridad (Real 2FA TOTP)
+    // Rutas de Seguridad (Real 2FA TOTP) - Requieren estar logueado
     Route::get('/profile/security', [SecurityController::class, 'index'])->name('profile.security');
     Route::post('/profile/security/2fa/setup', [SecurityController::class, 'setup2fa'])->name('profile.security.setup2fa');
+    Route::post('/profile/security/2fa/current-code', [SecurityController::class, 'getCurrentOtp'])->name('profile.security.current-code');
     Route::post('/profile/security/2fa/activate', [SecurityController::class, 'activate2fa'])->name('profile.security.activate2fa');
     Route::post('/profile/security/2fa/disable', [SecurityController::class, 'disable2fa'])->name('profile.security.disable2fa');
 
@@ -195,6 +193,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
         auth()->user()->update(['onboarding_completed_at' => now()]);
         return back();
     })->name('onboarding.complete');
+});
+
+// Rutas de 2FA Login (Fuera de auth porque el usuario se desconecta para verificar)
+Route::middleware(['web'])->group(function () {
+    Route::get('/login/2fa', [TwoFactorChallengeController::class, 'create'])->name('login.2fa');
+    Route::post('/login/2fa', [TwoFactorChallengeController::class, 'store'])->name('login.2fa.store');
 });
 
 // Panel de Administración (Protegido por Middleware Admin)

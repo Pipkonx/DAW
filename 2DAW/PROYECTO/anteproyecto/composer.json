@@ -11,6 +11,7 @@
         "barryvdh/laravel-dompdf": "^3.1",
         "guzzlehttp/guzzle": "^7.10",
         "inertiajs/inertia-laravel": "^2.0",
+        "jenssegers/agent": "^2.6",
         "laravel/cashier": "^16.5",
         "laravel/framework": "^12.0",
         "laravel/sanctum": "^4.0",
@@ -18,6 +19,7 @@
         "laravel/tinker": "^2.10.1",
         "pragmarx/google2fa-laravel": "^3.0",
         "smalot/pdfparser": "^2.12",
+        "stevebauman/location": "^7.6",
         "symfony/dom-crawler": "^7.4",
         "thiagoalessio/tesseract_ocr": "^2.13",
         "tightenco/ziggy": "^2.0"

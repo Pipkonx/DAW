@@ -80,15 +80,7 @@ const doughnutOptions = {
     rotation: -90,
     plugins: {
         legend: {
-            display: true,
-            position: 'bottom',
-            labels: {
-                usePointStyle: true,
-                pointStyle: 'circle',
-                padding: 20,
-                color: '#64748b',
-                font: { size: 12, weight: '500' }
-            }
+            display: false // Ocultamos el index/leyenda como solicitó el usuario
         },
         tooltip: {
             backgroundColor: '#1e293b',
@@ -100,8 +92,9 @@ const doughnutOptions = {
                 label: (context) => {
                     const label = context.label || '';
                     const value = context.parsed;
-                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                    const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                    // Cálculo robusto del total para el porcentaje
+                    const total = context.chart.data.datasets[0].data.reduce((a, b) => a + (Number(b) || 0), 0);
+                    const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : '0';
                     return ` ${label}: ${formatCurrency(value)} (${percentage}%)`;
                 }
             }

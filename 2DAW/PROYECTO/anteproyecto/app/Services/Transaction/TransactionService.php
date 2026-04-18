@@ -30,11 +30,16 @@ class TransactionService
     {
         return DB::transaction(function () use ($data) {
             $userId = Auth::id();
+            
+            // Resolver o crear cartera si viene nombre pero no ID
+            $portfolioId = $this->resolvePortfolio($userId, $data['portfolio_id'] ?? null, $data['portfolio_name'] ?? null);
+            $data['portfolio_id'] = $portfolioId;
+            
             $assetId = null;
 
             if (in_array($data['type'], ['buy', 'sell', 'dividend', 'reward', 'gift'])) {
                 $asset = $this->assetService->findOrCreateAndLink($userId, [
-                    'portfolio_id' => $data['portfolio_id'] ?? null,
+                    'portfolio_id' => $data['portfolio_id'],
                     'ticker' => $data['asset_name'],
                     'name' => $data['asset_full_name'] ?? null,
                     'type' => $data['asset_type'] ?? 'stock',
@@ -71,7 +76,7 @@ class TransactionService
                 'description' => $data['description'] ?? null,
                 'quantity' => $data['quantity'] ?? null,
                 'price_per_unit' => $data['price_per_unit'] ?? null,
-                'portfolio_id' => $data['portfolio_id'] ?? null,
+                'portfolio_id' => $data['portfolio_id'],
                 'fees' => $data['fees'] ?? null,
                 'exchange_fees' => $data['exchange_fees'] ?? null,
                 'tax' => $data['tax'] ?? null,
@@ -210,5 +215,25 @@ class TransactionService
         ]);
         
         return $newCategory->id;
+    }
+
+    private function resolvePortfolio($userId, $portfolioId, $portfolioName)
+    {
+        if ($portfolioId) return $portfolioId;
+        if (!$portfolioName) return null;
+
+        $portfolio = \App\Models\Portfolio::where('user_id', $userId)
+                        ->where('name', 'LIKE', $portfolioName)
+                        ->first();
+                        
+        if ($portfolio) return $portfolio->id;
+        
+        $newPortfolio = \App\Models\Portfolio::create([
+            'user_id' => $userId,
+            'name' => $portfolioName,
+            'currency' => 'EUR',
+        ]);
+        
+        return $newPortfolio->id;
     }
 }

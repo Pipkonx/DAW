@@ -4,32 +4,34 @@ import { Head, router } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import TransactionModal from '@/Components/TransactionModal.vue';
 import TransactionHistory from '@/Components/Transactions/TransactionHistory.vue';
+import ImportReviewModal from '@/Components/Expenses/ImportReviewModal.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
+import TextInput from '@/Components/TextInput.vue';
 import { usePrivacy } from '@/Composables/usePrivacy';
+import { useToast } from '@/Composables/useToast';
 import axios from 'axios';
 
-// Components refactorizados
+// Componenes de UI refactorizados
 import SummaryCards from '@/Components/Expenses/SummaryCards.vue';
 import ExpenseChartsSection from '@/Components/Expenses/ExpenseChartsSection.vue';
 import TopCategoriesList from '@/Components/Expenses/TopCategoriesList.vue';
 
 const { isPrivacyMode } = usePrivacy();
+const { showToast } = useToast();
 
 const props = defineProps({
     filters: Object,
     summary: Object,
     charts: Object,
-    transactions: Object, // Paginado inicial
+    transactions: Object,
     portfolios: Array,
     categories: Array,
-    availableYears: Array,
-    selectedYear: Number,
-    yearStats: Object,
     topExpenses: Array,
     topIncome: Array,
+    min_date: String,
 });
 
-// ESTADO DE DATOS E INFINITE SCROLL (Patrón Dashboard)
+// --- ESTADO Y CARGA INFINITA ---
 const allTransactions = ref([...props.transactions.data]);
 const loadingMore = ref(false);
 const hasMore = ref(!!props.transactions.next_page_url);
@@ -37,12 +39,8 @@ const currentPage = ref(1);
 const observerTarget = ref(null);
 let observer = null;
 
-/**
- * Carga más transacciones mediante la API JSON (Axios).
- */
 const loadMoreTransactions = async () => {
     if (loadingMore.value || !hasMore.value) return;
-
     loadingMore.value = true;
     try {
         const response = await axios.get(route('expenses.transactions'), {
@@ -52,37 +50,32 @@ const loadMoreTransactions = async () => {
                 end_date: dateFilters.value.end_date
             }
         });
-
         const paginator = response.data;
         allTransactions.value = [...allTransactions.value, ...paginator.data];
         currentPage.value = paginator.current_page;
         hasMore.value = !!paginator.next_page_url;
     } catch (error) {
-        console.error('Error al cargar más transacciones:', error);
+        console.error('Error al cargar más:', error);
     } finally {
         loadingMore.value = false;
     }
 };
 
-// Sincronizar si los datos iniciales cambian (ej: tras aplicar filtros)
 watch(() => props.transactions, (newVal) => {
     allTransactions.value = [...newVal.data];
     currentPage.value = 1;
     hasMore.value = !!newVal.next_page_url;
 }, { deep: true });
 
-// Intersection Observer para disparar la carga
 onMounted(() => {
     observer = new IntersectionObserver((entries) => {
         if (entries[0].isIntersecting) loadMoreTransactions();
     }, { rootMargin: '200px' });
-    
     if (observerTarget.value) observer.observe(observerTarget.value);
 
-    // Cargar filtros persistidos
+    // Recuperar filtros persistidos
     const queryParams = new URLSearchParams(window.location.search);
-    const hasUrlFilters = queryParams.has('start_date') || queryParams.has('end_date');
-    if (!hasUrlFilters) {
+    if (!queryParams.has('start_date') && !queryParams.has('end_date')) {
         const savedStart = localStorage.getItem('expenses_filter_start');
         const savedEnd = localStorage.getItem('expenses_filter_end');
         if (savedStart || savedEnd) {
@@ -94,19 +87,23 @@ onMounted(() => {
 
 onUnmounted(() => { if (observer) observer.disconnect(); });
 
-// Estado para filtros
+// --- FILTROS ---
 const dateFilters = ref({
     start_date: props.filters.start_date,
     end_date: props.filters.end_date,
 });
 
-// Peristir cambios en los filtros
 watch(() => dateFilters.value, (newFilters) => {
-    if (newFilters.start_date) localStorage.setItem('expenses_filter_start', newFilters.start_date);
-    if (newFilters.end_date) localStorage.setItem('expenses_filter_end', newFilters.end_date);
+    localStorage.setItem('expenses_filter_start', newFilters.start_date || '');
+    localStorage.setItem('expenses_filter_end', newFilters.end_date || '');
 }, { deep: true });
 
 const applyFilters = () => {
+    // Evitar fechas anteriores a la primera transacción
+    if (props.min_date && dateFilters.value.start_date < props.min_date) {
+        dateFilters.value.start_date = props.min_date;
+    }
+
     router.get(route('expenses.index'), {
         start_date: dateFilters.value.start_date,
         end_date: dateFilters.value.end_date,
@@ -117,9 +114,10 @@ const applyFilters = () => {
     });
 };
 
-// Modal Actions
+// --- MODALES Y ACCIONES ---
 const showModal = ref(false);
 const editingTransaction = ref(null);
+const fileInput = ref(null);
 
 const openTransactionModal = () => {
     editingTransaction.value = { type: 'expense' };
@@ -131,29 +129,49 @@ const editTransaction = (transaction) => {
     showModal.value = true;
 };
 
-const closeModal = () => {
-    showModal.value = false;
-    editingTransaction.value = null;
-};
-
-// CSV Import/Export
-const fileInput = ref(null);
-const triggerFileInput = () => { if (fileInput.value) fileInput.value.click(); };
-
 const handleExport = (format) => {
     window.location.href = route('transactions.export', { format, ...dateFilters.value });
 };
 
-const handleFileUpload = (event) => {
+// --- IMPORTACIÓN ---
+const showImportModal = ref(false);
+const importPreviewTransactions = ref([]);
+const isImporting = ref(false);
+
+const handleFileUpload = async (event) => {
     const file = event.target.files[0];
     if (!file) return;
     const formData = new FormData();
     formData.append('file', file);
-    router.post(route('transactions.import'), formData, {
-        forceFormData: true,
-        preserveScroll: true,
-        onSuccess: () => { applyFilters(); alert('Importadas correctamente.'); },
-        onFinish: () => { if (fileInput.value) fileInput.value.value = null; }
+    try {
+        isImporting.value = true;
+        const response = await axios.post(route('transactions.preview-import'), formData, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+        });
+        importPreviewTransactions.value = response.data.transactions;
+        showImportModal.value = true;
+    } catch (error) {
+        showToast('Error al procesar el archivo.', 'error');
+    } finally {
+        isImporting.value = false;
+        if (fileInput.value) fileInput.value.value = null;
+    }
+};
+
+const confirmImport = () => {
+    if (importPreviewTransactions.value.length === 0) return;
+    isImporting.value = true;
+    router.post(route('transactions.bulk-store'), {
+        transactions: importPreviewTransactions.value
+    }, {
+        onSuccess: () => {
+            showImportModal.value = false;
+            importPreviewTransactions.value = [];
+            applyFilters();
+        },
+        onFinish: () => {
+            isImporting.value = false;
+        }
     });
 };
 </script>
@@ -164,56 +182,47 @@ const handleFileUpload = (event) => {
     <AuthenticatedLayout>
         <template #header>
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                <h2 class="font-semibold text-xl text-slate-800 dark:text-slate-200 leading-tight">
-                    Análisis de Gastos
-                </h2>
+                <h2 class="font-semibold text-xl text-slate-800 dark:text-slate-200 leading-tight">Análisis de Gastos</h2>
                 
                 <div class="flex items-center gap-4">
-                    <!-- Botón Agregar Manual -->
                     <PrimaryButton @click="openTransactionModal" class="flex items-center gap-2">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                         </svg>
-                        <span class="hidden sm:inline">Agregar Operación</span>
-                        <span class="sm:hidden">Agregar</span>
+                        <span>Agregar Operación</span>
                     </PrimaryButton>
 
-                    <!-- Filtros de Fecha -->
-                    <div class="flex items-center gap-2 bg-white dark:bg-slate-800 p-2 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700">
-                        <div>
+                    <div class="flex items-center gap-2 bg-white dark:bg-slate-800 p-1.5 px-3 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 hover:border-indigo-300 dark:hover:border-indigo-500 transition-colors group">
+                        <div class="flex items-center gap-1.5">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 text-slate-400 group-hover:text-indigo-500 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
                             <input 
                                 type="date" 
-                                v-model="dateFilters.start_date"
-                                @change="applyFilters"
-                                class="text-xs border-none bg-slate-50 dark:bg-slate-700 rounded focus:ring-rose-500 text-slate-600 dark:text-slate-200 p-1.5"
+                                v-model="dateFilters.start_date" 
+                                @change="applyFilters" 
+                                :min="min_date"
+                                class="text-xs border-none bg-transparent dark:bg-transparent text-slate-600 dark:text-slate-200 focus:ring-0 p-0 py-1 transition-colors [color-scheme:dark]" 
                             />
                         </div>
-                        <span class="text-slate-400">-</span>
-                        <div>
-                            <input 
-                                type="date" 
-                                v-model="dateFilters.end_date"
-                                @change="applyFilters"
-                                class="text-xs border-none bg-slate-50 dark:bg-slate-700 rounded focus:ring-rose-500 text-slate-600 dark:text-slate-200 p-1.5"
-                            />
-                        </div>
+                        <span class="text-slate-300 dark:text-slate-600 font-bold ml-1">-</span>
+                        <input 
+                            type="date" 
+                            v-model="dateFilters.end_date" 
+                            @change="applyFilters" 
+                            class="text-xs border-none bg-transparent dark:bg-transparent text-slate-600 dark:text-slate-200 focus:ring-0 p-0 py-1 transition-colors [color-scheme:dark]" 
+                        />
                     </div>
                 </div>
             </div>
         </template>
 
-        <div class="py-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
-            
-            <!-- 1. TARJETAS DE RESUMEN (KPIs) -->
-            <SummaryCards :key="`summary-${JSON.stringify(summary)}`" :summary="summary" :is-privacy-mode="isPrivacyMode" />
+        <div class="py-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+            <SummaryCards :summary="summary" :is-privacy-mode="isPrivacyMode" />
+            <ExpenseChartsSection :charts="charts" :summary="summary" :is-privacy-mode="isPrivacyMode" />
 
-            <!-- 2. GRÁFICOS -->
-            <ExpenseChartsSection :key="`charts-${JSON.stringify(charts)}`" :charts="charts" :summary="summary" :is-privacy-mode="isPrivacyMode" />
-
-            <!-- 3. TOP GASTOS, INGRESOS & HISTORIAL -->
             <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
-                <!-- Historial (3/4 ancho, Izquierda) -->
-                <div class="lg:col-span-3 space-y-4 order-2 lg:order-1">
+                <div class="lg:col-span-3 space-y-4">
                     <TransactionHistory 
                         :transactions="allTransactions" 
                         :loading="loadingMore"
@@ -221,55 +230,38 @@ const handleFileUpload = (event) => {
                         filter-mode="expenses" 
                         @edit="editTransaction"
                         @export="handleExport"
-                        @import="triggerFileInput"
+                        @import="fileInput.click()"
                     />
-
-                    <!-- Ancla para el Observer del Scroll Infinito -->
                     <div ref="observerTarget" class="h-4"></div>
                 </div>
 
-                <!-- Input para Importar CSV -->
-                <input 
-                    type="file" 
-                    ref="fileInput" 
-                    @change="handleFileUpload" 
-                    class="hidden" 
-                    accept=".csv" 
-                />
-
-                <!-- Top Gastos e Ingresos (1/4 ancho, Derecha) -->
-                <div class="lg:col-span-1 space-y-6 order-1 lg:order-2">
-                    <!-- Top Gastos -->
-                    <TopCategoriesList 
-                        title="Top Gastos" 
-                        :items="topExpenses" 
-                        :total-amount="summary.total_expense"
-                        color-class="bg-rose-500"
-                        empty-message="No hay gastos registrados."
-                        :is-privacy-mode="isPrivacyMode"
-                    />
-
-                    <!-- Top Ingresos -->
-                    <TopCategoriesList 
-                        title="Top Ingresos" 
-                        :items="topIncome" 
-                        :total-amount="summary.total_income"
-                        color-class="bg-emerald-500"
-                        empty-message="No hay ingresos registrados."
-                        :is-privacy-mode="isPrivacyMode"
-                    />
+                <div class="lg:col-span-1 space-y-6">
+                    <TopCategoriesList title="Top Gastos" :items="topExpenses" :total-amount="summary.total_expense" color-class="bg-rose-500" :is-privacy-mode="isPrivacyMode" />
+                    <TopCategoriesList title="Top Ingresos" :items="topIncome" :total-amount="summary.total_income" color-class="bg-emerald-500" :is-privacy-mode="isPrivacyMode" />
                 </div>
             </div>
         </div>
 
-        <!-- Modal para Crear/Editar -->
+        <input type="file" ref="fileInput" @change="handleFileUpload" class="hidden" accept=".csv" />
+
         <TransactionModal 
             :show="showModal" 
-            :transaction="editingTransaction"
+            :transaction="editingTransaction" 
+            :portfolios="portfolios" 
+            :categories="categories" 
+            :allowed-types="['income', 'expense']" 
+            @close="showModal = false" 
+        />
+
+        <ImportReviewModal 
+            :show="showImportModal" 
+            :transactions="importPreviewTransactions" 
+            :categories="categories" 
             :portfolios="portfolios"
-            :categories="categories"
-            :allowed-types="['income', 'expense']"
-            @close="closeModal" 
+            :is-importing="isImporting"
+            @close="showImportModal = false" 
+            @confirm="confirmImport"
+            @remove="(idx) => importPreviewTransactions.splice(idx, 1)"
         />
     </AuthenticatedLayout>
 </template>

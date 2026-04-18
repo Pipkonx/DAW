@@ -5,6 +5,7 @@ import TextInput from '@/Components/TextInput.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import { formatCurrency, formatPercent } from '@/Utils/formatting';
 import { usePrivacy } from '@/Composables/usePrivacy';
+import ModalConfirm from '@/Components/ModalConfirm.vue';
 
 const { isPrivacyMode } = usePrivacy();
 
@@ -42,22 +43,57 @@ const toggleAllBulk = () => {
     }
 };
 
+const confirmModal = ref({
+    show: false,
+    title: '',
+    message: '',
+    confirmText: 'Eliminar',
+    type: 'danger',
+    action: null
+});
+
 const deleteBulkSelected = () => {
-    if (confirm(`¿Estás seguro de que quieres eliminar ${bulkSelectedAssets.value.length} activos? Esto borrará TODAS las operaciones asociadas de forma irreversible.`)) {
-        router.delete(route('assets.bulk-destroy'), {
-            data: { ids: bulkSelectedAssets.value },
-            preserveScroll: true,
-            onSuccess: () => {
-                bulkSelectedAssets.value = [];
-            }
-        });
-    }
+    confirmModal.value = {
+        show: true,
+        title: '¿Eliminar Activos?',
+        message: `¿Estás seguro de que quieres eliminar ${bulkSelectedAssets.value.length} activos? Esto borrará TODAS las operaciones asociadas de forma irreversible.`,
+        confirmText: 'Eliminar Activos',
+        type: 'danger',
+        action: () => {
+            router.delete(route('assets.bulk-destroy'), {
+                data: { ids: bulkSelectedAssets.value },
+                preserveScroll: true,
+                onSuccess: () => {
+                    bulkSelectedAssets.value = [];
+                    confirmModal.value.show = false;
+                }
+            });
+        }
+    };
 };
 
 const onDeleteAsset = (asset) => {
-    if (confirm(`¿Estás seguro de que quieres eliminar ${asset.name}? Esto borrará TODAS las operaciones asociadas de forma irreversible.`)) {
-        emit('delete-asset', asset);
+    confirmModal.value = {
+        show: true,
+        title: '¿Eliminar Activo?',
+        message: `¿Estás seguro de que quieres eliminar ${asset.name}? Esto borrará TODAS las operaciones asociadas de forma irreversible.`,
+        confirmText: 'Eliminar Activo',
+        type: 'danger',
+        action: () => {
+            emit('delete-asset', asset);
+            confirmModal.value.show = false;
+        }
+    };
+};
+
+const handleConfirm = () => {
+    if (confirmModal.value.action) {
+        confirmModal.value.action();
     }
+};
+
+const handleCancel = () => {
+    confirmModal.value.show = false;
 };
 
 const assetFilter = ref('');
@@ -270,4 +306,15 @@ const getAssetPerformance = (asset) => {
             </table>
         </div>
     </div>
+
+    <!-- Modal de Confirmación -->
+    <ModalConfirm
+        :show="confirmModal.show"
+        :title="confirmModal.title"
+        :message="confirmModal.message"
+        :confirm-text="confirmModal.confirmText"
+        :type="confirmModal.type"
+        @confirm="handleConfirm"
+        @cancel="handleCancel"
+    />
 </template>

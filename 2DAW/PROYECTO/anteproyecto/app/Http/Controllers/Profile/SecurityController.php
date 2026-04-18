@@ -51,6 +51,24 @@ class SecurityController extends Controller
     }
 
     /**
+     * Devuelve el código OTP actual y el tiempo restante (para el temporizador).
+     */
+    public function getCurrentOtp(Request $request)
+    {
+        $request->validate(['secret' => 'required|string']);
+        
+        $secret = $request->secret;
+        $period = 30; // Estándar por defecto
+        $timestamp = time();
+        $secondsRemaining = $period - ($timestamp % $period);
+        
+        return response()->json([
+            'code' => Google2FA::getCurrentOtp($secret),
+            'secondsRemaining' => $secondsRemaining,
+        ]);
+    }
+
+    /**
      * Valida y activa el 2FA tras verificar el primer código.
      */
     public function activate2fa(Request $request)
@@ -68,14 +86,8 @@ class SecurityController extends Controller
             $user->two_factor_enabled = true; // Mantener retrocompatibilidad de flag
             $user->save();
 
-            // Registrar la acción
-            LoginActivity::create([
-                'user_id' => $user->id,
-                'ip_address' => $request->ip(),
-                'user_agent' => $request->userAgent(),
-                'session_id' => $request->session()->getId(),
-                'type' => '2fa_enabled'
-            ]);
+            // Registrar la acción con enriquecimiento
+            $this->logActivity($user, '2fa_enabled');
 
             return back()->with('message', '2FA activado correctamente.');
         }
@@ -93,14 +105,36 @@ class SecurityController extends Controller
         $user->two_factor_enabled = false;
         $user->save();
 
-        LoginActivity::create([
-            'user_id' => $user->id,
-            'ip_address' => $request->ip(),
-            'user_agent' => $request->userAgent(),
-            'session_id' => $request->session()->getId(),
-            'type' => '2fa_disabled'
-        ]);
+        // Registrar la acción con enriquecimiento
+        $this->logActivity($user, '2fa_disabled');
 
         return back();
+    }
+
+    /**
+     * Registra la actividad de seguridad con metadatos enriquecidos.
+     */
+    private function logActivity($user, $type)
+    {
+        $ip = request()->ip();
+        $location = \Stevebauman\Location\Facades\Location::get($ip);
+        $agent = new \Jenssegers\Agent\Agent();
+        $agent->setUserAgent(request()->userAgent());
+        
+        $browser = $agent->browser();
+
+        LoginActivity::create([
+            'user_id' => $user->id,
+            'ip_address' => $ip,
+            'city' => $location ? $location->cityName : 'Local',
+            'country' => $location ? $location->countryName : 'Reserved',
+            'user_agent' => request()->userAgent(),
+            'browser' => $browser,
+            'browser_version' => $agent->version($browser),
+            'os' => $agent->platform(),
+            'device' => $agent->device(),
+            'session_id' => request()->session()->getId(),
+            'type' => $type
+        ]);
     }
 }

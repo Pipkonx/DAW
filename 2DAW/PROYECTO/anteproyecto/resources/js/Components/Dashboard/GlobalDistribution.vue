@@ -69,7 +69,7 @@ const chartOptions = {
             callbacks: {
                 label: (context) => {
                     const value = context.parsed;
-                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                    const total = context.chart.data.datasets[0].data.reduce((a, b) => a + (Number(b) || 0), 0);
                     const percentage = total > 0 ? ((value / total) * 100).toFixed(1) + '%' : '0%';
                     return ` ${context.label}: ${formatCurrency(value)} (${percentage})`;
                 }

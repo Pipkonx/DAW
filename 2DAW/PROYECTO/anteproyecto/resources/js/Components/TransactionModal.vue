@@ -253,7 +253,7 @@ const availableTypes = computed(() => props.allowedTypes?.length ? types.filter(
 
                 <div>
                     <InputLabel value="Fecha" class="dark:text-slate-300" />
-                    <TextInput type="date" v-model="form.date" class="mt-1 block w-full dark:bg-slate-700 dark:text-white" />
+                    <TextInput type="date" v-model="form.date" class="mt-1 block w-full" />
                     <InputError :message="form.errors.date" class="mt-2" />
                 </div>
 

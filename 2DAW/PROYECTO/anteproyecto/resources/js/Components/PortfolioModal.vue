@@ -288,7 +288,7 @@ const close = () => {
                         <tbody class="bg-white dark:bg-slate-800 divide-y divide-slate-200 dark:divide-slate-700">
                             <tr v-for="(tx, idx) in importedTransactions" :key="idx" class="hover:bg-slate-50 dark:hover:bg-slate-700/50 group">
                                 <td class="p-1">
-                                    <input type="date" v-model="tx.date" class="w-full text-xs border-0 bg-transparent focus:ring-1 focus:ring-indigo-500 rounded px-1 py-1 text-slate-900 dark:text-slate-300" />
+                                    <input type="date" v-model="tx.date" class="w-full text-xs border-0 bg-transparent focus:ring-1 focus:ring-indigo-500 rounded px-1 py-1 text-slate-900 dark:text-slate-300 [color-scheme:light] dark:[color-scheme:dark]" />
                                 </td>
                                 <td class="p-1">
                                     <select v-model="tx.type" class="w-full text-xs border-0 bg-transparent focus:ring-1 focus:ring-indigo-500 rounded px-1 py-1 text-slate-900 dark:text-slate-300">

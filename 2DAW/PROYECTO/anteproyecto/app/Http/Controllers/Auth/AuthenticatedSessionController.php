@@ -52,14 +52,28 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        // Registrar actividad de seguridad
+        // --- ENRIQUECIMIENTO DE ACTIVIDAD ---
+        $ip = $request->ip();
+        $location = \Stevebauman\Location\Facades\Location::get($ip);
+        $agent = new \Jenssegers\Agent\Agent();
+        $agent->setUserAgent($request->userAgent());
+        
+        $browser = $agent->browser();
+        
         LoginActivity::create([
             'user_id' => Auth::id(),
-            'ip_address' => $request->ip(),
+            'ip_address' => $ip,
+            'city' => $location ? $location->cityName : 'Local',
+            'country' => $location ? $location->countryName : 'Reserved',
             'user_agent' => $request->userAgent(),
+            'browser' => $browser,
+            'browser_version' => $agent->version($browser),
+            'os' => $agent->platform(),
+            'device' => $agent->device(),
             'session_id' => $request->session()->getId(),
             'type' => 'login'
         ]);
+        // ------------------------------------
 
         return redirect()->intended(route('dashboard', absolute: false));
     }

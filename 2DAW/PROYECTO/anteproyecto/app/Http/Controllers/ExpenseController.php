@@ -81,6 +81,7 @@ class ExpenseController extends Controller
             'transactions' => $transactions,
             'portfolios' => Portfolio::where('user_id', $user->id)->select('id', 'name')->get(),
             'categories' => $categories,
+            'min_date' => $minDate->format('Y-m-d'),
         ]);
     }
 
