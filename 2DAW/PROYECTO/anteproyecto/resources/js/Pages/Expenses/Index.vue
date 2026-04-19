@@ -2,19 +2,19 @@
 import { ref, onMounted, onUnmounted, watch } from 'vue';
 import { Head, router } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import TransactionModal from '@/Components/TransactionModal.vue';
-import TransactionHistory from '@/Components/Transactions/TransactionHistory.vue';
-import ImportReviewModal from '@/Components/Expenses/ImportReviewModal.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import TextInput from '@/Components/TextInput.vue';
+import TransactionModal from '@/Components/Features/Transactions/TransactionModal.vue';
+import TransactionHistory from '@/Components/Features/Transactions/TransactionHistory.vue';
+import ImportReviewModal from '@/Components/Features/Expenses/ImportReviewModal.vue';
+import PrimaryButton from '@/Components/BaseUI/PrimaryButton.vue';
+import TextInput from '@/Components/BaseUI/TextInput.vue';
 import { usePrivacy } from '@/Composables/usePrivacy';
 import { useToast } from '@/Composables/useToast';
 import axios from 'axios';
 
 // Componenes de UI refactorizados
-import SummaryCards from '@/Components/Expenses/SummaryCards.vue';
-import ExpenseChartsSection from '@/Components/Expenses/ExpenseChartsSection.vue';
-import TopCategoriesList from '@/Components/Expenses/TopCategoriesList.vue';
+import SummaryCards from '@/Components/Features/Expenses/SummaryCards.vue';
+import ExpenseChartsSection from '@/Components/Features/Expenses/ExpenseChartsSection.vue';
+import TopCategoriesList from '@/Components/Features/Expenses/TopCategoriesList.vue';
 
 const { isPrivacyMode } = usePrivacy();
 const { showToast } = useToast();

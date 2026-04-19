@@ -2,7 +2,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, useForm, Link } from '@inertiajs/vue3';
 import { ref } from 'vue';
-import ModalConfirm from '@/Components/ModalConfirm.vue';
+import ModalConfirm from '@/Components/BaseUI/ModalConfirm.vue';
 
 const props = defineProps({
     reports: Object, // Paginado

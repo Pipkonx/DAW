@@ -12,19 +12,19 @@ import { ref, onMounted, onUnmounted, watch } from 'vue';
 import axios from 'axios';
 
 // Componentes del Dashboard (Refactorizados)
-import KpiSection from '@/Components/Dashboard/KpiSection.vue';
-import GlobalDistribution from '@/Components/Dashboard/GlobalDistribution.vue';
-import PortfoliosSection from '@/Components/Dashboard/PortfoliosSection.vue';
-import ExpensesSection from '@/Components/Dashboard/ExpensesSection.vue';
-import EvolutionSection from '@/Components/Dashboard/EvolutionSection.vue';
-import RecentTransactions from '@/Components/Dashboard/RecentTransactions.vue';
-import UpgradePlanWidget from '@/Components/Dashboard/UpgradePlanWidget.vue';
-import FaqAssistant from '@/Components/Dashboard/FaqAssistant.vue';
-import WelcomeTour from '@/Components/Dashboard/WelcomeTour.vue';
+import KpiSection from '@/Components/Features/Dashboard/KpiSection.vue';
+import GlobalDistribution from '@/Components/Features/Dashboard/GlobalDistribution.vue';
+import PortfoliosSection from '@/Components/Features/Dashboard/PortfoliosSection.vue';
+import ExpensesSection from '@/Components/Features/Dashboard/ExpensesSection.vue';
+import EvolutionSection from '@/Components/Features/Dashboard/EvolutionSection.vue';
+import RecentTransactions from '@/Components/Features/Dashboard/RecentTransactions.vue';
+import UpgradePlanWidget from '@/Components/Features/Dashboard/UpgradePlanWidget.vue';
+import FaqAssistant from '@/Components/Features/Dashboard/FaqAssistant.vue';
+import WelcomeTour from '@/Components/Features/Dashboard/WelcomeTour.vue';
 
 // Otros Componentes
-import TransactionModal from '@/Components/TransactionModal.vue';
-import UnlinkedAssetsLog from '@/Components/Dashboard/UnlinkedAssetsLog.vue';
+import TransactionModal from '@/Components/Features/Transactions/TransactionModal.vue';
+import UnlinkedAssetsLog from '@/Components/Features/Dashboard/UnlinkedAssetsLog.vue';
 import { usePrivacy } from '@/Composables/usePrivacy';
 
 // Props: Datos inyectados por el controlador de Laravel (Inertia)

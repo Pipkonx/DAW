@@ -1,9 +1,9 @@
 <script setup>
 import { ref, watch } from 'vue';
 import { useForm } from '@inertiajs/vue3';
-import Modal from '@/Components/Modal.vue';
-import SecondaryButton from '@/Components/SecondaryButton.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
+import Modal from '@/Components/BaseUI/Modal.vue';
+import SecondaryButton from '@/Components/BaseUI/SecondaryButton.vue';
+import PrimaryButton from '@/Components/BaseUI/PrimaryButton.vue';
 
 const props = defineProps({
     show: Boolean,

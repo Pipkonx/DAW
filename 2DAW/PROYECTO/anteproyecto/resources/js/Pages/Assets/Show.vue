@@ -2,7 +2,7 @@
 import { ref, computed } from 'vue';
 import { Head } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import TransactionModal from '@/Components/TransactionModal.vue';
+import TransactionModal from '@/Components/Features/Transactions/TransactionModal.vue';
 import { usePrivacy } from '@/Composables/usePrivacy';
 import AssetHeader from './Partials/AssetHeader.vue';
 import AssetPriceChart from './Partials/AssetPriceChart.vue';

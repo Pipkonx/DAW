@@ -1,11 +1,11 @@
 <script setup>
-import Checkbox from '@/Components/Checkbox.vue';
+import Checkbox from '@/Components/BaseUI/Checkbox.vue';
 import GuestLayout from '@/Layouts/GuestLayout.vue';
-import InputError from '@/Components/InputError.vue';
-import InputLabel from '@/Components/InputLabel.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import TextInput from '@/Components/TextInput.vue';
-import GoogleLoginButton from '@/Components/GoogleLoginButton.vue';
+import InputError from '@/Components/BaseUI/InputError.vue';
+import InputLabel from '@/Components/BaseUI/InputLabel.vue';
+import PrimaryButton from '@/Components/BaseUI/PrimaryButton.vue';
+import TextInput from '@/Components/BaseUI/TextInput.vue';
+import GoogleLoginButton from '@/Components/Features/Auth/GoogleLoginButton.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import { EyeIcon, EyeSlashIcon } from '@heroicons/vue/24/outline';

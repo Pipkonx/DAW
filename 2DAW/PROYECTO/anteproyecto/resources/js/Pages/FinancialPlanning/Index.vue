@@ -3,14 +3,14 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import { ref, computed } from 'vue';
 import { usePrivacy } from '@/Composables/usePrivacy';
-import Modal from '@/Components/Modal.vue';
-import InputLabel from '@/Components/InputLabel.vue';
-import TextInput from '@/Components/TextInput.vue';
-import InputError from '@/Components/InputError.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import SecondaryButton from '@/Components/SecondaryButton.vue';
-import DangerButton from '@/Components/DangerButton.vue';
-import DoughnutChart from '@/Components/Charts/DoughnutChart.vue';
+import Modal from '@/Components/BaseUI/Modal.vue';
+import InputLabel from '@/Components/BaseUI/InputLabel.vue';
+import TextInput from '@/Components/BaseUI/TextInput.vue';
+import InputError from '@/Components/BaseUI/InputError.vue';
+import PrimaryButton from '@/Components/BaseUI/PrimaryButton.vue';
+import SecondaryButton from '@/Components/BaseUI/SecondaryButton.vue';
+import DangerButton from '@/Components/BaseUI/DangerButton.vue';
+import DoughnutChart from '@/Components/Features/Charts/DoughnutChart.vue';
 
 const props = defineProps({
     bankAccounts: Array,

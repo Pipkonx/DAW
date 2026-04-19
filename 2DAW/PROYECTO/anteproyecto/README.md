@@ -1,182 +1,399 @@
-# 💰 FintechPro: Gestión Patrimonial Inteligente
+<div align="center">
 
-[![Laravel Version](https://img.shields.io/badge/Laravel-12.x-red.svg)](https://laravel.com)
-[![Vue Version](https://img.shields.io/badge/Vue-3.x-green.svg)](https://vuejs.org)
-[![Tailwind](https://img.shields.io/badge/Tailwind-3.x-blue.svg)](https://tailwindcss.com)
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+<img src="https://img.shields.io/badge/version-4.0.0-0ea5e9?style=for-the-badge" alt="Version"/>
+<img src="https://img.shields.io/badge/Laravel-12-FF2D20?style=for-the-badge&logo=laravel&logoColor=white" alt="Laravel"/>
+<img src="https://img.shields.io/badge/Vue-3-4FC08D?style=for-the-badge&logo=vuedotjs&logoColor=white" alt="Vue 3"/>
+<img src="https://img.shields.io/badge/PHP-8.2+-777BB4?style=for-the-badge&logo=php&logoColor=white" alt="PHP"/>
+<img src="https://img.shields.io/badge/license-MIT-22c55e?style=for-the-badge" alt="License"/>
 
-**FintechPro** es una plataforma de ingeniería financiera de alto rendimiento diseñada para centralizar, automatizar y analizar activos heterogéneos (Acciones, ETFs, Criptomonedas, Fondos de Inversión, Bonos y Efectivo). 
+<br/><br/>
 
-Olvídate de las hojas de cálculo manuales: este ecosistema utiliza motores de **Web Scraping resiliente**, **OCR avanzado** y **Parsing logístico de PDFs** para mantener tu patrimonio actualizado en tiempo real con una intervención manual mínima.
+```
+███████╗██╗███╗   ██╗████████╗███████╗ ██████╗██╗  ██╗    ██████╗ ██████╗  ██████╗
+██╔════╝██║████╗  ██║╚══██╔══╝██╔════╝██╔════╝██║  ██║    ██╔══██╗██╔══██╗██╔═══██╗
+█████╗  ██║██╔██╗ ██║   ██║   █████╗  ██║     ███████║    ██████╔╝██████╔╝██║   ██║
+██╔══╝  ██║██║╚██╗██║   ██║   ██╔══╝  ██║     ██╔══██║    ██╔═══╝ ██╔══██╗██║   ██║
+██║     ██║██║ ╚████║   ██║   ███████╗╚██████╗██║  ██║    ██║     ██║  ██║╚██████╔╝
+╚═╝     ╚═╝╚═╝  ╚═══╝   ╚═╝   ╚══════╝ ╚═════╝╚═╝  ╚═╝    ╚═╝     ╚═╝  ╚═╝ ╚═════╝
+```
 
----
+### Gestión Patrimonial Inteligente — Automatizada. Segura. Completa.
 
-## 🚀 Características de Clase Enterprise
+**Consolida acciones, ETFs, criptomonedas, fondos y cash en una única plataforma de grado profesional.**  
+Automatización con OCR · Web Scraping resiliente · 2FA real · Analytics avanzado
 
-### 📈 Dashboard de Control Total
-Visualización holística del *Net Worth* (Patrimonio Neto) con desgloses de rentabilidad (P/L) diaria y acumulada. Gráficos interactivos de evolución temporal y distribución de activos.
+<br/>
 
-### 🤖 Automatización con Inteligencia Artificial y OCR
-Sube una captura de pantalla de tu cuenta bancaria o broker y nuestro motor basado en **OCR.space** extraerá las transacciones, tickers y montos automáticamente, vinculándolos a activos de mercado reales.
+[🚀 Demo en vivo](#) · [📖 Documentación](#arquitectura) · [🐛 Reportar un Bug](../../issues) · [💡 Proponer Feature](../../issues)
 
-### 📄 Motor de Ingesta Documental
-Lógica dedicada para el parseo de extractos bancarios en PDF mediante `smalot/pdfparser`. Capaz de interpretar tablas complejas y normalizar datos de múltiples entidades financieras.
-
-### 🕵️ Scraping con Sistema de Fallback
-Cuando las APIs tradicionales fallan o no cubren ciertos activos (especialmente fondos de inversión), entra en juego nuestro motor de scraping basado en **XPath** que consulta Morningstar, JustETF y Financial Times de forma secuencial.
-
-### 🤖 Asistente de FAQ Inteligente
-Hemos integrado un asistente conversacional directamente en el Dashboard que resuelve dudas comunes sobre el funcionamiento de la plataforma, cálculos financieros y seguridad de los datos, mejorando la curva de aprendizaje del usuario.
-
-### 🔐 Seguridad de Grado Bancario
-- **Autenticación de Doble Factor (TOTP)**: Implementación real mediante aplicaciones de autenticación (Google Authenticator, Authy).
-- **Trazabilidad de Sesiones**: Historial detallado de conexiones con detección de la sesión actual, IP y UserAgent para prevenir accesos no autorizados.
-- **Protección de Datos**: Cifrado de secretos 2FA y políticas de acceso granulares.
-
-### 🎫 Centro de Soporte Integrado
-Sistema de ticketing interno que permite la comunicación directa con el equipo técnico. Incluye gestión de estados (Abierto, Respondido, Cerrado) y prioridades para una resolución eficiente.
-
-### 🚀 Onboarding Guiado y Landing Premium
-- **Nueva Landing Page**: Rediseño minimalista de alta conversión con composición de **Mockups 3D** basados en capturas reales del producto.
-- **Flujo de Bienvenida**: Guía interactiva de 4 pasos para nuevos usuarios, facilitando la transición desde carteras manuales a la automatización de FintechPro.
-
-### ⚖️ Ecosistema Legal y Transparencia
-Sistema integral de cumplimiento legal con páginas dinámicas y coherentes:
-- **Política de Privacidad**: Detalles sobre el tratamiento de datos y privacidad.
-- **Términos de Servicio**: Marco regulatorio de suscripciones y uso de la plataforma.
-- **Aviso Legal**: Identificación corporativa completa.
-
-### ⚖️ Algoritmos Financieros Preciso
-- **Costo Promedio Ponderado (WAC)**: Motor de cálculo preciso para determinar el precio medio de compra tras múltiples operaciones.
-- **Normalización de Divisas**: Conversión automática a la divisa base del usuario para una visión unificada.
-- **Cálculo de Plusvalías**: Diferenciación entre ganancias latentes y realizadas.
-
-### 👥 Ecosistema Social y Gurús
-- **Follow & Insights**: Sigue a inversores experimentados (Gurús) para ver la composición sectorial de sus carteras sin exponer cantidades exactas.
-- **Feed Interactivo**: Publica análisis, comenta estrategias de otros usuarios y guarda (bookmark) posts técnicos.
-- **Transparencia Blindada**: Sistema de reportes de comunidad para mantener un entorno profesional y libre de spam.
-
-### 🛡️ Administración Senior y Mantenimiento
-- **Telemetría de Salud**: Monitorización en tiempo real del estado de las APIs de mercado y consumo de cuotas.
-- **Gestión de Backups**: Generación, descarga e importación de snapshots de la base de datos (SQLite) directamente desde la UI.
-- **Control de Usuarios**: Gestión de privilegios administrativos y estados de suscripción manual.
+</div>
 
 ---
 
-## 🛠️ Stack Tecnológico Senior
+## 📋 Tabla de Contenidos
 
-### Core Backend
-- **Laravel 12.x**: El framework PHP más robusto para aplicaciones empresariales.
-- **Inertia.js**: Renderizado en el lado del servidor con la reactividad de una SPA.
-- **Eloquent ORM**: Modelado de datos financiero altamente optimizado.
-- **Laravel Jobs & Queues**: Procesamiento en segundo plano para la actualización masiva de precios mediante comandos programados.
-
-### Frontend Moderno
-- **Vue 3 (Composition API)**: Reactividad eficiente y componentes modulares de alta cohesión.
-- **Tailwind CSS**: Diseño UI premium, minimalista y totalmente responsivo.
-- **Inertia.js**: Comunicación fluida entre Laravel y Vue sin API REST externa.
-- **Chart.js & Vue-Chartjs**: Motor gráfico para telemetría financiera y distribución de carteras.
-- **Axios**: Gestión de peticiones asíncronas para actualizaciones en tiempo real.
-- **PragmaRX Google2FA**: Motor estándar para la implementación de TOTP (RFC 6238).
-- **Bacon QR Code**: Generación de vectores QR para vinculación de dispositivos.
+- [¿Por qué FintechPro?](#-por-qué-fintechpro)
+- [Capturas de Pantalla](#-capturas-de-pantalla)
+- [Stack Tecnológico](#-stack-tecnológico)
+- [Arquitectura](#-arquitectura)
+- [Funcionalidades](#-funcionalidades)
+- [Instalación](#-instalación)
+- [Credenciales Demo](#-credenciales-de-acceso-demo)
+- [Seguridad](#-seguridad)
+- [Roadmap](#-roadmap)
+- [Contribuir](#-contribuir)
 
 ---
 
-## 🎨 Identidad Visual y Diseño Premium
+## 💡 ¿Por qué FintechPro?
 
-FintechPro ha sido diseñado bajo una estética **High-Finance Dashboard**, priorizando la legibilidad técnica y una experiencia de usuario inmersiva.
+Tener activos en tres brokers, dos bancos y un exchange de criptomonedas es la norma hoy. La pregunta — *"¿cuánto tengo realmente?"* — no debería requerir una hora de trabajo manual.
 
-### 🔴 Paleta de Colores (Brand System)
-- **Principal**: `Indigo-600` (`#4f46e5`) - Acciones primarias y marca corporativa.
-- **Superficies (Dark Mode)**: `Slate-950` (`#020617`) - Fondo inmersivo para reducir la fatiga visual.
-- **Estados Financieros**: 
-    - `Emerald-500` (`#10b981`) - Ganancias (Bullish).
-    - `Rose-500` (`#ef4444`) - Pérdidas (Bearish).
-    - `Amber-500` (`#f59e0b`) - Alertas y Tiers Legend.
-- **Textos**: Gradientes de `Slate-50` a `Slate-400` para jerarquía visual técnica.
+**FintechPro** automatiza por completo esa consolidación: lee extractos bancarios en PDF, interpreta capturas de pantalla de brókers mediante OCR y obtiene precios de mercado en tiempo real desde múltiples fuentes. El resultado es un cuadro de mando unificado con la precisión financiera que merecen tus decisiones de inversión.
 
-### 📐 Tipografía y Activos
-- **Fuentes**: `Inter` y `Outfit` (sans-serif) para una legibilidad óptima de datos numéricos.
-- **Iconografía**: 
-    - **Lucid Icons**: Para una estética técnica y minimalista.
-    - **HeroIcons**: Para acciones core de la interfaz.
-- **Avatares**: Integración con **UI-Avatars** para la generación dinámica de perfiles maestros de gurús.
+> *"De script personal para leer un Excel a plataforma de gestión financiera de grado profesional."*
 
 ---
 
-## 📂 Estructura Crítica del Proyecto
+## 🖼️ Capturas de Pantalla
 
-```bash
-├── app/
-│   ├── Services/               # Capa de lógica de negocio (MarketData, Analysis)
-│   ├── Jobs/                   # Tareas programadas (UpdatePrices)
-│   ├── Models/                 # Modelos financieros (Asset, Transaction, Portfolio)
-│   └── Http/Controllers/       # Orquestadores de peticiones
-├── resources/js/
-│   ├── Pages/                  # Vistas principales de la aplicación
-│   ├── Components/             # Átomos y moléculas de la interfaz
-│   ├── Utils/                  # Lógica compartida de formateo y cálculos
-│   └── Composables/            # Lógica reactiva reutilizable
-└── routes/                     # Definición de la superficie de la aplicación (Web & API)
+<div align="center">
+
+| Dashboard Principal | Security Hub | Analytics |
+|:---:|:---:|:---:|
+| ![Dashboard](docs/screenshots/dashboard.png) | ![Security](docs/screenshots/security.png) | ![Analytics](docs/screenshots/analytics.png) |
+| KPIs globales y patrimonio | 2FA, sesiones y geolocalización | Distribución sectorial |
+
+</div>
+
+---
+
+## 🛠️ Stack Tecnológico
+
+<div align="center">
+
+| Capa | Tecnología | Justificación |
+|:---|:---|:---|
+| **Backend** | Laravel 12 | ORM Eloquent, colas robustas, políticas de acceso |
+| **Frontend** | Vue 3 + Inertia.js | SPA sin API REST separada, composables reutilizables |
+| **Base de Datos** | MySQL / SQLite | Esquema relacional íntegro con integridad referencial total |
+| **OCR** | OCR.space API | Extracción de transacciones desde capturas de brókers |
+| **PDF** | smalot/pdfparser | Parsing estructurado de extractos bancarios |
+| **Scraping** | Guzzle + DomCrawler | Motor de precios con fallbacks en cascada |
+| **2FA** | pragmarx/google2fa | TOTP estándar RFC 6238 + QR codes |
+| **Gráficos** | Chart.js + vue-chartjs | Pie charts y telemetría financiera en tiempo real |
+| **DevOps** | Docker + Docker Compose | PHP-FPM, Nginx, Queue Workers orquestados |
+
+</div>
+
+---
+
+## 🏗️ Arquitectura
+
+### Patrones de Diseño Aplicados
+
+FintechPro no es un conjunto de scripts. Está construido bajo estándares de ingeniería senior para garantizar escalabilidad y mantenibilidad a largo plazo.
+
+| Patrón | Implementación |
+|:---|:---|
+| **Service Layer** | Lógica de negocio aislada en `app/Services` — controladores limpios y enfocados |
+| **Strategy & Factory** | El motor de datos decide en tiempo real: API Premium → Scraping → Proveedor de respaldo |
+| **Adapter** | Normalización de respuestas heterogéneas (OCR.space, PDFParser) al esquema interno |
+| **Middleware Chain** | Validación 2FA y protección de integridad de sesión en capas encadenadas |
+| **Composition (Vue 3)** | Lógica reactiva encapsulada en Composables: `useAssetTable`, `useTransactionForm` |
+| **Feature-based Architecture** | Componentes organizados por dominio funcional, no por tipo de archivo |
+
+---
+
+### Flujo de Importación OCR / PDF
+
+```mermaid
+graph TD
+    A[📤 Usuario sube archivo] --> B{¿Es PDF?}
+    B -- Sí --> C[📄 PDFParser Service]
+    B -- No --> D[👁️ OCR.space API]
+    C --> E[🔍 Extractor RegEx + Levenshtein]
+    D --> E
+    E --> F[⚙️ Normalizador de Transacciones]
+    F --> G[🖥️ Previsualización interactiva]
+    G --> H{✅ Confirmación del usuario}
+    H --> I[🧮 Cálculo WAC en Asset Model]
+    I --> J[(💾 Persistencia en DB)]
+
+    style A fill:#0ea5e9,color:#fff
+    style J fill:#22c55e,color:#fff
+    style H fill:#f59e0b,color:#fff
 ```
 
 ---
 
-## 🏗️ Ingeniería de Software y Buenas Prácticas
+### Flujo de Autenticación 2FA (TOTP — RFC 6238)
 
-Este proyecto no es solo código; es una arquitectura diseñada para durar:
-1.  **SOLID**: Aplicación estricta de principios para asegurar que el sistema sea extensible (ej. añadir un nuevo proveedor de datos es tan simple como implementar una interfaz).
-2.  **DRY (Don't Repeat Yourself)**: Lógica de formateo y visualización centralizada para evitar inconsistencias.
-3.  **Modularización**: El dashboard y las vistas complejas están divididos en micro-componentes para facilitar el mantenimiento y las pruebas.
-4.  **Seguridad**: Protección contra XSS, CSRF, inyección SQL y control de acceso basado en políticas (Laravel Policies).
+```mermaid
+sequenceDiagram
+    actor U as 👤 Usuario
+    participant L as Auth Controller
+    participant T as TOTP Provider
+    participant D as 🏠 Dashboard
 
----
+    U->>L: Credenciales (email + contraseña)
+    L->>L: Verificar hash bcrypt
 
-## 📈 Roadmap de Desarrollo
-
-- [x] **v1.0**: Lanzamiento Core, OCR y Scraping de Fondos.
-- [x] **v1.2**: Rediseño Premium de Landing Page y Mockups reales.
-- [x] **v1.3**: Implementación de Ecosistema Legal y Seguridad 2FA avanzada.
-- [ ] **v1.5**: Sistema de Alertas de Precios y Rebalanceo de Cartera.
-- [ ] **v1.8**: Integración directa con APIs bancarias (PSD2).
-- [ ] **v2.0**: App Móvil Nativa (iOS/Android) mediante Capacitor.
-
----
-
-## 🛠️ Guía Rápida de Instalación
-
-1.  **Clonado y Dependencias**:
-    ```bash
-    git clone https://github.com/tu-usuario/fintechpro.git
-    composer install && npm install
-    ```
-2.  **Entorno**:
-    `cp .env.example .env` y configura tus credenciales de base de datos y APIs.
-3.  **Despliegue de Datos**:
-    `php artisan migrate --seed`
-4.  **Ejecución**:
-    `php artisan serve` y `npm run dev` en terminales separadas.
+    alt 2FA Activado
+        L-->>U: Redirigir a desafío TOTP
+        U->>T: Código de 6 dígitos
+        T->>L: Validar secreto criptográfico
+        L->>D: ✅ Acceso concedido (sesión plena)
+    else 2FA Inactivo
+        L->>D: Acceso directo
+    end
+```
 
 ---
 
-## 🔐 Acceso de Prueba (Evaluación)
+### Modelo de Datos
 
-Para facilitar la revisión de las funcionalidades de administración, social y análisis IA:
-
-**Cuenta de Administrador (Estado Inicial):**
-- **Email:** `admin@fintechpro.com`
-- **Password:** `admin1234`
-
-**Cuenta de Prueba (5 años de historial):**
-- **Email:** `test@example.com`
-- **Password:** `password1234`
+```
+User ──────────────────────────────────────────────────────────┐
+ │                                                              │
+ │ 1:N                                                          │
+ ▼                                                              │
+Portfolio ─────────────────────────────────────────────────────┤
+ │   [Trading · Dividendos · Indexados · ...]                   │
+ │                                                              │
+ │ 1:N                                                          │
+ ▼                                                              │
+Asset ─────────── Acciones · ETFs · Cripto · Fondos · Cash     │
+ │   ▲                                                          │
+ │   └─── MarketData (Ticker: AAPL, BTC, MSFT...)  ◄───────────┘
+ │
+ │ 1:N
+ ▼
+Transaction ─── cost_basis · balance · WAC · TWR · splits
+```
 
 ---
 
-## 🤝 Créditos
+### Controladores y Responsabilidades
 
-Desarrollado con pasión por **Rafael**. 
-Si te gusta este proyecto, considera darle una ⭐ en GitHub.
+| Área | Controlador | Responsabilidad |
+|:---|:---|:---|
+| **Núcleo** | `DashboardController` | Orquestación de KPIs globales y estado patrimonial |
+| **Operativa** | `TransactionController` | CRUD de movimientos y cálculo de plusvalías |
+| **Importación** | `PortfolioController` | Procesamiento OCR, PDF y vinculación manual |
+| **Inteligencia** | `AnalystController` | Integración con IA para informes de cartera |
+| **Administración** | `AdminController` | Telemetría, monitorización de APIs y backups |
+| **Social** | `FamousPortfolioController` | Gurús, carteras 13F y análisis sectorial |
+| **Comunidad** | `SocialController` | Feed, posts y engagement de usuarios |
+| **Seguridad** | `SecurityController` | 2FA, auditoría de sesiones y actividad |
+| **Soporte** | `SupportController` | Ticketing omnicanal y flujo de resolución |
 
 ---
-*Este proyecto es parte del Trabajo de Fin de Grado (TFG) de Desarrollo de Aplicaciones Web.*
+
+## ✨ Funcionalidades
+
+<details>
+<summary><strong>💼 Gestión Patrimonial</strong></summary>
+
+- Soporte multi-clase de activo: **Acciones, ETFs, Criptomonedas, Fondos y Cash**
+- Cálculo automático de **Coste Promedio Ponderado (WAC)** con soporte a splits y dividendos
+- **TWR (Time-Weighted Return)** para rentabilidades ponderadas al tiempo
+- Agrupación por divisas con normalización de tipos de cambio en tiempo real
+- Dashboard con KPIs: P/L total, rentabilidad anualizada, exposición sectorial
+
+</details>
+
+<details>
+<summary><strong>🤖 Automatización Vision-to-Data</strong></summary>
+
+- **OCR de capturas de pantalla** de brókers (Degiro, Interactive Brokers, eToro...)
+- **PDF Parser** de extractos bancarios con reconocimiento de patrones financieros
+- Motor de limpieza con **distancia de Levenshtein** para corregir errores OCR (`8`↔`B`, `0`↔`O`)
+- Previsualización y confirmación antes de persistir cualquier dato
+
+</details>
+
+<details>
+<summary><strong>📡 Precios de Mercado — Scraping Resiliente</strong></summary>
+
+Sistema de **Fallbacks en Cascada** con cuatro niveles de resiliencia:
+
+1. **API Premium** (EODHD) — fuente primaria
+2. **Web Scraping** (Morningstar) — XPath específico como respaldo
+3. **Proveedor alternativo** (CoinGecko / Yahoo Finance) — tercer nivel
+4. **Precio anterior** — marcado como `⚠️ Requiere Revisión` si todo falla
+
+</details>
+
+<details>
+<summary><strong>🛡️ Security Hub</strong></summary>
+
+- **2FA real (TOTP)** basado en RFC 6238 con vinculación por código QR
+- **Auditoría de sesiones**: IP, User-Agent, geolocalización y Session ID
+- Detección de sesiones activas simultáneas y prevención de hijacking
+- **Modo Privacidad**: oculta cifras sensibles en entornos públicos
+- Políticas de acceso (`PortfolioPolicy`) que garantizan aislamiento total entre usuarios
+
+</details>
+
+<details>
+<summary><strong>🌐 Social Hub</strong></summary>
+
+- Feed de comunidad con posts e interacción entre inversores
+- **Seguimiento de carteras 13F** (gurús institucionales: Buffett, Ackman, Lynch...)
+- Rankings de inversores y análisis de tendencias sectoriales
+- Democratización del acceso a estrategias de gestores profesionales
+
+</details>
+
+<details>
+<summary><strong>⚙️ Admin Center</strong></summary>
+
+- Snapshots de base de datos desde la interfaz web
+- Monitorización del estado de APIs externas en tiempo real
+- Sistema de **ticketing de soporte omnicanal** con gestión de estados
+- Telemetría del sistema y logs de errores de scraping
+
+</details>
+
+---
+
+## 🚀 Instalación
+
+### Requisitos Previos
+
+```
+PHP       >= 8.2     + Composer
+Node.js   >= 18      + NPM
+SQLite o MySQL
+API Key   → OCR.space (gratuita en ocr.space)
+```
+
+### Pasos
+
+```bash
+# 1. Clonar el repositorio
+git clone https://github.com/tu-usuario/fintechpro.git
+cd fintechpro
+
+# 2. Instalar dependencias
+composer install
+npm install
+
+# 3. Configurar el entorno
+cp .env.example .env
+php artisan key:generate
+# → Edita .env: DB_*, OCR_SPACE_API_KEY, etc.
+
+# 4. Migrar y sembrar la base de datos
+php artisan migrate --seed
+# Los activos reales de mercado se inyectan automáticamente.
+
+# 5. Lanzar servidores de desarrollo (dos terminales)
+php artisan serve
+npm run dev
+```
+
+### Docker (Producción)
+
+```bash
+docker-compose up -d
+```
+
+Orquesta automáticamente: **PHP-FPM · Nginx · Queue Workers**
+
+---
+
+## 🔑 Credenciales de Acceso Demo
+
+| Rol | Email | Contraseña | Notas |
+|:---|:---|:---|:---|
+| **Administrador** | `admin@fintechpro.com` | `admin1234` | Acceso total al Admin Center |
+| **Usuario Pro** | `test@example.com` | `password1234` | Cartera con 5 años de historial real |
+
+> ⚠️ **No usar estas credenciales en producción.** Ejecuta `php artisan tinker` para crear tu usuario administrador personalizado.
+
+---
+
+## 🔒 Seguridad
+
+FintechPro aplica múltiples capas de protección:
+
+- **SQL Injection & XSS**: protección por defecto vía Laravel + Eloquent
+- **CSRF**: tokens por sesión en todos los formularios
+- **2FA TOTP** (RFC 6238): secretos criptográficos por usuario, nunca almacenados en texto plano
+- **Session Auditing**: IP + UserAgent + Ubicación registrados en cada login
+- **Políticas de acceso**: `PortfolioPolicy` garantiza que ningún usuario pueda acceder a datos de otro
+- **Sanitización OCR**: validación y normalización antes de cualquier persistencia
+
+Para reportar vulnerabilidades de seguridad, por favor usa la vía privada: [security@fintechpro.com](mailto:security@fintechpro.com)
+
+---
+
+## 🗺️ Roadmap
+
+```
+✅  Fase 1 — Cimentación          VILT stack · WAC engine · KPI Dashboard
+✅  Fase 2 — Automatización       OCR real · PDF Parser · Scraping con fallbacks
+✅  Fase 3 — Seguridad & Social   2FA TOTP · Auditoría de sesiones · Feed · Gurús 13F
+🔄  Fase 4 — Optimización         Feature-based architecture · Vue Composables · Landing premium
+⬜  Fase 5 — Futuro
+     ├─ 📱 Mobile App             Capacitor → iOS / Android nativo
+     ├─ 🏦 Open Banking          Integración PSD2 con APIs bancarias oficiales
+     ├─ ⚖️  Rebalanceo Inteligente  Alertas por desviación de pesos objetivo
+     └─ 🧾 Simulador Fiscal       Cálculo proactivo de plusvalías realizadas
+```
+
+---
+
+## 📊 Estado del Proyecto
+
+```
+Complejidad de componentes     ████████████░░░  Reducida –55% (atomización de UI)
+Mantenibilidad                 ████████████████  Alta (Composables + Services)
+Cobertura de tests             ████████░░░░░░░░  En expansión (capa Services)
+Deuda técnica                  ██░░░░░░░░░░░░░░  Baja y documentada
+```
+
+---
+
+## 🤝 Contribuir
+
+Las contribuciones son bienvenidas. Por favor, sigue el flujo estándar:
+
+```bash
+# 1. Fork del repositorio
+# 2. Crear una rama para tu feature
+git checkout -b feature/nombre-de-la-feature
+
+# 3. Commit con mensajes descriptivos
+git commit -m "feat: descripción clara del cambio"
+
+# 4. Push y abrir Pull Request
+git push origin feature/nombre-de-la-feature
+```
+
+Consulta [CONTRIBUTING.md](CONTRIBUTING.md) para las guías de estilo de código y convenciones de commits.
+
+---
+
+## 📄 Licencia
+
+Distribuido bajo la licencia **MIT**. Consulta [`LICENSE`](LICENSE) para más información.
+
+---
+
+<div align="center">
+
+Desarrollado con 🧠 y ☕ por **Rafael** — *Desarrollo de Aplicaciones Web (DAW)*
+
+<br/>
+
+*"La diferencia entre el caos financiero y la claridad es un sistema bien diseñado."*
+
+<br/>
+
+[![GitHub](https://img.shields.io/badge/GitHub-Rafael-181717?style=flat-square&logo=github)](https://github.com/tu-usuario)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Conectar-0A66C2?style=flat-square&logo=linkedin)](https://linkedin.com/in/tu-perfil)
+
+</div>

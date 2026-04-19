@@ -13,7 +13,7 @@ import FeedFilters from '../Social/Partials/FeedFilters.vue';
 import PostCard from '../Social/Partials/PostCard.vue';
 import PostModal from '../Social/Partials/PostModal.vue';
 import SuggestedPeople from '../Social/Partials/SuggestedPeople.vue';
-import ModalConfirm from '@/Components/ModalConfirm.vue';
+import ModalConfirm from '@/Components/BaseUI/ModalConfirm.vue';
 
 /**
  * Feed/Index - Orquestador del Muro Comunitario.

@@ -4,18 +4,18 @@ import { Head, router } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 
 // Components
-import PortfolioHeader from '@/Components/Transactions/PortfolioHeader.vue';
-import EvolutionChart from '@/Components/Transactions/EvolutionChart.vue';
-import AllocationChart from '@/Components/Transactions/AllocationChart.vue';
-import PerformanceBreakdown from '@/Components/Transactions/PerformanceBreakdown.vue';
-import AssetsTable from '@/Components/Transactions/AssetsTable.vue';
-import TransactionHistory from '@/Components/Transactions/TransactionHistory.vue';
-import ExportModal from '@/Components/Transactions/ExportModal.vue';
+import PortfolioHeader from '@/Components/Features/Transactions/PortfolioHeader.vue';
+import EvolutionChart from '@/Components/Features/Transactions/EvolutionChart.vue';
+import AllocationChart from '@/Components/Features/Transactions/AllocationChart.vue';
+import PerformanceBreakdown from '@/Components/Features/Transactions/PerformanceBreakdown.vue';
+import AssetsTable from '@/Components/Features/Transactions/AssetsTable.vue';
+import TransactionHistory from '@/Components/Features/Transactions/TransactionHistory.vue';
+import ExportModal from '@/Components/Features/Transactions/ExportModal.vue';
 
 // Legacy Modals
-import TransactionModal from '@/Components/TransactionModal.vue';
-import PortfolioModal from '@/Components/PortfolioModal.vue';
-import SettingsModal from '@/Components/SettingsModal.vue';
+import TransactionModal from '@/Components/Features/Transactions/TransactionModal.vue';
+import PortfolioModal from '@/Components/Features/Portfolio/PortfolioModal.vue';
+import SettingsModal from '@/Components/Features/Settings/SettingsModal.vue';
 
 const props = defineProps({
     portfolios: Array,

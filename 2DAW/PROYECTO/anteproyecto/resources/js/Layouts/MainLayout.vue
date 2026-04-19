@@ -1,7 +1,7 @@
 <script setup>
 import { Link } from '@inertiajs/vue3';
 import { ref, onMounted } from 'vue';
-import Footer from '@/Components/Footer.vue';
+import Footer from '@/Components/Layout/Footer.vue';
 
 // Props para controlar la visibilidad de elementos si es necesario
 defineProps({

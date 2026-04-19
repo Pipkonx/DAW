@@ -2,8 +2,8 @@
 import { ref, computed } from 'vue';
 import { Head, router, Link } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import PortfolioHeader from '@/Components/Transactions/PortfolioHeader.vue';
-import DoughnutChart from '@/Components/Charts/DoughnutChart.vue';
+import PortfolioHeader from '@/Components/Features/Transactions/PortfolioHeader.vue';
+import DoughnutChart from '@/Components/Features/Charts/DoughnutChart.vue';
 import { formatCurrency, formatPercent } from '@/Utils/formatting';
 import { usePrivacy } from '@/Composables/usePrivacy';
 

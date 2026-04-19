@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from 'vue';
 import { useForm } from '@inertiajs/vue3';
-import ModalConfirm from '@/Components/ModalConfirm.vue';
+import ModalConfirm from '@/Components/BaseUI/ModalConfirm.vue';
 
 defineProps({
     backups: Array,

@@ -2,14 +2,14 @@
 import { ref, computed } from 'vue';
 import { Head, router } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import PortfolioHeader from '@/Components/Transactions/PortfolioHeader.vue';
-import BarChart from '@/Components/Charts/BarChart.vue';
-import LineChart from '@/Components/Charts/LineChart.vue';
-import PerformanceTimeSelector from '@/Components/Transactions/PerformanceTimeSelector.vue';
-import PerformanceHeatmap from '@/Components/Transactions/PerformanceHeatmap.vue';
-import PerformanceBreakdown from '@/Components/Transactions/PerformanceBreakdown.vue';
-import AdSlot from '@/Components/AdSense/AdSlot.vue';
-import AnnualBarSection from '@/Components/Dashboard/AnnualBarSection.vue';
+import PortfolioHeader from '@/Components/Features/Transactions/PortfolioHeader.vue';
+import BarChart from '@/Components/Features/Charts/BarChart.vue';
+import LineChart from '@/Components/Features/Charts/LineChart.vue';
+import PerformanceTimeSelector from '@/Components/Features/Transactions/PerformanceTimeSelector.vue';
+import PerformanceHeatmap from '@/Components/Features/Transactions/PerformanceHeatmap.vue';
+import PerformanceBreakdown from '@/Components/Features/Transactions/PerformanceBreakdown.vue';
+import AdSlot from '@/Components/Features/AdSense/AdSlot.vue';
+import AnnualBarSection from '@/Components/Features/Dashboard/AnnualBarSection.vue';
 import { usePrivacy } from '@/Composables/usePrivacy';
 import { formatCurrency } from '@/Utils/formatting';
 

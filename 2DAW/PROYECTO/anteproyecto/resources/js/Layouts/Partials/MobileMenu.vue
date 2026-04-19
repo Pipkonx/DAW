@@ -1,5 +1,5 @@
 <script setup>
-import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
+import ResponsiveNavLink from '@/Components/Layout/ResponsiveNavLink.vue';
 
 defineProps({
     showingNavigationDropdown: Boolean

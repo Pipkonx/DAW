@@ -2,13 +2,13 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { ref, computed } from 'vue';
 import { useForm, router } from '@inertiajs/vue3';
-import Modal from '@/Components/Modal.vue';
-import InputLabel from '@/Components/InputLabel.vue';
-import TextInput from '@/Components/TextInput.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import SecondaryButton from '@/Components/SecondaryButton.vue';
-import DangerButton from '@/Components/DangerButton.vue';
-import Checkbox from '@/Components/Checkbox.vue';
+import Modal from '@/Components/BaseUI/Modal.vue';
+import InputLabel from '@/Components/BaseUI/InputLabel.vue';
+import TextInput from '@/Components/BaseUI/TextInput.vue';
+import PrimaryButton from '@/Components/BaseUI/PrimaryButton.vue';
+import SecondaryButton from '@/Components/BaseUI/SecondaryButton.vue';
+import DangerButton from '@/Components/BaseUI/DangerButton.vue';
+import Checkbox from '@/Components/BaseUI/Checkbox.vue';
 
 const props = defineProps({
     categories: {

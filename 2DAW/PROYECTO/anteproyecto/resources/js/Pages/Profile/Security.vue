@@ -10,8 +10,8 @@ import {
 import { ref } from 'vue';
 
 // Componentes Refactorizados
-import TwoFactorSetupModal from '@/Components/Security/TwoFactorSetupModal.vue';
-import ConnectionHistoryTable from '@/Components/Security/ConnectionHistoryTable.vue';
+import TwoFactorSetupModal from '@/Components/Features/Security/TwoFactorSetupModal.vue';
+import ConnectionHistoryTable from '@/Components/Features/Security/ConnectionHistoryTable.vue';
 
 const props = defineProps({
     activities: Array,

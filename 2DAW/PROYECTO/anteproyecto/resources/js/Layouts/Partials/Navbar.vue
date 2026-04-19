@@ -1,10 +1,10 @@
 <script setup>
 import { Link } from '@inertiajs/vue3';
-import ApplicationLogo from '@/Components/ApplicationLogo.vue';
-import NavLink from '@/Components/NavLink.vue';
-import Dropdown from '@/Components/Dropdown.vue';
-import DropdownLink from '@/Components/DropdownLink.vue';
-import AssetSearch from '@/Components/AssetSearch.vue';
+import ApplicationLogo from '@/Components/BaseUI/ApplicationLogo.vue';
+import NavLink from '@/Components/Layout/NavLink.vue';
+import Dropdown from '@/Components/BaseUI/Dropdown.vue';
+import DropdownLink from '@/Components/BaseUI/DropdownLink.vue';
+import AssetSearch from '@/Components/Features/Portfolio/AssetSearch.vue';
 
 defineProps({
     isDark: Boolean,

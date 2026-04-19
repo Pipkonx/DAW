@@ -1,6 +1,6 @@
 <script setup>
 import { computed } from 'vue';
-import LineChart from '@/Components/Charts/LineChart.vue';
+import LineChart from '@/Components/Features/Charts/LineChart.vue';
 import { formatCurrency } from '@/Utils/formatting';
 
 const props = defineProps({

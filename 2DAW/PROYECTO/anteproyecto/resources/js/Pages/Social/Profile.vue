@@ -2,7 +2,7 @@
 import { ref, computed } from 'vue';
 import { Head, router } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import ModalConfirm from '@/Components/ModalConfirm.vue';
+import ModalConfirm from '@/Components/BaseUI/ModalConfirm.vue';
 import ProfileHeader from './Partials/ProfileHeader.vue';
 import ProfileTabs from './Partials/ProfileTabs.vue';
 import PostCard from './Partials/PostCard.vue';

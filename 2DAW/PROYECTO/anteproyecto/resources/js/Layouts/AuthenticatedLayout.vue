@@ -5,11 +5,11 @@ import { usePrivacy } from '@/Composables/usePrivacy';
 import { useToast } from '@/Composables/useToast';
 import Navbar from './Partials/Navbar.vue';
 import MobileMenu from './Partials/MobileMenu.vue';
-import Toast from '@/Components/Toast.vue';
-import Breadcrumbs from '@/Components/Breadcrumbs.vue';
-import Footer from '@/Components/Footer.vue';
-import AdSlot from '@/Components/AdSense/AdSlot.vue';
-import AdBlockDetector from '@/Components/AdSense/AdBlockDetector.vue';
+import Toast from '@/Components/BaseUI/Toast.vue';
+import Breadcrumbs from '@/Components/Layout/Breadcrumbs.vue';
+import Footer from '@/Components/Layout/Footer.vue';
+import AdSlot from '@/Components/Features/AdSense/AdSlot.vue';
+import AdBlockDetector from '@/Components/Features/AdSense/AdBlockDetector.vue';
 
 const { isPrivacyMode, togglePrivacyMode } = usePrivacy();
 const { activeToasts, showToast, removeToast } = useToast();
