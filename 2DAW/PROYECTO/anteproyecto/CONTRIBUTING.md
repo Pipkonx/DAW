@@ -21,7 +21,7 @@
 
 Antes de abrir un PR o un Issue, revisa lo siguiente:
 
-- [ ] ¿Existe ya un [Issue abierto](../../issues) que cubra lo que quieres aportar?
+- [ ] ¿Existe ya un [Issue abierto](https://github.com/Pipkonx/DAW/issues) que cubra lo que quieres aportar?
 - [ ] ¿Has leído la [documentación del proyecto](README.md) y la arquitectura existente?
 - [ ] ¿Tu cambio respeta los principios **SOLID** y **DRY** que rigen este proyecto?
 - [ ] ¿La dependencia que quieres añadir es **estrictamente necesaria** y no puede resolverse con lo ya instalado?
@@ -189,7 +189,7 @@ Un PR será revisado atendiendo a:
 
 ## 🐛 Reportar Errores
 
-Si encuentras un bug, abre un **[Issue](../../issues/new?template=bug_report.md)** incluyendo:
+Si encuentras un bug, abre un **[Issue](https://github.com/Pipkonx/DAW/issues/new?template=bug_report.md)** incluyendo:
 
 ```
 **Descripción del error**

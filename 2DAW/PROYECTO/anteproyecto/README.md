@@ -24,7 +24,7 @@ Automatización con OCR · Web Scraping resiliente · 2FA real · Analytics avan
 
 <br/>
 
-[🚀 Demo en vivo](#) · [📖 Documentación](#arquitectura) · [🐛 Reportar un Bug](mailto:Pipkon.proyectos@gmail.com) · [💡 Proponer Feature](https://github.com/Pipkonx/DAW/issues)
+[🚀 Demo en vivo](#) · [📖 Documentación](#arquitectura) · [🐛 Reportar un Bug](https://github.com/Pipkonx/DAW/issues/new?template=bug_report.md) · [💡 Proponer Feature](https://github.com/Pipkonx/DAW/issues/new?template=feature_request.md)
 
 </div>
 
