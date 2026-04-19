@@ -24,7 +24,7 @@ Automatización con OCR · Web Scraping resiliente · 2FA real · Analytics avan
 
 <br/>
 
-[🚀 Demo en vivo](#) · [📖 Documentación](#arquitectura) · [🐛 Reportar un Bug](../../issues) · [💡 Proponer Feature](../../issues)
+[🚀 Demo en vivo](#) · [📖 Documentación](#arquitectura) · [🐛 Reportar un Bug](mailto:Pipkon.proyectos@gmail.com) · [💡 Proponer Feature](https://github.com/Pipkonx/DAW/issues)
 
 </div>
 
@@ -61,7 +61,7 @@ Tener activos en tres brokers, dos bancos y un exchange de criptomonedas es la n
 
 | Dashboard Principal | Security Hub | Analytics |
 |:---:|:---:|:---:|
-| ![Dashboard](docs/screenshots/dashboard.png) | ![Security](docs/screenshots/security.png) | ![Analytics](docs/screenshots/analytics.png) |
+| ![Dashboard](docs/screenshots/dashboard.png) | ![Security](docs/screenshots/social.png) | ![Analytics](docs/screenshots/portfolio.png) |
 | KPIs globales y patrimonio | 2FA, sesiones y geolocalización | Distribución sectorial |
 
 </div>
@@ -315,19 +315,24 @@ Sistema de **Fallbacks en Cascada** con cuatro niveles de resiliencia:
 
 ### Requisitos Previos
 
-```
 PHP       >= 8.2     + Composer
 Node.js   >= 18      + NPM
 SQLite o MySQL
-API Key   → OCR.space (gratuita en ocr.space)
-```
+
+### API Keys Necesarias
+Para que el sistema funcione plenamente, deberás configurar las siguientes llaves en tu `.env`:
+- **OCR.space**: [Obtener gratis aquí](https://ocr.space/ocrapi) (Para lectura de extractos).
+- **Google OAuth**: [Google Console](https://console.cloud.google.com/) (Para Login Social).
+- **Stripe**: [Stripe Dashboard](https://dashboard.stripe.com/) (Para simulación de pagos).
+- **CoinGecko**: [CoinGecko API](https://www.coingecko.com/en/api) (Para precios cripto).
+- **MailTrap/Gmail**: (Para envío de facturas PDF por correo).
 
 ### Pasos
 
 ```bash
 # 1. Clonar el repositorio
-git clone https://github.com/tu-usuario/fintechpro.git
-cd fintechpro
+git clone https://github.com/Pipkonx/DAW.git
+cd DAW
 
 # 2. Instalar dependencias
 composer install
@@ -379,7 +384,7 @@ FintechPro aplica múltiples capas de protección:
 - **Políticas de acceso**: `PortfolioPolicy` garantiza que ningún usuario pueda acceder a datos de otro
 - **Sanitización OCR**: validación y normalización antes de cualquier persistencia
 
-Para reportar vulnerabilidades de seguridad, por favor usa la vía privada: [security@fintechpro.com](mailto:security@fintechpro.com)
+Para reportar vulnerabilidades de seguridad, por favor usa la vía privada: [Pipkon.proyectos@gmail.com](mailto:Pipkon.proyectos@gmail.com)
 
 ---
 
