@@ -79,10 +79,10 @@ Tener activos en tres brokers, dos bancos y un exchange de criptomonedas es la n
 
 <div align="center">
 
-| Dashboard Principal | Security Hub | Analytics |
+| Dashboard Principal | Análisis de Cartera | Social Hub |
 |:---:|:---:|:---:|
-| ![Dashboard](docs/screenshots/dashboard.png) | ![Security](docs/screenshots/security.png) | ![Analytics](docs/screenshots/analytics.png) |
-| KPIs globales y patrimonio | 2FA, sesiones y geolocalización | Distribución sectorial |
+| ![Dashboard](public/images/mockups/dashboard.png) | ![Portfolio](public/images/mockups/portfolio.png) | ![Social](public/images/mockups/social.png) |
+| KPIs globales y patrimonio | Diversificación y rendimiento | Comunidad e inversores 13F |
 
 </div>
 
