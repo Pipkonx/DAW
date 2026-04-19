@@ -1,5 +1,7 @@
 # 🚀 Proyecto Final 2ª Evaluación - Nosecaen S.L.
 
+Enlace al repositorio: [GitHub - Pipkonx/DAW](https://github.com/Pipkonx/DAW/tree/main/2DAW/DWES/htdocs/EjerciciosBasicos/P2Trim)
+
 Este repositorio está organizado en **4 Bloques Académicos** independientes. Cada carpeta contiene una versión de la aplicación configurada para destacar una competencia técnica específica del curso.
 
 ---
