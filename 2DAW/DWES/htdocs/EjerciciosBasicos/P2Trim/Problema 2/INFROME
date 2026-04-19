@@ -1,0 +1,5 @@
+tener dos consolas:
+npm run dev
+php artisan serve
+
+El que tenemos que abrir en el navegador es el npm run dev

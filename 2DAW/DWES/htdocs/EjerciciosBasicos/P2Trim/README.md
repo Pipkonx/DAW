@@ -1,64 +1,41 @@
-# Proyecto de Gestión de Incidencias - Nosecaen S.L.
+# 🚀 Proyecto Final 2ª Evaluación - Nosecaen S.L.
 
-Este documento detalla la solución a los problemas planteados en la actividad de Gestión de Incidencias.
-
-**Acceso Administrador:**
-*   **Usuario:** `admin@example.com`
-*   **Contraseña:** `admin123`
+Este repositorio está organizado en **4 Bloques Académicos** independientes. Cada carpeta contiene una versión de la aplicación configurada para destacar una competencia técnica específica del curso.
 
 ---
 
-### 🟢 Problema 1: Aplicación de Incidencias en Laravel
-He desarrollado el sistema completo siguiendo el framework Laravel (Modelos, Controladores y Blade).
-*   **Gestión de Tareas y Validaciones**: Se encuentra en el controlador [TaskController.php](app/Http/Controllers/TaskController.php).
-*   **Gestión de Clientes**: Se encuentra en [ClientController.php](app/Http/Controllers/ClientController.php).
-*   **Gestión de Cuotas y Facturas PDF/Email**: Implementado en [FeeController.php](app/Http/Controllers/FeeController.php).
-*   **Modelos de Datos**: Definidos en la carpeta [app/Models/](app/Models/).
-*   **Disparador de BD (Trigger)**: Creado mediante esta migración [add_trigger_to_tasks_table.php](database/migrations/2026_04_19_005749_add_trigger_to_tasks_table.php).
+## 📂 Guía Rápida de Diferencias
+
+| Carpeta | Enfoque Principal | Archivos "Protagonistas" |
+| :--- | :--- | :--- |
+| **[Problema 1](./Problema%201)** | **Arquitectura y Estándares** | [`app/Models`](./Problema%201/app/Models) <br> [`app/Http/Controllers`](./Problema%201/app/Http/Controllers) |
+| **[Problema 2](./Problema%202)** | **Software Testing** | [`IncidenciasTest.php`](./Problema%202/tests/Feature/IncidenciasTest.php) <br> [`Pest.php`](./Problema%202/tests/Pest.php) |
+| **[Problema 3](./Problema%203)** | **Interactividad (Frontend)** | [`resources/views/clients`](./Problema%203/resources/views/clients) <br> [`Index.vue`](./Problema%203/resources/js/Pages/Tasks/Index.vue) |
+| **[Problema 4](./Problema%204)** | **Servicios y APIs** | [`TaskApiController.php`](./Problema%204/app/Http/Controllers/Api/TaskApiController.php) <br> [`Fee.php`](./Problema%204/app/Models/Fee.php) |
 
 ---
 
-### 🟢 Problema 2: Pruebas Automatizadas
-He creado una batería de pruebas que verifican las rutas y el funcionamiento de los formularios.
-*   **Archivo de Tests**: [IncidenciasTest.php](tests/Feature/IncidenciasTest.php).
+## 🔍 Detalle del Contenido por Bloque
+
+### 1️⃣ Problema 1: Aplicación Robusta (Core)
+Se enfoca en el cumplimiento de la norma de **"Controladores Delgados"**.
+*   **Diferencia clave**: Si revisas los controladores de esta carpeta, verás que están limpios. Toda la lógica de consulta y cálculo está en los **Modelos** ([`app/Models`](./Problema%201/app/Models)), cumpliendo con el requisito de no saturar los controladores.
+*   **Documentación**: Uso estricto de **PSR-5 PHPDoc** en castellano.
+
+### 2️⃣ Problema 2: Calidad y Verificación
+Se enfoca en asegurar que la aplicación no falle tras cambios.
+*   **Diferencia clave**: Aquí el foco está en el directorio [`tests/`](./Problema%202/tests/). Incluye pruebas de integración ([`IncidenciasTest.php`](./Problema%202/tests/Feature/IncidenciasTest.php)) que simulan el envío de formularios de incidencias y validan los accesos de Admin vs Operario.
+
+### 3️⃣ Problema 3: Niveles de JS y Vue
+Se enfoca en eliminar la recarga de página (UX).
+*   **Diferencia clave**: Compara las vistas de clientes en [`resources/views/clients`](./Problema%203/resources/views/clients) y el componente moderno en [`Index.vue`](./Problema%203/resources/js/Pages/Tasks/Index.vue). Muestran la evolución tecnológica desde JS básico hasta una moderna SPA.
+
+### 4️⃣ Problema 4: Conectividad y Servicios
+Se enfoca en la comunicación con el exterior.
+*   **Diferencia clave**: Implementa el servicio de **Cambio de Moneda** dinámico en el modelo [`Fee.php`](./Problema%204/app/Models/Fee.php) y expone una **API REST** documentada con **Swagger** en el controlador [`TaskApiController.php`](./Problema%204/app/Http/Controllers/Api/TaskApiController.php).
 
 ---
 
-### 🟢 Problema 3: Generación Dinámica de Páginas Web
-
-#### 3.1 Integración de JS y DataTables (CDN)
-CRUD de clientes funcionando sin recargar la página usando Fetch API y DataTables.
-*   **Vista**: [index_js.blade.php](resources/views/clients/index_js.blade.php).
-*   **Ruta**: `/gestor-js`
-
-#### 3.2 Uso de Vue/Quasar usando CDN
-Interfaz desarrollada con Vue 3 y componentes de Quasar desde CDN.
-*   **Vista**: [index_quasar.blade.php](resources/views/clients/index_quasar.blade.php).
-*   **Ruta**: `/gestor-quasar`
-
-#### 3.3 Uso de Vue con VITE y componentes .vue
-Listado de tareas usando un componente de Vue 3 real y compilado con Vite a través de Inertia.
-*   **Componente .vue**: [Index.vue](resources/js/Pages/Tasks/Index.vue).
-*   **Ruta**: `/gestor-vue-vite`
-
----
-
-### 🟢 Problema 4: Servicios
-
-#### 4.1 HttpClient (API de Cambio de Moneda)
-Al marcar una cuota como pagada, se consulta automáticamente el tipo de cambio actual.
-*   **Implementación**: `FeeController@update` y `FeeController@pay`.
-
-#### 4.2 Documentación API con Swagger
-Documentación interactiva generada con L5-Swagger y Atributos de PHP 8.
-*   **URL**: `/api/documentation`
-*   **Controlador API**: [TaskApiController.php](app/Http/Controllers/Api/TaskApiController.php).
-
-#### 4.3 Autenticación con Redes Sociales (Socialite)
-Configurada la integración con Google (entorno preparado con variables ficticias).
-*   **Rutas**: `/auth/google` y `/auth/google/callback`.
-
-#### 4.4 Simulación de Pagos (PayPal)
-Simulación de pasarela de pago que actualiza el estado de la cuota y realiza la conversión a Euros.
-*   **Acción**: Botón "Pay" en el listado de cuotas.
-*   **Ruta**: `/fees/{id}/pay` (POST).
+**Autor:** Rafael  
+**Versión:** 1.0 (Académica)  
+**Entorno:** Laravel 12 + MySQL
