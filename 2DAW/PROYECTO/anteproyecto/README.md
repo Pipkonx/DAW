@@ -24,7 +24,7 @@ Automatización con OCR · Web Scraping resiliente · 2FA real · Analytics avan
 
 <br/>
 
-[🚀 Demo en vivo](#) · [📖 Documentación](#arquitectura) · [🐛 Reportar un Bug](https://github.com/Pipkonx/DAW/issues/new?template=bug_report.md) · [💡 Proponer Feature](https://github.com/Pipkonx/DAW/issues/new?template=feature_request.md)
+[🚀 Demo en vivo](#) · [📖 Documentación](#arquitectura) · [🐛 Reportar un Bug](../../issues) · [💡 Proponer Feature](../../issues)
 
 </div>
 
@@ -32,16 +32,28 @@ Automatización con OCR · Web Scraping resiliente · 2FA real · Analytics avan
 
 ## 📋 Tabla de Contenidos
 
-- [¿Por qué FintechPro?](#-por-qué-fintechpro)
-- [Capturas de Pantalla](#-capturas-de-pantalla)
-- [Stack Tecnológico](#-stack-tecnológico)
-- [Arquitectura](#-arquitectura)
-- [Funcionalidades](#-funcionalidades)
-- [Instalación](#-instalación)
-- [Credenciales Demo](#-credenciales-de-acceso-demo)
-- [Seguridad](#-seguridad)
-- [Roadmap](#-roadmap)
-- [Contribuir](#-contribuir)
+- [💡 ¿Por qué FintechPro?](#-por-qué-fintechpro)
+- [🖼️ Capturas de Pantalla](#️-capturas-de-pantalla)
+- [🛠️ Stack Tecnológico](#️-stack-tecnológico)
+- [🏗️ Arquitectura](#️-arquitectura)
+  - [Patrones de Diseño](#patrones-de-diseño-aplicados)
+  - [Principios SOLID · DRY · Modularización](#principios-de-ingeniería-de-software)
+  - [Flujo OCR / PDF](#flujo-de-importación-ocr--pdf)
+  - [Flujo 2FA](#flujo-de-autenticación-2fa-totp--rfc-6238)
+  - [Modelo de Datos](#modelo-de-datos)
+  - [Controladores](#controladores-y-responsabilidades)
+- [✨ Funcionalidades](#-funcionalidades)
+- [🚀 Instalación](#-instalación)
+  - [Requisitos Previos](#requisitos-previos)
+  - [API Keys Necesarias](#api-keys-necesarias)
+  - [Pasos](#pasos)
+  - [Docker](#docker-producción)
+- [🔑 Credenciales Demo](#-credenciales-de-acceso-demo)
+- [🔒 Seguridad](#-seguridad)
+- [🗺️ Roadmap](#️-roadmap)
+- [📊 Estado del Proyecto](#-estado-del-proyecto)
+- [🤝 Contribuir](#-contribuir)
+- [📄 Licencia](#-licencia)
 
 ---
 
@@ -61,7 +73,7 @@ Tener activos en tres brokers, dos bancos y un exchange de criptomonedas es la n
 
 | Dashboard Principal | Security Hub | Analytics |
 |:---:|:---:|:---:|
-| ![Dashboard](docs/screenshots/dashboard.png) | ![Security](docs/screenshots/social.png) | ![Analytics](docs/screenshots/portfolio.png) |
+| ![Dashboard](docs/screenshots/dashboard.png) | ![Security](docs/screenshots/security.png) | ![Analytics](docs/screenshots/analytics.png) |
 | KPIs globales y patrimonio | 2FA, sesiones y geolocalización | Distribución sectorial |
 
 </div>
@@ -315,24 +327,19 @@ Sistema de **Fallbacks en Cascada** con cuatro niveles de resiliencia:
 
 ### Requisitos Previos
 
+```
 PHP       >= 8.2     + Composer
 Node.js   >= 18      + NPM
 SQLite o MySQL
-
-### API Keys Necesarias
-Para que el sistema funcione plenamente, deberás configurar las siguientes llaves en tu `.env`:
-- **OCR.space**: [Obtener gratis aquí](https://ocr.space/ocrapi) (Para lectura de extractos).
-- **Google OAuth**: [Google Console](https://console.cloud.google.com/) (Para Login Social).
-- **Stripe**: [Stripe Dashboard](https://dashboard.stripe.com/) (Para simulación de pagos).
-- **CoinGecko**: [CoinGecko API](https://www.coingecko.com/en/api) (Para precios cripto).
-- **MailTrap/Gmail**: (Para envío de facturas PDF por correo).
+API Key   → OCR.space (gratuita en ocr.space)
+```
 
 ### Pasos
 
 ```bash
 # 1. Clonar el repositorio
-git clone https://github.com/Pipkonx/DAW.git
-cd DAW
+git clone https://github.com/tu-usuario/fintechpro.git
+cd fintechpro
 
 # 2. Instalar dependencias
 composer install
@@ -384,7 +391,7 @@ FintechPro aplica múltiples capas de protección:
 - **Políticas de acceso**: `PortfolioPolicy` garantiza que ningún usuario pueda acceder a datos de otro
 - **Sanitización OCR**: validación y normalización antes de cualquier persistencia
 
-Para reportar vulnerabilidades de seguridad, por favor usa la vía privada: [Pipkon.proyectos@gmail.com](mailto:Pipkon.proyectos@gmail.com)
+Para reportar vulnerabilidades de seguridad, por favor usa la vía privada: [security@fintechpro.com](mailto:security@fintechpro.com)
 
 ---
 
