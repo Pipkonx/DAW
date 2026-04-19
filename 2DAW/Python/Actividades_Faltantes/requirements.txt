@@ -1,0 +1,9 @@
+pandas
+openpyxl
+numpy
+flask
+matplotlib
+scikit-learn
+pygame
+mysql-connector-python
+yfinance

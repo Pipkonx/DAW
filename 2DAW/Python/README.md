@@ -17,6 +17,15 @@ Este módulo sirve como introducción a la programación con Python, explorando 
 ### 🏆 Evaluación
 - **[Actividad Evaluable](./Actividad%20Evaluable/)**: Proyecto integrador de Python donde se aplica la lógica de programación para resolver un problema de automatización o gestión de datos.
 
+### 🌟 Actividades Complementarias
+- **[Actividades Faltantes](./Actividades_Faltantes/)**: Colección de 9 actividades avanzadas que incluyen:
+  - 📊 **Pandas y NumPy**: Análisis y simulación de datos.
+  - 🖥️ **Tkinter**: Aplicaciones de escritorio (IMC, CRUD).
+  - 🌐 **Flask**: Creación de APIs REST.
+  - 📈 **Matplotlib**: Visualización de datos.
+  - 🤖 **Scikit-learn**: Inteligencia Artificial básica.
+  - 🎮 **PyGame**: Desarrollo de videojuegos.
+
 ---
 ## 📑 Documentación de Apoyo
 - **[Manual de Python (Brais)](./PYTHON_BRAIS.pdf)**: Guía detallada con la teoría y ejemplos prácticos vistos en clase.
