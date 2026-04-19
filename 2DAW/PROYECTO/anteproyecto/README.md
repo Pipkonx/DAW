@@ -105,6 +105,59 @@ FintechPro no es un conjunto de scripts. Está construido bajo estándares de in
 
 ---
 
+### Principios de Ingeniería de Software
+
+> Este proyecto no es solo código — es una arquitectura diseñada para durar.
+
+#### 🔷 SOLID
+
+Aplicación estricta de los cinco principios a lo largo de toda la base de código:
+
+| Principio | Aplicación en FintechPro |
+|:---|:---|
+| **S** — Single Responsibility | Cada servicio (`MarketDataService`, `OcrService`, `SecurityService`) tiene una única razón de cambio |
+| **O** — Open / Closed | Añadir un nuevo proveedor de datos es tan simple como implementar `MarketDataProviderInterface` sin tocar el código existente |
+| **L** — Liskov Substitution | Cualquier proveedor de precios puede sustituir a otro sin alterar el comportamiento del sistema |
+| **I** — Interface Segregation | Las interfaces de proveedor están segregadas por capacidad: `FetchesPrice`, `FetchesHistory`, `FetchesDividends` |
+| **D** — Dependency Inversion | Los controladores dependen de abstracciones (interfaces), nunca de implementaciones concretas |
+
+#### 📐 DRY — *Don't Repeat Yourself*
+
+La lógica de formateo monetario, cálculo de rentabilidad y visualización de datos está centralizada en helpers y composables compartidos. Ninguna regla de negocio existe en dos lugares distintos del código.
+
+```
+app/Services/                  ← Lógica de negocio única y reutilizable
+resources/js/composables/      ← Lógica de UI centralizada (useAssetTable, useTransactionForm)
+app/Helpers/                   ← Formateo numérico, divisas y fechas sin duplicación
+```
+
+#### 🧩 Modularización
+
+El dashboard y todas las vistas complejas están descompuestos en micro-componentes atómicos. Cada componente es testeable, reemplazable y agnóstico del contexto que lo consume.
+
+```
+resources/js/
+├── Pages/              ← Vistas de nivel de ruta
+├── Components/
+│   ├── Portfolio/      ← Componentes de dominio: cartera y activos
+│   ├── Charts/         ← Motor gráfico desacoplado
+│   ├── Security/       ← UI de 2FA y auditoría de sesiones
+│   └── UI/             ← Átomos reutilizables (Badge, Card, Modal...)
+└── composables/        ← Lógica reactiva extraída y compartida
+```
+
+#### 🔒 Seguridad por Diseño
+
+La seguridad no es una capa añadida a posteriori — está integrada en la arquitectura desde el primer commit:
+
+- **XSS**: escapado automático en todas las vistas Blade e Inertia/Vue
+- **CSRF**: tokens por sesión en cada request mutante
+- **SQL Injection**: Eloquent ORM con queries parametrizadas en toda la capa de datos
+- **Control de acceso**: `PortfolioPolicy` y `AssetPolicy` garantizan que ningún usuario acceda a recursos de otro, incluso manipulando IDs en la URL
+- **2FA TOTP**: secretos por usuario derivados criptográficamente, nunca expuestos en logs ni en texto plano
+
+---
+
 ### Flujo de Importación OCR / PDF
 
 ```mermaid

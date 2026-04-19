@@ -1,4 +1,3 @@
--- Eliminar la base de datos si ya existe (¡CUIDADO! Esto borrará todos los datos existentes)
 DROP DATABASE IF EXISTS `expense_tracker_db`;
 
 -- Crear la base de datos
