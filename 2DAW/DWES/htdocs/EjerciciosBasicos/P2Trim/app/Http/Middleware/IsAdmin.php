@@ -2,6 +2,14 @@
 
 namespace App\Http\Middleware;
 
+/*
+|--------------------------------------------------------------------------
+| EXPLICACIÓN: use Closure;
+|--------------------------------------------------------------------------
+| Un "Closure" es simplemente una función que se puede guardar en una 
+| variable y pasarse de un lado a otro. Aquí se usa para decirle a Laravel: 
+| "Si todo está bien, pasa a la siguiente función ($next)".
+*/
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -9,16 +17,16 @@ use Symfony\Component\HttpFoundation\Response;
 class IsAdmin
 {
     /**
-     * Handle an incoming request.
-     *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
+     * Gestiona una petición que entra a la web.
      */
     public function handle(Request $request, Closure $next): Response
     {
+        // Si el usuario está identificado y su rol es 'admin', le dejamos pasar
         if (auth()->check() && auth()->user()->role === 'admin') {
             return $next($request);
         }
 
-        abort(403, 'Acceso no autorizado.');
+        // Si no es admin, le cortamos el paso con un error 403
+        abort(403, 'Acceso no autorizado. Tienes que ser administrador.');
     }
 }

@@ -11,14 +11,17 @@ use Illuminate\Validation\Rule;
 
 class ClientController extends Controller
 {
-    // Métodos para Problem 3.1 (API)
+    // --- MÉTODOS PARA EL PROBLEMA 3.1 (Uso con JavaScript/DataTables) ---
+    
     public function apiIndex()
     {
+        // Devuelve todos los clientes en formato JSON para que el JS los lea
         return response()->json(Client::all());
     }
 
     public function apiStore(Request $request)
     {
+        // Guarda un cliente nuevo enviado por la API de JS
         $validated = $request->validate([
             'cif' => 'required|string|max:20',
             'name' => 'required|string|max:255',
@@ -33,12 +36,16 @@ class ClientController extends Controller
 
     public function apiDestroy(Client $client)
     {
+        // Borra un cliente cuando se pulsa el botón en la tabla de JS
         $client->delete();
         return response()->json(['success' => true]);
     }
 
+    // --- MÉTODOS CRUD ESTÁNDAR (Páginas Web normales) ---
+
     public function index()
     {
+        // Lista todos los clientes en la vista normal de Blade
         return view('clients.index', [
             'clients' => Client::all()
         ]);
@@ -46,6 +53,7 @@ class ClientController extends Controller
 
     public function create()
     {
+        // Formulario para crear un cliente nuevo
         return view('clients.create', [
             'countries' => ['España', 'Portugal', 'Francia', 'Italia']
         ]);
@@ -53,6 +61,7 @@ class ClientController extends Controller
 
     public function store(Request $request)
     {
+        // Valida y guarda el cliente desde el formulario web
         $validated = $request->validate([
             'cif' => 'required|string|max:20|unique:clients',
             'name' => 'required|string|max:255',
@@ -71,6 +80,7 @@ class ClientController extends Controller
 
     public function edit(Client $client)
     {
+        // Carga el formulario de edición con los datos del cliente
         return view('clients.edit', [
             'client' => $client,
             'countries' => ['España', 'Portugal', 'Francia', 'Italia']
@@ -79,6 +89,7 @@ class ClientController extends Controller
 
     public function update(Request $request, Client $client)
     {
+        // Actualiza los datos del cliente en la base de datos
         $validated = $request->validate([
             'cif' => ['required', 'string', 'max:20', Rule::unique('clients')->ignore($client->id)],
             'name' => 'required|string|max:255',
@@ -98,6 +109,7 @@ class ClientController extends Controller
 
     public function destroy(Client $client)
     {
+        // En lugar de borrarlo, lo marcamos como "no activo" (Baja lógica)
         $client->update(['is_active' => false]);
         return redirect()->route('clients.index')->with('success', 'Cliente dado de baja con éxito.');
     }

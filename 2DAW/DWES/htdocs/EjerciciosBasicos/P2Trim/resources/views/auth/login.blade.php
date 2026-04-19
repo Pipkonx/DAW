@@ -43,5 +43,13 @@
                 {{ __('Log in') }}
             </x-primary-button>
         </div>
+
+        <!-- Botón Socialite (Problema 4.3) -->
+        <div class="mt-4 border-t pt-4">
+            <a href="{{ route('auth.google') }}" class="flex items-center justify-center w-full px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50">
+                <i class="fab fa-google mr-2 text-red-500"></i> Entrar con Google
+            </a>
+        </div>
+
     </form>
 </x-guest-layout>

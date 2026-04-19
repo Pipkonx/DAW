@@ -15,18 +15,23 @@ class TaskController extends Controller
 {
     public function index(Request $request)
     {
+        // Cogemos el usuario que ha entrado a la web
         $user = auth()->user();
+        
+        // Empezamos la consulta trayendo también los datos de cliente, operario y provincia (para que la web cargue rápido)
         $query = Task::with(['client', 'operator', 'province']);
 
-        // Los operarios solo ven sus propias tareas asignadas
+        // Si es un operario, solo le enseñamos las tareas que él tenga que hacer
         if ($user && $user->role === 'operator') {
             $query->where('operator_id', $user->id);
         }
 
+        // Filtramos por estado si el usuario lo pide en la web
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
 
+        // Filtramos por cliente si el usuario lo pide
         if ($request->filled('client_id')) {
             $query->where('client_id', $request->client_id);
         }
@@ -40,6 +45,7 @@ class TaskController extends Controller
 
     public function create()
     {
+        // Muestra el formulario para crear una tarea nueva asignando cliente y operario
         return view('tasks.create', [
             'clients' => Client::all(),
             'operators' => User::where('role', 'operator')->get(),
@@ -49,6 +55,7 @@ class TaskController extends Controller
 
     public function store(Request $request)
     {
+        // Validamos que todos los campos del formulario sean correctos
         $validated = $request->validate([
             'client_id' => 'required|exists:clients,id',
             'contact_person' => 'required|string|max:255',
@@ -63,14 +70,15 @@ class TaskController extends Controller
             'previous_notes' => 'nullable|string',
         ]);
 
+        // Guardamos la tarea en la base de datos
         Task::create($validated);
 
-        return redirect()->route('tasks.index')->with('success', 'Tarea creada y asignada.');
+        return redirect()->route('tasks.index')->with('success', 'Tarea creada y asignada al operario correctamente.');
     }
 
     public function show(Task $task)
     {
-        // Permitimos que tanto administradores como operarios vean los detalles
+        // Muestra el detalle de una tarea concreta
         return view('tasks.show', [
             'task' => $task->load(['client', 'operator', 'province'])
         ]);
@@ -78,9 +86,10 @@ class TaskController extends Controller
 
     public function update(Request $request, Task $task)
     {
+        // Si el usuario es un operario, solo puede cambiar ciertas cosas
         if (auth()->user()->isOperator()) {
             if ($task->operator_id !== auth()->id()) {
-                abort(403);
+                abort(403, 'No puedes editar una tarea que no tienes asignada.');
             }
 
             $validated = $request->validate([
@@ -90,7 +99,9 @@ class TaskController extends Controller
                 'attachment' => 'nullable|file|mimes:pdf,doc,docx,jpg,png|max:2048',
             ]);
 
+            // Si sube un archivo (foto o documento), lo guardamos
             if ($request->hasFile('attachment')) {
+                // Si ya había uno, lo borramos antes de poner el nuevo
                 if ($task->attachment_path) {
                     Storage::disk('private')->delete($task->attachment_path);
                 }
@@ -100,6 +111,7 @@ class TaskController extends Controller
 
             $task->update($validated);
         } else {
+            // Si eres Admin, puedes cambiar cualquier dato de la tarea
             $validated = $request->validate([
                 'client_id' => 'required|exists:clients,id',
                 'contact_person' => 'required|string|max:255',
@@ -120,17 +132,19 @@ class TaskController extends Controller
             $task->update($validated);
         }
 
-        return redirect()->route('tasks.index')->with('success', 'Tarea actualizada.');
+        return redirect()->route('tasks.index')->with('success', 'Tarea actualizada con éxito.');
     }
 
     public function destroy(Task $task)
     {
+        // Borra la tarea
         $task->delete();
         return redirect()->route('tasks.index')->with('success', 'Tarea eliminada.');
     }
 
     public function createPublic()
     {
+        // Formulario público para que un cliente nos envíe una incidencia sin registrarse
         return view('tasks.public_create', [
             'provinces' => Province::all()
         ]);
@@ -138,10 +152,12 @@ class TaskController extends Controller
 
     public function storePublic(Request $request)
     {
+        // Buscamos si el cliente existe por su CIF y su teléfono
         $client = Client::where('cif', $request->cif)
                         ->where('phone', $request->phone)
                         ->first();
 
+        // Si no lo encontramos, avisamos de que los datos no son correctos
         if (!$client) {
             return back()->withErrors(['cif' => 'Los datos de CIF y teléfono no coinciden con nuestros registros.']);
         }
@@ -160,14 +176,16 @@ class TaskController extends Controller
         $validated['client_id'] = $client->id;
         $validated['status'] = 'pending';
 
+        // Creamos la tarea que el cliente ha enviado desde la zona pública
         Task::create($validated);
 
         return view('tasks.public_success');
     }
 
-    // Método para Problem 3.3 (Vue + Vite + Inertia)
+    // --- MÉTODOS PARA EL PROBLEMA 3.3 (Vistas con Vue moderno) ---
     public function indexVite()
     {
+        // Envía los datos a un componente de Vue 3 a través de Inertia
         return Inertia::render('Tasks/Index', [
             'tasks' => Task::with('client', 'operator')->latest()->get(),
             'operators' => User::where('role', 'operator')->get(),

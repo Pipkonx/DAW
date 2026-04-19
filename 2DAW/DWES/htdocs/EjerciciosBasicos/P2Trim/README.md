@@ -40,3 +40,25 @@ Interfaz desarrollada con Vue 3 y componentes de Quasar desde CDN.
 Listado de tareas usando un componente de Vue 3 real y compilado con Vite a través de Inertia.
 *   **Componente .vue**: [Index.vue](resources/js/Pages/Tasks/Index.vue).
 *   **Ruta**: `/gestor-vue-vite`
+
+---
+
+### 🟢 Problema 4: Servicios
+
+#### 4.1 HttpClient (API de Cambio de Moneda)
+Al marcar una cuota como pagada, se consulta automáticamente el tipo de cambio actual.
+*   **Implementación**: `FeeController@update` y `FeeController@pay`.
+
+#### 4.2 Documentación API con Swagger
+Documentación interactiva generada con L5-Swagger y Atributos de PHP 8.
+*   **URL**: `/api/documentation`
+*   **Controlador API**: [TaskApiController.php](app/Http/Controllers/Api/TaskApiController.php).
+
+#### 4.3 Autenticación con Redes Sociales (Socialite)
+Configurada la integración con Google (entorno preparado con variables ficticias).
+*   **Rutas**: `/auth/google` y `/auth/google/callback`.
+
+#### 4.4 Simulación de Pagos (PayPal)
+Simulación de pasarela de pago que actualiza el estado de la cuota y realiza la conversión a Euros.
+*   **Acción**: Botón "Pay" en el listado de cuotas.
+*   **Ruta**: `/fees/{id}/pay` (POST).

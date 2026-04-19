@@ -13,6 +13,7 @@ This application is a Laravel application and its main Laravel ecosystems packag
 - laravel/framework (LARAVEL) - v12
 - laravel/prompts (PROMPTS) - v0
 - laravel/sanctum (SANCTUM) - v4
+- laravel/socialite (SOCIALITE) - v5
 - tightenco/ziggy (ZIGGY) - v2
 - laravel/breeze (BREEZE) - v2
 - laravel/mcp (MCP) - v0

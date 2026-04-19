@@ -35,6 +35,7 @@
                                 <th>Concepto</th>
                                 <th>Fecha</th>
                                 <th>Importe</th>
+                                <th>Equiv. EUR</th>
                                 <th>Pagado</th>
                                 <th>Factura</th>
                                 <th>Acciones</th>
@@ -49,6 +50,13 @@
                                     <td>{{ $fee->emission_date }}</td>
                                     <td>{{ number_format($fee->amount, 2) }} {{ $fee->client->currency }}</td>
                                     <td>
+                                        @if($fee->amount_eur)
+                                            <span class="text-secondary small">{{ number_format($fee->amount_eur, 2) }} €</span>
+                                        @else
+                                            <span class="text-muted small">-</span>
+                                        @endif
+                                    </td>
+                                    <td>
                                         <span class="badge {{ $fee->is_paid == 'S' ? 'bg-success' : 'bg-warning' }}">
                                             {{ $fee->is_paid == 'S' ? 'SÍ' : 'NO' }}
                                         </span>
@@ -59,6 +67,14 @@
                                         </a>
                                     </td>
                                     <td>
+                                        @if($fee->is_paid == 'N')
+                                            <form action="{{ route('fees.pay', $fee) }}" method="POST" class="d-inline">
+                                                @csrf
+                                                <button type="submit" class="btn btn-sm btn-warning" title="Simular pago">
+                                                    <i class="fab fa-paypal"></i> Pay
+                                                </button>
+                                            </form>
+                                        @endif
                                         <form action="{{ route('fees.destroy', $fee) }}" method="POST" class="d-inline">
                                             @csrf
                                             @method('DELETE')

@@ -13,9 +13,7 @@ class User extends Authenticatable
     use HasFactory, Notifiable;
 
     /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
+     * Los atributos que se pueden asignar masivamente.
      */
     protected $fillable = [
         'dni',
@@ -30,25 +28,32 @@ class User extends Authenticatable
         'password',
     ];
 
+    /**
+     * Relación: Un operario tiene muchas tareas asignadas.
+     */
     public function tasks()
     {
         return $this->hasMany(Task::class, 'operator_id');
     }
 
+    /**
+     * Comprueba si el usuario es administrador.
+     */
     public function isAdmin()
     {
         return $this->role === 'admin';
     }
 
+    /**
+     * Comprueba si el usuario es un operario.
+     */
     public function isOperator()
     {
         return $this->role === 'operator';
     }
 
     /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
+     * Atributos que deben ocultarse (no se envían en JSON).
      */
     protected $hidden = [
         'password',
@@ -56,9 +61,7 @@ class User extends Authenticatable
     ];
 
     /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
+     * Define cómo se deben transformar los datos al leerlos.
      */
     protected function casts(): array
     {
