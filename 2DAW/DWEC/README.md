@@ -1,122 +1,39 @@
 # 🌐 Desarrollo Web en Entorno Cliente (DWEC)
 
-Colección de actividades y prácticas del módulo DWEC de 2º DAW. Ejercicios progresivos para dominar HTML, CSS y JavaScript en el navegador.
-
-## 🎯 Objetivos del módulo
-
-- Manejar el DOM y los eventos del navegador
-- Validar formularios y gestionar datos con JSON
-- Practicar lógica de programación y buenas prácticas con JavaScript moderno
-- Aplicar estilos y accesibilidad en interfaces web
-
-## 📁 Actividades disponibles
-
-### Fundamentos y sintaxis
-- **[01_EjerciciosBasicos](./01_EjerciciosBasicos/)** - Sintaxis de JS, variables, funciones, condicionales y bucles
-- **[02_Ejercicio_DOM](./02_Ejercicio_DOM/)** - Selección y manipulación de elementos del DOM, eventos
-
-### Interacción y formularios
-- **[03_Mostrar-Ocultar](./03_Mostrar-Ocultar/)** - Interacción con clases y estilos para mostrar/ocultar elementos
-- **[04_Formularios](./04_Formularios/)** - Envío, control y tratamiento de datos de formularios
-- **[05_Seleccion_Multiple](./05_Seleccion_Multiple/)** - Listas, selección múltiple y gestión de opciones
-
-### Aplicaciones prácticas
-- **[06_factura](./06_factura/)** - Cálculo de totales, IVA y descuentos
-- **[07_BuscarArticulo](./07_BuscarArticulo/)** - Filtrado y búsqueda en colecciones de datos
-- **[08_ValiacionFormulario](./08_ValiacionFormulario/)** - Validación de campos en cliente
-- **[09_FValidaciondeRegistro](./09_FValidaciondeRegistro/)** - Validación de registros completos
-
-### Datos y APIs
-- **[10_JsonApiRest](./10_JsonApiRest/)** - Lectura y procesamiento de datos en formato JSON
-- **[11_Tienda](./11_Tienda/)** - Aplicación completa de tienda online con carrito de compras
-- **[12_Pokemon](./12_Pokemon/)** - Pokédex interactiva con búsqueda y filtrado por tipos
-
-### Repaso
-- **[99_Repaso](./99_Repaso/)** - Ejercicios de refuerzo y resumen
-
-## 🚀 Cómo probar las actividades
-
-### Opción 1: VS Code + Live Server (Recomendado)
-1. Abre la carpeta de la actividad en VS Code
-2. Instala la extensión "Live Server" si no la tienes
-3. Clic derecho en `index.html` → "Open with Live Server"
-4. Se abrirá automáticamente en el navegador con recarga automática
-
-### Opción 2: Servidor Python
-```bash
-# Navega a la carpeta de la actividad
-cd ruta/a/la/actividad
-# Inicia servidor (Python 3)
-python -m http.server 8000
-# Visita: http://localhost:8000
-```
-
-### Opción 3: Servidor Node.js
-```bash
-# Instala http-server globalmente (una sola vez)
-npm install -g http-server
-# En la carpeta de la actividad
-npx http-server -p 8000
-# Visita: http://localhost:8000
-```
-
-### Opción 4: Abrir directamente
-- Simplemente abre el archivo `index.html` en tu navegador
-- ⚠️ Algunas funcionalidades pueden no funcionar por restricciones CORS
-
-## 🛠️ Requisitos técnicos
-
-- **Navegador moderno**: Chrome, Firefox, Edge o Safari
-- **Editor de código**: VS Code (recomendado), Sublime Text, Atom
-- **Node.js** (opcional): Para herramientas de desarrollo adicionales
-
-## 📋 Estructura típica de cada actividad
-
-```
-actividad/
-├── index.html          # Archivo principal
-├── style.css          # Estilos (si aplica)
-├── script.js          # Lógica JavaScript
-├── README.md          # Instrucciones específicas (si existe)
-└── assets/            # Recursos adicionales (imágenes, etc.)
-```
-
-## ✅ Convenciones y buenas prácticas
-
-- **JavaScript moderno**: `let/const`, funciones flecha, destructuring
-- **Nombres descriptivos**: Variables y funciones con nombres claros
-- **Validaciones**: Manejo de errores en formularios y entrada de datos
-- **Comentarios**: Solo donde aporten claridad real
-- **Accesibilidad**: Etiquetas semánticas y atributos ARIA cuando sea necesario
-
-## 🔧 Depuración y desarrollo
-
-1. **Consola del navegador**: `F12` → Console para ver errores y logs
-2. **Elementos**: `F12` → Elements para inspeccionar DOM y CSS
-3. **Network**: Para revisar peticiones HTTP y respuestas
-4. **Breakpoints**: Usa `debugger;` en el código o puntos de interrupción en DevTools
-
-## 📚 Recursos recomendados
-
-- **[MDN Web Docs](https://developer.mozilla.org/es/)** - Documentación oficial de JavaScript
-- **[JavaScript.info](https://es.javascript.info/)** - Tutorial completo y actualizado
-- **[Web.dev](https://web.dev/learn/)** - Guías de Google para desarrollo web
-- **[Can I Use](https://caniuse.com/)** - Compatibilidad de características web
-
-## 📝 Notas importantes
-
-- Cada actividad incluye su propio `index.html` como punto de entrada
-- Revisa la consola del navegador si algo no funciona como esperado
-- Algunas actividades pueden requerir archivos JSON o APIs externas
-- Los enlaces son relativos y funcionan tanto en GitHub como en VS Code
-
-## 🤝 Contribuciones
-
-Si encuentras mejoras o errores:
-1. Abre un issue describiendo el problema
-2. Propón cambios mediante pull request
-3. Asegúrate de que el código sigue las convenciones establecidas
-
+---
+### 🧭 Navegación Rápida por Módulos
+[🏠 Inicio](../README.md) | [🌐 DWEC](../DWEC) | [🖥️ DWES](../DWES) | [🎨 DIW](../DiseñoInterfacesWeb) | [🚀 DAW](../DespliegueDeAplicacionesWeb) | [🐍 Python](../Python) | [📂 Proyecto](../PROYECTO)
 ---
 
-💡 **Tip**: Usa las herramientas de desarrollo del navegador (`F12`) para experimentar y aprender más sobre cada ejercicio.
+Colección de actividades y prácticas del módulo DWEC de 2º DAW. Ejercicios progresivos para dominar HTML, CSS y JavaScript en el navegador.
+
+## 📁 Detalle de Actividades (htdocs/ACTIVIDADES)
+
+### 🧱 Fundamentos y Lógica
+- **[01_EjerciciosBasicos](./htdocs/ACTIVIDADES/01_EjerciciosBasicos/)**: Introducción a la sintaxis de JavaScript. Variables, tipos de datos, estructuras de control (`if`, `for`, `while`) y funciones básicas.
+- **[02_Ejercicio_DOM](./htdocs/ACTIVIDADES/02_Ejercicio_DOM/)**: Manipulación dinámica del Document Object Model. Selección de elementos, modificación de contenido y gestión de eventos de usuario.
+
+### 🖱️ Interactividad Avanzada
+- **[03_Mostrar-Ocultar](./htdocs/ACTIVIDADES/03_Mostrar-Ocultar/)**: Implementación de elementos colapsables y modales mediante la manipulación de clases CSS y visibilidad desde JS.
+- **[04_Formularios](./htdocs/ACTIVIDADES/04_Formularios/)**: Control total sobre la entrada de datos. Captura de eventos `submit`, lectura de campos y tratamiento de información en tiempo real.
+- **[05_Seleccion_Multiple](./htdocs/ACTIVIDADES/05_Seleccion_Multiple/)**: Lógica para gestionar listas de selección, checkboxes y radio buttons, permitiendo interacciones complejas.
+
+### 🧮 Aplicaciones de Negocio
+- **[06_factura](./htdocs/ACTIVIDADES/06_factura/)**: Generador de facturas dinámico. Cálculo de bases imponibles, aplicación de distintos tipos de IVA y gestión de descuentos.
+- **[07_BuscarArticulo](./htdocs/ACTIVIDADES/07_BuscarArticulo/)**: Implementación de buscadores y filtros. Uso de métodos de array como `filter`, `find` y `map` sobre colecciones de datos.
+- **[08_ValiacionFormulario](./htdocs/ACTIVIDADES/08_ValiacionFormulario/)**: Validación robusta en el cliente. Uso de expresiones regulares (RegEx) y feedback visual inmediato al usuario.
+- **[09_FValidaciondeRegistro](./htdocs/ACTIVIDADES/09_FValidaciondeRegistro/)**: Flujo completo de registro de usuarios con validaciones cruzadas (ej. confirmación de contraseña) y políticas de seguridad.
+
+### 📡 APIs y Datos Externos
+- **[10_JsonApiRest](./htdocs/ACTIVIDADES/10_JsonApiRest/)**: Consumo de servicios web. Peticiones `fetch`, manejo de promesas y renderizado de respuestas JSON en el DOM.
+- **[11_Tienda](./htdocs/ACTIVIDADES/11_Tienda/)**: Desarrollo de un E-commerce básico. Gestión de catálogo, carrito de compras persistente y cálculo de totales.
+- **[12_Pokemon](./htdocs/ACTIVIDADES/12_Pokemon/)**: Pokédex interactiva que consume la PokéAPI. Filtrado por tipos, búsqueda y visualización de estadísticas detalladas.
+
+---
+### 🧪 Refuerzo
+- **[99_Repaso](./htdocs/ACTIVIDADES/99_Repaso/)**: Miscelánea de ejercicios para consolidar todos los conceptos anteriores antes de proyectos finales.
+
+---
+<div align="center">
+[Volver al Inicio](../README.md)
+</div>

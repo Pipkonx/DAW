@@ -1,3 +1,24 @@
+# 💼 Formación en Centros de Trabajo (FCT) — Prácticas de Empresa
+
+---
+### 🧭 Navegación Rápida por Módulos
+[🏠 Inicio](../README.md) | [🌐 DWEC](../DWEC) | [🖥️ DWES](../DWES) | [🎨 DIW](../DiseñoInterfacesWeb) | [🚀 DAW](../DespliegueDeAplicacionesWeb) | [🐍 Python](../Python) | [📂 Proyecto](../PROYECTO)
+---
+
+Este directorio documenta el periodo de prácticas realizado en empresa, un pilar fundamental del ciclo DAW para aplicar los conocimientos académicos en entornos de producción reales.
+
+## 📋 Objetivos de las Prácticas
+- **Integración en equipos ágiles**: Uso de metodologías Scrum/Kanban.
+- **Resolución de tickets**: Mantenimiento y corrección de errores en aplicaciones existentes.
+- **Desarrollo de nuevas funcionalidades**: Implementación de requisitos de cliente desde cero.
+- **Entornos profesionales**: Trabajo con herramientas de CI/CD, Git avanzado y despliegue cloud.
+
+## 🛠️ Tecnologías y Herramientas utilizadas
+- Gestión: Jira / Trello.
+- Stack: Tecnologías específicas de la empresa (Laravel, Vue, React, Docker, etc.).
+- Control de Versiones: GitLab / GitHub / Bitbucket.
+
+
 Pasar de breeze a laravel ui porque es más sencillo
 
 Examen santi
@@ -17,11 +38,14 @@ crud usando todas las funciones de laravel y sus relaciones, nos da la base de d
 ### Login register vista como admin y tablas y demas
 
 Primer paso
+
 ```bash
 composer create-project laravel/laravel:^12.0 proyecto
 cd proyecto-filament
 ```
+
 En el env tenemos que tner lo siguiente
+
 ```bash
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
@@ -33,32 +57,40 @@ DB_PASSWORD=
 
 Entramos en la carpeta de xamp php y buscamos el php.ini y descomentamos el intl y el zip
 Y ahora ejecutamos lo siguiente
+
 ```bash
 composer require filament/filament:3.x-dev -W --ignore-platform-reqs
 ```
+
 Y ahora creamos los modelos y migraciones con lo siguiente
+
 ```bash
 php artisan filament:install --panels
 ```
+
 Nos preguntara varias cosas la rpimera la dejamos predeterminada a la segunda le damos que no
 
 Hacemos ahora el migrate
+
 ```bash
 php artisan migrate
 ```
 
 Ahora creamos lo del usuario
+
 ```bash
 php artisan make:filament-user
 ```
 
 Ahora pasamos acrear el resource para tener el crud
+
 ```bash
 php artisan make:filament-resource Product
 ```
 
 Abre app/Providers/Filament/AdminPanelProvider.php.
 Añade la función registration() dentro de panel():
+
 ```bash
 public function panel(Panel $panel): Panel
 {
@@ -72,6 +104,7 @@ public function panel(Panel $panel): Panel
 ```
 
 Ahora agregamos el starter kit de breezer
+
 ```bash
 composer require laravel/breeze --dev -W --ignore-platform-reqs
 php artisan breeze:install blade
@@ -79,22 +112,28 @@ php artisan migrate
 ```
 
 Y por ultimo el
+
 ```bash
 npm install
 npm run dev
 ```
 
 Todo esto era solo para el auth y tablas pero ahora viene el crud
+
 ```bash
 php artisan make:filament-resource User
 ```
+
 Y ya podríamos entrar en /login para acceder como un usuario o a /admin/login para las vistas como administrador
 
 Si no se muestran es porque nos falta crear el modelo y la migracion
+
 ```bash
 php artisan make:model Product -m
 ```
+
 Ahora tendríamos que entrar a las migracion que acabamos de crear y pegar lo siguiente (xxxx_xx_xx_create_products_table.php)
+
 ```bash
 public function up(): void
 {
@@ -109,11 +148,13 @@ public function up(): void
 ```
 
 Y luego pegamos
+
 ```bash
 php artisan migrate
 ```
 
 Ahora entramos al modelo de producto en app model product
+
 ```bash
 namespace App\Models;
 
@@ -128,8 +169,10 @@ class Product extends Model
     protected $guarded = [];
 }
 ```
+
 Ahora vamos a poner los inputs del formulario Abre el archivo app/Filament/Resources/ProductResource.php.
 Buscamos public static function form(Form $form): Form
+
 ```bash
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
@@ -157,7 +200,9 @@ public static function form(Form $form): Form
         ]);
 }
 ```
+
 Ahora para ver la lista funcion table
+
 ```bash
 use Filament\Tables\Columns\TextColumn;
 
@@ -177,6 +222,7 @@ public static function table(Table $table): Table
 
 Ahora para ver a los usuarios vamos a modificar el user resource
 app/Filament/Resources/UserResource.php
+
 ```bash
 use Filament\Forms\Components\TextInput;
 
@@ -201,7 +247,9 @@ public static function form(Form $form): Form
         ]);
 }
 ```
+
 Misma dinámica configuramos la lista de la tabla
+
 ```bash
 use Filament\Tables\Columns\TextColumn;
 
@@ -232,11 +280,15 @@ public static function table(Table $table): Table
 ```
 
 # Relaciones
+
 ## Creamos la migracion
+
 ```bash
 php artisan make:migration add_user_id_to_products_table
 ```
+
 Entramos a la migracion creada database/migrations/xxxx_add_user_id...
+
 ```bash
 public function up(): void
 {
@@ -245,7 +297,9 @@ public function up(): void
     });
 }
 ```
+
 Entramos a app/Models/Product.php
+
 ```bash
 public function user()
 {
@@ -259,9 +313,8 @@ public function products()
 }
 ```
 
-
-
 Implementar el Select en ProductResource.php
+
 ```bash
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
@@ -300,8 +353,8 @@ public static function form(Form $form): Form
 }
 ```
 
-
 # Filtro
+
 ```bash
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
@@ -348,6 +401,7 @@ public static function table(Table $table): Table
         ]);
 }
 ```
+
 ## ¿Qué has logrado con esto para tu examen/ejercicio?
 
 Relaciones: Has usado belongsTo y hasMany (Relaciones de Laravel).
@@ -361,6 +415,7 @@ Prueba final: Ve a tu panel /admin/products, crea un producto nuevo y verás que
 ---
 
 ### Arreglar el login y register para que no se peleen breezer y filament, como usamos filament pasaré todo allí
+
 Comentamos el bloque de dashboard y ponemos el siguiente
 
 ```bash

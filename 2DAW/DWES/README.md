@@ -1,88 +1,32 @@
 # 🖥️ Desarrollo Web en Entorno Servidor (DWES)
 
-<div align="center">
-  <img src="https://img.shields.io/badge/PHP-777BB4?style=for-the-badge&logo=php&logoColor=white" alt="PHP"/>
-  <img src="https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white" alt="MySQL"/>
-  <img src="https://img.shields.io/badge/Laravel-FF2D20?style=for-the-badge&logo=laravel&logoColor=white" alt="Laravel"/>
-  <img src="https://img.shields.io/badge/Apache-D22128?style=for-the-badge&logo=apache&logoColor=white" alt="Apache"/>
-</div>
-
-## 📋 Descripción del Módulo
-
-El módulo de Desarrollo Web en Entorno Servidor (DWES) es una parte fundamental del Ciclo Formativo de Grado Superior en Desarrollo de Aplicaciones Web. En este módulo aprenderemos a crear aplicaciones web dinámicas utilizando tecnologías del lado del servidor, gestionar bases de datos y desarrollar APIs.
-
-## 📚 Contenidos Principales
-
-- **Programación en PHP**: Fundamentos, sintaxis y características avanzadas
-- **Bases de datos**: MySQL, MariaDB, diseño y consultas SQL
-- **Frameworks backend**: Laravel, Symfony, CodeIgniter
-- **APIs RESTful**: Diseño, implementación y consumo
-- **Seguridad web**: Autenticación, autorización, protección contra ataques
-- **Arquitectura MVC**: Modelos, vistas y controladores
-- **Testing y depuración**: Herramientas y metodologías
-
-## 🚀 Proyectos y Ejercicios
-
-### 📁 [EjerciciosBasicos](./htdocs/EjerciciosBasicos/)
-
-Ejercicios prácticos para dominar los fundamentos de PHP y MySQL:
-
-#### 📂 [T1 - Introducción a PHP](./htdocs/EjerciciosBasicos/T1/)
-- ✅ Sintaxis básica y variables
-- ✅ Estructuras de control
-- ✅ Funciones y arrays
-- ✅ Formularios y procesamiento de datos
-
-#### 📂 [T2 - Estructuras de Control y Funciones](./htdocs/EjerciciosBasicos/T2/)
-- ✅ Estructuras condicionales (if, switch)
-- ✅ Bucles (for, while, do-while)
-- ✅ Funciones definidas por el usuario
-- ✅ Arrays y manipulación de datos
-
-## 💻 Tecnologías Utilizadas
-
-- **PHP**: Lenguaje principal para la programación del lado del servidor
-- **MySQL**: Sistema de gestión de bases de datos relacional
-- **Apache**: Servidor web
-- **Laravel/Symfony**: Frameworks PHP
-- **Git**: Control de versiones
-- **XAMPP**: Entorno de desarrollo local
-
-## 📅 Planificación del Curso
-
-| Trimestre | Contenidos | Proyectos |
-|-----------|------------|-----------|
-| 1º | Fundamentos de PHP, MySQL | Aplicaciones CRUD básicas |
-| 2º | Frameworks, APIs | Desarrollo de aplicaciones con Laravel |
-| 3º | Seguridad, Optimización | Proyecto final integrado |
-
-## 🔧 Configuración del Entorno
-
-1. **Instalar XAMPP**:
-   - Descarga e instala XAMPP desde [apachefriends.org](https://www.apachefriends.org/)
-   - Inicia los servicios de Apache y MySQL
-
-2. **Verificar la instalación**:
-   - Accede a http://localhost/ en tu navegador
-   - Comprueba que PHP está funcionando correctamente
-
-3. **Configurar el entorno de desarrollo**:
-   - Coloca tus proyectos en la carpeta `htdocs`
-   - Configura la base de datos desde phpMyAdmin
-
-## 🔗 Enlaces Útiles
-
-- [PHP.net - Documentación oficial](https://www.php.net/manual/es/)
-- [MySQL Documentation](https://dev.mysql.com/doc/)
-- [Laravel - Documentación](https://laravel.com/docs)
-- [PHP The Right Way](https://phptherightway.com/)
-
-## 📞 Contacto
-
-Para cualquier duda o consulta relacionada con este módulo, puedes contactar con el profesor a través del aula virtual o por correo electrónico.
-
+---
+### 🧭 Navegación Rápida por Módulos
+[🏠 Inicio](../README.md) | [🌐 DWEC](../DWEC) | [🖥️ DWES](../DWES) | [🎨 DIW](../DiseñoInterfacesWeb) | [🚀 DAW](../DespliegueDeAplicacionesWeb) | [🐍 Python](../Python) | [📂 Proyecto](../PROYECTO)
 ---
 
+El módulo de Desarrollo Web en Entorno Servidor (DWES) se centra en la lógica de negocio, gestión de bases de datos y creación de APIs robustas utilizando PHP y Laravel.
+
+## 🚀 Detalle de Proyectos y Ejercicios (htdocs/EjerciciosBasicos)
+
+### 📚 Temario Teórico-Práctico
+- **[T1 - Introducción a PHP](./htdocs/EjerciciosBasicos/T1/)**: Primeros pasos con el lenguaje. Sintaxis, tipos de variables, operadores y configuración inicial de servidores Apache.
+- **[T2 - Estructuras de Control](./htdocs/EjerciciosBasicos/T2/)**: Lógica de programación en servidor. Bucles (`foreach`), condicionales complejos y estructuras de salto.
+- **[T3 - Funciones y Arrays](./htdocs/EjerciciosBasicos/T3/)**: Gestión de datos estructurados. Arrays asociativos, funciones predefinidas de PHP y creación de bibliotecas propias.
+- **[T4 - Formularios en PHP](./htdocs/EjerciciosBasicos/T4/)**: Recepción y procesamiento de datos. Gestión de las superglobales `$_GET` y `$_POST`, sanitización de entradas y persistencia simple.
+- **[T9 - AJAX y Servicios Web](./htdocs/EjerciciosBasicos/T9/)**: Creación de endpoints y consumo asíncrono. Generación de XML/JSON y comunicación entre cliente y servidor.
+
+### 🧪 Prácticas de Consolidación
+- **[P1 a P2 — Evolución de Arquitectura](./htdocs/EjerciciosBasicos/P1aP2/)**: Proyecto de refactorización donde se evoluciona de código espagueti a una estructura más MVC y organizada.
+- **[P2Trim — Proyecto de Segundo Trimestre](./htdocs/EjerciciosBasicos/P2Trim/)**: Aplicación financiera base. Implementación de CRUDs complejos, autenticación propia y uso de APIs de terceros (moneda/cripto).
+- **[Tareas Slim & Sessions](./htdocs/EjerciciosBasicos/tareas_slim_session_y_bbdd/)**: Introducción a microframeworks. Uso de **Slim Framework**, gestión de sesiones PHP y conexión a base de datos externa.
+- **[SERVIDOR](./htdocs/EjerciciosBasicos/SERVIDOR/)**: Configuraciones de servidor, cabeceras HTTP y gestión de respuestas personalizadas.
+
+---
+## 💻 Tecnologías
+- PHP 8.2+, Laravel 12, MySQL, SQLite, Apache, Composer.
+
+---
 <div align="center">
-  <p>Desarrollado con ❤️ para el Ciclo Formativo de Grado Superior en Desarrollo de Aplicaciones Web</p>
+[Volver al Inicio](../README.md)
 </div>

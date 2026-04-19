@@ -1,41 +1,31 @@
-# 🌐 Despliegue de Aplicaciones Web
+# 🚀 Despliegue de Aplicaciones Web (DAW)
 
-## 📋 Descripción
+---
+### 🧭 Navegación Rápida por Módulos
+[🏠 Inicio](../README.md) | [🌐 DWEC](../DWEC) | [🖥️ DWES](../DWES) | [🎨 DIW](../DiseñoInterfacesWeb) | [🚀 DAW](../DespliegueDeAplicacionesWeb) | [🐍 Python](../Python) | [📂 Proyecto](../PROYECTO)
+---
 
-Este repositorio contiene ejercicios y prácticas relacionadas con el despliegue de aplicaciones web, enfocándose en la configuración y uso de servidores web básicos con Python.
+Módulo dedicado a la configuración de infraestructuras, servidores web, monitorización y estrategias de despliegue continuo.
 
-## 🔧 Requisitos
+## 📁 Ejercicios de Configuración y Despliegue
 
-- Python 3.x instalado
-- Navegador web
-- Conexión a internet para acceder a los recursos
+### 🖥️ Servidores Web (Apache)
+- **[01_ServidorHTTPBasico](./01_ServidorHTTPBasico/)**: Configuración inicial y puesta en marcha de un servidor Apache. Gestión de sitios estáticos.
+- **[02_ServidorPersonalizado](./02_ServidorPersonalizado/)**: Ajustes finos de configuración. Cambio de puertos, personalización de la página por defecto e imágenes.
+- **[03_InstalacionApache](./03_InstalacionApache/)**: Proceso paso a paso de instalación y verificación del servicio en distintos entornos.
+- **[04_cambiosApache](./04_cambiosApache/)**: Modificación de directivas globales, gestión de errores personalizados y logs de sistema.
+- **[05_DirectivaDirectory](./05_DirectivaDirectory/)**: Control de acceso granular. Uso de `AllowOverride`, `Require` y protección de directorios sensibles.
 
-## 📚 Recursos de referencia
+### 🛠️ Prácticas Avanzadas
+- **[06_Practica_Servidor_Web](./06_Practica_Servidor_Web/)**: Proyecto integrador de configuración de servidor para una aplicación real multipágina.
+- **[07_Bind_ServidorDNS](./07_Bind_ServidorDNS/)**: Instalación y configuración de **BIND9**. Resolución de nombres local, zonas directas e inversas.
+- **[08_Practica2Trim](./08_Practica2Trim/)**: Caso práctico final de trimestre que combina servidor web, DNS y seguridad básica.
 
-- [Simple web server (Python)](https://docs.python.org/3/library/http.server.html)
-- [HTTP Server Implementation](https://github.com/python/cpython/blob/main/Lib/http/server.py)
-- [Dummy Web Server Example](https://gist.github.com/kabinpokhrel/6fd1275603e9d5f1e284be717cbd1bff)
+---
+## ⚙️ Tecnologías Clave
+- Linux (Ubuntu Server), Apache 2, BIND9, SSH, Docker.
 
-## 🚀 Ejercicios realizados
-
-### [📁 Ejercicio 1: Servidor HTTP básico](./01_ServidorHTTPBasico/README.MD)
-
-### [📁 Ejercicio 2: Servidor personalizado](./02_ServidorPersonalizado/README.MD)
-
-### [📁 Ejercicio 3: Instalación de Apache, MySQL y PHP](./03_InstalacionApache/README.MD)
-
-### [📁 Ejercicio 4: Cambiar configuracion de apache](./04_cambiosApache/README.MD)
-
-### [📁 Ejercicio 5: Directiva directory](./05_DirectivaDirectory/README.MD)
-
-### [📁 Ejercicio 6: Practica Servidor Web 1 Trimestre](./06_Practica_Servidor_Web/README.md)
-
-### [📁 Ejercicio 7: Servidor DNS con Bind](./07_Bind_ServidorDNS/README.md)
-
-### [📄 Guía Rápida Bash](./GUIA%20RAPIDA%20bash.pdf)
-
-## 💡 Notas adicionales
-
-- Para detener cualquier servidor, presionar `Ctrl+C` en la línea de comandos
-- Para salir de mysql, usa el comando `exit`
-- Para cerrar apache2, usa el comando `sudo service apache2 stop`
+---
+<div align="center">
+[Volver al Inicio](../README.md)
+</div>
