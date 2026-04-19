@@ -48,4 +48,24 @@ Route::middleware('auth')->group(function () {
 Route::get('incidencias/create', [TaskController::class, 'createPublic'])->name('tasks.public.create');
 Route::post('incidencias', [TaskController::class, 'storePublic'])->name('tasks.public.store');
 
+// --- RUTAS PARA PROBLEMA 3 (CRUDs Dinámicos) ---
+
+// 3.1: CRUD de Clientes usando JavaScript y DataTables (CDN)
+Route::get('gestor-js', function() {
+    return view('clients.index_js');
+})->middleware(['auth', 'admin'])->name('clients.js');
+
+// API sencilla para que el JS pueda leer y guardar datos sin recargar
+Route::get('api/clients', [ClientController::class, 'apiIndex'])->middleware('auth');
+Route::post('api/clients', [ClientController::class, 'apiStore'])->middleware(['auth', 'admin']);
+Route::delete('api/clients/{client}', [ClientController::class, 'apiDestroy'])->middleware(['auth', 'admin']);
+
+// 3.2: Vista de Vue/Quasar usando CDN (Archivo estático o Blade sencillo)
+Route::get('gestor-quasar', function() {
+    return view('clients.index_quasar');
+})->middleware(['auth', 'admin'])->name('clients.quasar');
+
+// 3.3: Vista de Vue usando VITE y componentes .vue (Inertia)
+Route::get('gestor-vue-vite', [TaskController::class, 'indexVite'])->middleware(['auth'])->name('tasks.vite');
+
 require __DIR__.'/auth.php';

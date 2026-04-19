@@ -4,9 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AlumnoController;
 use App\Http\Controllers\ProvControl;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', [AlumnoController::class, 'index']);
 
 Route::get('/alumnos', [AlumnoController::class, 'index']);
 Route::get('/alumnos/pluck', [AlumnoController::class, 'pluck']);

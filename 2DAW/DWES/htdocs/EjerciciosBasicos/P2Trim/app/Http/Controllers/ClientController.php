@@ -11,6 +11,32 @@ use Illuminate\Validation\Rule;
 
 class ClientController extends Controller
 {
+    // Métodos para Problem 3.1 (API)
+    public function apiIndex()
+    {
+        return response()->json(Client::all());
+    }
+
+    public function apiStore(Request $request)
+    {
+        $validated = $request->validate([
+            'cif' => 'required|string|max:20',
+            'name' => 'required|string|max:255',
+            'phone' => 'required|string',
+            'email' => 'required|email',
+            'monthly_fee' => 'required|numeric',
+        ]);
+
+        $client = Client::create($validated);
+        return response()->json(['success' => true, 'client' => $client]);
+    }
+
+    public function apiDestroy(Client $client)
+    {
+        $client->delete();
+        return response()->json(['success' => true]);
+    }
+
     public function index()
     {
         return view('clients.index', [

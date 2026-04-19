@@ -164,4 +164,13 @@ class TaskController extends Controller
 
         return view('tasks.public_success');
     }
+
+    // Método para Problem 3.3 (Vue + Vite + Inertia)
+    public function indexVite()
+    {
+        return Inertia::render('Tasks/Index', [
+            'tasks' => Task::with('client', 'operator')->latest()->get(),
+            'operators' => User::where('role', 'operator')->get(),
+        ]);
+    }
 }

@@ -1,59 +1,42 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Proyecto de Gestión de Incidencias - Nosecaen S.L.
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Este documento detalla la solución a los problemas planteados en la actividad de Gestión de Incidencias.
 
-## About Laravel
+**Acceso Administrador:**
+*   **Usuario:** `admin@example.com`
+*   **Contraseña:** `admin123`
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+### 🟢 Problema 1: Aplicación de Incidencias en Laravel
+He desarrollado el sistema completo siguiendo el framework Laravel (Modelos, Controladores y Blade).
+*   **Gestión de Tareas y Validaciones**: Se encuentra en el controlador [TaskController.php](app/Http/Controllers/TaskController.php).
+*   **Gestión de Clientes**: Se encuentra en [ClientController.php](app/Http/Controllers/ClientController.php).
+*   **Gestión de Cuotas y Facturas PDF/Email**: Implementado en [FeeController.php](app/Http/Controllers/FeeController.php).
+*   **Modelos de Datos**: Definidos en la carpeta [app/Models/](app/Models/).
+*   **Disparador de BD (Trigger)**: Creado mediante esta migración [add_trigger_to_tasks_table.php](database/migrations/2026_04_19_005749_add_trigger_to_tasks_table.php).
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+### 🟢 Problema 2: Pruebas Automatizadas
+He creado una batería de pruebas que verifican las rutas y el funcionamiento de los formularios.
+*   **Archivo de Tests**: [IncidenciasTest.php](tests/Feature/IncidenciasTest.php).
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+---
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### 🟢 Problema 3: Generación Dinámica de Páginas Web
 
-## Laravel Sponsors
+#### 3.1 Integración de JS y DataTables (CDN)
+CRUD de clientes funcionando sin recargar la página usando Fetch API y DataTables.
+*   **Vista**: [index_js.blade.php](resources/views/clients/index_js.blade.php).
+*   **Ruta**: `/gestor-js`
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+#### 3.2 Uso de Vue/Quasar usando CDN
+Interfaz desarrollada con Vue 3 y componentes de Quasar desde CDN.
+*   **Vista**: [index_quasar.blade.php](resources/views/clients/index_quasar.blade.php).
+*   **Ruta**: `/gestor-quasar`
 
-### Premium Partners
-
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
-
-## Contributing
-
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+#### 3.3 Uso de Vue con VITE y componentes .vue
+Listado de tareas usando un componente de Vue 3 real y compilado con Vite a través de Inertia.
+*   **Componente .vue**: [Index.vue](resources/js/Pages/Tasks/Index.vue).
+*   **Ruta**: `/gestor-vue-vite`
