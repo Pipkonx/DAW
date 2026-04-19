@@ -397,28 +397,74 @@ Para reportar vulnerabilidades de seguridad, por favor usa la vía privada: [sec
 
 ## 🗺️ Roadmap
 
-```
-✅  Fase 1 — Cimentación          VILT stack · WAC engine · KPI Dashboard
-✅  Fase 2 — Automatización       OCR real · PDF Parser · Scraping con fallbacks
-✅  Fase 3 — Seguridad & Social   2FA TOTP · Auditoría de sesiones · Feed · Gurús 13F
-🔄  Fase 4 — Optimización         Feature-based architecture · Vue Composables · Landing premium
-⬜  Fase 5 — Futuro
-     ├─ 📱 Mobile App             Capacitor → iOS / Android nativo
-     ├─ 🏦 Open Banking          Integración PSD2 con APIs bancarias oficiales
-     ├─ ⚖️  Rebalanceo Inteligente  Alertas por desviación de pesos objetivo
-     └─ 🧾 Simulador Fiscal       Cálculo proactivo de plusvalías realizadas
-```
+> Leyenda: `✅ Completado` · `🔄 En progreso` · `🔍 En revisión` · `⬜ Backlog`
+
+---
+
+### ✅ Fase 1 — Cimentación *(Completado)*
+
+| Estado | Tarea | Detalle |
+|:---:|:---|:---|
+| ✅ | **Arquitectura VILT base** | Setup de Laravel 12 + Inertia.js + Vue 3 + Vite. Estructura de carpetas feature-based y configuración de middleware |
+| ✅ | **Motor WAC y esquema de datos** | Algoritmo Weighted Average Cost + TWR. Esquema relacional: `User → Portfolio → Asset → Transaction → MarketData` |
+| ✅ | **Dashboard KPIs globales** | Vista principal con P/L total, rentabilidad anualizada, exposición sectorial y Pie Charts con Chart.js |
+
+---
+
+### ✅ Fase 2 — Automatización e Ingesta *(Completado)*
+
+| Estado | Tarea | Detalle |
+|:---:|:---|:---|
+| ✅ | **Motor OCR — Vision to Data** | Integración con OCR.space API. Motor de limpieza con distancia de Levenshtein para corregir errores (`8`↔`B`, `0`↔`O`) |
+| ✅ | **PDF Parser de extractos bancarios** | `smalot/pdfparser` con extractor de patrones RegEx para interpretar extractos en PDF de múltiples brókers |
+| ✅ | **Scraping resiliente con fallbacks** | Sistema de 4 niveles: API Premium (EODHD) → Scraping Morningstar → CoinGecko → precio anterior con flag `⚠️ Requiere Revisión` |
+
+---
+
+### ✅ Fase 3 — Seguridad y Comunidad *(Completado)*
+
+| Estado | Tarea | Detalle |
+|:---:|:---|:---|
+| ✅ | **2FA TOTP — RFC 6238** | `pragmarx/google2fa` + QR codes con `bacon/bacon-qr-code`. Secretos criptográficos por usuario, nunca en texto plano |
+| ✅ | **Auditoría de sesiones e IP tracking** | Captura de IP, User-Agent, Session ID y geolocalización en cada login. Detección de sesiones activas simultáneas |
+| ✅ | **Social Hub — Feed y Gurús 13F** | Feed de comunidad con posts. Seguimiento de carteras institucionales (Buffett, Ackman, Lynch) mediante datos 13F |
+
+---
+
+### 🔄 Fase 4 — Optimización y Arquitectura *(En progreso)*
+
+| Estado | Tarea | Detalle |
+|:---:|:---|:---|
+| 🔄 | **Arquitectura feature-based** | Refactorización de componentes Vue por dominio: `Portfolio/`, `Charts/`, `Security/`, `UI/` |
+| 🔄 | **Vue Composables — lógica desacoplada** | Extracción a `useAssetTable`, `useTransactionForm`, `useMarketData`. Reduce complejidad de componentes un 55% |
+| 🔄 | **Landing page premium** | Rediseño de `Welcome.vue` con mockups 3D y composición visual avanzada |
+| 🔄 | **Sistema legal completo** | Páginas de Política de Privacidad, Términos y Aviso Legal con cumplimiento RGPD |
+| 🔍 | **Admin Center — backups y telemetría** | Snapshots de DB desde la UI, monitorización de APIs en tiempo real y logs de errores de scraping |
+| 🔍 | **Sistema de ticketing omnicanal** | `SupportController` con gestión de estados de incidencia y comunicación asíncrona usuario-administrador |
+| 🔍 | **Unit tests — capa de servicios** | Ampliación de cobertura para `MarketDataService`, `OcrService` y `SecurityService` (deuda técnica identificada) |
+
+---
+
+### ⬜ Fase 5 — El Futuro *(Backlog)*
+
+| Estado | Tarea | Detalle |
+|:---:|:---|:---|
+| ⬜ | **📱 Mobile App con Capacitor** | Conversión del frontend Vue 3 a app nativa iOS / Android. Notificaciones push y biometría del dispositivo |
+| ⬜ | **🏦 Open Banking — PSD2** | Conexión directa con APIs bancarias oficiales para eliminar la importación manual de extractos |
+| ⬜ | **⚖️ Rebalanceo inteligente** | Alertas por desviación de pesos objetivo de cartera. Sugerencias automáticas de compra/venta para mantener el target |
+| ⬜ | **🧾 Simulador fiscal de plusvalías** | Cálculo proactivo del impacto fiscal según tramos IRPF. Estimación de cuota a pagar por operaciones realizadas |
+| ⬜ | **☁️ Infraestructura cloud escalable** | Migración a arquitectura cloud con autoescalado horizontal y pipeline CI/CD para despliegues sin downtime |
 
 ---
 
 ## 📊 Estado del Proyecto
 
-```
-Complejidad de componentes     ████████████░░░  Reducida –55% (atomización de UI)
-Mantenibilidad                 ████████████████  Alta (Composables + Services)
-Cobertura de tests             ████████░░░░░░░░  En expansión (capa Services)
-Deuda técnica                  ██░░░░░░░░░░░░░░  Baja y documentada
-```
+| Métrica | Progreso | Nota |
+|:---|:---|:---|
+| Complejidad de componentes | `████████████░░░` 75% | Reducida –55% mediante atomización de UI |
+| Mantenibilidad | `████████████████` 100% | Alta — Composables + Service Layer |
+| Cobertura de tests | `████████░░░░░░░░` 50% | En expansión — capa de Services core |
+| Deuda técnica | `██░░░░░░░░░░░░░░` 12% | Baja y documentada |
 
 ---
 
