@@ -26,6 +26,10 @@ Automatización con OCR · Web Scraping resiliente · 2FA real · Analytics avan
 
 [🚀 Demo en vivo](#) · [📖 Documentación](#arquitectura) · [🐛 Reportar un Bug](../../issues) · [💡 Proponer Feature](../../issues)
 
+<br/>
+
+[📝 Memoria Técnica](./docs/memoria.md) · [🎨 Guía de Estilos](./docs/guia_de_estilos.md) · [📸 Manual Multimedia](./docs/manual_buenas_practicas_multimedia.md)
+
 </div>
 
 ---
@@ -54,6 +58,10 @@ Automatización con OCR · Web Scraping resiliente · 2FA real · Analytics avan
 - [📊 Estado del Proyecto](#-estado-del-proyecto)
 - [🤝 Contribuir](#-contribuir)
 - [📄 Licencia](#-licencia)
+- [📚 Documentación del Proyecto](#-documentación-del-proyecto)
+  - [Memoria Técnica](./docs/memoria.md)
+  - [Guía de Estilos](./docs/guia_de_estilos.md)
+  - [Manual de Buenas Prácticas Multimedia](./docs/manual_buenas_practicas_multimedia.md)
 
 ---
 
@@ -491,6 +499,20 @@ Consulta [CONTRIBUTING.md](CONTRIBUTING.md) para las guías de estilo de código
 ## 📄 Licencia
 
 Distribuido bajo la licencia **MIT**. Consulta [`LICENSE`](LICENSE) para más información.
+
+---
+
+## 📚 Documentación del Proyecto
+
+Toda la documentación técnica y académica del proyecto se encuentra organizada en la carpeta [`docs/`](./docs/):
+
+| Documento | Descripción | Enlace |
+|:---|:---|:---:|
+| **Memoria Técnica** | Planificación, justificación tecnológica (Tailwind vs Bootstrap), webgrafía e incidencias | [📝 Ver](./docs/memoria.md) |
+| **Guía de Estilos** | Identidad visual: tipografía, paleta de colores, componentes y sistema de diseño | [🎨 Ver](./docs/guia_de_estilos.md) |
+| **Manual de Multimedia** | Buenas prácticas para imágenes, vídeo y audio: formatos, optimización y accesibilidad | [📸 Ver](./docs/manual_buenas_practicas_multimedia.md) |
+
+> **Nota:** Los archivos multimedia originales y optimizados se encuentran en [`resources/multimedia/`](./resources/multimedia/), organizados en subcarpetas `original/` y `optimized/`.
 
 ---
 
