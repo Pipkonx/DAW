@@ -24,7 +24,7 @@ Automatización con OCR · Web Scraping resiliente · 2FA real · Analytics avan
 
 <br/>
 
-[🚀 Demo en vivo](https://ieslamarisma.net/proyectos/2026/rafaelcordero/anteproyecto/public/) · [📖 Documentación](#arquitectura) · [🐛 Reportar un Bug](../../issues) · [💡 Proponer Feature](../../issues)
+[🚀 Demo en vivo](#) · [📖 Documentación](#arquitectura) · [🐛 Reportar un Bug](../../issues) · [💡 Proponer Feature](../../issues)
 
 <br/>
 
