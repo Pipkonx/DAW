@@ -1,0 +1,45 @@
+services:
+  app:
+    build: .
+    container_name: fintechpro-app
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    volumes:
+      - storage:/var/www/html/storage
+    depends_on:
+      - mysql
+      - redis
+    networks:
+      - fintechpro-network
+
+  mysql:
+    image: mysql:8.0
+    container_name: fintechpro-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: fintechpro
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "33066:3306"
+    volumes:
+      - mysql-db:/var/lib/mysql
+    networks:
+      - fintechpro-network
+
+  redis:
+    image: redis:alpine
+    container_name: fintechpro-redis
+    restart: unless-stopped
+    ports:
+      - "63799:6379"
+    networks:
+      - fintechpro-network
+
+networks:
+  fintechpro-network:
+    driver: bridge
+
+volumes:
+  mysql-db:
+  storage:

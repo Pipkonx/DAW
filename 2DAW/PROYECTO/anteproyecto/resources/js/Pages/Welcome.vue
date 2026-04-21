@@ -73,14 +73,14 @@ const toggleFaq = (index) => {
                 <!-- Mockup Composition -->
                 <div class="relative lg:-mr-24 scale-110 lg:scale-125 pt-20 lg:pt-0">
                     <div class="relative w-full aspect-video z-20 transform -rotate-2 hover:rotate-0 transition-all duration-700">
-                        <img src="/images/mockups/dashboard.png" class="rounded-3xl shadow-[0_50px_100px_rgba(0,0,0,0.15)] ring-1 ring-slate-200 dark:ring-slate-800" alt="FintechPro Dashboard">
+                        <img src="../../../public/images/mockups/dashboard.png" class="rounded-3xl shadow-[0_50px_100px_rgba(0,0,0,0.15)] ring-1 ring-slate-200 dark:ring-slate-800" alt="FintechPro Dashboard">
                     </div>
                     <!-- Floating Elements -->
                     <div class="absolute -top-12 -right-8 w-1/2 z-30 transform rotate-6 hover:rotate-0 transition-all duration-700 delay-100">
-                        <img src="/images/mockups/portfolio.png" class="rounded-2xl shadow-2xl ring-1 ring-white/50" alt="Portfolio Analysis">
+                        <img src="../../../public/images/mockups/portfolio.png" class="rounded-2xl shadow-2xl ring-1 ring-white/50" alt="Portfolio Analysis">
                     </div>
                     <div class="absolute -bottom-12 -left-8 w-1/2 z-30 transform -rotate-6 hover:rotate-0 transition-all duration-700 delay-200">
-                        <img src="/images/mockups/social.png" class="rounded-2xl shadow-2xl ring-1 ring-white/50" alt="Community Feed">
+                        <img src="../../../public/images/mockups/social.png" class="rounded-2xl shadow-2xl ring-1 ring-white/50" alt="Community Feed">
                     </div>
                 </div>
             </div>
