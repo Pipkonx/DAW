@@ -23,7 +23,7 @@ class AppServiceProvider extends ServiceProvider
     {
         Vite::prefetch(concurrency: 3);
 
-        if (config('app.env') === 'production') {
+        if (app()->environment('production') && str_contains(request()->url(), 'ieslamarisma.net')) {
             URL::forceScheme('https');
         }
     }

@@ -40,18 +40,18 @@ Automatización con OCR · Web Scraping resiliente · 2FA real · Analytics avan
 - [🖼️ Capturas de Pantalla](#️-capturas-de-pantalla)
 - [🛠️ Stack Tecnológico](#️-stack-tecnológico)
 - [🏗️ Arquitectura](#️-arquitectura)
-  - [Patrones de Diseño](#patrones-de-diseño-aplicados)
-  - [Principios SOLID · DRY · Modularización](#principios-de-ingeniería-de-software)
-  - [Flujo OCR / PDF](#flujo-de-importación-ocr--pdf)
-  - [Flujo 2FA](#flujo-de-autenticación-2fa-totp--rfc-6238)
-  - [Modelo de Datos](#modelo-de-datos)
-  - [Controladores](#controladores-y-responsabilidades)
+    - [Patrones de Diseño](#patrones-de-diseño-aplicados)
+    - [Principios SOLID · DRY · Modularización](#principios-de-ingeniería-de-software)
+    - [Flujo OCR / PDF](#flujo-de-importación-ocr--pdf)
+    - [Flujo 2FA](#flujo-de-autenticación-2fa-totp--rfc-6238)
+    - [Modelo de Datos](#modelo-de-datos)
+    - [Controladores](#controladores-y-responsabilidades)
 - [✨ Funcionalidades](#-funcionalidades)
 - [🚀 Instalación](#-instalación)
-  - [Requisitos Previos](#requisitos-previos)
-  - [API Keys Necesarias](#api-keys-necesarias)
-  - [Pasos](#pasos)
-  - [Docker](#docker-producción)
+    - [Requisitos Previos](#requisitos-previos)
+    - [API Keys Necesarias](#api-keys-necesarias)
+    - [Pasos](#pasos)
+    - [Docker](#docker-producción)
 - [🔑 Credenciales Demo](#-credenciales-de-acceso-demo)
 - [🔒 Seguridad](#-seguridad)
 - [🗺️ Roadmap](#️-roadmap)
@@ -59,19 +59,19 @@ Automatización con OCR · Web Scraping resiliente · 2FA real · Analytics avan
 - [🤝 Contribuir](#-contribuir)
 - [📄 Licencia](#-licencia)
 - [📚 Documentación del Proyecto](#-documentación-del-proyecto)
-  - [Memoria Técnica](./docs/memoria.md)
-  - [Guía de Estilos](./docs/guia_de_estilos.md)
-  - [Manual de Buenas Prácticas Multimedia](./docs/manual_buenas_practicas_multimedia.md)
+    - [Memoria Técnica](./docs/memoria.md)
+    - [Guía de Estilos](./docs/guia_de_estilos.md)
+    - [Manual de Buenas Prácticas Multimedia](./docs/manual_buenas_practicas_multimedia.md)
 
 ---
 
 ## 💡 ¿Por qué FintechPro?
 
-Tener activos en tres brokers, dos bancos y un exchange de criptomonedas es la norma hoy. La pregunta — *"¿cuánto tengo realmente?"* — no debería requerir una hora de trabajo manual.
+Tener activos en tres brokers, dos bancos y un exchange de criptomonedas es la norma hoy. La pregunta — _"¿cuánto tengo realmente?"_ — no debería requerir una hora de trabajo manual.
 
 **FintechPro** automatiza por completo esa consolidación: lee extractos bancarios en PDF, interpreta capturas de pantalla de brókers mediante OCR y obtiene precios de mercado en tiempo real desde múltiples fuentes. El resultado es un cuadro de mando unificado con la precisión financiera que merecen tus decisiones de inversión.
 
-> *"De script personal para leer un Excel a plataforma de gestión financiera de grado profesional."*
+> _"De script personal para leer un Excel a plataforma de gestión financiera de grado profesional."_
 
 ---
 
@@ -79,10 +79,10 @@ Tener activos en tres brokers, dos bancos y un exchange de criptomonedas es la n
 
 <div align="center">
 
-| Dashboard Principal | Análisis de Cartera | Social Hub |
-|:---:|:---:|:---:|
+|                Dashboard Principal                |                Análisis de Cartera                |                 Social Hub                  |
+| :-----------------------------------------------: | :-----------------------------------------------: | :-----------------------------------------: |
 | ![Dashboard](public/images/mockups/dashboard.png) | ![Portfolio](public/images/mockups/portfolio.png) | ![Social](public/images/mockups/social.png) |
-| KPIs globales y patrimonio | Diversificación y rendimiento | Comunidad e inversores 13F |
+|            KPIs globales y patrimonio             |           Diversificación y rendimiento           |         Comunidad e inversores 13F          |
 
 </div>
 
@@ -92,17 +92,17 @@ Tener activos en tres brokers, dos bancos y un exchange de criptomonedas es la n
 
 <div align="center">
 
-| Capa | Tecnología | Justificación |
-|:---|:---|:---|
-| **Backend** | Laravel 12 | ORM Eloquent, colas robustas, políticas de acceso |
-| **Frontend** | Vue 3 + Inertia.js | SPA sin API REST separada, composables reutilizables |
-| **Base de Datos** | MySQL / SQLite | Esquema relacional íntegro con integridad referencial total |
-| **OCR** | OCR.space API | Extracción de transacciones desde capturas de brókers |
-| **PDF** | smalot/pdfparser | Parsing estructurado de extractos bancarios |
-| **Scraping** | Guzzle + DomCrawler | Motor de precios con fallbacks en cascada |
-| **2FA** | pragmarx/google2fa | TOTP estándar RFC 6238 + QR codes |
-| **Gráficos** | Chart.js + vue-chartjs | Pie charts y telemetría financiera en tiempo real |
-| **DevOps** | Docker + Docker Compose | PHP-FPM, Nginx, Queue Workers orquestados |
+| Capa              | Tecnología              | Justificación                                               |
+| :---------------- | :---------------------- | :---------------------------------------------------------- |
+| **Backend**       | Laravel 12              | ORM Eloquent, colas robustas, políticas de acceso           |
+| **Frontend**      | Vue 3 + Inertia.js      | SPA sin API REST separada, composables reutilizables        |
+| **Base de Datos** | MySQL / SQLite          | Esquema relacional íntegro con integridad referencial total |
+| **OCR**           | OCR.space API           | Extracción de transacciones desde capturas de brókers       |
+| **PDF**           | smalot/pdfparser        | Parsing estructurado de extractos bancarios                 |
+| **Scraping**      | Guzzle + DomCrawler     | Motor de precios con fallbacks en cascada                   |
+| **2FA**           | pragmarx/google2fa      | TOTP estándar RFC 6238 + QR codes                           |
+| **Gráficos**      | Chart.js + vue-chartjs  | Pie charts y telemetría financiera en tiempo real           |
+| **DevOps**        | Docker + Docker Compose | PHP-FPM, Nginx, Queue Workers orquestados                   |
 
 </div>
 
@@ -114,14 +114,14 @@ Tener activos en tres brokers, dos bancos y un exchange de criptomonedas es la n
 
 FintechPro no es un conjunto de scripts. Está construido bajo estándares de ingeniería senior para garantizar escalabilidad y mantenibilidad a largo plazo.
 
-| Patrón | Implementación |
-|:---|:---|
-| **Service Layer** | Lógica de negocio aislada en `app/Services` — controladores limpios y enfocados |
-| **Strategy & Factory** | El motor de datos decide en tiempo real: API Premium → Scraping → Proveedor de respaldo |
-| **Adapter** | Normalización de respuestas heterogéneas (OCR.space, PDFParser) al esquema interno |
-| **Middleware Chain** | Validación 2FA y protección de integridad de sesión en capas encadenadas |
-| **Composition (Vue 3)** | Lógica reactiva encapsulada en Composables: `useAssetTable`, `useTransactionForm` |
-| **Feature-based Architecture** | Componentes organizados por dominio funcional, no por tipo de archivo |
+| Patrón                         | Implementación                                                                          |
+| :----------------------------- | :-------------------------------------------------------------------------------------- |
+| **Service Layer**              | Lógica de negocio aislada en `app/Services` — controladores limpios y enfocados         |
+| **Strategy & Factory**         | El motor de datos decide en tiempo real: API Premium → Scraping → Proveedor de respaldo |
+| **Adapter**                    | Normalización de respuestas heterogéneas (OCR.space, PDFParser) al esquema interno      |
+| **Middleware Chain**           | Validación 2FA y protección de integridad de sesión en capas encadenadas                |
+| **Composition (Vue 3)**        | Lógica reactiva encapsulada en Composables: `useAssetTable`, `useTransactionForm`       |
+| **Feature-based Architecture** | Componentes organizados por dominio funcional, no por tipo de archivo                   |
 
 ---
 
@@ -133,15 +133,15 @@ FintechPro no es un conjunto de scripts. Está construido bajo estándares de in
 
 Aplicación estricta de los cinco principios a lo largo de toda la base de código:
 
-| Principio | Aplicación en FintechPro |
-|:---|:---|
-| **S** — Single Responsibility | Cada servicio (`MarketDataService`, `OcrService`, `SecurityService`) tiene una única razón de cambio |
-| **O** — Open / Closed | Añadir un nuevo proveedor de datos es tan simple como implementar `MarketDataProviderInterface` sin tocar el código existente |
-| **L** — Liskov Substitution | Cualquier proveedor de precios puede sustituir a otro sin alterar el comportamiento del sistema |
-| **I** — Interface Segregation | Las interfaces de proveedor están segregadas por capacidad: `FetchesPrice`, `FetchesHistory`, `FetchesDividends` |
-| **D** — Dependency Inversion | Los controladores dependen de abstracciones (interfaces), nunca de implementaciones concretas |
+| Principio                     | Aplicación en FintechPro                                                                                                      |
+| :---------------------------- | :---------------------------------------------------------------------------------------------------------------------------- |
+| **S** — Single Responsibility | Cada servicio (`MarketDataService`, `OcrService`, `SecurityService`) tiene una única razón de cambio                          |
+| **O** — Open / Closed         | Añadir un nuevo proveedor de datos es tan simple como implementar `MarketDataProviderInterface` sin tocar el código existente |
+| **L** — Liskov Substitution   | Cualquier proveedor de precios puede sustituir a otro sin alterar el comportamiento del sistema                               |
+| **I** — Interface Segregation | Las interfaces de proveedor están segregadas por capacidad: `FetchesPrice`, `FetchesHistory`, `FetchesDividends`              |
+| **D** — Dependency Inversion  | Los controladores dependen de abstracciones (interfaces), nunca de implementaciones concretas                                 |
 
-#### 📐 DRY — *Don't Repeat Yourself*
+#### 📐 DRY — _Don't Repeat Yourself_
 
 La lógica de formateo monetario, cálculo de rentabilidad y visualización de datos está centralizada en helpers y composables compartidos. Ninguna regla de negocio existe en dos lugares distintos del código.
 
@@ -249,17 +249,17 @@ Transaction ─── cost_basis · balance · WAC · TWR · splits
 
 ### Controladores y Responsabilidades
 
-| Área | Controlador | Responsabilidad |
-|:---|:---|:---|
-| **Núcleo** | `DashboardController` | Orquestación de KPIs globales y estado patrimonial |
-| **Operativa** | `TransactionController` | CRUD de movimientos y cálculo de plusvalías |
-| **Importación** | `PortfolioController` | Procesamiento OCR, PDF y vinculación manual |
-| **Inteligencia** | `AnalystController` | Integración con IA para informes de cartera |
-| **Administración** | `AdminController` | Telemetría, monitorización de APIs y backups |
-| **Social** | `FamousPortfolioController` | Gurús, carteras 13F y análisis sectorial |
-| **Comunidad** | `SocialController` | Feed, posts y engagement de usuarios |
-| **Seguridad** | `SecurityController` | 2FA, auditoría de sesiones y actividad |
-| **Soporte** | `SupportController` | Ticketing omnicanal y flujo de resolución |
+| Área               | Controlador                 | Responsabilidad                                    |
+| :----------------- | :-------------------------- | :------------------------------------------------- |
+| **Núcleo**         | `DashboardController`       | Orquestación de KPIs globales y estado patrimonial |
+| **Operativa**      | `TransactionController`     | CRUD de movimientos y cálculo de plusvalías        |
+| **Importación**    | `PortfolioController`       | Procesamiento OCR, PDF y vinculación manual        |
+| **Inteligencia**   | `AnalystController`         | Integración con IA para informes de cartera        |
+| **Administración** | `AdminController`           | Telemetría, monitorización de APIs y backups       |
+| **Social**         | `FamousPortfolioController` | Gurús, carteras 13F y análisis sectorial           |
+| **Comunidad**      | `SocialController`          | Feed, posts y engagement de usuarios               |
+| **Seguridad**      | `SecurityController`        | 2FA, auditoría de sesiones y actividad             |
+| **Soporte**        | `SupportController`         | Ticketing omnicanal y flujo de resolución          |
 
 ---
 
@@ -379,10 +379,10 @@ Orquesta automáticamente: **PHP-FPM · Nginx · Queue Workers**
 
 ## 🔑 Credenciales de Acceso Demo
 
-| Rol | Email | Contraseña | Notas |
-|:---|:---|:---|:---|
-| **Administrador** | `admin@fintechpro.com` | `admin1234` | Acceso total al Admin Center |
-| **Usuario Pro** | `test@example.com` | `password1234` | Cartera con 5 años de historial real |
+| Rol               | Email                  | Contraseña     | Notas                                |
+| :---------------- | :--------------------- | :------------- | :----------------------------------- |
+| **Administrador** | `admin@fintechpro.com` | `admin1234`    | Acceso total al Admin Center         |
+| **Usuario Pro**   | `test@example.com`     | `password1234` | Cartera con 5 años de historial real |
 
 > ⚠️ **No usar estas credenciales en producción.** Ejecuta `php artisan tinker` para crear tu usuario administrador personalizado.
 
@@ -409,70 +409,70 @@ Para reportar vulnerabilidades de seguridad, por favor usa la vía privada: [sec
 
 ---
 
-### ✅ Fase 1 — Cimentación *(Completado)*
+### ✅ Fase 1 — Cimentación _(Completado)_
 
-| Estado | Tarea | Detalle |
-|:---:|:---|:---|
-| ✅ | **Arquitectura VILT base** | Setup de Laravel 12 + Inertia.js + Vue 3 + Vite. Estructura de carpetas feature-based y configuración de middleware |
-| ✅ | **Motor WAC y esquema de datos** | Algoritmo Weighted Average Cost + TWR. Esquema relacional: `User → Portfolio → Asset → Transaction → MarketData` |
-| ✅ | **Dashboard KPIs globales** | Vista principal con P/L total, rentabilidad anualizada, exposición sectorial y Pie Charts con Chart.js |
-
----
-
-### ✅ Fase 2 — Automatización e Ingesta *(Completado)*
-
-| Estado | Tarea | Detalle |
-|:---:|:---|:---|
-| ✅ | **Motor OCR — Vision to Data** | Integración con OCR.space API. Motor de limpieza con distancia de Levenshtein para corregir errores (`8`↔`B`, `0`↔`O`) |
-| ✅ | **PDF Parser de extractos bancarios** | `smalot/pdfparser` con extractor de patrones RegEx para interpretar extractos en PDF de múltiples brókers |
-| ✅ | **Scraping resiliente con fallbacks** | Sistema de 4 niveles: API Premium (EODHD) → Scraping Morningstar → CoinGecko → precio anterior con flag `⚠️ Requiere Revisión` |
+| Estado | Tarea                            | Detalle                                                                                                             |
+| :----: | :------------------------------- | :------------------------------------------------------------------------------------------------------------------ |
+|   ✅   | **Arquitectura VILT base**       | Setup de Laravel 12 + Inertia.js + Vue 3 + Vite. Estructura de carpetas feature-based y configuración de middleware |
+|   ✅   | **Motor WAC y esquema de datos** | Algoritmo Weighted Average Cost + TWR. Esquema relacional: `User → Portfolio → Asset → Transaction → MarketData`    |
+|   ✅   | **Dashboard KPIs globales**      | Vista principal con P/L total, rentabilidad anualizada, exposición sectorial y Pie Charts con Chart.js              |
 
 ---
 
-### ✅ Fase 3 — Seguridad y Comunidad *(Completado)*
+### ✅ Fase 2 — Automatización e Ingesta _(Completado)_
 
-| Estado | Tarea | Detalle |
-|:---:|:---|:---|
-| ✅ | **2FA TOTP — RFC 6238** | `pragmarx/google2fa` + QR codes con `bacon/bacon-qr-code`. Secretos criptográficos por usuario, nunca en texto plano |
-| ✅ | **Auditoría de sesiones e IP tracking** | Captura de IP, User-Agent, Session ID y geolocalización en cada login. Detección de sesiones activas simultáneas |
-| ✅ | **Social Hub — Feed y Gurús 13F** | Feed de comunidad con posts. Seguimiento de carteras institucionales (Buffett, Ackman, Lynch) mediante datos 13F |
-
----
-
-### 🔄 Fase 4 — Optimización y Arquitectura *(En progreso)*
-
-| Estado | Tarea | Detalle |
-|:---:|:---|:---|
-| 🔄 | **Arquitectura feature-based** | Refactorización de componentes Vue por dominio: `Portfolio/`, `Charts/`, `Security/`, `UI/` |
-| 🔄 | **Vue Composables — lógica desacoplada** | Extracción a `useAssetTable`, `useTransactionForm`, `useMarketData`. Reduce complejidad de componentes un 55% |
-| 🔄 | **Landing page premium** | Rediseño de `Welcome.vue` con mockups 3D y composición visual avanzada |
-| 🔄 | **Sistema legal completo** | Páginas de Política de Privacidad, Términos y Aviso Legal con cumplimiento RGPD |
-| 🔍 | **Admin Center — backups y telemetría** | Snapshots de DB desde la UI, monitorización de APIs en tiempo real y logs de errores de scraping |
-| 🔍 | **Sistema de ticketing omnicanal** | `SupportController` con gestión de estados de incidencia y comunicación asíncrona usuario-administrador |
-| 🔍 | **Unit tests — capa de servicios** | Ampliación de cobertura para `MarketDataService`, `OcrService` y `SecurityService` (deuda técnica identificada) |
+| Estado | Tarea                                 | Detalle                                                                                                                        |
+| :----: | :------------------------------------ | :----------------------------------------------------------------------------------------------------------------------------- |
+|   ✅   | **Motor OCR — Vision to Data**        | Integración con OCR.space API. Motor de limpieza con distancia de Levenshtein para corregir errores (`8`↔`B`, `0`↔`O`)         |
+|   ✅   | **PDF Parser de extractos bancarios** | `smalot/pdfparser` con extractor de patrones RegEx para interpretar extractos en PDF de múltiples brókers                      |
+|   ✅   | **Scraping resiliente con fallbacks** | Sistema de 4 niveles: API Premium (EODHD) → Scraping Morningstar → CoinGecko → precio anterior con flag `⚠️ Requiere Revisión` |
 
 ---
 
-### ⬜ Fase 5 — El Futuro *(Backlog)*
+### ✅ Fase 3 — Seguridad y Comunidad _(Completado)_
 
-| Estado | Tarea | Detalle |
-|:---:|:---|:---|
-| ⬜ | **📱 Mobile App con Capacitor** | Conversión del frontend Vue 3 a app nativa iOS / Android. Notificaciones push y biometría del dispositivo |
-| ⬜ | **🏦 Open Banking — PSD2** | Conexión directa con APIs bancarias oficiales para eliminar la importación manual de extractos |
-| ⬜ | **⚖️ Rebalanceo inteligente** | Alertas por desviación de pesos objetivo de cartera. Sugerencias automáticas de compra/venta para mantener el target |
-| ⬜ | **🧾 Simulador fiscal de plusvalías** | Cálculo proactivo del impacto fiscal según tramos IRPF. Estimación de cuota a pagar por operaciones realizadas |
-| ⬜ | **☁️ Infraestructura cloud escalable** | Migración a arquitectura cloud con autoescalado horizontal y pipeline CI/CD para despliegues sin downtime |
+| Estado | Tarea                                   | Detalle                                                                                                              |
+| :----: | :-------------------------------------- | :------------------------------------------------------------------------------------------------------------------- |
+|   ✅   | **2FA TOTP — RFC 6238**                 | `pragmarx/google2fa` + QR codes con `bacon/bacon-qr-code`. Secretos criptográficos por usuario, nunca en texto plano |
+|   ✅   | **Auditoría de sesiones e IP tracking** | Captura de IP, User-Agent, Session ID y geolocalización en cada login. Detección de sesiones activas simultáneas     |
+|   ✅   | **Social Hub — Feed y Gurús 13F**       | Feed de comunidad con posts. Seguimiento de carteras institucionales (Buffett, Ackman, Lynch) mediante datos 13F     |
+
+---
+
+### 🔄 Fase 4 — Optimización y Arquitectura _(En progreso)_
+
+| Estado | Tarea                                    | Detalle                                                                                                         |
+| :----: | :--------------------------------------- | :-------------------------------------------------------------------------------------------------------------- |
+|   🔄   | **Arquitectura feature-based**           | Refactorización de componentes Vue por dominio: `Portfolio/`, `Charts/`, `Security/`, `UI/`                     |
+|   🔄   | **Vue Composables — lógica desacoplada** | Extracción a `useAssetTable`, `useTransactionForm`, `useMarketData`. Reduce complejidad de componentes un 55%   |
+|   🔄   | **Landing page premium**                 | Rediseño de `Welcome.vue` con mockups 3D y composición visual avanzada                                          |
+|   🔄   | **Sistema legal completo**               | Páginas de Política de Privacidad, Términos y Aviso Legal con cumplimiento RGPD                                 |
+|   🔍   | **Admin Center — backups y telemetría**  | Snapshots de DB desde la UI, monitorización de APIs en tiempo real y logs de errores de scraping                |
+|   🔍   | **Sistema de ticketing omnicanal**       | `SupportController` con gestión de estados de incidencia y comunicación asíncrona usuario-administrador         |
+|   🔍   | **Unit tests — capa de servicios**       | Ampliación de cobertura para `MarketDataService`, `OcrService` y `SecurityService` (deuda técnica identificada) |
+
+---
+
+### ⬜ Fase 5 — El Futuro _(Backlog)_
+
+| Estado | Tarea                                  | Detalle                                                                                                              |
+| :----: | :------------------------------------- | :------------------------------------------------------------------------------------------------------------------- |
+|   ⬜   | **📱 Mobile App con Capacitor**        | Conversión del frontend Vue 3 a app nativa iOS / Android. Notificaciones push y biometría del dispositivo            |
+|   ⬜   | **🏦 Open Banking — PSD2**             | Conexión directa con APIs bancarias oficiales para eliminar la importación manual de extractos                       |
+|   ⬜   | **⚖️ Rebalanceo inteligente**          | Alertas por desviación de pesos objetivo de cartera. Sugerencias automáticas de compra/venta para mantener el target |
+|   ⬜   | **🧾 Simulador fiscal de plusvalías**  | Cálculo proactivo del impacto fiscal según tramos IRPF. Estimación de cuota a pagar por operaciones realizadas       |
+|   ⬜   | **☁️ Infraestructura cloud escalable** | Migración a arquitectura cloud con autoescalado horizontal y pipeline CI/CD para despliegues sin downtime            |
 
 ---
 
 ## 📊 Estado del Proyecto
 
-| Métrica | Progreso | Nota |
-|:---|:---|:---|
-| Complejidad de componentes | `████████████░░░` 75% | Reducida –55% mediante atomización de UI |
-| Mantenibilidad | `████████████████` 100% | Alta — Composables + Service Layer |
-| Cobertura de tests | `████████░░░░░░░░` 50% | En expansión — capa de Services core |
-| Deuda técnica | `██░░░░░░░░░░░░░░` 12% | Baja y documentada |
+| Métrica                    | Progreso                | Nota                                     |
+| :------------------------- | :---------------------- | :--------------------------------------- |
+| Complejidad de componentes | `████████████░░░` 75%   | Reducida –55% mediante atomización de UI |
+| Mantenibilidad             | `████████████████` 100% | Alta — Composables + Service Layer       |
+| Cobertura de tests         | `████████░░░░░░░░` 50%  | En expansión — capa de Services core     |
+| Deuda técnica              | `██░░░░░░░░░░░░░░` 12%  | Baja y documentada                       |
 
 ---
 
@@ -506,11 +506,11 @@ Distribuido bajo la licencia **MIT**. Consulta [`LICENSE`](LICENSE) para más in
 
 Toda la documentación técnica y académica del proyecto se encuentra organizada en la carpeta [`docs/`](./docs/):
 
-| Documento | Descripción | Enlace |
-|:---|:---|:---:|
-| **Memoria Técnica** | Planificación, justificación tecnológica (Tailwind vs Bootstrap), webgrafía e incidencias | [📝 Ver](./docs/memoria.md) |
-| **Guía de Estilos** | Identidad visual: tipografía, paleta de colores, componentes y sistema de diseño | [🎨 Ver](./docs/guia_de_estilos.md) |
-| **Manual de Multimedia** | Buenas prácticas para imágenes, vídeo y audio: formatos, optimización y accesibilidad | [📸 Ver](./docs/manual_buenas_practicas_multimedia.md) |
+| Documento                | Descripción                                                                               |                         Enlace                         |
+| :----------------------- | :---------------------------------------------------------------------------------------- | :----------------------------------------------------: |
+| **Memoria Técnica**      | Planificación, justificación tecnológica (Tailwind vs Bootstrap), webgrafía e incidencias |              [📝 Ver](./docs/memoria.md)               |
+| **Guía de Estilos**      | Identidad visual: tipografía, paleta de colores, componentes y sistema de diseño          |          [🎨 Ver](./docs/guia_de_estilos.md)           |
+| **Manual de Multimedia** | Buenas prácticas para imágenes, vídeo y audio: formatos, optimización y accesibilidad     | [📸 Ver](./docs/manual_buenas_practicas_multimedia.md) |
 
 > **Nota:** Los archivos multimedia originales y optimizados se encuentran en [`resources/multimedia/`](./resources/multimedia/), organizados en subcarpetas `original/` y `optimized/`.
 
@@ -518,11 +518,11 @@ Toda la documentación técnica y académica del proyecto se encuentra organizad
 
 <div align="center">
 
-Desarrollado con 🧠 y ☕ por **Rafael** — *Desarrollo de Aplicaciones Web (DAW)*
+Desarrollado con 🧠 y ☕ por **Rafael** — _Desarrollo de Aplicaciones Web (DAW)_
 
 <br/>
 
-*"La diferencia entre el caos financiero y la claridad es un sistema bien diseñado."*
+_"La diferencia entre el caos financiero y la claridad es un sistema bien diseñado."_
 
 <br/>
 

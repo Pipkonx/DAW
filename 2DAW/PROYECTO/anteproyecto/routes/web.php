@@ -31,6 +31,16 @@ use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
+// Ruta temporal para reparar la base de datos (Ejecutar migraciones)
+Route::get('/migrate-repair', function () {
+    try {
+        \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
+        return "Migraciones completadas: " . \Illuminate\Support\Facades\Artisan::output();
+    } catch (\Exception $e) {
+        return "Error: " . $e->getMessage();
+    }
+});
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -226,6 +236,7 @@ Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.'
 
     // Mantenimiento de Sistema
     Route::post('/system/optimize', [AdminController::class, 'optimizeDb'])->name('system.optimize');
+    Route::post('/system/migrate', [AdminController::class, 'runMigrations'])->name('system.migrate');
     Route::post('/system/clear-cache', [AdminController::class, 'clearCache'])->name('system.clear-cache');
     Route::get('/system/logs', [AdminController::class, 'getSystemLogs'])->name('system.logs');
 

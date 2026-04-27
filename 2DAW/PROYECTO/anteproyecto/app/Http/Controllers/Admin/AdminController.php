@@ -175,10 +175,31 @@ class AdminController extends Controller
     public function optimizeDb()
     {
         try {
-            \DB::statement('VACUUM'); // Optimización nativa SQLite
-            return back()->with('success', 'Base de datos compactada correctamente.');
+            $driver = \DB::getDriverName();
+            if ($driver === 'sqlite') {
+                \DB::statement('VACUUM');
+            } else {
+                // Para MySQL optimizamos las tablas principales
+                \DB::statement('OPTIMIZE TABLE users, transactions, assets, categories, portfolios');
+            }
+            return back()->with('success', 'Base de datos optimizada correctamente.');
         } catch (\Exception $e) {
             return back()->with('error', 'Error en optimización: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Ejecuta las migraciones pendientes en el servidor.
+     * Útil cuando no se tiene acceso SSH.
+     */
+    public function runMigrations()
+    {
+        try {
+            Artisan::call('migrate', ['--force' => true]);
+            $output = Artisan::output();
+            return back()->with('success', 'Migraciones ejecutadas: ' . $output);
+        } catch (\Exception $e) {
+            return back()->with('error', 'Error al migrar: ' . $e->getMessage());
         }
     }
 }

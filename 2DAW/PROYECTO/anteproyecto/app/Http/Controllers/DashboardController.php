@@ -114,11 +114,19 @@ class DashboardController extends Controller
             $data[$key] = [
                 'start' => $dates[0]->format('Y-m-d'),
                 'end' => $dates[1]->format('Y-m-d'),
-                'total' => (float) Transaction::where('user_id', $userId)->where('type', 'expense')->whereBetween('date', $dates)->sum('amount'),
-                'byCategory' => Transaction::where('transactions.user_id', $userId)->where('transactions.type', 'expense')->whereBetween('transactions.date', $dates)
-                    ->leftJoin('categories', 'transactions.category_id', '=', 'categories.id')
+                'total' => (float) Transaction::where('user_id', $userId)
+                    ->where('type', 'expense')
+                    ->whereBetween('date', $dates)
+                    ->sum('amount'),
+                'byCategory' => Transaction::where('transactions.user_id', $userId)
+                    ->where('transactions.type', 'expense')
+                    ->whereBetween('transactions.date', $dates)
+                    ->join('categories', 'transactions.category_id', '=', 'categories.id')
                     ->select('categories.name as category', DB::raw('SUM(transactions.amount) as total'))
-                    ->groupBy('categories.name')->orderByDesc('total')->get()
+                    ->groupBy('categories.id', 'categories.name')
+                    ->orderByDesc('total')
+                    ->limit(5) // Limitamos a las 5 principales para aligerar la carga
+                    ->get()
             ];
         }
         return $data;
