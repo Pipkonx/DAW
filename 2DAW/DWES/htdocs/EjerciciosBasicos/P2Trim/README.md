@@ -13,7 +13,6 @@ Este repositorio está organizado en **4 Bloques Académicos** independientes. C
 | **[Problema 1](./Problema%201)** | **Arquitectura y Estándares** | [`app/Models`](./Problema%201/app/Models) <br> [`app/Http/Controllers`](./Problema%201/app/Http/Controllers) |
 | **[Problema 2](./Problema%202)** | **Software Testing** | [`IncidenciasTest.php`](./Problema%202/tests/Feature/IncidenciasTest.php) <br> [`Pest.php`](./Problema%202/tests/Pest.php) |
 | **[Problema 3](./Problema%203)** | **Interactividad (Frontend)** | [`resources/views/clients`](./Problema%203/resources/views/clients) <br> [`Index.vue`](./Problema%203/resources/js/Pages/Tasks/Index.vue) |
-| **[Problema 4](./Problema%204)** | **Servicios y APIs** | [`TaskApiController.php`](./Problema%204/app/Http/Controllers/Api/TaskApiController.php) <br> [`Fee.php`](./Problema%204/app/Models/Fee.php) |
 
 ## 🔐 Credenciales de Acceso (Válidas para todos los problemas)
 
