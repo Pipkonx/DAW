@@ -1,9 +1,5 @@
 <?php
-/**
- * Autor: Rafael
- * Fecha: 19/04/2026
- * Versión: 1.0
- */
+
 
 namespace App\Models;
 
@@ -86,4 +82,5 @@ class Task extends Model
         return $query;
     }
 }
+
 

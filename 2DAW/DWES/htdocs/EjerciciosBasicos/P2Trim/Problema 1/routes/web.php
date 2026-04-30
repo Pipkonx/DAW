@@ -6,9 +6,6 @@ use App\Http\Controllers\ClientController;
 use App\Http\Controllers\FeeController;
 use App\Http\Controllers\TaskController;
 /**
- * Autor: Rafael
- * Fecha: 19/04/2026
- * Versión: 1.0
  * 
  * Este archivo define las rutas para la parte web de la aplicación.
  */
@@ -97,3 +94,4 @@ Route::get('auth/google/callback', [\App\Http\Controllers\Auth\SocialController:
 
 // Cargamos las rutas de autenticación por defecto de Laravel
 require __DIR__.'/auth.php';
+

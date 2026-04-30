@@ -1,9 +1,5 @@
 <?php
-/**
- * Autor: Rafael
- * Fecha: 19/04/2026
- * Versión: 1.0
- */
+
 
 namespace App\Models;
 
@@ -89,4 +85,5 @@ class User extends Authenticatable
         ];
     }
 }
+
 

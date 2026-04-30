@@ -1,9 +1,6 @@
 <?php
 
 /**
- * Autor: Rafael
- * Fecha: 19/04/2026
- * Versión: 1.0
  * 
  * Clase Province
  * Esta clase representa la tabla de provincias en la base de datos.
@@ -27,3 +24,4 @@ class Province extends Model
 
     protected $fillable = ['code', 'name'];
 }
+

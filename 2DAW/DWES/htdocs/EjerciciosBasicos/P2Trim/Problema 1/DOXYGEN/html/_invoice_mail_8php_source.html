@@ -1,0 +1,173 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="es">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.15.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>DWES DOC DOXYGEN: Archivo de código fuente C:/Users/Rafael/Desktop/DAW/2DAW/DWES/htdocs/EjerciciosBasicos/P2Trim/Problema 1/app/Mail/InvoiceMail.php</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">DWES DOC DOXYGEN
+   </div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generado por Doxygen 1.15.0 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+$(function() { codefold.init(); });
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('',true,false,'search.php','Buscar',true);
+  $(function() { init_search(); });
+});
+</script>
+<div id="main-nav"></div>
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+$(function(){initNavTree('_invoice_mail_8php_source.html','',''); });
+</script>
+<div id="container">
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Cargando...</div>
+<div class="SRStatus" id="Searching">Buscando...</div>
+<div class="SRStatus" id="NoMatches">Nada coincide</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="headertitle"><div class="title">InvoiceMail.php</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="_invoice_mail_8php.html">Ir a la documentación de este archivo.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span>&lt;?php</div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno"><a class="line" href="namespace_app_1_1_mail.html">    3</a></span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespace_app_1_1_mail.html">App\Mail</a>;</div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span>use Illuminate\Bus\Queueable;</div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span>use Illuminate\Contracts\Queue\ShouldQueue;</div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span>use Illuminate\Mail\Mailable;</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span>use Illuminate\Mail\Mailables\Content;</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span>use Illuminate\Mail\Mailables\Envelope;</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>use Illuminate\Queue\SerializesModels;</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>use <a class="code hl_class" href="class_app_1_1_models_1_1_fee.html">App\Models\Fee</a>;</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>use Illuminate\Mail\Mailables\Attachment;</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="foldopen" id="foldopen00015" data-start="{" data-end="};">
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno"><a class="line" href="class_app_1_1_mail_1_1_invoice_mail.html">   15</a></span><span class="keyword">class </span><a class="code hl_class" href="class_app_1_1_mail_1_1_invoice_mail.html">InvoiceMail</a> <span class="keyword">extends</span> Mailable</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>{</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>    use Queueable, SerializesModels;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="class_app_1_1_mail_1_1_invoice_mail.html#aaae531680cac4b9220fb1a0fe8b4c698">   19</a></span>    <span class="keyword">public</span> <a class="code hl_variable" href="class_app_1_1_mail_1_1_invoice_mail.html#aaae531680cac4b9220fb1a0fe8b4c698">$fee</a>;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="class_app_1_1_mail_1_1_invoice_mail.html#a9ad423668419f3923a056b6f0993c390">   20</a></span>    <span class="keyword">public</span> <a class="code hl_variable" href="class_app_1_1_mail_1_1_invoice_mail.html#a9ad423668419f3923a056b6f0993c390">$pdfContent</a>;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span></div>
+<div class="foldopen" id="foldopen00025" data-start="{" data-end="}">
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="class_app_1_1_mail_1_1_invoice_mail.html#a313aef85cb6d2154c51a639ce2e56283">   25</a></span>    <span class="keyword">public</span> <span class="keyword">function</span> <a class="code hl_function" href="class_app_1_1_mail_1_1_invoice_mail.html#a313aef85cb6d2154c51a639ce2e56283">__construct</a>(<a class="code hl_class" href="class_app_1_1_models_1_1_fee.html">Fee</a> <a class="code hl_variable" href="class_app_1_1_mail_1_1_invoice_mail.html#aaae531680cac4b9220fb1a0fe8b4c698">$fee</a>, <a class="code hl_variable" href="class_app_1_1_mail_1_1_invoice_mail.html#a9ad423668419f3923a056b6f0993c390">$pdfContent</a>)</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    {</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>        $this-&gt;fee = <a class="code hl_variable" href="class_app_1_1_mail_1_1_invoice_mail.html#aaae531680cac4b9220fb1a0fe8b4c698">$fee</a>;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>        $this-&gt;pdfContent = <a class="code hl_variable" href="class_app_1_1_mail_1_1_invoice_mail.html#a9ad423668419f3923a056b6f0993c390">$pdfContent</a>;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    }</div>
+</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span></div>
+<div class="foldopen" id="foldopen00034" data-start="{" data-end="}">
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="class_app_1_1_mail_1_1_invoice_mail.html#a49b8f0147d9fe88e109116a8f0dca59a">   34</a></span>    <span class="keyword">public</span> <span class="keyword">function</span> <a class="code hl_function" href="class_app_1_1_mail_1_1_invoice_mail.html#a49b8f0147d9fe88e109116a8f0dca59a">envelope</a>(): Envelope</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    {</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>        <span class="keywordflow">return</span> <span class="keyword">new</span> Envelope(</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>            subject: <span class="stringliteral">&#39;Factura #&#39;</span> . $this-&gt;fee-&gt;id . <span class="stringliteral">&#39; - &#39;</span> . config(<span class="stringliteral">&#39;app.name&#39;</span>),</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>        );</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    }</div>
+</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span></div>
+<div class="foldopen" id="foldopen00044" data-start="{" data-end="}">
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="class_app_1_1_mail_1_1_invoice_mail.html#a9b80bb36f89498eac4f43bf08461240d">   44</a></span>    <span class="keyword">public</span> <span class="keyword">function</span> <a class="code hl_function" href="class_app_1_1_mail_1_1_invoice_mail.html#a9b80bb36f89498eac4f43bf08461240d">content</a>(): Content</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    {</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>        <span class="keywordflow">return</span> <span class="keyword">new</span> Content(</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>            markdown: <span class="stringliteral">&#39;emails.invoice&#39;</span>,</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>        );</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    }</div>
+</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span></div>
+<div class="foldopen" id="foldopen00056" data-start="{" data-end="}">
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno"><a class="line" href="class_app_1_1_mail_1_1_invoice_mail.html#a5fc550edbf0cd33362468cbc036349e9">   56</a></span>    <span class="keyword">public</span> <span class="keyword">function</span> <a class="code hl_function" href="class_app_1_1_mail_1_1_invoice_mail.html#a5fc550edbf0cd33362468cbc036349e9">attachments</a>(): array</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    {</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>        <span class="keywordflow">return</span> [</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>            Attachment::fromData(fn () =&gt; $this-&gt;pdfContent, <span class="stringliteral">&#39;factura_&#39;</span> . $this-&gt;fee-&gt;id . <span class="stringliteral">&#39;.pdf&#39;</span>)</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>                -&gt;withMime(<span class="stringliteral">&#39;application/pdf&#39;</span>),</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>        ];</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    }</div>
+</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>}</div>
+</div>
+<div class="ttc" id="aclass_app_1_1_mail_1_1_invoice_mail_html"><div class="ttname"><a href="class_app_1_1_mail_1_1_invoice_mail.html">App\Mail\InvoiceMail</a></div><div class="ttdef"><b>Definition</b> <a href="#l00015">InvoiceMail.php:16</a></div></div>
+<div class="ttc" id="aclass_app_1_1_mail_1_1_invoice_mail_html_a313aef85cb6d2154c51a639ce2e56283"><div class="ttname"><a href="class_app_1_1_mail_1_1_invoice_mail.html#a313aef85cb6d2154c51a639ce2e56283">App\Mail\InvoiceMail\__construct</a></div><div class="ttdeci">__construct(Fee $fee, $pdfContent)</div><div class="ttdef"><b>Definition</b> <a href="#l00025">InvoiceMail.php:25</a></div></div>
+<div class="ttc" id="aclass_app_1_1_mail_1_1_invoice_mail_html_a49b8f0147d9fe88e109116a8f0dca59a"><div class="ttname"><a href="class_app_1_1_mail_1_1_invoice_mail.html#a49b8f0147d9fe88e109116a8f0dca59a">App\Mail\InvoiceMail\envelope</a></div><div class="ttdeci">envelope()</div><div class="ttdef"><b>Definition</b> <a href="#l00034">InvoiceMail.php:34</a></div></div>
+<div class="ttc" id="aclass_app_1_1_mail_1_1_invoice_mail_html_a5fc550edbf0cd33362468cbc036349e9"><div class="ttname"><a href="class_app_1_1_mail_1_1_invoice_mail.html#a5fc550edbf0cd33362468cbc036349e9">App\Mail\InvoiceMail\attachments</a></div><div class="ttdeci">attachments()</div><div class="ttdef"><b>Definition</b> <a href="#l00056">InvoiceMail.php:56</a></div></div>
+<div class="ttc" id="aclass_app_1_1_mail_1_1_invoice_mail_html_a9ad423668419f3923a056b6f0993c390"><div class="ttname"><a href="class_app_1_1_mail_1_1_invoice_mail.html#a9ad423668419f3923a056b6f0993c390">App\Mail\InvoiceMail\$pdfContent</a></div><div class="ttdeci">$pdfContent</div><div class="ttdef"><b>Definition</b> <a href="#l00020">InvoiceMail.php:20</a></div></div>
+<div class="ttc" id="aclass_app_1_1_mail_1_1_invoice_mail_html_a9b80bb36f89498eac4f43bf08461240d"><div class="ttname"><a href="class_app_1_1_mail_1_1_invoice_mail.html#a9b80bb36f89498eac4f43bf08461240d">App\Mail\InvoiceMail\content</a></div><div class="ttdeci">content()</div><div class="ttdef"><b>Definition</b> <a href="#l00044">InvoiceMail.php:44</a></div></div>
+<div class="ttc" id="aclass_app_1_1_mail_1_1_invoice_mail_html_aaae531680cac4b9220fb1a0fe8b4c698"><div class="ttname"><a href="class_app_1_1_mail_1_1_invoice_mail.html#aaae531680cac4b9220fb1a0fe8b4c698">App\Mail\InvoiceMail\$fee</a></div><div class="ttdeci">$fee</div><div class="ttdef"><b>Definition</b> <a href="#l00019">InvoiceMail.php:19</a></div></div>
+<div class="ttc" id="aclass_app_1_1_models_1_1_fee_html"><div class="ttname"><a href="class_app_1_1_models_1_1_fee.html">App\Models\Fee</a></div><div class="ttdef"><b>Definition</b> <a href="_fee_8php_source.html#l00016">Fee.php:17</a></div></div>
+<div class="ttc" id="anamespace_app_1_1_mail_html"><div class="ttname"><a href="namespace_app_1_1_mail.html">App\Mail</a></div><div class="ttdef"><b>Definition</b> <a href="#l00003">InvoiceMail.php:3</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+</div><!-- doc-content -->
+</div><!-- container -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a href="dir_842b07b27e60d61a55ec21cb07fd5ff5.html">DAW</a></li><li class="navelem"><a href="dir_b99674050254736bca2213981ba01aa2.html">2DAW</a></li><li class="navelem"><a href="dir_64c9819208c582ffbaea46191fef2dda.html">DWES</a></li><li class="navelem"><a href="dir_fc48d152594f468300b284d0931a1459.html">htdocs</a></li><li class="navelem"><a href="dir_e0087976ee574b4d66c68a5e39760dd6.html">EjerciciosBasicos</a></li><li class="navelem"><a href="dir_64d0bf464339d64e1c5606a13a952791.html">P2Trim</a></li><li class="navelem"><a href="dir_93ae176776ae40294bd1b8430246a3b6.html">Problema 1</a></li><li class="navelem"><a href="dir_6dc8971f54bb8c7b1f4c201e1483c0a9.html">app</a></li><li class="navelem"><a href="dir_399ca5d8c8aef700086d4891cddbbbd7.html">Mail</a></li><li class="navelem"><a href="_invoice_mail_8php.html">InvoiceMail.php</a></li>
+    <li class="footer">Generado por <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.15.0 </li>
+  </ul>
+</div>
+</body>
+</html>

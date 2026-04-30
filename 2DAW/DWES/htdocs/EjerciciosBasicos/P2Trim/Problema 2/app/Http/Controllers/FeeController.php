@@ -1,9 +1,5 @@
 <?php
-/**
- * Autor: Rafael
- * Fecha: 19/04/2026
- * Versión: 1.0
- */
+
 
 namespace App\Http\Controllers;
 
@@ -197,4 +193,5 @@ class FeeController extends Controller
         return redirect()->route('fees.index')->with('success', 'Pago procesado correctamente.');
     }
 }
+
 

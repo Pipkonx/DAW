@@ -1,9 +1,5 @@
 <?php
-/**
- * Autor: Rafael
- * Fecha: 19/04/2026
- * Versión: 1.0
- */
+
 
 namespace App\Http\Controllers\Api;
 
@@ -188,4 +184,5 @@ class TaskApiController extends Controller
         return response()->json(null, 204);
     }
 }
+
 

@@ -1,10 +1,6 @@
 <?php
 
-/**
- * Autor: Rafael
- * Fecha: 19/04/2026
- * Versión: 1.0
- */
+
 
 namespace App\Http\Controllers;
 
@@ -112,3 +108,4 @@ class EmployeeController extends Controller
         return redirect()->route('employees.index')->with('success', 'Empleado dado de baja con éxito.');
     }
 }
+
