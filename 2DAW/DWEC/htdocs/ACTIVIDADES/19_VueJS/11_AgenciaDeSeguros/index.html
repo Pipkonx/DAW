@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aeterna Seguros</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+</head>
+
+<body class="bg-light">
+
+    <div id="app" class="container mt-4">
+        <h1>Aeterna Seguros</h1>
+        <hr>
+
+        <!-- Login simple -->
+        <div v-if="!mostrarFormNuevo" style="max-width: 400px; margin: auto; border: 1px solid #ccc; padding: 20px;">
+            <h3>Acceso</h3>
+            <div class="mb-2">
+                Usuario: <input type="text" class="form-control" v-model="inputUsuario">
+            </div>
+            <div class="mb-2">
+                Contraseña: <input type="password" class="form-control" v-model="inputPassword">
+            </div>
+            <div v-if="loginMensaje" style="color: red;">{{ loginMensaje }}</div>
+            <button class="btn btn-primary w-100 mt-2" @click="login()">Entrar</button>
+            <hr>
+            <button class="btn btn-link w-100" @click="mostrarFormNuevo = true">¿No tienes cuenta? Regístrate</button>
+        </div>
+
+        <!-- Registro simple -->
+        <div v-if="mostrarFormNuevo" style="max-width: 400px; margin: auto; border: 1px solid #0d6efd; padding: 20px;">
+            <h3>Nuevo Usuario</h3>
+            <div class="mb-2">
+                Nombre: <input type="text" class="form-control" v-model="nuevoLogin.nombre">
+            </div>
+            <div class="mb-2">
+                Password: <input type="password" class="form-control" v-model="nuevoLogin.password">
+            </div>
+            <button class="btn btn-success w-100 mt-2" @click="registrarNuevoLogin()">Registrar</button>
+            <button class="btn btn-secondary w-100 mt-1" @click="mostrarFormNuevo = false">Cancelar</button>
+        </div>
+    </div>
+
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/utiles.js"></script>
+</body>
+
+</html>

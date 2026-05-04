@@ -16,7 +16,7 @@ def iniciar_vigilante():
     while not simbolo:
         simbolo = input("\nQue moneda o accion quieres vigilar? (ej: BTC-USD, XRP): ").strip().upper()
         if not simbolo:
-            print("Errror: Tienes que introducir un Tinker válido.")
+            print("Error: Tienes que introducir un Tinker válido.")
 
 
     try:

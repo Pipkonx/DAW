@@ -1,80 +1,33 @@
-# Gestión de Agencia de Seguros
+# Agencia de Seguros Aeterna
 
-Este proyecto es una aplicación web para la gestión de una agencia de seguros, desarrollada con **Vue.js 3** (Composition API) y **PrimeVue 3** en el frontend, y **PHP** con **MySQL** en el backend.
+Sistema de gestión integral para una agencia de seguros, desarrollado con **Vue.js 3**, **PHP** y **MySQL**.
 
-## 📋 Características
+## 🚀 Características
+- Gestión completa de Clientes (Alta, Baja, Modificación y Listado).
+*   Control de Pólizas por cliente con estados dinámicos.
+*   Gestión de Recibos y Pagos (validación de importes pendientes).
+*   Geografía Dinámica: Provincias y Municipios cargados desde la Base de Datos.
+*   Interfaz moderna con **Bootstrap 5** y componentes **PrimeVue**.
+*   Sistema de autenticación con roles (Administrador/Usuario).
 
-- **Autenticación de Usuarios**: Sistema de login seguro.
-- **Panel de Control (Dashboard)**:
-  - Listado de clientes con paginación y ordenación.
-  - Búsqueda global de clientes.
-  - Indicadores visuales de tipo de cliente (Empresa/Particular).
-- **Detalle de Cliente**:
-  - Información completa del cliente.
-  - Historial de pólizas asociadas.
-  - Gestión de pagos fraccionados (añadir/eliminar pagos).
-  - Estado de pólizas con código de colores (Cobrada, A cuenta, Liquidada, Anulada, Pre-anulada).
-- **Reportes Avanzados**:
-  - Filtrado por rango de códigos de cliente.
-  - Filtrado por rango de fechas.
-  - Filtrado por estado de la póliza.
-  - Resultados en tabla interactiva.
+## 🔑 Usuarios Predeterminados
+Para acceder al sistema, puede utilizar las siguientes credenciales:
 
-## 🛠️ Tecnologías Utilizadas
+| Usuario | Contraseña | Rol |
+| :--- | :--- | :--- |
+| **admin** | `123` | Administrador (Acceso total) |
+| **user** | `user` | Usuario (Solo lectura/operaciones básicas) |
 
-- **Frontend**:
-  - **Vue.js 3.x** (Composition API)
-  - **PrimeVue 3.x** (Biblioteca de Componentes UI)
-  - **PrimeIcons** (Iconos)
-  - **PrimeFlex 2.x** (Sistema de Grid y Utilidades CSS)
-- **Backend**:
-  - **PHP 7.4+** (API REST simple)
-  - **PDO** (Conexión a Base de Datos)
-- **Base de Datos**:
-  - **MySQL / MariaDB**
+## 🛠️ Instalación
+1. Clone o descargue los archivos en su servidor local (XAMPP/WAMP).
+2. Importe el archivo `database.sql` en su gestor de bases de datos (phpMyAdmin).
+3. Asegúrese de que la base de datos se llame `agencia_seguros_new` (o cambie el nombre en `db_config.php`).
+4. Abra `index.html` a través de su servidor local (ej: `http://localhost/AgenciaDeSeguros/`).
 
-## 🚀 Instalación y Configuración
-
-### 1. Base de Datos
-1. Crea una base de datos en MySQL llamada `agencia_seguros_new`.
-2. Importa el archivo `database.sql` incluido en el proyecto.
-
-### 2. Configuración del Backend
-1. Abre el archivo `api.php`.
-2. Verifica y ajusta las credenciales de tu base de datos al inicio del archivo:
-   ```php
-   $host = 'localhost';
-   $db   = 'agencia_seguros_new';
-   $user = 'root'; // Cambia esto por tu usuario de MySQL
-   $pass = '';     // Cambia esto por tu contraseña de MySQL
-   ```
-
-### 3. Ejecución
-Para ejecutar la aplicación, necesitas un servidor web con soporte para PHP (como Apache en XAMPP, Nginx, o el servidor integrado de PHP).
-
-## 👤 Usuarios de Prueba
-
-El sistema incluye usuarios predefinidos para pruebas:
-
-- **Administrador**:
-  - Usuario: `admin`
-  - Contraseña: `123`
-- **Usuario Estándar**:
-  - Usuario: `user`
-  - Contraseña: `user`
-
-## 📂 Estructura del Proyecto
-
-- `index.html`: Punto de entrada de la aplicación. Carga las librerías CDN y define la estructura base.
-- `app.js`: Contiene toda la lógica de la aplicación Vue 3 (Componentes, Router simulado, Estado reactivo).
-- `api.php`: API Backend que maneja las peticiones AJAX (Login, CRUD de datos).
-- `styles.css`: Estilos personalizados adicionales.
-- `database.sql`: Esquema de la base de datos.
-
-## ⚠️ Notas de Migración (Vue 2 -> Vue 3)
-
-Este proyecto ha sido migrado a Vue 3. Principales cambios:
-- Uso de `createApp` y `setup()` (Composition API).
-- Registro de componentes PrimeVue mediante `app.component`.
-- Actualización de sintaxis de slots (`v-slot` / `#`).
-- Uso de PrimeFlex 2 para mantener compatibilidad de clases de utilidad.
+## 📁 Estructura del Proyecto
+- `index.html`: Punto de entrada y plantillas de componentes.
+- `api.php`: Backend REST que gestiona todas las peticiones SQL.
+- `app.js`: Lógica principal de la aplicación Vue.
+- `utils/`: Abstracciones de API, Estilos y Helpers.
+- `views/`: Componentes Vue para cada sección (Login, Clientes, Pólizas, etc.).
+- `database.sql`: Esquema completo y datos de ejemplo.

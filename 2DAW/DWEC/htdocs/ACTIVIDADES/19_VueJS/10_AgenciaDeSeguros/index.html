@@ -3,86 +3,371 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agencia de Seguros</title>
+    <title>Gestión Agencia de Seguros - Pro</title>
 
-    <!-- Vue 3 CDN -->
-    <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
+    
+    <!-- PrimeVue 3 -->
+    <link href="https://cdn.jsdelivr.net/npm/primeicons@6.0.1/primeicons.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/primevue@3.45.0/resources/themes/lara-light-blue/theme.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/primevue@3.45.0/resources/primevue.min.css" rel="stylesheet">
 
-    <!-- PrimeVue CSS -->
-    <link href="https://unpkg.com/primevue@3.52.0/resources/themes/saga-blue/theme.css" rel="stylesheet">
-    <link href="https://unpkg.com/primevue@3.52.0/resources/primevue.min.css" rel="stylesheet">
-    <link href="https://unpkg.com/primeicons@7.0.0/primeicons.css" rel="stylesheet">
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    <!-- PrimeFlex CSS (para utilidades de layout) -->
-    <link href="https://unpkg.com/primeflex@3.3.1/primeflex.min.css" rel="stylesheet">
-
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-
-    <!-- PrimeVue Components CDN (individualmente, si no se usa un bundler) -->
-    <script src="https://unpkg.com/primevue@3.52.0/button/button.min.js"></script>
-    <script src="https://unpkg.com/primevue@3.52.0/card/card.min.js"></script>
-    <script src="https://unpkg.com/primevue@3.52.0/inputtext/inputtext.min.js"></script>
-    <script src="https://unpkg.com/primevue@3.52.0/datatable/datatable.min.js"></script>
-    <script src="https://unpkg.com/primevue@3.52.0/column/column.min.js"></script>
-    <script src="https://unpkg.com/primevue@3.52.0/dialog/dialog.min.js"></script>
-    <script src="https://unpkg.com/primevue@3.52.0/dropdown/dropdown.min.js"></script>
-    <script src="https://unpkg.com/primevue@3.52.0/calendar/calendar.min.js"></script>
-    <script src="https://unpkg.com/primevue@3.52.0/inputnumber/inputnumber.min.js"></script>
-    <script src="https://unpkg.com/primevue@3.52.0/tag/tag.min.js"></script>
-    <script src="https://unpkg.com/primevue@3.52.0/message/message.min.js"></script>
-    <script src="https://unpkg.com/primevue@3.52.0/menubar/menubar.min.js"></script>
-    <script src="https://unpkg.com/primevue@3.52.0/tooltip/tooltip.min.js"></script>
-
+    <style>
+        .cursor-pointer { cursor: pointer; }
+        .bg-login { background: linear-gradient(135deg, #0d6efd 0%, #003d99 100%); min-height: 100vh; }
+        .hover-shadow:hover { box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important; transition: 0.3s; }
+        /* Fix para expansión de PrimeVue */
+        .p-datatable-row-expansion > td { background: #f8f9fa !important; }
+    </style>
 </head>
-<body>
-    <div id="app" class="max-w-[1200px] mx-auto my-5 bg-white p-5 rounded-lg shadow-md">
-        <div v-if="!isLoggedIn" class="max-w-[400px] mx-auto my-24 p-8 rounded-lg shadow-xl bg-white text-center">
-            <h2 class="mb-6 text-[#333]">Iniciar Sesión</h2>
-            <div class="p-fluid">
-                <div class="mb-5">
-                    <span class="p-float-label">
-                        <p-inputtext id="username" v-model="loginForm.username"></p-inputtext>
-                        <label for="username">Usuario</label>
-                    </span>
+<body class="bg-light">
+
+    <!-- TEMPLATE: LOGIN -->
+    <script type="text/x-template" id="template-login">
+        <div :class="UI.bgLogin">
+            <div :class="UI.cardLogin" style="width: 400px;">
+                <div :class="UI.cardBody + ' p-5 text-center'">
+                    <i :class="UI.iconLogin"></i>
+                    <h2 :class="UI.sectionTitle">Acceso Agencia</h2>
+                    <form @submit.prevent="submitLogin">
+                        <div :class="UI.formFloating">
+                            <input type="text" :class="UI.formControl" v-model="username" required placeholder="Usuario">
+                            <label>Usuario</label>
+                        </div>
+                        <div :class="UI.formFloating">
+                            <input type="password" :class="UI.formControl" v-model="password" required placeholder="Contraseña">
+                            <label>Contraseña</label>
+                        </div>
+                        <button type="submit" :class="UI.btnLarge" :disabled="loading">
+                            {{ loading ? 'Entrando...' : 'INGRESAR' }}
+                        </button>
+                    </form>
                 </div>
-                <div class="mb-5">
-                    <span class="p-float-label">
-                        <p-inputtext id="password" type="password" v-model="loginForm.password" @keyup.enter="login"></p-inputtext>
-                        <label for="password">Contraseña</label>
-                    </span>
-                </div>
-                <p-button label="Entrar" icon="pi pi-sign-in" class="w-full py-3 text-lg p-button-primary" @click="login"></p-button>
-                <div v-if="loginError" class="text-red-500 mt-4 font-medium">{{ loginError }}</div>
             </div>
         </div>
+    </script>
 
-        <div v-else>
-            <p-menubar :model="menuItems" class="mb-5 rounded-md shadow-sm">
-                <template #end>
-                    <p-button label="Salir" icon="pi pi-sign-out" class="p-button-danger" @click="logout"></p-button>
+    <!-- TEMPLATE: INICIO -->
+    <script type="text/x-template" id="template-inicio">
+        <div :class="UI.container">
+            <div :class="UI.jumbotron">
+                <h1 :class="UI.title">Sistema de Gestión de Seguros</h1>
+                <p :class="UI.subtitle">Panel de control integral para clientes, pólizas y recibos.</p>
+                <div :class="UI.rowG4">
+                    <div :class="UI.colMd4">
+                        <div :class="UI.cardAction" @click="$emit('cambiar-vista', 'Clientes')">
+                            <i :class="UI.iconPeoplePrimary"></i>
+                            <h4 :class="UI.mt3">Clientes</h4>
+                            <p :class="UI.textMuted">Gestión de cartera y datos fiscales.</p>
+                        </div>
+                    </div>
+                    <div :class="UI.colMd4">
+                        <div :class="UI.cardAction" @click="$emit('cambiar-vista', 'Polizas')">
+                            <i :class="UI.iconPolicySuccess"></i>
+                            <h4 :class="UI.mt3">Pólizas</h4>
+                            <p :class="UI.textMuted">Control de estados y vencimientos.</p>
+                        </div>
+                    </div>
+                    <div :class="UI.colMd4">
+                        <div :class="UI.cardAction">
+                            <i :class="UI.iconStats"></i>
+                            <h4 :class="UI.mt3">Informes</h4>
+                            <p :class="UI.textMuted">Próximamente...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </script>
+
+    <!-- TEMPLATE: CLIENTES -->
+    <script type="text/x-template" id="template-clientes">
+        <div :class="UI.container">
+            <div :class="UI.flexBetween + ' ' + UI.mb4">
+                <h2 :class="UI.fwBold"><i :class="UI.iconPeople + ' me-2'"></i>Cartera de Clientes</h2>
+                <button v-if="esAdmin" :class="UI.btnPrimary" @click="mostrarForm = !mostrarForm">
+                    <i :class="UI.iconPlus"></i> {{ mostrarForm ? 'Cerrar' : 'Nuevo Cliente' }}
+                </button>
+            </div>
+
+            <!-- Form Alta/Edición (Solo Admin) -->
+            <div v-if="mostrarForm" :class="UI.mainCard + ' ' + UI.mb4 + ' border-primary shadow-sm'">
+                <div :class="UI.cardHeaderPrimary">
+                    <i :class="UI.iconPlus"></i> {{ editando ? 'Modificar Cliente' : 'Registro de Nuevo Cliente' }}
+                </div>
+                <div :class="UI.cardBody">
+                    <form @submit.prevent="guardarCliente" :class="UI.rowG3">
+                        <div :class="UI.colMd2"><input v-model="nuevo.codigo" :class="UI.formControl" placeholder="Código" required></div>
+                        <div :class="UI.colMd4"><input v-model="nuevo.nombre" :class="UI.formControl" placeholder="Nombre completo" required></div>
+                        <div :class="UI.colMd3"><input v-model="nuevo.telefono" :class="UI.formControl" placeholder="Teléfono"></div>
+                        <div :class="UI.colMd3">
+                            <select v-model="nuevo.tipo" :class="UI.formSelect">
+                                <option value="Particular">Particular</option>
+                                <option value="Empresa">Empresa</option>
+                            </select>
+                        </div>
+                        <div :class="UI.colMd3">
+                            <label :class="UI.formLabel">Provincia</label>
+                            <select v-model="nuevo.provincia" :class="UI.formSelect" @change="onProvinciaChange" required>
+                                <option value="" disabled>Seleccione...</option>
+                                <option v-for="p in provincias" :key="p.id" :value="p.provincia">{{ p.provincia }}</option>
+                            </select>
+                        </div>
+                        <div :class="UI.colMd3">
+                            <label :class="UI.formLabel">Localidad</label>
+                            <select v-model="nuevo.localidad" :class="UI.formSelect" :disabled="!nuevo.provincia" required>
+                                <option value="" disabled>Seleccione...</option>
+                                <option v-for="l in localidades" :key="l.id" :value="l.municipio">{{ l.municipio }}</option>
+                            </select>
+                        </div>
+                        <div :class="UI.colMd2">
+                            <label :class="UI.formLabel">CP</label>
+                            <input v-model="nuevo.cp" :class="UI.formControl" placeholder="00000">
+                        </div>
+                        <div :class="UI.colMd4 + ' text-end'">
+                            <button v-if="editando" type="button" :class="UI.btnDanger + ' me-2'" @click="resetForm">Cancelar</button>
+                            <button type="submit" :class="UI.btnSuccess + ' px-4'">{{ editando ? 'Actualizar' : 'Guardar' }}</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <p-datatable :value="items" 
+                         :paginator="true" :rows="10" 
+                         class="p-datatable-sm" stripedRows
+                         v-model:expandedRows="expandedRows"
+                         dataKey="id"
+                         @row-expand="onRowExpand">
+                
+                <p-column expander style="width: 3rem" />
+                <p-column field="codigo" header="Cod" sortable></p-column>
+                <p-column field="nombre" header="Cliente" sortable></p-column>
+                <p-column field="telefono" header="Tel"></p-column>
+                <p-column field="localidad" header="Ciudad"></p-column>
+                <p-column field="tipo" header="Tipo"></p-column>
+                
+                <p-column header="Acciones">
+                    <template #body="slotProps">
+                        <div :class="UI.btnGroup">
+                            <button v-if="esAdmin" :class="UI.btnOutlinePrimary" @click="prepararEdicion(slotProps.data)" title="Editar">
+                                <i class="bi bi-pencil"></i>
+                            </button>
+                            <button v-if="esAdmin" :class="UI.btnOutlineDanger" @click="eliminar(slotProps.data.id)" title="Eliminar">
+                                <i :class="UI.iconTrash"></i>
+                            </button>
+                        </div>
+                    </template>
+                </p-column>
+
+                <template #expansion="slotProps">
+                    <div class="p-4 bg-white border rounded shadow-sm ms-3 mb-3">
+                        <div :class="UI.flexBetween + ' ' + UI.mb3">
+                            <h5 :class="UI.fwBold">Pólizas de {{ slotProps.data.nombre }}</h5>
+                            <button v-if="esAdmin" :class="UI.btnPrimary + ' btn-sm'" @click="abrirFormPoliza(slotProps.data.id)">
+                                <i :class="UI.iconPlus"></i> Nueva Póliza
+                            </button>
+                        </div>
+
+                        <!-- Form Nueva Póliza Inline -->
+                        <div v-if="formPolizaVisible === slotProps.data.id" :class="UI.mainCard + ' ' + UI.mb3 + ' border-success'">
+                            <div :class="UI.cardBody">
+                                <form @submit.prevent="guardarPoliza(slotProps.data.id)" :class="UI.rowG3">
+                                    <div :class="UI.colMd3"><input v-model="nuevaP.numero" :class="UI.formControl" placeholder="Nº Póliza" required></div>
+                                    <div :class="UI.colMd3"><input type="number" step="0.01" v-model="nuevaP.importe" :class="UI.formControl" placeholder="Importe" required></div>
+                                    <div :class="UI.colMd3"><input type="date" v-model="nuevaP.fecha" :class="UI.formControl" required></div>
+                                    <div :class="UI.colMd3">
+                                        <select v-model="nuevaP.estado" :class="UI.formSelect">
+                                            <option value="cobrada">cobrada</option>
+                                            <option value="a cuenta">a cuenta</option>
+                                            <option value="liquidada">liquidada</option>
+                                        </select>
+                                    </div>
+                                    <div :class="UI.col12 + ' text-end'">
+                                        <button type="submit" :class="UI.btnSuccess + ' btn-sm px-4'">Guardar Póliza</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+
+                        <div :class="UI.tableResponsive">
+                            <table :class="UI.table">
+                                <thead :class="UI.tableHeader">
+                                    <tr>
+                                        <th>Nº Póliza</th>
+                                        <th>Importe</th>
+                                        <th>Fecha</th>
+                                        <th>Estado</th>
+                                        <th>Pagos</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="p in polizasPorCliente[slotProps.data.id]" :key="p.id" :class="getStatusClass(p.estado)">
+                                        <td :class="UI.fwBold">{{ p.numero }}</td>
+                                        <td>{{ p.importe }} €</td>
+                                        <td>{{ p.fecha }}</td>
+                                        <td>{{ p.estado }}</td>
+                                        <td>
+                                            <button :class="UI.btnDark + ' btn-sm'" @click="verPagos(p)">
+                                                <i :class="UI.iconCash"></i> Recibos
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr v-if="!polizasPorCliente[slotProps.data.id] || polizasPorCliente[slotProps.data.id].length === 0">
+                                        <td colspan="5" class="text-center py-3 text-muted">Sin pólizas registradas.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </template>
-            </p-menubar>
+            </p-datatable>
+        </div>
+    </script>
 
-            <div class="mt-4">
-                <dashboard v-if="currentView === 'dashboard'" 
-                    :clients="clients" 
-                    :policies="policies" 
-                    :payments="payments"
-                    :selectedClient="selectedClient"
-                    @view-client="viewClient"
-                    @refresh-data="fetchAllData">
-                </dashboard>
+    <!-- TEMPLATE: POLIZAS (VISTA GENERAL) -->
+    <script type="text/x-template" id="template-polizas">
+        <div :class="UI.container">
+            <h2 :class="UI.sectionTitle"><i :class="UI.iconPolicy + ' me-2'"></i>Todas las Pólizas</h2>
+            <p-datatable :value="items" :paginator="true" :rows="10" class="p-datatable-sm" stripedRows>
+                <p-column field="numero" header="Póliza" sortable></p-column>
+                <p-column field="cliente_nombre" header="Cliente" sortable></p-column>
+                <p-column field="importe" header="Importe">
+                    <template #body="slotProps">{{ slotProps.data.importe }} €</template>
+                </p-column>
+                <p-column field="fecha" header="Fecha" sortable></p-column>
+                <p-column field="estado" header="Estado">
+                    <template #body="slotProps">
+                        <span :class="UI.badgeStatus + ' ' + getStatusBadge(slotProps.data.estado)">
+                            {{ slotProps.data.estado }}
+                        </span>
+                    </template>
+                </p-column>
+                <p-column header="Ficha">
+                    <template #body="slotProps">
+                        <button :class="UI.btnLink" @click="verCliente(slotProps.data.cliente_id)">Ver Cliente</button>
+                    </template>
+                </p-column>
+            </p-datatable>
+        </div>
+    </script>
 
-                <reports v-if="currentView === 'reports'" 
-                    :clients="clients" 
-                    :policies="policies">
-                </reports>
+    <!-- TEMPLATE: DETALLE POLIZA (PAGOS) -->
+    <script type="text/x-template" id="template-detalle-poliza">
+        <div :class="UI.container">
+            <button :class="UI.btnLink + ' ' + UI.mb3" @click="$emit('cambiar-vista', 'Clientes')">
+                <i :class="UI.iconBack"></i> Volver a Clientes
+            </button>
+            <div :class="UI.row">
+                <div :class="UI.colMd4">
+                    <div :class="UI.mainCard + ' ' + UI.mb4 + ' shadow-sm'">
+                        <div :class="UI.cardHeaderDark">Resumen Póliza {{ poliza.numero }}</div>
+                        <div :class="UI.cardBody">
+                            <p :class="UI.mb3 + ' text-muted'">Total:</p>
+                            <h4 :class="UI.fwBold">{{ poliza.importe }} €</h4>
+                            <hr :class="UI.hr">
+                            <p :class="UI.mb3 + ' text-muted'">Pagado:</p>
+                            <h4 :class="UI.textSuccess">{{ totalPagado }} €</h4>
+                            <p :class="UI.mb3 + ' text-muted'">Pendiente:</p>
+                            <h4 :class="pendiente > 0 ? UI.textDanger : UI.textSuccess">{{ pendiente }} €</h4>
+                        </div>
+                    </div>
+
+                    <div v-if="pendiente > 0" :class="UI.mainCard + ' shadow-sm'">
+                        <div class="card-header">Registrar Pago</div>
+                        <div :class="UI.cardBody">
+                            <div :class="UI.mb3">
+                                <label :class="UI.formLabel">Importe</label>
+                                <input type="number" :class="UI.formControl" v-model="nuevoPago.importe">
+                            </div>
+                            <div :class="UI.mb3">
+                                <label :class="UI.formLabel">Fecha</label>
+                                <input type="date" :class="UI.formControl" v-model="nuevoPago.fecha">
+                            </div>
+                            <button :class="UI.btnPrimary + ' w-100'" @click="guardarPago">Añadir Recibo</button>
+                        </div>
+                    </div>
+                </div>
+                <div :class="UI.colMd8">
+                    <h4 :class="UI.sectionTitle">Historial de Pagos</h4>
+                    <p-datatable :value="pagos" class="p-datatable-sm shadow-sm" stripedRows>
+                        <p-column field="id" header="Recibo #"></p-column>
+                        <p-column field="fecha" header="Fecha"></p-column>
+                        <p-column field="importe" header="Importe">
+                            <template #body="slotProps">{{ slotProps.data.importe }} €</template>
+                        </p-column>
+                    </p-datatable>
+                </div>
             </div>
         </div>
+    </script>
+
+    <!-- ==========================================
+         APP SHELL
+         ========================================== -->
+
+    <div id="app">
+        <!-- Navbar -->
+        <nav v-if="usuarioLogueado" :class="UI.navbar">
+            <div :class="UI.container">
+                <a :class="UI.navBrand" href="#" @click.prevent="setVista('Inicio')">
+                    <i :class="UI.iconShield"></i> AGENCIA PRO
+                </a>
+                <div class="collapse navbar-collapse">
+                    <ul class="navbar-nav me-auto">
+                        <li class="nav-item">
+                            <a :class="[UI.navLink, { [UI.navLinkActive]: vistaActual==='Clientes' }]" @click="setVista('Clientes')">Clientes</a>
+                        </li>
+                        <li class="nav-item">
+                            <a :class="[UI.navLink, { [UI.navLinkActive]: vistaActual==='Polizas' }]" @click="setVista('Polizas')">Pólizas</a>
+                        </li>
+                    </ul>
+                    <div :class="UI.flexCenter + ' text-white'">
+                        <span class="me-3 small">
+                            <i :class="UI.iconUser"></i> {{ usuarioLogueado.username }}
+                            <span v-if="esAdmin" :class="UI.badgeAdmin">ADMIN</span>
+                        </span>
+                        <button :class="UI.btnOutlineLight" @click="handleLogout">Salir</button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <main>
+            <component 
+                :is="vistaActual" 
+                :es-admin="esAdmin"
+                @login-success="handleLogin"
+                @cambiar-vista="setVista"
+            ></component>
+        </main>
     </div>
 
-    <!-- Main application script -->
-    <script type="module" src="./app.js"></script>
+    <!-- SCRIPTS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@3.3.4/dist/vue.global.prod.js"></script>
+    
+    <!-- PrimeVue 3 (JS) -->
+    <script src="https://cdn.jsdelivr.net/npm/primevue@3.45.0/core/core.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/primevue@3.45.0/datatable/datatable.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/primevue@3.45.0/column/column.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/primevue@3.45.0/button/button.min.js"></script>
+
+    <script src="utils/api.js"></script>
+    <script src="utils/styles.js"></script>
+    <script src="utils/helpers.js"></script>
+    
+    <script src="views/Login.js"></script>
+    <script src="views/Inicio.js"></script>
+    <script src="views/Clientes.js"></script>
+    <script src="views/Polizas.js"></script>
+    <script src="views/DetallePoliza.js"></script>
+    
+    <script src="app.js"></script>
+
 </body>
 </html>

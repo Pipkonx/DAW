@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aeterna Seguros - Filtrado</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.css" />
+    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        .asegurado-link {
+            color: #0d6efd;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .asegurado-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body class="bg-light">
+    <div id="app" class="container mt-3">
+        <div v-if="logueado">
+            <h1>Panel de Control</h1>
+            <p>Usuario: <b>{{ nombreLogin }}</b> ({{ isAdmin ? 'Admin' : 'Usuario' }})</p>
+            <nav class="mb-3">
+                <a href="listado.html" class="btn btn-sm btn-outline-dark">Asegurados</a>
+                <a href="polizas.html" class="btn btn-sm btn-outline-dark">Pólizas</a>
+                <a href="filtrado.html" class="btn btn-sm btn-dark">Filtros</a>
+                <a href="index.html" class="btn btn-sm btn-danger">Salir</a>
+            </nav>
+            <hr>
+
+            <!-- Sección para Detalles del Asegurado (Sin modales) -->
+            <div v-if="mostrarDetallesUsuario" class="card mb-4 border-info" id="seccion-detalles-usuario">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Información del Asegurado</h5>
+                    <button type="button" class="btn-close" @click="mostrarDetallesUsuario = false"></button>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Nombre:</strong> {{ usuarioDetalles.nombre }} {{ usuarioDetalles.apellidos }}</p>
+                            <p><strong>Teléfono:</strong> {{ usuarioDetalles.tlf }}</p>
+                            <p><strong>Tipo:</strong> {{ usuarioDetalles.tipoTexto }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Localidad:</strong> {{ usuarioDetalles.localidadNombre }}</p>
+                            <p><strong>Provincia:</strong> {{ usuarioDetalles.provinciaNombre }}</p>
+                            <p><strong>Login:</strong> {{ usuarioDetalles.login }}</p>
+                        </div>
+                    </div>
+                    <hr v-if="usuarioDetalles.polizas && usuarioDetalles.polizas.length > 0">
+                    <div v-if="usuarioDetalles.polizas && usuarioDetalles.polizas.length > 0">
+                        <h6>Pólizas asociadas</h6>
+                        <table class="table table-sm table-striped">
+                            <thead>
+                                <tr><th>ID</th><th>Importe</th><th>Estado</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="p in usuarioDetalles.polizas" :key="p.idPoliza">
+                                    <td>#{{ p.idPoliza }}</td>
+                                    <td>{{ parseFloat(p.importe).toFixed(2) }}€</td>
+                                    <td>{{ p.estadoTexto }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Botón para mostrar el formulario de nuevo login (Admin) -->
+            <button v-if="isAdmin" class="btn btn-success mb-3" @click="abrirGestionLogins()">Gestionar Logins</button>
+
+            <!-- Sección para Gestionar Logins (reemplaza al modal) -->
+            <div v-if="mostrarFormGestionLogins" class="card mb-4 border-info">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Gestión de Logins</h5>
+                    <button type="button" class="btn-close" @click="mostrarFormGestionLogins = false"></button>
+                </div>
+                <div class="card-body">
+                    <button class="btn btn-primary mb-3" @click="prepararNuevoLogin()">Añadir Nuevo Login</button>
+                    
+                    <!-- Formulario Nuevo/Modificar Login -->
+                    <div v-if="mostrarFormNuevoLogin" class="card mb-3 border-primary">
+                        <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                            <h6 class="mb-0">{{ nuevoLogin.id ? 'Modificar Login' : 'Nuevo Login' }}</h6>
+                            <button type="button" class="btn-close" @click="mostrarFormNuevoLogin = false"></button>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-4 mb-2">
+                                    <label class="form-label">Nombre</label>
+                                    <input type="text" class="form-control" v-model="nuevoLogin.nombre">
+                                </div>
+                                <div class="col-md-4 mb-2">
+                                    <label class="form-label">Contraseña <small v-if="nuevoLogin.id">(Vacío = sin cambio)</small></label>
+                                    <input type="password" class="form-control" v-model="nuevoLogin.password">
+                                </div>
+                                <div class="col-md-3 mb-2">
+                                    <label class="form-label">Tipo</label>
+                                    <select class="form-select" v-model="nuevoLogin.tipo">
+                                        <option value="0">Administrador</option>
+                                        <option value="1">Usuario</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-1 mb-2 d-flex align-items-end">
+                                    <button class="btn btn-success w-100" @click="registrarNuevoLogin()">OK</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <table class="table table-sm table-striped">
+                        <thead>
+                            <tr><th>Nombre</th><th>Tipo</th><th>Acciones</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="lg in logins" :key="lg.id">
+                                <td>{{ lg.nombre }}</td>
+                                <td>{{ lg.tipo == '0' ? 'Admin' : 'Usuario' }}</td>
+                                <td>
+                                    <button class="btn btn-warning btn-sm" @click="prepararModificarLogin(lg)">Modificar</button>
+                                    <button class="btn btn-danger btn-sm" @click="eliminarLogin(lg.id)">Eliminar</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Sección para Añadir/Modificar Póliza (reemplaza al modal) -->
+            <div v-if="mostrarFormPolizaVar" class="card mb-4 border-success">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0" id="polizaModalTitle">Gestión de Póliza</h5>
+                    <button type="button" class="btn-close" @click="ocultarFormPoliza"></button>
+                </div>
+                <div class="card-body">
+                    <input type="hidden" id="form-poliza-id" value="">
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <label>Asegurado*</label>
+                            <select class="form-select" id="form-poliza-id-usuario">
+                                <option value="">Seleccione un asegurado</option>
+                                <option v-for="user in usuarios" :value="user.id">{{ user.nombre }} {{ user.apellidos }}</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <label>Importe</label>
+                            <input type="number" step="0.01" class="form-control" id="form-poliza-importe">
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <label>Fecha</label>
+                            <input type="date" class="form-control" id="form-poliza-fecha">
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <label>Estado</label>
+                            <select class="form-select" id="form-poliza-estado">
+                                <option value="0">cobrado</option>
+                                <option value="1">a cuenta</option>
+                                <option value="2">liquidada</option>
+                                <option value="3">anulada</option>
+                                <option value="4">pre-anulada</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <label>Observaciones</label>
+                            <input type="text" class="form-control" id="form-poliza-observaciones">
+                        </div>
+                    </div>
+                    <div class="text-end mt-3">
+                        <button class="btn btn-secondary me-2" @click="ocultarFormPoliza">Cancelar</button>
+                        <button class="btn btn-primary" @click="guardarPoliza()">Guardar Póliza</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sección para Pagos (reemplaza al modal) -->
+            <div v-if="mostrarFormPagos" class="card mb-4 border-warning">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Pagos de la Póliza #{{ polizaActual?.idPoliza }}</h5>
+                    <button type="button" class="btn-close" @click="mostrarFormPagos = false"></button>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center mb-3">
+                        <div class="col-md-4"><strong>Total:</strong> {{ parseFloat(polizaActual?.importe || 0).toFixed(2) }} €</div>
+                        <div class="col-md-4"><strong>Pagado:</strong> {{ totalPagado.toFixed(2) }} €</div>
+                        <div class="col-md-4"><strong>Restante:</strong> {{ (parseFloat(polizaActual?.importe || 0) - totalPagado).toFixed(2) }} €</div>
+                    </div>
+
+                    <div v-if="polizaActual?.estado == '1' && (parseFloat(polizaActual?.importe || 0) - totalPagado) > 0"
+                        class="row align-items-end mb-4 bg-light p-3 border rounded">
+                        <div class="col-md-4 mb-2">
+                            <label>Importe</label>
+                            <input type="number" step="0.01" class="form-control" v-model="nuevoPago.importe">
+                        </div>
+                        <div class="col-md-4 mb-2">
+                            <label>Fecha</label>
+                            <input type="date" class="form-control" v-model="nuevoPago.fecha">
+                        </div>
+                        <div class="col-md-4 mb-2 d-flex gap-2">
+                            <button class="btn btn-success flex-grow-1" @click="guardarPago">Añadir Pago</button>
+                            <button class="btn btn-primary flex-grow-1" @click="pagarRestante">Pagar Restante</button>
+                        </div>
+                    </div>
+
+                    <div v-if="pagos.length === 0" class="text-muted text-center py-3">No hay pagos registrados.</div>
+                    <div v-else class="table-responsive">
+                        <table class="table table-sm table-striped">
+                            <thead><tr><th>Fecha</th><th>Importe</th><th>Acciones</th></tr></thead>
+                            <tbody>
+                                <tr v-for="pago in pagos" :key="pago.id || pago.Id">
+                                    <td>{{ pago.fecha }}</td>
+                                    <td>{{ parseFloat(pago.importe).toFixed(2) }} €</td>
+                                    <td>
+                                        <button v-if="polizaActual?.estado == '1'" class="btn btn-sm btn-danger" @click="borrarPago(pago.id || pago.Id)">Eliminar</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card p-4 shadow-sm mb-4">
+                <div class="row mb-3 align-items-end">
+                    <div class="col-md-5">
+                        <label class="form-label text-secondary fs-6">Desde Asegurado:</label>
+                        <select class="form-select form-select-lg" v-model="usuarioDesde" @change="cambioFiltroRango()">
+                            <option value="">-- Asgurado 1 --</option>
+                            <option v-for="user in usuariosDropdownRango" :value="user.id">{{ user.nombre }} {{
+                                user.apellidos }}</option>
+                        </select>
+                    </div>
+                    <div class="col-md-5">
+                        <label class="form-label text-secondary fs-6">Hasta Asegurado:</label>
+                        <select class="form-select form-select-lg" v-model="usuarioHasta" @change="cambioFiltroRango()">
+                            <option value="">-- Asegurado 2 --</option>
+                            <option v-for="user in usuariosDropdownRango" :value="user.id">{{ user.nombre }} {{
+                                user.apellidos }}</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2 d-flex align-items-end">
+                        <button class="btn btn-outline-success btn-lg w-100" @click="verTodosRango()">Ver Todos</button>
+                    </div>
+                </div>
+
+                <div class="row mb-3 align-items-end">
+                    <div class="col-md-5">
+                        <label class="form-label text-secondary fs-6">Desde Fecha:</label>
+                        <input type="date" class="form-control form-control-lg" v-model="fechaDesde"
+                            :max="fechaHasta ? fechaHasta : fechaHoy" @change="cambioFiltroRango()">
+                    </div>
+                    <div class="col-md-5">
+                        <label class="form-label text-secondary fs-6">Hasta Fecha:</label>
+                        <input type="date" class="form-control form-control-lg" v-model="fechaHasta" :max="fechaHoy"
+                            :min="fechaDesde" @change="cambioFiltroRango()">
+                    </div>
+                </div>
+
+                <div v-show="usuarioDesde || usuarioHasta || fechaDesde || fechaHasta || intencionVerTodos"
+                    class="mt-4 border-top pt-4">
+                    <h5 class="mb-3 text-secondary">
+                        <span v-if="intencionVerTodos">Pólizas de todos los asegurados</span>
+                        <span v-else>Pólizas de clientes en el rango seleccionado</span>
+                    </h5>
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover w-100" id="myTablePolizas">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Asegurado</th>
+                                    <th>Importe</th>
+                                    <th>Fecha</th>
+                                    <th>Estado</th>
+                                    <th>Observaciones</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="p in todasPolizas" :key="p.idPoliza">
+                                    <td>{{p.idPoliza}}</td>
+                                    <td>
+                                        <a href="#" class="asegurado-link" @click.prevent="verDetallesUsuario(p.idUsuario)">
+                                            {{p.nombreUsuario}}
+                                        </a>
+                                    </td>
+                                    <td>{{parseFloat(p.importe).toFixed(2)}} €</td>
+                                    <td>{{p.fechaMostrada}}</td>
+                                    <td>
+                                        <span class="badge bg-secondary">{{p.estadoTexto}}</span>
+                                    </td>
+                                    <td>{{p.observaciones}}</td>
+                                    <td>
+                                        <div class="btn-group">
+                                            <button v-if="p.estado != '0'" class="btn btn-info btn-sm" @click="mostrarPagos(p.idPoliza, p.importe, p.estado, p.idUsuario)">Pagos</button>
+                                            <button class="btn btn-warning btn-sm" @click="mostrarFormPoliza(p.idUsuario, p.idPoliza)">Editar</button>
+                                            <button class="btn btn-danger btn-sm" @click="deletePoliza(p.idPoliza, p.idUsuario)">Borrar</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div v-else>
+            <h1 class="text-danger">Primero debe de loguearse</h1>
+            <a href="index.html">Ir al Login</a>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/utiles.js"></script>
+</body>
+
+</html>

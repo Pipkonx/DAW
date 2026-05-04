@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plantilla CRUD Vue</title>
+    <!-- Bootstrap: Nos da estilos CSS predefinidos para botones, tablas y formularios sin tener que escribir CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- 
+        El id="app" es crucial. Le indica a Vue dónde debe montarse. 
+        Todo lo que esté dentro de este div será controlado por Vue.
+    -->
+    <div id="app" class="container mt-4">
+        <h2>Gestión de Registros (CRUD)</h2>
+        <hr>
+        
+        <!-- Botón para mostrar el formulario vacío. Llama al método abrirFormulario() sin pasar parámetros -->
+        <button class="btn btn-primary mb-3" @click="abrirFormulario()">+ Nuevo Registro</button>
+
+        <!-- 
+            Formulario de Creación/Edición. 
+            v-if="verFormulario": Solo se muestra si la variable 'verFormulario' es true. 
+        -->
+        <div v-if="verFormulario" class="card p-3 mb-4 shadow-sm">
+            <!-- Cambia el título dependiendo de si existe un ID (Editar) o no (Crear) -->
+            <h4>{{ formulario.id ? 'Editar Registro' : 'Crear Registro' }}</h4>
+            
+            <div class="mb-3">
+                <label class="form-label">Nombre:</label>
+                <!-- v-model="formulario.nombre" conecta el input directamente con la variable en Vue -->
+                <input type="text" class="form-control" v-model="formulario.nombre" placeholder="Introduce el nombre">
+            </div>
+            
+            <div class="mb-3">
+                <label class="form-label">Email:</label>
+                <input type="email" class="form-control" v-model="formulario.email" placeholder="Introduce el email">
+            </div>
+            
+            <div>
+                <!-- Al hacer clic, llama a la función para guardar en la BD -->
+                <button class="btn btn-success" @click="guardarRegistro">Guardar</button>
+                <!-- Botón para cancelar y ocultar el formulario -->
+                <button class="btn btn-secondary ms-2" @click="cerrarFormulario">Cancelar</button>
+            </div>
+        </div>
+
+        <!-- Tabla donde se muestran los datos -->
+        <table class="table table-bordered table-striped">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Email</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- 
+                    v-for itera sobre el array 'listaDatos'.
+                    'key' ayuda a Vue a identificar cada fila de forma única. 
+                -->
+                <tr v-for="item in listaDatos" :key="item.id">
+                    <td>{{ item.id }}</td>
+                    <td>{{ item.nombre }}</td>
+                    <td>{{ item.email }}</td>
+                    <td>
+                        <!-- Pasa el 'item' completo para rellenar el formulario de edición -->
+                        <button class="btn btn-sm btn-warning me-2" @click="abrirFormulario(item)">Editar</button>
+                        <!-- Pasa solo el 'id' para eliminar el registro -->
+                        <button class="btn btn-sm btn-danger" @click="eliminarRegistro(item.id)">Borrar</button>
+                    </td>
+                </tr>
+                <!-- Mensaje por si el array está vacío -->
+                <tr v-if="listaDatos.length === 0">
+                    <td colspan="4" class="text-center">No hay registros disponibles.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Librería principal de Vue 3 -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <!-- Librería Axios para hacer peticiones HTTP al servidor (PHP) fácilmente -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    
+    <!-- Nuestro script de lógica. Va al final para asegurar que el HTML ya cargó -->
+    <script src="../plantillasvue/app.js"></script>
+</body>
+</html>
