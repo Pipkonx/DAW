@@ -1,30 +1,230 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Actividades VueJS</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --bg: #0d0f14; --surface: #14171f; --border: #1e2330;
+            --gold: #c9a84c; --gold-dim: #8a6f30;
+            --text: #e8e2d9; --muted: #6b7280;
+            --teal: #4db8a0; --blue: #5b8dee; --purple: #a78bfa; --green: #42b883;
+        }
+        html { scroll-behavior: smooth; }
+        body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
+        body::before {
+            content: ''; position: fixed; inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+            pointer-events: none; z-index: 0;
+        }
+
+        /* HERO */
+        .hero { position: relative; padding: 80px 40px 60px; border-bottom: 1px solid var(--border); overflow: hidden; }
+        .hero::after {
+            content: 'Vue'; position: absolute; right: -20px; top: -10px;
+            font-family: 'Playfair Display', serif; font-size: clamp(120px, 18vw, 260px);
+            font-weight: 900; color: transparent; -webkit-text-stroke: 1px rgba(66, 184, 131, 0.08);
+            pointer-events: none; line-height: 1; user-select: none;
+        }
+        .hero-inner { max-width: 1100px; margin: 0 auto; position: relative; z-index: 1; }
+        .hero-tag {
+            display: inline-block; font-family: 'DM Mono', monospace; font-size: 11px;
+            letter-spacing: .15em; color: var(--green); text-transform: uppercase;
+            border: 1px solid rgba(66,184,131,.35); padding: 4px 12px; border-radius: 2px;
+            margin-bottom: 24px; animation: fadeUp .6s ease both;
+        }
+        h1 { font-family: 'Playfair Display', serif; font-size: clamp(38px, 6vw, 72px); font-weight: 900; line-height: 1.05; margin-bottom: 16px; animation: fadeUp .6s .1s ease both; }
+        h1 span { color: var(--green); }
+        .hero-sub { font-size: 16px; color: var(--muted); font-weight: 300; max-width: 520px; line-height: 1.7; animation: fadeUp .6s .2s ease both; }
+        .hero-meta { display: flex; gap: 32px; flex-wrap: wrap; margin-top: 36px; animation: fadeUp .6s .3s ease both; }
+        .meta-item { display: flex; flex-direction: column; gap: 2px; }
+        .meta-label { font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); font-family: 'DM Mono', monospace; }
+        .meta-value { font-size: 14px; font-weight: 500; color: var(--text); }
+
+        /* BACK LINK */
+        .back-link {
+            display: inline-flex; align-items: center; gap: 8px;
+            font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: .1em;
+            text-transform: uppercase; color: var(--muted); text-decoration: none;
+            margin-bottom: 32px; transition: color .2s;
+        }
+        .back-link:hover { color: var(--green); }
+
+        /* MAIN */
+        main { max-width: 1100px; margin: 0 auto; padding: 40px; }
+
+        /* SECTION */
+        .section { margin-bottom: 64px; animation: fadeUp .7s .2s ease both; }
+        .section-header { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; }
+        .section-badge { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; background: var(--green); box-shadow: 0 0 10px rgba(66,184,131,.4); }
+        .section-title { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; }
+        .section-count { margin-left: auto; font-family: 'DM Mono', monospace; font-size: 12px; color: var(--muted); }
+        .section-rule { width: 100%; height: 1px; background: var(--border); margin-top: 12px; }
+
+        /* BADGE TYPES */
+        .type-badge {
+            display: inline-block; font-family: 'DM Mono', monospace; font-size: 9px;
+            letter-spacing: .1em; text-transform: uppercase; padding: 3px 8px;
+            border-radius: 2px; border: 1px solid; margin-bottom: 6px;
+        }
+        .type-Ejemplo   { color: var(--blue);   border-color: rgba(91,141,238,.35);  background: rgba(91,141,238,.06); }
+        .type-App       { color: var(--teal);   border-color: rgba(77,184,160,.35);  background: rgba(77,184,160,.06); }
+        .type-Juego     { color: var(--gold);   border-color: rgba(201,168,76,.35);  background: rgba(201,168,76,.06); }
+        .type-Actividad { color: var(--purple); border-color: rgba(167,139,250,.35); background: rgba(167,139,250,.06); }
+        .type-API       { color: var(--teal);   border-color: rgba(77,184,160,.35);  background: rgba(77,184,160,.06); }
+        .type-Proyecto  { color: var(--green);  border-color: rgba(66,184,131,.35);  background: rgba(66,184,131,.06); }
+        .type-FullStack { color: var(--gold);   border-color: rgba(201,168,76,.35);  background: rgba(201,168,76,.06); }
+
+        /* GRID CARDS */
+        .cards-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1px; background: var(--border); border: 1px solid var(--border);
+            border-radius: 8px; overflow: hidden;
+        }
+        .card {
+            background: var(--surface); padding: 24px; display: flex;
+            flex-direction: column; gap: 8px; text-decoration: none;
+            color: inherit; transition: background .2s; position: relative;
+        }
+        .card:hover { background: #1a1d28; }
+        .card:hover .card-name { color: var(--green); }
+        .card:hover .card-arrow { opacity: 1; transform: translate(2px, -2px); }
+        .card-num { font-family: 'DM Mono', monospace; font-size: 11px; color: rgba(66,184,131,.5); letter-spacing: .06em; }
+        .card-name { font-size: 15px; font-weight: 500; line-height: 1.3; }
+        .card-desc { font-size: 13px; color: var(--muted); line-height: 1.5; flex: 1; }
+        .card-arrow { position: absolute; top: 20px; right: 20px; font-size: 16px; color: var(--green); opacity: 0; transition: opacity .2s, transform .2s; }
+
+        /* FOOTER */
+        footer { border-top: 1px solid var(--border); padding: 32px 40px; text-align: center; font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); letter-spacing: .08em; }
+        footer span { color: var(--green); }
+
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        @media (max-width: 600px) {
+            .hero { padding: 48px 24px 40px; }
+            main { padding: 32px 24px; }
+            .hero-meta { gap: 20px; }
+            footer { padding: 24px; }
+        }
+    </style>
 </head>
-
 <body>
-    <table>
-        <thead>
-            <tr>
-                <th>Nº</th>
-                <th>Proyecto</th>
-                <th>Descripción</th>
-                <th>Acción</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>00</td>
-                <td>00_Proyecto_DWEC</td>
-                <td>Proyecto inicial de DWEC con funcionalidades básicas.</td>
-                <td><a href="00_Proyecto_DWEC/README.md" class="button">Abrir</a></td>
-            </tr>
-            
-</body>
 
+<header class="hero">
+    <div class="hero-inner">
+        <div class="hero-tag">DWEC · VueJS · 2025/2026</div>
+        <h1>Ejercicios y<br>Proyectos <span>VueJS</span></h1>
+        <p class="hero-sub">Colección de actividades desarrolladas con Vue.js: desde conceptos básicos de reactividad hasta aplicaciones full stack.</p>
+        <div class="hero-meta">
+            <div class="meta-item">
+                <span class="meta-label">Módulo</span>
+                <span class="meta-value">DWEC — DAW</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">Ejercicios</span>
+                <span class="meta-value">10</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">Tecnología</span>
+                <span class="meta-value">Vue.js · PHP · MySQL</span>
+            </div>
+        </div>
+    </div>
+</header>
+
+<main>
+    <a href="../index.html" class="back-link">← Volver al portafolio</a>
+
+    <section class="section">
+        <div class="section-header">
+            <span class="section-badge"></span>
+            <h2 class="section-title">Actividades VueJS</h2>
+            <span class="section-count">10 elementos</span>
+        </div>
+        <div class="section-rule" style="margin-bottom:24px;"></div>
+
+        <div class="cards-grid">
+            <a href="01_Ejemplo/index.html" class="card">
+                <span class="card-num">#01</span>
+                <span class="type-badge type-Ejemplo">Ejemplo</span>
+                <span class="card-name">01 · Ejemplo</span>
+                <span class="card-desc">Introducción básica a Vue.js con manejo de imágenes de frutas.</span>
+                <span class="card-arrow">↗</span>
+            </a>
+            <a href="02_Ejemplo/index.html" class="card">
+                <span class="card-num">#02</span>
+                <span class="type-badge type-Ejemplo">Ejemplo</span>
+                <span class="card-name">02 · Ejemplo</span>
+                <span class="card-desc">Conceptos fundamentales y reactividad básica.</span>
+                <span class="card-arrow">↗</span>
+            </a>
+            <a href="03_Calculadora/index.html" class="card">
+                <span class="card-num">#03</span>
+                <span class="type-badge type-App">App</span>
+                <span class="card-name">Calculadora</span>
+                <span class="card-desc">Una calculadora interactiva desarrollada con Vue.js.</span>
+                <span class="card-arrow">↗</span>
+            </a>
+            <a href="04_PuntuacionJugadores/index.html" class="card">
+                <span class="card-num">#04</span>
+                <span class="type-badge type-Juego">Juego</span>
+                <span class="card-name">Puntuación de Jugadores</span>
+                <span class="card-desc">Marcador de puntos para jugadores con incremento y decremento.</span>
+                <span class="card-arrow">↗</span>
+            </a>
+            <a href="05_Lista/index.html" class="card">
+                <span class="card-num">#05</span>
+                <span class="type-badge type-App">App</span>
+                <span class="card-name">Lista</span>
+                <span class="card-desc">Gestión dinámica de una lista de tareas o elementos.</span>
+                <span class="card-arrow">↗</span>
+            </a>
+            <a href="06_actividad/index.html" class="card">
+                <span class="card-num">#06</span>
+                <span class="type-badge type-Actividad">Actividad</span>
+                <span class="card-name">Actividad</span>
+                <span class="card-desc">Ejercicio práctico sobre directivas y eventos.</span>
+                <span class="card-arrow">↗</span>
+            </a>
+            <a href="07_Factura/index.html" class="card">
+                <span class="card-num">#07</span>
+                <span class="type-badge type-App">App</span>
+                <span class="card-name">Factura</span>
+                <span class="card-desc">Generador de facturas dinámico utilizando bucles v-for.</span>
+                <span class="card-arrow">↗</span>
+            </a>
+            <a href="08_MostrarPosts/index.html" class="card">
+                <span class="card-num">#08</span>
+                <span class="type-badge type-API">API</span>
+                <span class="card-name">Mostrar Posts</span>
+                <span class="card-desc">Visualización de publicaciones obtenidas de forma dinámica.</span>
+                <span class="card-arrow">↗</span>
+            </a>
+            <a href="09_Tienda/index.html" class="card">
+                <span class="card-num">#09</span>
+                <span class="type-badge type-Proyecto">Proyecto</span>
+                <span class="card-name">Tienda Online</span>
+                <span class="card-desc">Tienda online simple con catálogo de productos.</span>
+                <span class="card-arrow">↗</span>
+            </a>
+            <a href="10_AgenciaDeSeguros/index.html" class="card">
+                <span class="card-num">#10</span>
+                <span class="type-badge type-FullStack">Full Stack</span>
+                <span class="card-name">Agencia de Seguros</span>
+                <span class="card-desc">Gestión integral de agencia con Vue 3, PHP y MySQL.</span>
+                <span class="card-arrow">↗</span>
+            </a>
+        </div>
+    </section>
+</main>
+
+<footer>
+    <span>VueJS</span> · Desarrollo Web en Entorno Cliente · DAW 2025–2026
+</footer>
+
+</body>
 </html>

@@ -10,7 +10,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 $host = 'localhost';
-$db   = 'agencia_seguros_new';
+$db   = 'agencia_seguros';
 $user = 'root'; // Cambiar si es necesario
 $pass = '';     // Cambiar si es necesario
 $charset = 'utf8mb4';

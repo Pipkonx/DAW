@@ -1,186 +1,357 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Índice de Actividades</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Índice de Actividades DWEC</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --bg: #0d0f14; --surface: #14171f; --border: #1e2330;
+            --gold: #c9a84c; --gold-dim: #8a6f30;
+            --text: #e8e2d9; --muted: #6b7280;
+            --red: #d96060; --teal: #4db8a0; --blue: #5b8dee; --purple: #a78bfa;
+        }
+        html { scroll-behavior: smooth; }
+        body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
+        body::before {
+            content: ''; position: fixed; inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+            pointer-events: none; z-index: 0;
+        }
+
+        /* HERO */
+        .hero { position: relative; padding: 80px 40px 60px; border-bottom: 1px solid var(--border); overflow: hidden; }
+        .hero::after {
+            content: 'DWEC'; position: absolute; right: -20px; top: -10px;
+            font-family: 'Playfair Display', serif; font-size: clamp(120px, 18vw, 260px);
+            font-weight: 900; color: transparent; -webkit-text-stroke: 1px rgba(201,168,76,0.08);
+            pointer-events: none; line-height: 1; user-select: none;
+        }
+        .hero-inner { max-width: 1100px; margin: 0 auto; position: relative; z-index: 1; }
+        .hero-tag {
+            display: inline-block; font-family: 'DM Mono', monospace; font-size: 11px;
+            letter-spacing: .15em; color: var(--gold); text-transform: uppercase;
+            border: 1px solid var(--gold-dim); padding: 4px 12px; border-radius: 2px;
+            margin-bottom: 24px; animation: fadeUp .6s ease both;
+        }
+        h1 { font-family: 'Playfair Display', serif; font-size: clamp(38px, 6vw, 72px); font-weight: 900; line-height: 1.05; margin-bottom: 16px; animation: fadeUp .6s .1s ease both; }
+        h1 span { color: var(--gold); }
+        .hero-sub { font-size: 16px; color: var(--muted); font-weight: 300; max-width: 520px; line-height: 1.7; animation: fadeUp .6s .2s ease both; }
+        .hero-meta { display: flex; gap: 32px; flex-wrap: wrap; margin-top: 36px; animation: fadeUp .6s .3s ease both; }
+        .meta-item { display: flex; flex-direction: column; gap: 2px; }
+        .meta-label { font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); font-family: 'DM Mono', monospace; }
+        .meta-value { font-size: 14px; font-weight: 500; color: var(--text); }
+
+        /* BACK LINK */
+        .back-link {
+            display: inline-flex; align-items: center; gap: 8px;
+            font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: .1em;
+            text-transform: uppercase; color: var(--muted); text-decoration: none;
+            margin-bottom: 32px; transition: color .2s;
+        }
+        .back-link:hover { color: var(--gold); }
+
+        /* MAIN */
+        main { max-width: 1100px; margin: 0 auto; padding: 40px; }
+
+        /* SECTION */
+        .section { margin-bottom: 64px; animation: fadeUp .7s ease both; }
+        .section:nth-child(2) { animation-delay: .1s; }
+        .section:nth-child(3) { animation-delay: .2s; }
+        .section:nth-child(4) { animation-delay: .3s; }
+        .section:nth-child(5) { animation-delay: .4s; }
+        .section-header { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; }
+        .section-badge { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+        .badge-gold   { background: var(--gold);   box-shadow: 0 0 10px var(--gold-dim); }
+        .badge-red    { background: var(--red);    box-shadow: 0 0 10px rgba(217,96,96,.4); }
+        .badge-teal   { background: var(--teal);   box-shadow: 0 0 10px rgba(77,184,160,.4); }
+        .badge-blue   { background: var(--blue);   box-shadow: 0 0 10px rgba(91,141,238,.4); }
+        .badge-purple { background: var(--purple); box-shadow: 0 0 10px rgba(167,139,250,.4); }
+        .section-title { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; }
+        .section-count { margin-left: auto; font-family: 'DM Mono', monospace; font-size: 12px; color: var(--muted); }
+        .section-rule { width: 100%; height: 1px; background: var(--border); margin-top: 12px; }
+
+        /* GRID CARDS */
+        .cards-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1px; background: var(--border); border: 1px solid var(--border);
+            border-radius: 8px; overflow: hidden;
+        }
+        .card {
+            background: var(--surface); padding: 24px; display: flex;
+            flex-direction: column; gap: 10px; text-decoration: none;
+            color: inherit; transition: background .2s; position: relative;
+        }
+        .card:hover { background: #1a1d28; }
+        .card:hover .card-arrow { opacity: 1; transform: translate(2px, -2px); }
+        .card-num { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); letter-spacing: .06em; }
+        .card-name { font-size: 15px; font-weight: 500; line-height: 1.3; }
+        .card-desc { font-size: 13px; color: var(--muted); line-height: 1.5; flex: 1; }
+        .card-arrow { position: absolute; top: 20px; right: 20px; font-size: 16px; color: var(--gold); opacity: 0; transition: opacity .2s, transform .2s; }
+
+        /* ACCENT COLORS PER SECTION */
+        .section-exams    .card:hover .card-name { color: var(--red); }
+        .section-exams    .card-num { color: rgba(217,96,96,.5); }
+        .section-recovery .card:hover .card-name { color: var(--teal); }
+        .section-recovery .card-num { color: rgba(77,184,160,.5); }
+        .section-vue      .card:hover .card-name { color: var(--purple); }
+        .section-vue      .card-num { color: rgba(167,139,250,.5); }
+        .section-vue      .card-arrow { color: var(--purple); }
+        .section-activities .card:hover .card-name { color: var(--blue); }
+        .section-activities .card-num { color: rgba(91,141,238,.5); }
+
+        /* FOOTER */
+        footer { border-top: 1px solid var(--border); padding: 32px 40px; text-align: center; font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); letter-spacing: .08em; }
+        footer span { color: var(--gold); }
+
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        @media (max-width: 600px) {
+            .hero { padding: 48px 24px 40px; }
+            main { padding: 32px 24px; }
+            .hero-meta { gap: 20px; }
+            footer { padding: 24px; }
+        }
+    </style>
 </head>
-
 <body>
-    <h1>Índice de Actividades DWEC</h1>
-    <p>Selecciona una actividad para navegar:</p>
-    <table>
-        <thead>
-            <tr>
-                <th>Nº</th>
-                <th>Proyecto</th>
-                <th>Descripción</th>
-                <th>Acción</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>00</td>
-                <td>00_Proyecto_DWEC</td>
-                <td>Proyecto inicial de DWEC con funcionalidades básicas.</td>
-                <td><a href="00_Proyecto_DWEC/README.md" class="button">Abrir</a></td>
-            </tr>
-            <tr>
-                <td>01</td>
-                <td>01_EjerciciosBasicos</td>
-                <td>Ejercicios básicos de JavaScript.</td>
-                <td><a href="01_EjerciciosBasicos/index.html" class="button">Abrir</a></td>
-            </tr>
-            <tr>
-                <td>02</td>
-                <td>02_Ejercicio_DOM</td>
-                <td>Ejercicios de manipulación del DOM.</td>
-                <td><a href="02_Ejercicio_DOM/index.html" class="button">Abrir</a></td>
-            </tr>
-            <tr>
-                <td>03</td>
-                <td>03_Mostrar-Ocultar</td>
-                <td>Ejemplo de mostrar y ocultar elementos.</td>
-                <td><a href="03_Mostrar-Ocultar/index.html" class="button">Abrir</a></td>
-            </tr>
-            <tr>
-                <td>04</td>
-                <td>04_Formularios</td>
-                <td>Ejemplos de formularios y su manejo.</td>
-                <td><a href="04_Formularios/index.html" class="button">Abrir</a></td>
-            </tr>
-            <tr>
-                <td>05</td>
-                <td>05_Seleccion_Multiple</td>
-                <td>Ejemplo de selección múltiple.</td>
-                <td><a href="05_Seleccion_Multiple/index.html" class="button">Abrir</a></td>
-            </tr>
-            <tr>
-                <td>06</td>
-                <td>06_factura</td>
-                <td>Proyecto de factura.</td>
-                <td><a href="06_factura/index.html" class="button">Abrir</a></td>
-            </tr>
-            <tr>
-                <td>07</td>
-                <td>07_BuscarArticulo</td>
-                <td>Funcionalidad para buscar artículos.</td>
-                <td><a href="07_BuscarArticulo/index.html" class="button">Abrir</a></td>
-            </tr>
-            <tr>
-                <td>08</td>
-                <td>08_ValiacionFormulario</td>
-                <td>Validación de formularios.</td>
-                <td><a href="08_ValiacionFormulario/index.html" class="button">Abrir</a></td>
-            </tr>
-            <tr>
-                <td>09</td>
-                <td>09_FValidaciondeRegistro</td>
-                <td>Formulario de validación de registro.</td>
-                <td><a href="09_FValidaciondeRegistro/index.html" class="button">Abrir</a></td>
-            </tr>
-            <tr>
-                <td>10</td>
-                <td>10_JsonApiRest</td>
-                <td>Ejemplos de consumo de API REST con JSON.</td>
-                <td><a href="10_JsonApiRest/index.html" class="button">Abrir</a></td>
-            </tr>
-            <tr>
-                <td>11</td>
-                <td>11_Tienda</td>
-                <td>Proyecto de tienda.</td>
-                <td><a href="11_Tienda/index.html" class="button">Abrir</a></td>
-            </tr>
-            <tr>
-                <td>12</td>
-                <td>12_PokemonAPI</td>
-                <td>Consumo de la API de Pokémon.</td>
-                <td><a href="12_PokemonAPI/index.html" class="button">Abrir</a></td>
-            </tr>
-            <tr>
-                <td>13</td>
-                <td>13_SimulacroE</td>
-                <td>Simulacro de examen.</td>
-                <td><a href="13_SimulacroE/index.html" class="button">Abrir</a></td>
-            </tr>
-            <tr>
-                <td>14</td>
-                <td>14_GamesAPI</td>
-                <td>Consumo de una API de juegos.</td>
-                <td><a href="14_GamesAPI/index.html" class="button">Abrir</a></td>
-            </tr>
-            <tr>
-                <td>15</td>
-                <td>15_RecetasAPI</td>
-                <td>Consumo de una API de recetas.</td>
-                <td><a href="15_RecetasAPI/index.html" class="button">Abrir</a></td>
-            </tr>
-            <tr>
-                <td>16</td>
-                <td>16_Ahorcado_PHP</td>
-                <td>Juego del ahorcado en PHP.</td>
-                <td><a href="16_Ahorcado_PHP/index.php" class="button">Abrir</a></td>
-            </tr>
-            <tr>
-                <td>17</td>
-                <td>17_Instituto</td>
-                <td>Proyecto de gestión de instituto.</td>
-                <td><a href="17_Instituto/index.html" class="button">Abrir</a></td>
-            </tr>
-            <tr>
-                <td>18</td>
-                <td>18_Ahorcado_JS</td>
-                <td>Juego del ahorcado en JavaScript.</td>
-                <td><a href="18_Ahorcado_JS/index.php" class="button">Abrir</a></td>
-            </tr>
-            <tr>
-                <td>19</td>
-                <td>99_Repaso</td>
-                <td>Ejercicios de repaso.</td>
-                <td><a href="99_Repaso/index.html" class="button">Abrir</a></td>
-            </tr>
-            <tr>
-                <td>20</td>
-                <td>A0_Examen</td>
-                <td>Examen de JavaScript.</td>
-                <td><a href="A0_Examen/index.html" class="button">Abrir</a></td>
-            </tr>
-            <tr>
-                <td>21</td>
-                <td>A1_E_Alta_Editar_Eliminar</td>
-                <td>Ejercicios de alta, editar y eliminar.</td>
-                <td><a href="A1_E_Alta_Editar_Eliminar/index.html" class="button">Abrir</a></td>
-            </tr>
-            <tr>
-                <td>22</td>
-                <td>A2_Examen2025</td>
-                <td>Examen 15 / 12 / 2025.</td>
-                <td><a href="A2_Examen2025/index.html" class="button">Abrir</a></td>
-            </tr>
-            <tr>
-                <td>23</td>
-                <td>A3_Examen17-12-2025</td>
-                <td>Examen 17 / 12 / 2025.</td>
-                <td><a href="A3_Examen17-12-2025/index.html" class="button">Abrir</a></td>
-            </tr>
 
-            <tr>
-                <td>24</td>
-                <td>ACTIVIDADES_RECUPERACION</td>
-                <td>Actividades recuperacion</td>
-                <td><a href="ACTIVIDADES_RECUPERACION/index.html" class="button">Abrir</a></td>
-            </tr>
-            <tr>
-                <td>19</td>
-                <td>Actividades Vue</td>
-                <td>Actividades Vue JS</td>
-                <td><a href="19_VueJS/index.html" class="button">Abrir</a></td>
-            </tr>
+<header class="hero">
+    <div class="hero-inner">
+        <div class="hero-tag">Portafolio Académico · DWEC 2025/2026</div>
+        <h1>Índice de<br><span>Actividades</span></h1>
+        <p class="hero-sub">Selecciona una actividad para navegar a su contenido. Organizado por categorías para facilitar la consulta.</p>
+        <div class="hero-meta">
+            <div class="meta-item">
+                <span class="meta-label">Módulo</span>
+                <span class="meta-value">DWEC — DAW</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">Total actividades</span>
+                <span class="meta-value">26</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">Tecnologías</span>
+                <span class="meta-value">HTML · CSS · JS · PHP · Vue</span>
+            </div>
+        </div>
+    </div>
+</header>
 
-        </tbody>
-    </table>
+<main>
+    <a href="../index.html" class="back-link">← Volver al portafolio</a>
+
+    <!-- EXÁMENES -->
+    <section class="section section-exams">
+        <div class="section-header">
+            <span class="section-badge badge-red"></span>
+            <h2 class="section-title">Exámenes &amp; Simulacros</h2>
+            <span class="section-count">04 elementos</span>
+        </div>
+        <div class="section-rule" style="margin-bottom:24px;"></div>
+        <div class="cards-grid">
+            <a href="13_SimulacroE/index.html" class="card">
+                <span class="card-num">#13</span>
+                <span class="card-name">Simulacro de Examen</span>
+                <span class="card-desc">Práctica previa en condiciones de examen real.</span>
+                <span class="card-arrow">↗</span>
+            </a>
+            <a href="A0_Examen/index.html" class="card">
+                <span class="card-num">#20</span>
+                <span class="card-name">Examen JavaScript</span>
+                <span class="card-desc">Examen oficial de JavaScript.</span>
+                <span class="card-arrow">↗</span>
+            </a>
+            <a href="A2_Examen2025/index.html" class="card">
+                <span class="card-num">#22</span>
+                <span class="card-name">Examen 15 · 12 · 2025</span>
+                <span class="card-desc">Examen parcial de evaluación — diciembre 2025.</span>
+                <span class="card-arrow">↗</span>
+            </a>
+            <a href="A3_Examen17-12-2025/index.html" class="card">
+                <span class="card-num">#23</span>
+                <span class="card-name">Examen 17 · 12 · 2025</span>
+                <span class="card-desc">Examen parcial de evaluación — diciembre 2025.</span>
+                <span class="card-arrow">↗</span>
+            </a>
+        </div>
+    </section>
+
+    <!-- RECUPERACIÓN -->
+    <section class="section section-recovery">
+        <div class="section-header">
+            <span class="section-badge badge-teal"></span>
+            <h2 class="section-title">Actividades de Recuperación</h2>
+            <span class="section-count">01 elemento</span>
+        </div>
+        <div class="section-rule" style="margin-bottom:24px;"></div>
+        <div class="cards-grid">
+            <a href="ACTIVIDADES_RECUPERACION/index.html" class="card">
+                <span class="card-num">#24</span>
+                <span class="card-name">Actividades de Recuperación</span>
+                <span class="card-desc">Ejercicios y actividades para la recuperación de contenidos del módulo.</span>
+                <span class="card-arrow">↗</span>
+            </a>
+        </div>
+    </section>
+
+    <!-- VUE -->
+    <section class="section section-vue">
+        <div class="section-header">
+            <span class="section-badge badge-purple"></span>
+            <h2 class="section-title">Actividades VueJS</h2>
+            <span class="section-count">01 elemento</span>
+        </div>
+        <div class="section-rule" style="margin-bottom:24px;"></div>
+        <div class="cards-grid">
+            <a href="19_VueJS/index.html" class="card">
+                <span class="card-num">#19</span>
+                <span class="card-name">Actividades Vue</span>
+                <span class="card-desc">Actividades y ejercicios desarrollados con Vue.js.</span>
+                <span class="card-arrow">↗</span>
+            </a>
+        </div>
+    </section>
+
+    <!-- ACTIVIDADES -->
+    <section class="section section-activities">
+        <div class="section-header">
+            <span class="section-badge badge-blue"></span>
+            <h2 class="section-title">Actividades del Curso</h2>
+            <span class="section-count">20 elementos</span>
+        </div>
+        <div class="section-rule" style="margin-bottom:24px;"></div>
+        <div class="cards-grid">
+            <a href="00_Proyecto_DWEC/README.md" class="card">
+                <span class="card-num">#00</span>
+                <span class="card-name">Proyecto Inicial DWEC</span>
+                <span class="card-desc">Proyecto de arranque con funcionalidades básicas del módulo.</span>
+                <span class="card-arrow">↗</span>
+            </a>
+            <a href="01_EjerciciosBasicos/index.html" class="card">
+                <span class="card-num">#01</span>
+                <span class="card-name">Ejercicios Básicos</span>
+                <span class="card-desc">Ejercicios introductorios de JavaScript: variables, funciones y control de flujo.</span>
+                <span class="card-arrow">↗</span>
+            </a>
+            <a href="02_Ejercicio_DOM/index.html" class="card">
+                <span class="card-num">#02</span>
+                <span class="card-name">Manipulación del DOM</span>
+                <span class="card-desc">Ejercicios de selección, creación y modificación de nodos en el DOM.</span>
+                <span class="card-arrow">↗</span>
+            </a>
+            <a href="03_Mostrar-Ocultar/index.html" class="card">
+                <span class="card-num">#03</span>
+                <span class="card-name">Mostrar / Ocultar</span>
+                <span class="card-desc">Interacción con visibilidad de elementos mediante eventos.</span>
+                <span class="card-arrow">↗</span>
+            </a>
+            <a href="04_Formularios/index.html" class="card">
+                <span class="card-num">#04</span>
+                <span class="card-name">Formularios</span>
+                <span class="card-desc">Captura y manejo de datos de formularios HTML con JavaScript.</span>
+                <span class="card-arrow">↗</span>
+            </a>
+            <a href="05_Seleccion_Multiple/index.html" class="card">
+                <span class="card-num">#05</span>
+                <span class="card-name">Selección Múltiple</span>
+                <span class="card-desc">Gestión de listas desplegables y selección múltiple de opciones.</span>
+                <span class="card-arrow">↗</span>
+            </a>
+            <a href="06_factura/index.html" class="card">
+                <span class="card-num">#06</span>
+                <span class="card-name">Factura</span>
+                <span class="card-desc">Generación y cálculo dinámico de una factura con líneas de producto.</span>
+                <span class="card-arrow">↗</span>
+            </a>
+            <a href="07_BuscarArticulo/index.html" class="card">
+                <span class="card-num">#07</span>
+                <span class="card-name">Buscar Artículo</span>
+                <span class="card-desc">Funcionalidad de búsqueda y filtrado dinámico de artículos.</span>
+                <span class="card-arrow">↗</span>
+            </a>
+            <a href="08_ValiacionFormulario/index.html" class="card">
+                <span class="card-num">#08</span>
+                <span class="card-name">Validación de Formulario</span>
+                <span class="card-desc">Validación de campos en tiempo real con feedback al usuario.</span>
+                <span class="card-arrow">↗</span>
+            </a>
+            <a href="09_FValidaciondeRegistro/index.html" class="card">
+                <span class="card-num">#09</span>
+                <span class="card-name">Formulario de Registro</span>
+                <span class="card-desc">Registro de usuario con validación completa de los campos del formulario.</span>
+                <span class="card-arrow">↗</span>
+            </a>
+            <a href="10_JsonApiRest/index.html" class="card">
+                <span class="card-num">#10</span>
+                <span class="card-name">JSON &amp; API REST</span>
+                <span class="card-desc">Consumo de APIs REST, manejo de JSON y peticiones asíncronas con fetch.</span>
+                <span class="card-arrow">↗</span>
+            </a>
+            <a href="11_Tienda/index.html" class="card">
+                <span class="card-num">#11</span>
+                <span class="card-name">Tienda Online</span>
+                <span class="card-desc">Catálogo de productos con carrito de compra y gestión de stock.</span>
+                <span class="card-arrow">↗</span>
+            </a>
+            <a href="12_PokemonAPI/index.html" class="card">
+                <span class="card-num">#12</span>
+                <span class="card-name">Pokémon API</span>
+                <span class="card-desc">Integración con la PokéAPI pública: listado, búsqueda y detalle de Pokémon.</span>
+                <span class="card-arrow">↗</span>
+            </a>
+            <a href="14_GamesAPI/index.html" class="card">
+                <span class="card-num">#14</span>
+                <span class="card-name">Games API</span>
+                <span class="card-desc">Exploración de videojuegos mediante el consumo de una API externa.</span>
+                <span class="card-arrow">↗</span>
+            </a>
+            <a href="15_RecetasAPI/index.html" class="card">
+                <span class="card-num">#15</span>
+                <span class="card-name">Recetas API</span>
+                <span class="card-desc">Buscador de recetas de cocina consumiendo una API pública.</span>
+                <span class="card-arrow">↗</span>
+            </a>
+            <a href="16_Ahorcado_PHP/index.php" class="card">
+                <span class="card-num">#16</span>
+                <span class="card-name">Ahorcado PHP</span>
+                <span class="card-desc">Juego del ahorcado clásico implementado en PHP con sesiones del servidor.</span>
+                <span class="card-arrow">↗</span>
+            </a>
+            <a href="17_Instituto/index.html" class="card">
+                <span class="card-num">#17</span>
+                <span class="card-name">Gestión de Instituto</span>
+                <span class="card-desc">Sistema CRUD para gestión de alumnos, módulos y calificaciones.</span>
+                <span class="card-arrow">↗</span>
+            </a>
+            <a href="18_Ahorcado_JS/index.php" class="card">
+                <span class="card-num">#18</span>
+                <span class="card-name">Ahorcado JavaScript</span>
+                <span class="card-desc">Versión mejorada del ahorcado migrada a JavaScript puro en el cliente.</span>
+                <span class="card-arrow">↗</span>
+            </a>
+            <a href="99_Repaso/index.html" class="card">
+                <span class="card-num">#19</span>
+                <span class="card-name">Repaso General</span>
+                <span class="card-desc">Ejercicios de consolidación y repaso de los contenidos del módulo.</span>
+                <span class="card-arrow">↗</span>
+            </a>
+            <a href="A1_E_Alta_Editar_Eliminar/index.html" class="card">
+                <span class="card-num">#21</span>
+                <span class="card-name">Alta · Editar · Eliminar</span>
+                <span class="card-desc">CRUD completo: creación, lectura, actualización y eliminación de registros.</span>
+                <span class="card-arrow">↗</span>
+            </a>
+        </div>
+    </section>
+</main>
+
+<footer>
+    <span>DWEC</span> · Desarrollo Web en Entorno Cliente · DAW 2025–2026
+</footer>
+
 </body>
-
 </html>

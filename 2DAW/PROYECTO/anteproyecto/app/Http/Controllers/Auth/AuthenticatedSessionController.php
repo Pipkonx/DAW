@@ -54,24 +54,32 @@ class AuthenticatedSessionController extends Controller
 
         // --- ENRIQUECIMIENTO DE ACTIVIDAD ---
         $ip = $request->ip();
-        $location = \Stevebauman\Location\Facades\Location::get($ip);
         $agent = new \Jenssegers\Agent\Agent();
         $agent->setUserAgent($request->userAgent());
-        
         $browser = $agent->browser();
-        
+
+        // Proteger la llamada externa de geolocalización (puede fallar o hacer timeout)
+        try {
+            $location = \Stevebauman\Location\Facades\Location::get($ip);
+            $city    = $location ? $location->cityName    : 'Local';
+            $country = $location ? $location->countryName : 'Reserved';
+        } catch (\Exception $e) {
+            $city    = 'Local';
+            $country = 'Reserved';
+        }
+
         LoginActivity::create([
-            'user_id' => Auth::id(),
-            'ip_address' => $ip,
-            'city' => $location ? $location->cityName : 'Local',
-            'country' => $location ? $location->countryName : 'Reserved',
-            'user_agent' => $request->userAgent(),
-            'browser' => $browser,
+            'user_id'         => Auth::id(),
+            'ip_address'      => $ip,
+            'city'            => $city,
+            'country'         => $country,
+            'user_agent'      => $request->userAgent(),
+            'browser'         => $browser,
             'browser_version' => $agent->version($browser),
-            'os' => $agent->platform(),
-            'device' => $agent->device(),
-            'session_id' => $request->session()->getId(),
-            'type' => 'login'
+            'os'              => $agent->platform(),
+            'device'          => $agent->device(),
+            'session_id'      => $request->session()->getId(),
+            'type'            => 'login'
         ]);
         // ------------------------------------
 
