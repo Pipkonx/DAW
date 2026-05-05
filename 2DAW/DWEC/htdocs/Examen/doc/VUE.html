@@ -1,0 +1,2426 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Guía Vue 2 — Examen</title>
+    <style>
+      :root {
+        --bg: #0f0f13;
+        --bg2: #1a1a22;
+        --bg3: #22222e;
+        --border: rgba(255, 255, 255, 0.08);
+        --border2: rgba(255, 255, 255, 0.15);
+        --text: #e8e8f0;
+        --muted: #8888aa;
+        --accent: #6c63ff;
+        --accent2: #a78bfa;
+        --green: #22c55e;
+        --green-bg: rgba(34, 197, 94, 0.1);
+        --yellow: #eab308;
+        --yellow-bg: rgba(234, 179, 8, 0.1);
+        --red: #ef4444;
+        --red-bg: rgba(239, 68, 68, 0.1);
+        --blue: #3b82f6;
+        --blue-bg: rgba(59, 130, 246, 0.1);
+        --orange: #f97316;
+        --orange-bg: rgba(249, 115, 22, 0.1);
+        --cyan: #06b6d4;
+        --cyan-bg: rgba(6, 182, 212, 0.1);
+        --pink: #ec4899;
+        --pink-bg: rgba(236, 72, 153, 0.1);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", system-ui, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.6;
+        font-size: 14px;
+      }
+
+      /* ─── LAYOUT ─── */
+      .app {
+        display: flex;
+        min-height: 100vh;
+      }
+
+      .sidebar {
+        width: 240px;
+        min-width: 240px;
+        background: var(--bg2);
+        border-right: 1px solid var(--border);
+        padding: 20px 0;
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        overflow-y: auto;
+      }
+
+      .sidebar-logo {
+        padding: 0 20px 20px;
+        border-bottom: 1px solid var(--border);
+        margin-bottom: 12px;
+      }
+
+      .sidebar-logo h1 {
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--accent2);
+        letter-spacing: -0.3px;
+      }
+
+      .sidebar-logo p {
+        font-size: 11px;
+        color: var(--muted);
+        margin-top: 2px;
+      }
+
+      .sidebar-section {
+        padding: 6px 20px 4px;
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: var(--muted);
+        margin-top: 8px;
+      }
+
+      .sidebar-btn {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        width: 100%;
+        padding: 8px 20px;
+        background: none;
+        border: none;
+        color: var(--muted);
+        cursor: pointer;
+        font-size: 13px;
+        text-align: left;
+        transition: all 0.15s;
+        border-left: 2px solid transparent;
+      }
+
+      .sidebar-btn:hover {
+        color: var(--text);
+        background: rgba(255, 255, 255, 0.03);
+      }
+
+      .sidebar-btn.active {
+        color: var(--accent2);
+        background: rgba(108, 99, 255, 0.1);
+        border-left-color: var(--accent);
+      }
+
+      .sidebar-btn .dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        flex-shrink: 0;
+      }
+
+      .main {
+        flex: 1;
+        padding: 32px 40px;
+        max-width: 900px;
+      }
+
+      /* ─── SECCIONES ─── */
+      .section {
+        display: none;
+      }
+      .section.active {
+        display: block;
+      }
+
+      /* ─── COMPONENTES ─── */
+      .page-title {
+        font-size: 22px;
+        font-weight: 700;
+        color: var(--text);
+        margin-bottom: 6px;
+        letter-spacing: -0.5px;
+      }
+
+      .page-subtitle {
+        color: var(--muted);
+        font-size: 13px;
+        margin-bottom: 28px;
+      }
+
+      .card {
+        background: var(--bg2);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 18px 20px;
+        margin-bottom: 16px;
+      }
+
+      .card-title {
+        font-size: 13px;
+        font-weight: 700;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .badge {
+        font-size: 10px;
+        font-weight: 700;
+        padding: 2px 8px;
+        border-radius: 99px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .badge-green {
+        background: var(--green-bg);
+        color: var(--green);
+      }
+      .badge-yellow {
+        background: var(--yellow-bg);
+        color: var(--yellow);
+      }
+      .badge-red {
+        background: var(--red-bg);
+        color: var(--red);
+      }
+      .badge-blue {
+        background: var(--blue-bg);
+        color: var(--blue);
+      }
+      .badge-orange {
+        background: var(--orange-bg);
+        color: var(--orange);
+      }
+      .badge-cyan {
+        background: var(--cyan-bg);
+        color: var(--cyan);
+      }
+      .badge-pink {
+        background: var(--pink-bg);
+        color: var(--pink);
+      }
+      .badge-purple {
+        background: rgba(108, 99, 255, 0.15);
+        color: var(--accent2);
+      }
+
+      /* ─── CÓDIGO ─── */
+      pre,
+      code {
+        font-family: "Cascadia Code", "Fira Code", "Consolas", monospace;
+        font-size: 12px;
+      }
+
+      pre {
+        background: #0d0d10;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 14px 16px;
+        overflow-x: auto;
+        margin: 10px 0;
+        position: relative;
+      }
+
+      code.inline {
+        background: rgba(255, 255, 255, 0.07);
+        padding: 1px 6px;
+        border-radius: 4px;
+        font-size: 12px;
+        color: var(--accent2);
+      }
+
+      .copy-btn {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        background: var(--bg3);
+        border: 1px solid var(--border);
+        color: var(--muted);
+        padding: 3px 10px;
+        border-radius: 5px;
+        font-size: 11px;
+        cursor: pointer;
+        transition: all 0.15s;
+      }
+      .copy-btn:hover {
+        color: var(--text);
+        border-color: var(--border2);
+      }
+      .copy-btn.copied {
+        color: var(--green);
+        border-color: var(--green);
+      }
+
+      /* Colores sintaxis básicos */
+      .kw {
+        color: #c084fc;
+      } /* keyword */
+      .fn {
+        color: #60a5fa;
+      } /* function */
+      .st {
+        color: #34d399;
+      } /* string */
+      .cm {
+        color: #4b5563;
+      } /* comment */
+      .nr {
+        color: #fb923c;
+      } /* number */
+      .at {
+        color: #f472b6;
+      } /* attribute */
+
+      /* ─── CHECKLIST ─── */
+      .checklist {
+        list-style: none;
+      }
+      .checklist li {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 8px 0;
+        border-bottom: 1px solid var(--border);
+        font-size: 13px;
+      }
+      .checklist li:last-child {
+        border-bottom: none;
+      }
+
+      .check-box {
+        width: 18px;
+        height: 18px;
+        min-width: 18px;
+        border: 1.5px solid var(--border2);
+        border-radius: 4px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.15s;
+        margin-top: 1px;
+        font-size: 11px;
+      }
+      .check-box.done {
+        background: var(--green);
+        border-color: var(--green);
+        color: #fff;
+      }
+
+      .check-text {
+        flex: 1;
+        line-height: 1.5;
+      }
+      .check-text.done {
+        color: var(--muted);
+        text-decoration: line-through;
+      }
+      .check-desc {
+        font-size: 11px;
+        color: var(--muted);
+        margin-top: 2px;
+      }
+
+      /* ─── STEPS ─── */
+      .steps {
+        counter-reset: step;
+      }
+      .step {
+        display: flex;
+        gap: 16px;
+        margin-bottom: 20px;
+        position: relative;
+      }
+      .step::before {
+        content: "";
+        position: absolute;
+        left: 15px;
+        top: 32px;
+        bottom: -20px;
+        width: 1px;
+        background: var(--border);
+      }
+      .step:last-child::before {
+        display: none;
+      }
+
+      .step-num {
+        width: 32px;
+        height: 32px;
+        min-width: 32px;
+        border-radius: 50%;
+        background: var(--bg3);
+        border: 1px solid var(--border2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--accent2);
+        counter-increment: step;
+      }
+
+      .step-body {
+        flex: 1;
+        padding-top: 4px;
+      }
+      .step-title {
+        font-weight: 700;
+        font-size: 14px;
+        margin-bottom: 4px;
+      }
+      .step-desc {
+        color: var(--muted);
+        font-size: 12px;
+        margin-bottom: 8px;
+      }
+
+      /* ─── TABLA ─── */
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 12px;
+      }
+      th {
+        text-align: left;
+        padding: 8px 12px;
+        background: var(--bg3);
+        color: var(--muted);
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border-bottom: 1px solid var(--border);
+      }
+      td {
+        padding: 8px 12px;
+        border-bottom: 1px solid var(--border);
+        vertical-align: top;
+      }
+      tr:last-child td {
+        border-bottom: none;
+      }
+      tr:hover td {
+        background: rgba(255, 255, 255, 0.02);
+      }
+
+      /* ─── GRID 2 COLS ─── */
+      .grid2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+        margin-bottom: 16px;
+      }
+      @media (max-width: 700px) {
+        .grid2 {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* ─── ALERTA ─── */
+      .alert {
+        border-radius: 8px;
+        padding: 12px 16px;
+        font-size: 12px;
+        margin-bottom: 14px;
+        border-left: 3px solid;
+      }
+      .alert-yellow {
+        background: var(--yellow-bg);
+        border-color: var(--yellow);
+        color: #fde68a;
+      }
+      .alert-green {
+        background: var(--green-bg);
+        border-color: var(--green);
+        color: #86efac;
+      }
+      .alert-red {
+        background: var(--red-bg);
+        border-color: var(--red);
+        color: #fca5a5;
+      }
+      .alert-blue {
+        background: var(--blue-bg);
+        border-color: var(--blue);
+        color: #93c5fd;
+      }
+
+      /* ─── PROGRESO EXAMEN ─── */
+      .progress-bar-bg {
+        background: var(--bg3);
+        border-radius: 99px;
+        height: 8px;
+        overflow: hidden;
+        margin-bottom: 6px;
+      }
+      .progress-bar-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--accent), var(--accent2));
+        border-radius: 99px;
+        transition: width 0.3s;
+      }
+
+      /* ─── SEPARADOR ─── */
+      .divider {
+        border: none;
+        border-top: 1px solid var(--border);
+        margin: 20px 0;
+      }
+
+      /* ─── PILL TABS ─── */
+      .tabs {
+        display: flex;
+        gap: 6px;
+        margin-bottom: 16px;
+        flex-wrap: wrap;
+      }
+      .tab-btn {
+        padding: 5px 14px;
+        border-radius: 99px;
+        border: 1px solid var(--border);
+        background: none;
+        color: var(--muted);
+        font-size: 12px;
+        cursor: pointer;
+        transition: all 0.15s;
+      }
+      .tab-btn:hover {
+        border-color: var(--border2);
+        color: var(--text);
+      }
+      .tab-btn.active {
+        background: rgba(108, 99, 255, 0.2);
+        border-color: var(--accent);
+        color: var(--accent2);
+        font-weight: 600;
+      }
+
+      .tab-content {
+        display: none;
+      }
+      .tab-content.active {
+        display: block;
+      }
+
+      /* ─── MINI TAGS ─── */
+      .tag {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-size: 11px;
+        font-weight: 600;
+        margin: 2px;
+      }
+
+      /* ─── SCROLLBAR ─── */
+      ::-webkit-scrollbar {
+        width: 5px;
+        height: 5px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: var(--bg3);
+        border-radius: 99px;
+      }
+
+      /* ─── Highlight ─── */
+      .hl {
+        color: var(--accent2);
+        font-weight: 600;
+      }
+      .hl-green {
+        color: var(--green);
+        font-weight: 600;
+      }
+      .hl-yellow {
+        color: var(--yellow);
+        font-weight: 600;
+      }
+      .hl-red {
+        color: var(--red);
+        font-weight: 600;
+      }
+      .hl-cyan {
+        color: var(--cyan);
+        font-weight: 600;
+      }
+      .hl-orange {
+        color: var(--orange);
+        font-weight: 600;
+      }
+
+      /* ─── QUICK REF BOX ─── */
+      .qref {
+        background: var(--bg3);
+        border-radius: 8px;
+        padding: 12px 16px;
+        font-size: 12px;
+        margin-bottom: 10px;
+        line-height: 2;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <!-- ══════════ SIDEBAR ══════════ -->
+      <nav class="sidebar">
+        <div class="sidebar-logo">
+          <h1>Vue 2 — Examen</h1>
+          <p>Guía completa paso a paso</p>
+        </div>
+
+        <div class="sidebar-section">Antes de empezar</div>
+        <button class="sidebar-btn active" onclick="show('inicio')">
+          <span class="dot" style="background: #6c63ff"></span> Estructura del
+          proyecto
+        </button>
+        <button class="sidebar-btn" onclick="show('mental')">
+          <span class="dot" style="background: #a78bfa"></span> Esquema mental
+        </button>
+
+        <div class="sidebar-section">Código esencial</div>
+        <button class="sidebar-btn" onclick="show('html-base')">
+          <span class="dot" style="background: #3b82f6"></span> HTML base
+          (cópialo)
+        </button>
+        <button class="sidebar-btn" onclick="show('data')">
+          <span class="dot" style="background: #06b6d4"></span> Data — cómo
+          declarar datos
+        </button>
+        <button class="sidebar-btn" onclick="show('directivas')">
+          <span class="dot" style="background: #22c55e"></span> Directivas Vue
+        </button>
+
+        <div class="sidebar-section">Funcionalidades</div>
+        <button class="sidebar-btn" onclick="show('login')">
+          <span class="dot" style="background: #eab308"></span> Login
+        </button>
+        <button class="sidebar-btn" onclick="show('tabla')">
+          <span class="dot" style="background: #f97316"></span> Tabla + Buscador
+        </button>
+        <button class="sidebar-btn" onclick="show('crud')">
+          <span class="dot" style="background: #ef4444"></span> CRUD (modal)
+        </button>
+        <button class="sidebar-btn" onclick="show('detalle')">
+          <span class="dot" style="background: #ec4899"></span> Pantalla Detalle
+        </button>
+        <button class="sidebar-btn" onclick="show('pagos')">
+          <span class="dot" style="background: #8b5cf6"></span> Pagos /
+          Sub-items
+        </button>
+        <button class="sidebar-btn" onclick="show('colores')">
+          <span class="dot" style="background: #14b8a6"></span> Colores por
+          estado
+        </button>
+
+        <div class="sidebar-section">Referencia rápida</div>
+        <button class="sidebar-btn" onclick="show('bootstrap')">
+          <span class="dot" style="background: #60a5fa"></span> Bootstrap 3
+          cheatsheet
+        </button>
+        <button class="sidebar-btn" onclick="show('patrones')">
+          <span class="dot" style="background: #34d399"></span> Patrones
+          frecuentes
+        </button>
+
+        <div class="sidebar-section">En el examen</div>
+        <button class="sidebar-btn" onclick="show('checklist')">
+          <span class="dot" style="background: #fb923c"></span> Checklist examen
+        </button>
+      </nav>
+
+      <!-- ══════════ CONTENIDO PRINCIPAL ══════════ -->
+      <main class="main">
+        <!-- ─── INICIO: Estructura del proyecto ─── -->
+        <section class="section active" id="sec-inicio">
+          <div class="page-title">Estructura del proyecto</div>
+          <div class="page-subtitle">
+            Lo primero que haces al sentarte: crear UN solo fichero .html
+          </div>
+
+          <div class="alert alert-green">
+            ✅ <strong>Buena noticia:</strong> Vue 2 sin build tools =
+            <strong>un único fichero .html</strong>. No hay carpetas raras, no
+            hay npm install, no hay webpack. Solo abres el bloc de notas y
+            empiezas.
+          </div>
+
+          <div class="card">
+            <div class="card-title">📁 ¿Qué debes crear?</div>
+            <div class="steps">
+              <div class="step">
+                <div class="step-num">1</div>
+                <div class="step-body">
+                  <div class="step-title">
+                    Crea una carpeta con el nombre de tu práctica
+                  </div>
+                  <div class="step-desc">
+                    Ejemplo: <code class="inline">mi-examen/</code> — Esto es
+                    solo para organizarte tú
+                  </div>
+                </div>
+              </div>
+              <div class="step">
+                <div class="step-num">2</div>
+                <div class="step-body">
+                  <div class="step-title">
+                    Dentro, crea UN fichero:
+                    <code class="inline">index.html</code>
+                  </div>
+                  <div class="step-desc">
+                    Solo este fichero. No necesitas más. Ni CSS separado, ni JS
+                    separado.
+                  </div>
+                </div>
+              </div>
+              <div class="step">
+                <div class="step-num">3</div>
+                <div class="step-body">
+                  <div class="step-title">
+                    Ábrelo con VS Code o el editor que uses
+                  </div>
+                  <div class="step-desc">
+                    Cuando termines, lo abres directamente en el navegador
+                    (doble clic o botón derecho → Abrir con Chrome)
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">🗂️ Así queda tu "proyecto"</div>
+            <pre><span class="cm">📁 mi-examen/
+└── 📄 index.html        ← TODO va aquí dentro</span></pre>
+            <p style="color: var(--muted); font-size: 12px; margin-top: 8px">
+              Dentro de ese index.html irá: el HTML, el CSS (en una etiqueta
+              &lt;style&gt;) y el JavaScript de Vue (en una etiqueta
+              &lt;script&gt;). Las librerías (Bootstrap, jQuery, Vue) se cargan
+              desde internet mediante sus CDN — no hay que descargar nada.
+            </p>
+          </div>
+
+          <div class="card">
+            <div class="card-title">
+              🧠 Cómo funciona esto por dentro (simplificado)
+            </div>
+            <div class="qref">
+              <span class="hl">Tu HTML</span> — la estructura visible (botones,
+              tablas, formularios)<br />
+              <span class="hl-cyan">Bootstrap</span> — estilos y componentes
+              listos (se carga de internet con &lt;link&gt;)<br />
+              <span class="hl-yellow">jQuery</span> — necesario para que
+              Bootstrap funcione (se carga de internet con &lt;script&gt;)<br />
+              <span class="hl-green">Vue 2</span> — la magia: mantiene los datos
+              sincronizados con lo que se ve (se carga de internet con
+              &lt;script&gt;)<br />
+              <span class="hl-orange">Tu &lt;script&gt;</span> — donde escribes
+              los datos y la lógica de tu app
+            </div>
+            <div class="alert alert-yellow">
+              ⚠️ <strong>Orden importa:</strong> Los &lt;script&gt; deben ir al
+              final del &lt;body&gt;, y en este orden: jQuery → Bootstrap → Vue
+              → Tu código. Si los pones en otro orden, nada funcionará y no
+              sabrás por qué.
+            </div>
+          </div>
+        </section>
+
+        <!-- ─── ESQUEMA MENTAL ─── -->
+        <section class="section" id="sec-mental">
+          <div class="page-title">Esquema mental para el examen</div>
+          <div class="page-subtitle">
+            Lee el enunciado, identifica cada bloque, construye en orden
+          </div>
+
+          <div class="alert alert-blue">
+            📋 <strong>Regla de oro:</strong> Sigue siempre este orden. Si vas a
+            la pantalla de tabla antes de tener los datos, perderás tiempo
+            depurando errores innecesarios.
+          </div>
+
+          <div class="steps">
+            <div class="step">
+              <div class="step-num">1</div>
+              <div class="step-body">
+                <div class="step-title">
+                  Pega la plantilla HTML base
+                  <span class="badge badge-red">SIEMPRE LO PRIMERO</span>
+                </div>
+                <div class="step-desc">
+                  Abre esta guía en "HTML base", copia todo y pégalo en tu
+                  index.html. Verifica que se abre en el navegador sin errores.
+                </div>
+              </div>
+            </div>
+
+            <div class="step">
+              <div class="step-num">2</div>
+              <div class="step-body">
+                <div class="step-title">
+                  Lee el enunciado entero y rellena el
+                  <code class="inline">data: {}</code>
+                </div>
+                <div class="step-desc">
+                  ¿Qué entidades hay? (clientes, pólizas, productos...) → crea
+                  sus arrays. ¿Hay estados? → anótalos. ¿Hay login? → crea la
+                  tabla de usuarios. No escribas HTML todavía.
+                </div>
+                <div class="qref" style="margin-top: 8px">
+                  Por cada entidad crea:<br />
+                  → <code class="inline">clientes: [...]</code> con 2-3 ejemplos
+                  de datos<br />
+                  →
+                  <code class="inline"
+                    >fCliente: { id:null, nombre:'', ... }</code
+                  >
+                  (formulario vacío)<br />
+                  → <code class="inline">clienteActual: null</code> (el que está
+                  seleccionado)<br />
+                  → <code class="inline">busqueda: ''</code> si hay buscador<br />
+                  → <code class="inline">pantalla: 'clientes'</code> para la
+                  navegación
+                </div>
+              </div>
+            </div>
+
+            <div class="step">
+              <div class="step-num">3</div>
+              <div class="step-body">
+                <div class="step-title">Login (si lo piden)</div>
+                <div class="step-desc">
+                  HTML del formulario + método
+                  <code class="inline">hacerLogin()</code>. Prueba que funciona
+                  antes de seguir.
+                </div>
+              </div>
+            </div>
+
+            <div class="step">
+              <div class="step-num">4</div>
+              <div class="step-body">
+                <div class="step-title">Navbar (si hay varias pantallas)</div>
+                <div class="step-desc">
+                  Los enlaces del menú solo cambian
+                  <code class="inline">pantalla</code>. Nada más.
+                </div>
+              </div>
+            </div>
+
+            <div class="step">
+              <div class="step-num">5</div>
+              <div class="step-body">
+                <div class="step-title">
+                  Pantalla principal — tabla de la entidad principal
+                </div>
+                <div class="step-desc">
+                  El <code class="inline">v-for</code> sobre el
+                  <code class="inline">computed</code> filtrado. Buscador
+                  vinculado con <code class="inline">v-model</code>. Botones
+                  Ver/Editar/Borrar.
+                </div>
+              </div>
+            </div>
+
+            <div class="step">
+              <div class="step-num">6</div>
+              <div class="step-body">
+                <div class="step-title">
+                  Modal CRUD — formulario de alta y edición
+                </div>
+                <div class="step-desc">
+                  Un solo modal sirve para nuevo Y editar. Lo que cambia es
+                  <code class="inline">modo</code> ('nuevo' o 'editar'). El
+                  botón Guardar mira ese modo para decidir si hace push o
+                  findIndex+$set.
+                </div>
+              </div>
+            </div>
+
+            <div class="step">
+              <div class="step-num">7</div>
+              <div class="step-body">
+                <div class="step-title">
+                  Pantalla Detalle (si hay sub-entidades)
+                </div>
+                <div class="step-desc">
+                  Se activa cuando haces clic en "Ver" un registro. Muestra sus
+                  datos y debajo su tabla de sub-entidades (pólizas, pedidos,
+                  etc.).
+                </div>
+              </div>
+            </div>
+
+            <div class="step">
+              <div class="step-num">8</div>
+              <div class="step-body">
+                <div class="step-title">Colores por estado</div>
+                <div class="step-desc">
+                  Método <code class="inline">colorFila(estado)</code> y
+                  <code class="inline">badgeEstado(estado)</code>. Se añaden con
+                  <code class="inline">:class="colorFila(p.estado)"</code>.
+                </div>
+              </div>
+            </div>
+
+            <div class="step">
+              <div class="step-num">9</div>
+              <div class="step-body">
+                <div class="step-title">
+                  Pagos / sub-sub-entidades (si las hay)
+                </div>
+                <div class="step-desc">
+                  Sección dentro del detalle. Computed
+                  <code class="inline">totalPagado</code> y
+                  <code class="inline">restante</code>. Validar que no se supera
+                  el importe.
+                </div>
+              </div>
+            </div>
+
+            <div class="step">
+              <div class="step-num">10</div>
+              <div class="step-body">
+                <div class="step-title">
+                  Pantalla de listado general (opcional)
+                </div>
+                <div class="step-desc">
+                  Todas las pólizas/pedidos/etc. ordenadas y con filtro de
+                  estado. Computed que ordena y filtra.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card" style="border-color: rgba(108, 99, 255, 0.3)">
+            <div class="card-title">
+              💡 Reglas de supervivencia en el examen
+            </div>
+            <ul style="list-style: none; font-size: 13px; line-height: 2.2">
+              <li>→ Primero haz que funcione, luego ponlo bonito</li>
+              <li>
+                → Cada vez que añadas algo,
+                <strong>prueba en el navegador</strong> antes de seguir
+              </li>
+              <li>
+                → Si algo no funciona, abre las DevTools (F12) y mira la consola
+              </li>
+              <li>
+                → <code class="inline">{{ variable }}</code> en el HTML te sirve
+                para ver qué valor tiene algo mientras depuras
+              </li>
+              <li>
+                → Los datos de ejemplo en el
+                <code class="inline">data</code> son tus mejores aliados —
+                ponlos antes de hacer el HTML
+              </li>
+              <li>
+                → Si el modal no abre, comprueba que jQuery está cargado ANTES
+                que Bootstrap
+              </li>
+              <li>
+                → Si Vue no reacciona a cambios, usa
+                <code class="inline">this.$set()</code> o
+                <code class="inline">.splice()</code>
+              </li>
+            </ul>
+          </div>
+        </section>
+
+        <!-- ─── HTML BASE ─── -->
+        <section class="section" id="sec-html-base">
+          <div class="page-title">
+            HTML base — la plantilla que siempre copias
+          </div>
+          <div class="page-subtitle">
+            Copia esto entero al empezar. Cada comentario explica qué es.
+          </div>
+
+          <div class="alert alert-yellow">
+            ⚠️ El orden de los &lt;script&gt; es crítico. Si Vue va antes que
+            jQuery, el modal no funcionará.
+          </div>
+
+          <div style="position: relative">
+            <pre
+              id="code-htmlbase"
+            ><span class="cm">&lt;!-- ════════════════════════════════════════════
+     PLANTILLA BASE VUE 2 + BOOTSTRAP 3 + JQUERY
+     Copia esto SIEMPRE al empezar
+     ════════════════════════════════════════════ --&gt;</span>
+<span class="at">&lt;!DOCTYPE html&gt;</span>
+<span class="at">&lt;html</span> lang=<span class="st">"es"</span><span class="at">&gt;</span>
+<span class="at">&lt;head&gt;</span>
+  <span class="at">&lt;meta</span> charset=<span class="st">"UTF-8"</span><span class="at">&gt;</span>
+  <span class="at">&lt;meta</span> name=<span class="st">"viewport"</span> content=<span class="st">"width=device-width, initial-scale=1.0"</span><span class="at">&gt;</span>
+  <span class="at">&lt;title&gt;</span>Mi Aplicación<span class="at">&lt;/title&gt;</span>
+
+  <span class="cm">&lt;!-- Bootstrap 3 CSS --&gt;</span>
+  <span class="at">&lt;link</span> rel=<span class="st">"stylesheet"</span>
+    href=<span class="st">"https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"</span><span class="at">&gt;</span>
+  <span class="cm">&lt;!-- jQuery UI CSS (para datepicker) --&gt;</span>
+  <span class="at">&lt;link</span> rel=<span class="st">"stylesheet"</span>
+    href=<span class="st">"https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css"</span><span class="at">&gt;</span>
+
+  <span class="at">&lt;style&gt;</span>
+    <span class="cm">/* Evita que se vea el HTML sin procesar mientras Vue carga */</span>
+    [v-cloak] { display: none; }
+  <span class="at">&lt;/style&gt;</span>
+<span class="at">&lt;/head&gt;</span>
+<span class="at">&lt;body&gt;</span>
+
+  <span class="cm">&lt;!-- Todo tu HTML de Vue va aquí dentro --&gt;</span>
+  <span class="at">&lt;div</span> id=<span class="st">"app"</span> v-cloak<span class="at">&gt;</span>
+    <span class="cm">&lt;!-- CONTENIDO (login, navbar, tablas, modales...) --&gt;</span>
+  <span class="at">&lt;/div&gt;</span>
+
+  <span class="cm">&lt;!-- ⚠️ SCRIPTS: AL FINAL DEL BODY, EN ESTE ORDEN EXACTO --&gt;</span>
+  <span class="at">&lt;script</span> src=<span class="st">"https://code.jquery.com/jquery-3.6.0.min.js"</span><span class="at">&gt;&lt;/script&gt;</span>
+  <span class="at">&lt;script</span> src=<span class="st">"https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"</span><span class="at">&gt;&lt;/script&gt;</span>
+  <span class="at">&lt;script</span> src=<span class="st">"https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"</span><span class="at">&gt;&lt;/script&gt;</span>
+  <span class="at">&lt;script</span> src=<span class="st">"https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"</span><span class="at">&gt;&lt;/script&gt;</span>
+
+  <span class="at">&lt;script&gt;</span>
+  <span class="kw">new</span> <span class="fn">Vue</span>({
+    el: <span class="st">'#app'</span>,          <span class="cm">// Conecta Vue con el div id="app"</span>
+
+    data: {
+      <span class="cm">// TUS DATOS AQUÍ (arrays, objetos, variables)</span>
+    },
+
+    computed: {
+      <span class="cm">// VALORES CALCULADOS AUTOMÁTICAMENTE (filtros, totales...)</span>
+    },
+
+    methods: {
+      <span class="cm">// TUS FUNCIONES AQUÍ (guardar, eliminar, navegar...)</span>
+    },
+
+    mounted() {
+      <span class="cm">// Se ejecuta cuando el DOM está listo</span>
+      <span class="cm">// Aquí van cosas de jQuery UI como el datepicker</span>
+    }
+  });
+  <span class="at">&lt;/script&gt;</span>
+<span class="at">&lt;/body&gt;</span>
+<span class="at">&lt;/html&gt;</span></pre>
+            <button class="copy-btn" onclick="copyCode('htmlbase', this)">
+              Copiar
+            </button>
+          </div>
+        </section>
+
+        <!-- ─── DATA ─── -->
+        <section class="section" id="sec-data">
+          <div class="page-title">Data — cómo declarar los datos</div>
+          <div class="page-subtitle">
+            El data es el "almacén" de tu app. Todo lo que Vue necesita saber va
+            aquí.
+          </div>
+
+          <div class="grid2">
+            <div class="card">
+              <div class="card-title">🧭 Variables de navegación</div>
+              <pre><span class="cm">// Controla qué pantalla se muestra</span>
+pantalla: <span class="st">'login'</span>,
+<span class="cm">// 'login' | 'clientes' | 'detalle'</span>
+<span class="cm">// | 'polizas' | 'informe'</span>
+
+<span class="cm">// Modo del formulario</span>
+modo: <span class="st">'nuevo'</span>,
+<span class="cm">// 'nuevo' | 'editar'</span></pre>
+            </div>
+            <div class="card">
+              <div class="card-title">🔐 Variables de login</div>
+              <pre>loginUsuario: <span class="st">''</span>,
+loginPassword: <span class="st">''</span>,
+usuarioLogueado: <span class="kw">null</span>,
+errorLogin: <span class="st">''</span>,</pre>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">📦 Arrays de datos (entidades)</div>
+            <div class="alert alert-blue" style="margin-bottom: 12px">
+              Pon 2-3 registros de ejemplo. Te ayudan a ver si el HTML funciona
+              sin tener que usar los formularios.
+            </div>
+            <pre>usuarios: [
+  { id:<span class="nr">1</span>, usuario:<span class="st">'admin'</span>, password:<span class="st">'1234'</span>, nombre:<span class="st">'Administrador'</span> }
+],
+
+clientes: [
+  { id:<span class="nr">1</span>, nombre:<span class="st">'Juan'</span>, apellidos:<span class="st">'García'</span>, telefono:<span class="st">'600111'</span>,
+    localidad:<span class="st">'Sevilla'</span>, cp:<span class="st">'41001'</span>, provincia:<span class="st">'Sevilla'</span>, tipo:<span class="st">'particular'</span> },
+  { id:<span class="nr">2</span>, nombre:<span class="st">'Acme'</span>, apellidos:<span class="st">'S.L.'</span>,   telefono:<span class="st">'954222'</span>,
+    localidad:<span class="st">'Madrid'</span>,  cp:<span class="st">'28001'</span>, provincia:<span class="st">'Madrid'</span>,  tipo:<span class="st">'empresa'</span>    }
+],
+
+polizas: [
+  { id:<span class="nr">1</span>, clienteId:<span class="nr">1</span>, numero:<span class="st">'POL-001'</span>, importe:<span class="nr">500</span>,
+    fecha:<span class="st">'2024-01-10'</span>, estado:<span class="st">'cobrada'</span>,  observaciones:<span class="st">''</span> },
+  { id:<span class="nr">2</span>, clienteId:<span class="nr">1</span>, numero:<span class="st">'POL-002'</span>, importe:<span class="nr">300</span>,
+    fecha:<span class="st">'2024-03-15'</span>, estado:<span class="st">'anulada'</span>,  observaciones:<span class="st">'Cancelada'</span> }
+],</pre>
+          </div>
+
+          <div class="card">
+            <div class="card-title">
+              📝 Objetos de formulario (para alta/edición)
+            </div>
+            <div class="alert alert-yellow" style="margin-bottom: 12px">
+              Importante: un objeto fCliente por cada entidad. Cuando vayas a
+              editar, copias el registro aquí (con
+              <code class="inline">{ ...cliente }</code>). Cuando vayas a crear
+              uno nuevo, lo reseteas a vacío.
+            </div>
+            <pre><span class="cm">// Para el formulario de clientes</span>
+fCliente: {
+  id: <span class="kw">null</span>, nombre: <span class="st">''</span>, apellidos: <span class="st">''</span>,
+  telefono: <span class="st">''</span>, localidad: <span class="st">''</span>, cp: <span class="st">''</span>,
+  provincia: <span class="st">''</span>, tipo: <span class="st">'particular'</span>
+},
+
+<span class="cm">// Para el formulario de pólizas</span>
+fPoliza: {
+  id: <span class="kw">null</span>, clienteId: <span class="kw">null</span>, numero: <span class="st">''</span>,
+  importe: <span class="nr">0</span>, fecha: <span class="st">''</span>, estado: <span class="st">'cobrada'</span>,
+  observaciones: <span class="st">''</span>
+},</pre>
+          </div>
+
+          <div class="grid2">
+            <div class="card">
+              <div class="card-title">🔍 Variables de búsqueda</div>
+              <pre>busqueda: <span class="st">''</span>,
+filtroEstado: <span class="st">''</span>,</pre>
+            </div>
+            <div class="card">
+              <div class="card-title">☑️ Selección actual</div>
+              <pre>clienteActual: <span class="kw">null</span>,
+polizaActual: <span class="kw">null</span>,
+mensajeOk: <span class="st">''</span>,</pre>
+            </div>
+          </div>
+        </section>
+
+        <!-- ─── DIRECTIVAS ─── -->
+        <section class="section" id="sec-directivas">
+          <div class="page-title">Directivas Vue — la referencia rápida</div>
+          <div class="page-subtitle">
+            Las instrucciones especiales que pones dentro del HTML
+          </div>
+
+          <div class="tabs">
+            <button class="tab-btn active" onclick="showTab('dir', 'mostrar')">
+              Mostrar/Ocultar
+            </button>
+            <button class="tab-btn" onclick="showTab('dir', 'bucle')">
+              Bucles
+            </button>
+            <button class="tab-btn" onclick="showTab('dir', 'datos')">
+              Datos bidireccionales
+            </button>
+            <button class="tab-btn" onclick="showTab('dir', 'atributos')">
+              Atributos dinámicos
+            </button>
+            <button class="tab-btn" onclick="showTab('dir', 'eventos')">
+              Eventos
+            </button>
+          </div>
+
+          <div class="tab-content active" id="dir-mostrar">
+            <div class="card">
+              <pre><span class="cm">&lt;!-- v-if: El elemento SE CREA o SE ELIMINA del DOM --&gt;</span>
+<span class="at">&lt;div</span> <span class="fn">v-if</span>=<span class="st">"pantalla === 'login'"</span><span class="at">&gt;</span>HTML del login<span class="at">&lt;/div&gt;</span>
+<span class="at">&lt;div</span> <span class="fn">v-else-if</span>=<span class="st">"pantalla === 'clientes'"</span><span class="at">&gt;</span>Tabla<span class="at">&lt;/div&gt;</span>
+<span class="at">&lt;div</span> <span class="fn">v-else</span><span class="at">&gt;</span>Cualquier otra pantalla<span class="at">&lt;/div&gt;</span>
+
+<span class="cm">&lt;!-- v-show: El elemento existe pero se oculta con display:none --&gt;</span>
+<span class="cm">&lt;!-- Más rápido si el elemento se muestra/oculta mucho --&gt;</span>
+<span class="at">&lt;div</span> <span class="fn">v-show</span>=<span class="st">"mensajeOk"</span><span class="at">&gt;</span>{{ mensajeOk }}<span class="at">&lt;/div&gt;</span>
+
+<span class="cm">&lt;!-- Mostrar texto: {{ variable }} --&gt;</span>
+Hola, {{ usuarioLogueado.nombre }}</pre>
+            </div>
+          </div>
+
+          <div class="tab-content" id="dir-bucle">
+            <div class="card">
+              <pre><span class="cm">&lt;!-- v-for: Repite el elemento por cada item de un array --&gt;</span>
+<span class="cm">&lt;!-- :key es OBLIGATORIO — usa el id único de cada elemento --&gt;</span>
+<span class="at">&lt;tr</span> <span class="fn">v-for</span>=<span class="st">"cliente in clientesFiltrados"</span> <span class="fn">:key</span>=<span class="st">"cliente.id"</span><span class="at">&gt;</span>
+  <span class="at">&lt;td&gt;</span>{{ cliente.nombre }}<span class="at">&lt;/td&gt;</span>
+<span class="at">&lt;/tr&gt;</span>
+
+<span class="cm">&lt;!-- Con índice (si necesitas el número de posición) --&gt;</span>
+<span class="at">&lt;tr</span> <span class="fn">v-for</span>=<span class="st">"(cliente, i) in clientes"</span> <span class="fn">:key</span>=<span class="st">"cliente.id"</span><span class="at">&gt;</span>
+  <span class="at">&lt;td&gt;</span>{{ i + 1 }}<span class="at">&lt;/td&gt;</span>  <span class="cm">&lt;!-- posición empezando en 1 --&gt;</span>
+<span class="at">&lt;/tr&gt;</span>
+
+<span class="cm">&lt;!-- Fila de "no hay datos" --&gt;</span>
+<span class="at">&lt;tr</span> <span class="fn">v-if</span>=<span class="st">"clientesFiltrados.length === 0"</span><span class="at">&gt;</span>
+  <span class="at">&lt;td</span> colspan=<span class="st">"8"</span> class=<span class="st">"text-center text-muted"</span><span class="at">&gt;</span>Sin resultados<span class="at">&lt;/td&gt;</span>
+<span class="at">&lt;/tr&gt;</span></pre>
+            </div>
+          </div>
+
+          <div class="tab-content" id="dir-datos">
+            <div class="card">
+              <pre><span class="cm">&lt;!-- v-model: Sincroniza el input con una variable --&gt;</span>
+<span class="cm">&lt;!-- Lo que escribas en el input, Vue lo actualiza en tiempo real --&gt;</span>
+<span class="at">&lt;input</span> <span class="fn">v-model</span>=<span class="st">"busqueda"</span><span class="at">&gt;</span>
+
+<span class="cm">&lt;!-- Número (convierte el string del input a número) --&gt;</span>
+<span class="at">&lt;input</span> type=<span class="st">"number"</span> <span class="fn">v-model.number</span>=<span class="st">"fPoliza.importe"</span><span class="at">&gt;</span>
+
+<span class="cm">&lt;!-- Trim (elimina espacios al principio y final) --&gt;</span>
+<span class="at">&lt;input</span> <span class="fn">v-model.trim</span>=<span class="st">"fCliente.nombre"</span><span class="at">&gt;</span>
+
+<span class="cm">&lt;!-- Select --&gt;</span>
+<span class="at">&lt;select</span> <span class="fn">v-model</span>=<span class="st">"fCliente.tipo"</span><span class="at">&gt;</span>
+  <span class="at">&lt;option</span> value=<span class="st">"particular"</span><span class="at">&gt;</span>Particular<span class="at">&lt;/option&gt;</span>
+  <span class="at">&lt;option</span> value=<span class="st">"empresa"</span><span class="at">&gt;</span>Empresa<span class="at">&lt;/option&gt;</span>
+<span class="at">&lt;/select&gt;</span>
+
+<span class="cm">&lt;!-- Textarea --&gt;</span>
+<span class="at">&lt;textarea</span> <span class="fn">v-model</span>=<span class="st">"fPoliza.observaciones"</span> rows=<span class="st">"3"</span><span class="at">&gt;&lt;/textarea&gt;</span></pre>
+            </div>
+          </div>
+
+          <div class="tab-content" id="dir-atributos">
+            <div class="card">
+              <pre><span class="cm">&lt;!-- :atributo — el : hace que el valor sea JavaScript, no texto --&gt;</span>
+<span class="at">&lt;img</span> <span class="fn">:src</span>=<span class="st">"cliente.foto"</span><span class="at">&gt;</span>
+<span class="at">&lt;a</span> <span class="fn">:href</span>=<span class="st">"url"</span><span class="at">&gt;</span>Enlace<span class="at">&lt;/a&gt;</span>
+
+<span class="cm">&lt;!-- Clase condicional --&gt;</span>
+<span class="at">&lt;tr</span> <span class="fn">:class</span>=<span class="st">"colorFila(poliza.estado)"</span><span class="at">&gt;</span>
+<span class="at">&lt;li</span> <span class="fn">:class</span>=<span class="st">"{ active: pantalla === 'clientes' }"</span><span class="at">&gt;</span>
+
+<span class="cm">&lt;!-- Estilo inline --&gt;</span>
+<span class="at">&lt;span</span> <span class="fn">:style</span>=<span class="st">"{ color: restante &lt; 0 ? 'red' : 'green' }"</span><span class="at">&gt;</span>
+  {{ restante }} €
+<span class="at">&lt;/span&gt;</span>
+
+<span class="cm">&lt;!-- Disabled condicional --&gt;</span>
+<span class="at">&lt;button</span> <span class="fn">:disabled</span>=<span class="st">"!fCliente.nombre"</span><span class="at">&gt;</span>Guardar<span class="at">&lt;/button&gt;</span></pre>
+            </div>
+          </div>
+
+          <div class="tab-content" id="dir-eventos">
+            <div class="card">
+              <pre><span class="cm">&lt;!-- @click — ejecuta un método al hacer clic --&gt;</span>
+<span class="at">&lt;button</span> <span class="fn">@click</span>=<span class="st">"guardarCliente"</span><span class="at">&gt;</span>Guardar<span class="at">&lt;/button&gt;</span>
+<span class="at">&lt;button</span> <span class="fn">@click</span>=<span class="st">"editarCliente(cliente)"</span><span class="at">&gt;</span>Editar<span class="at">&lt;/button&gt;</span>
+<span class="at">&lt;button</span> <span class="fn">@click</span>=<span class="st">"pantalla = 'clientes'"</span><span class="at">&gt;</span>Ir a clientes<span class="at">&lt;/button&gt;</span>
+
+<span class="cm">&lt;!-- .prevent — cancela el comportamiento por defecto del navegador --&gt;</span>
+<span class="at">&lt;a</span> href=<span class="st">"#"</span> <span class="fn">@click.prevent</span>=<span class="st">"pantalla = 'clientes'"</span><span class="at">&gt;</span>Clientes<span class="at">&lt;/a&gt;</span>
+
+<span class="cm">&lt;!-- Teclas de teclado --&gt;</span>
+<span class="at">&lt;input</span> <span class="fn">@keyup.enter</span>=<span class="st">"hacerLogin"</span><span class="at">&gt;</span>   <span class="cm">&lt;!-- al pulsar Enter --&gt;</span>
+<span class="at">&lt;input</span> <span class="fn">@keyup.esc</span>=<span class="st">"cancelar"</span><span class="at">&gt;</span>     <span class="cm">&lt;!-- al pulsar Escape --&gt;</span></pre>
+            </div>
+          </div>
+        </section>
+
+        <!-- ─── LOGIN ─── -->
+        <section class="section" id="sec-login">
+          <div class="page-title">Login</div>
+          <div class="page-subtitle">
+            Pantalla de acceso con usuario y contraseña
+          </div>
+
+          <div class="card">
+            <div class="card-title">HTML — formulario de login</div>
+            <pre><span class="cm">&lt;!-- Se muestra si NO hay usuario logueado --&gt;</span>
+<span class="at">&lt;div</span> <span class="fn">v-if</span>=<span class="st">"!usuarioLogueado"</span> class=<span class="st">"container"</span><span class="at">&gt;</span>
+  <span class="at">&lt;div</span> class=<span class="st">"col-md-4 col-md-offset-4"</span><span class="at">&gt;</span>
+    <span class="at">&lt;div</span> class=<span class="st">"panel panel-primary"</span> style=<span class="st">"margin-top:80px"</span><span class="at">&gt;</span>
+      <span class="at">&lt;div</span> class=<span class="st">"panel-heading"</span><span class="at">&gt;&lt;h3</span> class=<span class="st">"text-center"</span><span class="at">&gt;</span>Login<span class="at">&lt;/h3&gt;&lt;/div&gt;</span>
+      <span class="at">&lt;div</span> class=<span class="st">"panel-body"</span><span class="at">&gt;</span>
+
+        <span class="cm">&lt;!-- Mensaje de error --&gt;</span>
+        <span class="at">&lt;div</span> <span class="fn">v-if</span>=<span class="st">"errorLogin"</span> class=<span class="st">"alert alert-danger"</span><span class="at">&gt;</span>{{ errorLogin }}<span class="at">&lt;/div&gt;</span>
+
+        <span class="at">&lt;div</span> class=<span class="st">"form-group"</span><span class="at">&gt;</span>
+          <span class="at">&lt;label&gt;</span>Usuario<span class="at">&lt;/label&gt;</span>
+          <span class="at">&lt;input</span> class=<span class="st">"form-control"</span> <span class="fn">v-model</span>=<span class="st">"loginUsuario"</span><span class="at">&gt;</span>
+        <span class="at">&lt;/div&gt;</span>
+        <span class="at">&lt;div</span> class=<span class="st">"form-group"</span><span class="at">&gt;</span>
+          <span class="at">&lt;label&gt;</span>Contraseña<span class="at">&lt;/label&gt;</span>
+          <span class="cm">&lt;!-- @keyup.enter: pulsar Enter hace login --&gt;</span>
+          <span class="at">&lt;input</span> type=<span class="st">"password"</span> class=<span class="st">"form-control"</span>
+                 <span class="fn">v-model</span>=<span class="st">"loginPassword"</span> <span class="fn">@keyup.enter</span>=<span class="st">"hacerLogin"</span><span class="at">&gt;</span>
+        <span class="at">&lt;/div&gt;</span>
+
+        <span class="at">&lt;button</span> class=<span class="st">"btn btn-primary btn-block"</span> <span class="fn">@click</span>=<span class="st">"hacerLogin"</span><span class="at">&gt;</span>
+          Entrar
+        <span class="at">&lt;/button&gt;</span>
+      <span class="at">&lt;/div&gt;</span>
+    <span class="at">&lt;/div&gt;</span>
+  <span class="at">&lt;/div&gt;</span>
+<span class="at">&lt;/div&gt;</span></pre>
+          </div>
+
+          <div class="card">
+            <div class="card-title">
+              JavaScript — método hacerLogin y cerrarSesion
+            </div>
+            <pre>methods: {
+  <span class="fn">hacerLogin</span>() {
+    <span class="cm">// Busca un usuario que tenga ese usuario Y contraseña</span>
+    <span class="kw">const</span> u = <span class="kw">this</span>.usuarios.<span class="fn">find</span>(u =>
+      u.usuario === <span class="kw">this</span>.loginUsuario &&
+      u.password === <span class="kw">this</span>.loginPassword
+    );
+
+    <span class="kw">if</span> (u) {
+      <span class="kw">this</span>.usuarioLogueado = u;   <span class="cm">// Guarda el usuario</span>
+      <span class="kw">this</span>.errorLogin = <span class="st">''</span>;      <span class="cm">// Limpia el error</span>
+      <span class="cm">// Si tienes pantallas, ve a la principal:</span>
+      <span class="cm">// this.pantalla = 'clientes';</span>
+    } <span class="kw">else</span> {
+      <span class="kw">this</span>.errorLogin = <span class="st">'Usuario o contraseña incorrectos'</span>;
+    }
+  },
+
+  <span class="fn">cerrarSesion</span>() {
+    <span class="kw">this</span>.usuarioLogueado = <span class="kw">null</span>;
+    <span class="kw">this</span>.loginUsuario = <span class="st">''</span>;
+    <span class="kw">this</span>.loginPassword = <span class="st">''</span>;
+  }
+}</pre>
+          </div>
+
+          <div class="card">
+            <div class="card-title">
+              Navbar con logout (dentro del v-else, cuando hay sesión)
+            </div>
+            <pre><span class="at">&lt;div</span> <span class="fn">v-else</span><span class="at">&gt;</span>  <span class="cm">&lt;!-- se muestra cuando usuarioLogueado != null --&gt;</span>
+  <span class="at">&lt;nav</span> class=<span class="st">"navbar navbar-default"</span><span class="at">&gt;</span>
+    <span class="at">&lt;div</span> class=<span class="st">"container-fluid"</span><span class="at">&gt;</span>
+      <span class="at">&lt;span</span> class=<span class="st">"navbar-brand"</span><span class="at">&gt;</span>Mi App<span class="at">&lt;/span&gt;</span>
+      <span class="at">&lt;ul</span> class=<span class="st">"nav navbar-nav"</span><span class="at">&gt;</span>
+        <span class="at">&lt;li</span> <span class="fn">:class</span>=<span class="st">"{ active: pantalla==='clientes' }"</span><span class="at">&gt;</span>
+          <span class="at">&lt;a</span> href=<span class="st">"#"</span> <span class="fn">@click.prevent</span>=<span class="st">"pantalla='clientes'"</span><span class="at">&gt;</span>Clientes<span class="at">&lt;/a&gt;</span>
+        <span class="at">&lt;/li&gt;</span>
+      <span class="at">&lt;/ul&gt;</span>
+      <span class="at">&lt;ul</span> class=<span class="st">"nav navbar-nav navbar-right"</span><span class="at">&gt;</span>
+        <span class="at">&lt;li&gt;&lt;a</span> href=<span class="st">"#"</span><span class="at">&gt;</span>{{ usuarioLogueado.nombre }}<span class="at">&lt;/a&gt;&lt;/li&gt;</span>
+        <span class="at">&lt;li&gt;&lt;a</span> href=<span class="st">"#"</span> <span class="fn">@click.prevent</span>=<span class="st">"cerrarSesion"</span><span class="at">&gt;</span>Salir<span class="at">&lt;/a&gt;&lt;/li&gt;</span>
+      <span class="at">&lt;/ul&gt;</span>
+    <span class="at">&lt;/div&gt;</span>
+  <span class="at">&lt;/nav&gt;</span>
+
+  <span class="cm">&lt;!-- Aquí va el resto de tu app --&gt;</span>
+<span class="at">&lt;/div&gt;</span></pre>
+          </div>
+        </section>
+
+        <!-- ─── TABLA ─── -->
+        <section class="section" id="sec-tabla">
+          <div class="page-title">Tabla + Buscador</div>
+          <div class="page-subtitle">
+            La pantalla principal con listado de registros y búsqueda en tiempo
+            real
+          </div>
+
+          <div class="card">
+            <div class="card-title">
+              HTML — tabla con buscador y botón nuevo
+            </div>
+            <pre><span class="at">&lt;div</span> <span class="fn">v-if</span>=<span class="st">"pantalla === 'clientes'"</span> class=<span class="st">"container-fluid"</span><span class="at">&gt;</span>
+  <span class="at">&lt;h2&gt;</span>Clientes<span class="at">&lt;/h2&gt;</span>
+
+  <span class="at">&lt;div</span> class=<span class="st">"row"</span> style=<span class="st">"margin-bottom:15px"</span><span class="at">&gt;</span>
+    <span class="at">&lt;div</span> class=<span class="st">"col-md-6"</span><span class="at">&gt;</span>
+      <span class="cm">&lt;!-- v-model="busqueda" sincroniza lo que escribe el usuario --&gt;</span>
+      <span class="at">&lt;input</span> class=<span class="st">"form-control"</span> <span class="fn">v-model</span>=<span class="st">"busqueda"</span>
+             placeholder=<span class="st">"Buscar..."</span><span class="at">&gt;</span>
+    <span class="at">&lt;/div&gt;</span>
+    <span class="at">&lt;div</span> class=<span class="st">"col-md-6 text-right"</span><span class="at">&gt;</span>
+      <span class="at">&lt;button</span> class=<span class="st">"btn btn-success"</span> <span class="fn">@click</span>=<span class="st">"nuevoCliente"</span><span class="at">&gt;</span>Nuevo<span class="at">&lt;/button&gt;</span>
+    <span class="at">&lt;/div&gt;</span>
+  <span class="at">&lt;/div&gt;</span>
+
+  <span class="at">&lt;table</span> class=<span class="st">"table table-striped table-bordered table-hover"</span><span class="at">&gt;</span>
+    <span class="at">&lt;thead&gt;</span>
+      <span class="at">&lt;tr&gt;</span>
+        <span class="at">&lt;th&gt;</span>Nombre<span class="at">&lt;/th&gt;&lt;th&gt;</span>Apellidos<span class="at">&lt;/th&gt;&lt;th&gt;</span>Teléfono<span class="at">&lt;/th&gt;&lt;th&gt;</span>Acciones<span class="at">&lt;/th&gt;</span>
+      <span class="at">&lt;/tr&gt;</span>
+    <span class="at">&lt;/thead&gt;</span>
+    <span class="at">&lt;tbody&gt;</span>
+      <span class="cm">&lt;!-- clientesFiltrados es el computed (ver abajo) --&gt;</span>
+      <span class="at">&lt;tr</span> <span class="fn">v-for</span>=<span class="st">"c in clientesFiltrados"</span> <span class="fn">:key</span>=<span class="st">"c.id"</span><span class="at">&gt;</span>
+        <span class="at">&lt;td&gt;</span>{{ c.nombre }}<span class="at">&lt;/td&gt;</span>
+        <span class="at">&lt;td&gt;</span>{{ c.apellidos }}<span class="at">&lt;/td&gt;</span>
+        <span class="at">&lt;td&gt;</span>{{ c.telefono }}<span class="at">&lt;/td&gt;</span>
+        <span class="at">&lt;td&gt;</span>
+          <span class="at">&lt;button</span> class=<span class="st">"btn btn-xs btn-primary"</span> <span class="fn">@click</span>=<span class="st">"verCliente(c)"</span><span class="at">&gt;</span>Ver<span class="at">&lt;/button&gt;</span>
+          <span class="at">&lt;button</span> class=<span class="st">"btn btn-xs btn-warning"</span> <span class="fn">@click</span>=<span class="st">"editarCliente(c)"</span><span class="at">&gt;</span>Editar<span class="at">&lt;/button&gt;</span>
+          <span class="at">&lt;button</span> class=<span class="st">"btn btn-xs btn-danger"</span>  <span class="fn">@click</span>=<span class="st">"borrarCliente(c.id)"</span><span class="at">&gt;</span>Borrar<span class="at">&lt;/button&gt;</span>
+        <span class="at">&lt;/td&gt;</span>
+      <span class="at">&lt;/tr&gt;</span>
+      <span class="at">&lt;tr</span> <span class="fn">v-if</span>=<span class="st">"clientesFiltrados.length === 0"</span><span class="at">&gt;</span>
+        <span class="at">&lt;td</span> colspan=<span class="st">"4"</span> class=<span class="st">"text-center text-muted"</span><span class="at">&gt;</span>Sin resultados<span class="at">&lt;/td&gt;</span>
+      <span class="at">&lt;/tr&gt;</span>
+    <span class="at">&lt;/tbody&gt;</span>
+  <span class="at">&lt;/table&gt;</span>
+
+  <span class="cm">&lt;!-- Contador --&gt;</span>
+  <span class="at">&lt;p</span> class=<span class="st">"text-muted"</span><span class="at">&gt;</span>{{ clientesFiltrados.length }} de {{ clientes.length }}<span class="at">&lt;/p&gt;</span>
+<span class="at">&lt;/div&gt;</span></pre>
+          </div>
+
+          <div class="card">
+            <div class="card-title">JavaScript — computed para el buscador</div>
+            <div class="alert alert-blue" style="margin-bottom: 12px">
+              <strong>computed</strong> = valor que Vue recalcula
+              automáticamente cuando cambia
+              <code class="inline">busqueda</code>. No necesitas llamarlo:
+              simplemente usas <code class="inline">clientesFiltrados</code> en
+              el HTML y funciona solo.
+            </div>
+            <pre>computed: {
+  <span class="fn">clientesFiltrados</span>() {
+    <span class="cm">// Si no hay texto escrito, devuelve todos</span>
+    <span class="kw">if</span> (!<span class="kw">this</span>.busqueda) <span class="kw">return this</span>.clientes;
+
+    <span class="cm">// Convierte a minúsculas para que no importe si escribes</span>
+    <span class="cm">// "juan" o "JUAN" o "Juan"</span>
+    <span class="kw">const</span> b = <span class="kw">this</span>.busqueda.<span class="fn">toLowerCase</span>();
+
+    <span class="kw">return this</span>.clientes.<span class="fn">filter</span>(c =>
+      c.nombre.<span class="fn">toLowerCase</span>().<span class="fn">includes</span>(b)    ||
+      c.apellidos.<span class="fn">toLowerCase</span>().<span class="fn">includes</span>(b) ||
+      c.localidad.<span class="fn">toLowerCase</span>().<span class="fn">includes</span>(b) ||
+      c.telefono.<span class="fn">includes</span>(b)  <span class="cm">// Teléfono no necesita toLowerCase</span>
+    );
+  }
+}</pre>
+          </div>
+        </section>
+
+        <!-- ─── CRUD ─── -->
+        <section class="section" id="sec-crud">
+          <div class="page-title">CRUD — Alta, Edición, Baja</div>
+          <div class="page-subtitle">
+            Un modal que sirve para crear Y para editar. La variable
+            <code class="inline">modo</code> decide cuál de los dos hace.
+          </div>
+
+          <div class="card">
+            <div class="card-title">HTML — modal (estructura genérica)</div>
+            <pre><span class="cm">&lt;!-- El modal va FUERA de los v-if de pantallas, al final del #app --&gt;</span>
+<span class="at">&lt;div</span> class=<span class="st">"modal fade"</span> id=<span class="st">"modalCliente"</span> tabindex=<span class="st">"-1"</span><span class="at">&gt;</span>
+  <span class="at">&lt;div</span> class=<span class="st">"modal-dialog"</span><span class="at">&gt;</span>
+    <span class="at">&lt;div</span> class=<span class="st">"modal-content"</span><span class="at">&gt;</span>
+
+      <span class="at">&lt;div</span> class=<span class="st">"modal-header"</span><span class="at">&gt;</span>
+        <span class="at">&lt;button</span> class=<span class="st">"close"</span> data-dismiss=<span class="st">"modal"</span><span class="at">&gt;</span>×<span class="at">&lt;/button&gt;</span>
+        <span class="cm">&lt;!-- El título cambia según modo --&gt;</span>
+        <span class="at">&lt;h4</span> class=<span class="st">"modal-title"</span><span class="at">&gt;</span>{{ modo==='nuevo' ? 'Nuevo' : 'Editar' }} Cliente<span class="at">&lt;/h4&gt;</span>
+      <span class="at">&lt;/div&gt;</span>
+
+      <span class="at">&lt;div</span> class=<span class="st">"modal-body"</span><span class="at">&gt;</span>
+        <span class="cm">&lt;!-- Campos del formulario vinculados con v-model --&gt;</span>
+        <span class="at">&lt;div</span> class=<span class="st">"form-group"</span><span class="at">&gt;</span>
+          <span class="at">&lt;label&gt;</span>Nombre *<span class="at">&lt;/label&gt;</span>
+          <span class="at">&lt;input</span> class=<span class="st">"form-control"</span> <span class="fn">v-model</span>=<span class="st">"fCliente.nombre"</span><span class="at">&gt;</span>
+        <span class="at">&lt;/div&gt;</span>
+        <span class="cm">&lt;!-- ... más campos ... --&gt;</span>
+      <span class="at">&lt;/div&gt;</span>
+
+      <span class="at">&lt;div</span> class=<span class="st">"modal-footer"</span><span class="at">&gt;</span>
+        <span class="at">&lt;button</span> class=<span class="st">"btn btn-default"</span> data-dismiss=<span class="st">"modal"</span><span class="at">&gt;</span>Cancelar<span class="at">&lt;/button&gt;</span>
+        <span class="at">&lt;button</span> class=<span class="st">"btn btn-success"</span> <span class="fn">@click</span>=<span class="st">"guardarCliente"</span><span class="at">&gt;</span>Guardar<span class="at">&lt;/button&gt;</span>
+      <span class="at">&lt;/div&gt;</span>
+
+    <span class="at">&lt;/div&gt;</span>
+  <span class="at">&lt;/div&gt;</span>
+<span class="at">&lt;/div&gt;</span></pre>
+          </div>
+
+          <div class="card">
+            <div class="card-title">JavaScript — métodos CRUD completos</div>
+            <pre>methods: {
+
+  <span class="cm">// ── NUEVO: resetea el formulario y abre el modal ──</span>
+  <span class="fn">nuevoCliente</span>() {
+    <span class="kw">this</span>.modo = <span class="st">'nuevo'</span>;
+    <span class="cm">// Vaciar todos los campos</span>
+    <span class="kw">this</span>.fCliente = { id:<span class="kw">null</span>, nombre:<span class="st">''</span>, apellidos:<span class="st">''</span>, telefono:<span class="st">''</span>,
+                      localidad:<span class="st">''</span>, cp:<span class="st">''</span>, provincia:<span class="st">''</span>, tipo:<span class="st">'particular'</span> };
+    $(<span class="st">'#modalCliente'</span>).<span class="fn">modal</span>(<span class="st">'show'</span>);   <span class="cm">// jQuery abre el modal</span>
+  },
+
+  <span class="cm">// ── EDITAR: copia los datos al formulario y abre el modal ──</span>
+  <span class="fn">editarCliente</span>(cliente) {
+    <span class="kw">this</span>.modo = <span class="st">'editar'</span>;
+    <span class="cm">// { ...cliente } hace UNA COPIA (si modificas el form, no modificas el original)</span>
+    <span class="kw">this</span>.fCliente = { ...cliente };
+    $(<span class="st">'#modalCliente'</span>).<span class="fn">modal</span>(<span class="st">'show'</span>);
+  },
+
+  <span class="cm">// ── GUARDAR: decide si crear o actualizar ──</span>
+  <span class="fn">guardarCliente</span>() {
+    <span class="cm">// Validación básica (nunca guardes sin validar)</span>
+    <span class="kw">if</span> (!<span class="kw">this</span>.fCliente.nombre || !<span class="kw">this</span>.fCliente.apellidos) {
+      <span class="fn">alert</span>(<span class="st">'Nombre y Apellidos son obligatorios'</span>);
+      <span class="kw">return</span>;  <span class="cm">// Para aquí, no guarda</span>
+    }
+
+    <span class="kw">if</span> (<span class="kw">this</span>.modo === <span class="st">'nuevo'</span>) {
+      <span class="cm">// Calcula el próximo ID (el mayor que haya + 1)</span>
+      <span class="kw">this</span>.fCliente.id = Math.<span class="fn">max</span>(<span class="nr">0</span>, ...<span class="kw">this</span>.clientes.<span class="fn">map</span>(c => c.id)) + <span class="nr">1</span>;
+      <span class="cm">// Añade una copia al array</span>
+      <span class="kw">this</span>.clientes.<span class="fn">push</span>({ ...<span class="kw">this</span>.fCliente });
+
+    } <span class="kw">else</span> {
+      <span class="cm">// Encuentra la posición del elemento a editar</span>
+      <span class="kw">const</span> i = <span class="kw">this</span>.clientes.<span class="fn">findIndex</span>(c => c.id === <span class="kw">this</span>.fCliente.id);
+      <span class="cm">// $set garantiza que Vue detecta el cambio y actualiza la pantalla</span>
+      <span class="kw">this</span>.$<span class="fn">set</span>(<span class="kw">this</span>.clientes, i, { ...<span class="kw">this</span>.fCliente });
+    }
+
+    $(<span class="st">'#modalCliente'</span>).<span class="fn">modal</span>(<span class="st">'hide'</span>);   <span class="cm">// Cierra el modal</span>
+    <span class="kw">this</span>.<span class="fn">ok</span>(<span class="st">'Cliente guardado correctamente'</span>);
+  },
+
+  <span class="cm">// ── BORRAR ──</span>
+  <span class="fn">borrarCliente</span>(id) {
+    <span class="kw">if</span> (!<span class="fn">confirm</span>(<span class="st">'¿Eliminar este cliente?'</span>)) <span class="kw">return</span>;
+    <span class="cm">// filter crea un nuevo array sin el elemento con ese id</span>
+    <span class="kw">this</span>.clientes = <span class="kw">this</span>.clientes.<span class="fn">filter</span>(c => c.id !== id);
+  },
+
+  <span class="cm">// Función auxiliar para mensajes de éxito</span>
+  <span class="fn">ok</span>(msg) {
+    <span class="kw">this</span>.mensajeOk = msg;
+    <span class="fn">setTimeout</span>(() => <span class="kw">this</span>.mensajeOk = <span class="st">''</span>, <span class="nr">3000</span>);  <span class="cm">// Desaparece en 3 seg</span>
+  }
+}</pre>
+          </div>
+        </section>
+
+        <!-- ─── DETALLE ─── -->
+        <section class="section" id="sec-detalle">
+          <div class="page-title">Pantalla Detalle</div>
+          <div class="page-subtitle">
+            Ver un registro y sus sub-entidades (ej: cliente → pólizas)
+          </div>
+
+          <div class="card">
+            <div class="card-title">JavaScript — métodos de navegación</div>
+            <pre>methods: {
+  <span class="cm">// Guarda el cliente seleccionado y cambia la pantalla</span>
+  <span class="fn">verCliente</span>(cliente) {
+    <span class="kw">this</span>.clienteActual = cliente;
+    <span class="kw">this</span>.polizaActual = <span class="kw">null</span>;     <span class="cm">// Limpia la póliza anterior</span>
+    <span class="kw">this</span>.pantalla = <span class="st">'detalle'</span>;
+  }
+},
+
+computed: {
+  <span class="cm">// Devuelve solo las pólizas del cliente actual</span>
+  <span class="fn">polizasCliente</span>() {
+    <span class="kw">if</span> (!<span class="kw">this</span>.clienteActual) <span class="kw">return</span> [];
+    <span class="kw">return this</span>.polizas.<span class="fn">filter</span>(p => p.clienteId === <span class="kw">this</span>.clienteActual.id);
+  }
+}</pre>
+          </div>
+
+          <div class="card">
+            <div class="card-title">HTML — pantalla de detalle</div>
+            <pre><span class="at">&lt;div</span> <span class="fn">v-if</span>=<span class="st">"pantalla === 'detalle' && clienteActual"</span> class=<span class="st">"container-fluid"</span><span class="at">&gt;</span>
+
+  <span class="cm">&lt;!-- Botón volver --&gt;</span>
+  <span class="at">&lt;button</span> class=<span class="st">"btn btn-default"</span> <span class="fn">@click</span>=<span class="st">"pantalla='clientes'"</span><span class="at">&gt;</span>← Volver<span class="at">&lt;/button&gt;</span>
+  <span class="at">&lt;hr&gt;</span>
+
+  <span class="cm">&lt;!-- Datos del cliente --&gt;</span>
+  <span class="at">&lt;div</span> class=<span class="st">"panel panel-info"</span><span class="at">&gt;</span>
+    <span class="at">&lt;div</span> class=<span class="st">"panel-heading"</span><span class="at">&gt;</span>
+      {{ clienteActual.nombre }} {{ clienteActual.apellidos }}
+    <span class="at">&lt;/div&gt;</span>
+    <span class="at">&lt;div</span> class=<span class="st">"panel-body"</span><span class="at">&gt;</span>
+      Tel: {{ clienteActual.telefono }} |
+      {{ clienteActual.localidad }}, {{ clienteActual.provincia }}
+    <span class="at">&lt;/div&gt;</span>
+  <span class="at">&lt;/div&gt;</span>
+
+  <span class="cm">&lt;!-- Sub-entidades: pólizas --&gt;</span>
+  <span class="at">&lt;h4&gt;</span>Pólizas
+    <span class="at">&lt;button</span> class=<span class="st">"btn btn-success btn-sm"</span> <span class="fn">@click</span>=<span class="st">"nuevaPoliza"</span><span class="at">&gt;</span>Nueva<span class="at">&lt;/button&gt;</span>
+  <span class="at">&lt;/h4&gt;</span>
+
+  <span class="at">&lt;table</span> class=<span class="st">"table table-bordered"</span><span class="at">&gt;</span>
+    <span class="at">&lt;thead&gt;&lt;tr&gt;</span>
+      <span class="at">&lt;th&gt;</span>Nº<span class="at">&lt;/th&gt;&lt;th&gt;</span>Importe<span class="at">&lt;/th&gt;&lt;th&gt;</span>Fecha<span class="at">&lt;/th&gt;&lt;th&gt;</span>Estado<span class="at">&lt;/th&gt;&lt;th&gt;</span>Acciones<span class="at">&lt;/th&gt;</span>
+    <span class="at">&lt;/tr&gt;&lt;/thead&gt;</span>
+    <span class="at">&lt;tbody&gt;</span>
+      <span class="cm">&lt;!-- :class aplica color de fila según estado --&gt;</span>
+      <span class="at">&lt;tr</span> <span class="fn">v-for</span>=<span class="st">"p in polizasCliente"</span> <span class="fn">:key</span>=<span class="st">"p.id"</span> <span class="fn">:class</span>=<span class="st">"colorFila(p.estado)"</span><span class="at">&gt;</span>
+        <span class="at">&lt;td&gt;</span>{{ p.numero }}<span class="at">&lt;/td&gt;</span>
+        <span class="at">&lt;td&gt;</span>{{ p.importe }}€<span class="at">&lt;/td&gt;</span>
+        <span class="at">&lt;td&gt;</span>{{ p.fecha }}<span class="at">&lt;/td&gt;</span>
+        <span class="at">&lt;td&gt;&lt;span</span> <span class="fn">:class</span>=<span class="st">"badgeEstado(p.estado)"</span><span class="at">&gt;</span>{{ p.estado }}<span class="at">&lt;/span&gt;&lt;/td&gt;</span>
+        <span class="at">&lt;td&gt;</span>
+          <span class="at">&lt;button</span> class=<span class="st">"btn btn-xs btn-info"</span>    <span class="fn">@click</span>=<span class="st">"verPagos(p)"</span><span class="at">&gt;</span>Pagos<span class="at">&lt;/button&gt;</span>
+          <span class="at">&lt;button</span> class=<span class="st">"btn btn-xs btn-warning"</span> <span class="fn">@click</span>=<span class="st">"editarPoliza(p)"</span><span class="at">&gt;</span>Editar<span class="at">&lt;/button&gt;</span>
+          <span class="at">&lt;button</span> class=<span class="st">"btn btn-xs btn-danger"</span>  <span class="fn">@click</span>=<span class="st">"borrarPoliza(p.id)"</span><span class="at">&gt;</span>Borrar<span class="at">&lt;/button&gt;</span>
+        <span class="at">&lt;/td&gt;</span>
+      <span class="at">&lt;/tr&gt;</span>
+    <span class="at">&lt;/tbody&gt;</span>
+  <span class="at">&lt;/table&gt;</span>
+<span class="at">&lt;/div&gt;</span></pre>
+          </div>
+        </section>
+
+        <!-- ─── PAGOS ─── -->
+        <section class="section" id="sec-pagos">
+          <div class="page-title">Pagos / Sub-items</div>
+          <div class="page-subtitle">
+            Control de cuotas o pagos vinculados a una póliza
+          </div>
+
+          <div class="card">
+            <div class="card-title">JavaScript — computed de pagos</div>
+            <pre>computed: {
+  <span class="cm">// Pagos de la póliza que está seleccionada</span>
+  <span class="fn">pagosPoliza</span>() {
+    <span class="kw">if</span> (!<span class="kw">this</span>.polizaActual) <span class="kw">return</span> [];
+    <span class="kw">return this</span>.pagos.<span class="fn">filter</span>(p => p.polizaId === <span class="kw">this</span>.polizaActual.id);
+  },
+
+  <span class="cm">// Suma de todos los pagos de esa póliza</span>
+  <span class="fn">totalPagado</span>() {
+    <span class="kw">return this</span>.pagosPoliza.<span class="fn">reduce</span>((acc, p) => acc + p.importe, <span class="nr">0</span>);
+  },
+
+  <span class="cm">// Cuánto queda por pagar</span>
+  <span class="fn">restante</span>() {
+    <span class="kw">if</span> (!<span class="kw">this</span>.polizaActual) <span class="kw">return</span> <span class="nr">0</span>;
+    <span class="kw">return this</span>.polizaActual.importe - <span class="kw">this</span>.totalPagado;
+  }
+},
+
+methods: {
+  <span class="fn">verPagos</span>(poliza) {
+    <span class="kw">this</span>.polizaActual = poliza;
+    <span class="kw">this</span>.fPago = { polizaId: poliza.id, fecha: <span class="st">''</span>, importe: <span class="nr">0</span> };
+  },
+
+  <span class="fn">agregarPago</span>() {
+    <span class="kw">if</span> (<span class="kw">this</span>.fPago.importe <= <span class="nr">0</span>)              { <span class="fn">alert</span>(<span class="st">'Importe inválido'</span>); <span class="kw">return</span>; }
+    <span class="kw">if</span> (<span class="kw">this</span>.fPago.importe > <span class="kw">this</span>.restante) { <span class="fn">alert</span>(<span class="st">`Máximo: ${this.restante}€`</span>); <span class="kw">return</span>; }
+    <span class="kw">if</span> (!<span class="kw">this</span>.fPago.fecha)                    { <span class="fn">alert</span>(<span class="st">'Indica una fecha'</span>); <span class="kw">return</span>; }
+
+    <span class="kw">const</span> id = Math.<span class="fn">max</span>(<span class="nr">0</span>, ...<span class="kw">this</span>.pagos.<span class="fn">map</span>(p => p.id)) + <span class="nr">1</span>;
+    <span class="kw">this</span>.pagos.<span class="fn">push</span>({ id, ...<span class="kw">this</span>.fPago });
+    <span class="kw">this</span>.fPago.fecha = <span class="st">''</span>;
+    <span class="kw">this</span>.fPago.importe = <span class="nr">0</span>;
+  },
+
+  <span class="fn">borrarPago</span>(id) {
+    <span class="kw">if</span> (!<span class="fn">confirm</span>(<span class="st">'¿Eliminar pago?'</span>)) <span class="kw">return</span>;
+    <span class="kw">this</span>.pagos = <span class="kw">this</span>.pagos.<span class="fn">filter</span>(p => p.id !== id);
+  }
+}</pre>
+          </div>
+
+          <div class="card">
+            <div class="card-title">
+              HTML — sección de pagos (dentro del detalle)
+            </div>
+            <pre><span class="at">&lt;div</span> <span class="fn">v-if</span>=<span class="st">"polizaActual"</span> class=<span class="st">"panel panel-default"</span> style=<span class="st">"margin-top:20px"</span><span class="at">&gt;</span>
+  <span class="at">&lt;div</span> class=<span class="st">"panel-heading"</span><span class="at">&gt;</span>
+    Pagos: {{ polizaActual.numero }} |
+    Pagado: {{ totalPagado }}€ / {{ polizaActual.importe }}€ —
+    <span class="cm">&lt;!-- Color rojo si se supera, verde si no --&gt;</span>
+    Restante: <span class="at">&lt;strong</span> <span class="fn">:class</span>=<span class="st">"restante &lt; 0 ? 'text-danger' : 'text-success'"</span><span class="at">&gt;</span>{{ restante }}€<span class="at">&lt;/strong&gt;</span>
+  <span class="at">&lt;/div&gt;</span>
+  <span class="at">&lt;div</span> class=<span class="st">"panel-body"</span><span class="at">&gt;</span>
+    <span class="at">&lt;table</span> class=<span class="st">"table table-bordered table-sm"</span><span class="at">&gt;</span>
+      <span class="at">&lt;thead&gt;&lt;tr&gt;&lt;th&gt;</span>Fecha<span class="at">&lt;/th&gt;&lt;th&gt;</span>Importe<span class="at">&lt;/th&gt;&lt;th&gt;&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;</span>
+      <span class="at">&lt;tbody&gt;</span>
+        <span class="at">&lt;tr</span> <span class="fn">v-for</span>=<span class="st">"pg in pagosPoliza"</span> <span class="fn">:key</span>=<span class="st">"pg.id"</span><span class="at">&gt;</span>
+          <span class="at">&lt;td&gt;</span>{{ pg.fecha }}<span class="at">&lt;/td&gt;</span>
+          <span class="at">&lt;td&gt;</span>{{ pg.importe }}€<span class="at">&lt;/td&gt;</span>
+          <span class="at">&lt;td&gt;&lt;button</span> class=<span class="st">"btn btn-xs btn-danger"</span> <span class="fn">@click</span>=<span class="st">"borrarPago(pg.id)"</span><span class="at">&gt;</span>✕<span class="at">&lt;/button&gt;&lt;/td&gt;</span>
+        <span class="at">&lt;/tr&gt;</span>
+      <span class="at">&lt;/tbody&gt;</span>
+    <span class="at">&lt;/table&gt;</span>
+
+    <span class="cm">&lt;!-- Formulario para añadir pago --&gt;</span>
+    <span class="at">&lt;div</span> class=<span class="st">"row"</span><span class="at">&gt;</span>
+      <span class="at">&lt;div</span> class=<span class="st">"col-md-4"</span><span class="at">&gt;</span>
+        <span class="at">&lt;input</span> type=<span class="st">"date"</span> class=<span class="st">"form-control"</span> <span class="fn">v-model</span>=<span class="st">"fPago.fecha"</span><span class="at">&gt;</span>
+      <span class="at">&lt;/div&gt;</span>
+      <span class="at">&lt;div</span> class=<span class="st">"col-md-4"</span><span class="at">&gt;</span>
+        <span class="at">&lt;input</span> type=<span class="st">"number"</span> class=<span class="st">"form-control"</span> <span class="fn">v-model.number</span>=<span class="st">"fPago.importe"</span>
+               placeholder=<span class="st">"Importe €"</span><span class="at">&gt;</span>
+      <span class="at">&lt;/div&gt;</span>
+      <span class="at">&lt;div</span> class=<span class="st">"col-md-4"</span><span class="at">&gt;</span>
+        <span class="at">&lt;button</span> class=<span class="st">"btn btn-primary"</span> <span class="fn">@click</span>=<span class="st">"agregarPago"</span><span class="at">&gt;</span>Añadir Pago<span class="at">&lt;/button&gt;</span>
+      <span class="at">&lt;/div&gt;</span>
+    <span class="at">&lt;/div&gt;</span>
+  <span class="at">&lt;/div&gt;</span>
+<span class="at">&lt;/div&gt;</span></pre>
+          </div>
+        </section>
+
+        <!-- ─── COLORES ─── -->
+        <section class="section" id="sec-colores">
+          <div class="page-title">Colores por estado</div>
+          <div class="page-subtitle">
+            Cómo pintar filas de tabla y badges según el estado de un registro
+          </div>
+
+          <div class="card">
+            <div class="card-title">JavaScript — métodos de color</div>
+            <pre>methods: {
+  <span class="cm">// Devuelve la clase de Bootstrap para colorear la FILA completa</span>
+  <span class="cm">// Úsalo en: :class="colorFila(poliza.estado)"</span>
+  <span class="fn">colorFila</span>(estado) {
+    <span class="kw">const</span> colores = {
+      <span class="st">'cobrada'</span>:     <span class="st">'success'</span>,   <span class="cm">// Verde</span>
+      <span class="st">'a cuenta'</span>:    <span class="st">'warning'</span>,   <span class="cm">// Amarillo</span>
+      <span class="st">'liquidada'</span>:   <span class="st">'info'</span>,      <span class="cm">// Azul claro</span>
+      <span class="st">'anulada'</span>:     <span class="st">'danger'</span>,    <span class="cm">// Rojo</span>
+      <span class="st">'pre-anulada'</span>: <span class="st">'active'</span>     <span class="cm">// Gris</span>
+    };
+    <span class="cm">// Si no encuentra el estado, devuelve '' (sin color)</span>
+    <span class="kw">return</span> colores[estado] || <span class="st">''</span>;
+  },
+
+  <span class="cm">// Devuelve la clase para el BADGE pequeño de estado</span>
+  <span class="cm">// Úsalo en: :class="badgeEstado(poliza.estado)"</span>
+  <span class="fn">badgeEstado</span>(estado) {
+    <span class="kw">const</span> badges = {
+      <span class="st">'cobrada'</span>:     <span class="st">'label label-success'</span>,
+      <span class="st">'a cuenta'</span>:    <span class="st">'label label-warning'</span>,
+      <span class="st">'liquidada'</span>:   <span class="st">'label label-info'</span>,
+      <span class="st">'anulada'</span>:     <span class="st">'label label-danger'</span>,
+      <span class="st">'pre-anulada'</span>: <span class="st">'label label-default'</span>
+    };
+    <span class="kw">return</span> badges[estado] || <span class="st">'label label-default'</span>;
+  }
+}</pre>
+          </div>
+
+          <div class="card">
+            <div class="card-title">
+              Referencia visual de colores Bootstrap 3
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th>Clase fila</th>
+                  <th>Clase badge</th>
+                  <th>Color</th>
+                  <th>Cuándo usarlo</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code class="inline">success</code></td>
+                  <td><code class="inline">label-success</code></td>
+                  <td>
+                    <span
+                      style="
+                        background: #dff0d8;
+                        color: #3c763d;
+                        padding: 2px 10px;
+                        border-radius: 4px;
+                        font-size: 12px;
+                      "
+                      >Verde</span
+                    >
+                  </td>
+                  <td>Cobrado, activo, completado</td>
+                </tr>
+                <tr>
+                  <td><code class="inline">warning</code></td>
+                  <td><code class="inline">label-warning</code></td>
+                  <td>
+                    <span
+                      style="
+                        background: #fcf8e3;
+                        color: #8a6d3b;
+                        padding: 2px 10px;
+                        border-radius: 4px;
+                        font-size: 12px;
+                      "
+                      >Amarillo</span
+                    >
+                  </td>
+                  <td>A cuenta, pendiente, en curso</td>
+                </tr>
+                <tr>
+                  <td><code class="inline">danger</code></td>
+                  <td><code class="inline">label-danger</code></td>
+                  <td>
+                    <span
+                      style="
+                        background: #f2dede;
+                        color: #a94442;
+                        padding: 2px 10px;
+                        border-radius: 4px;
+                        font-size: 12px;
+                      "
+                      >Rojo</span
+                    >
+                  </td>
+                  <td>Anulado, error, cancelado</td>
+                </tr>
+                <tr>
+                  <td><code class="inline">info</code></td>
+                  <td><code class="inline">label-info</code></td>
+                  <td>
+                    <span
+                      style="
+                        background: #d9edf7;
+                        color: #31708f;
+                        padding: 2px 10px;
+                        border-radius: 4px;
+                        font-size: 12px;
+                      "
+                      >Azul</span
+                    >
+                  </td>
+                  <td>Liquidado, informativo</td>
+                </tr>
+                <tr>
+                  <td><code class="inline">active</code></td>
+                  <td><code class="inline">label-default</code></td>
+                  <td>
+                    <span
+                      style="
+                        background: #f5f5f5;
+                        color: #777;
+                        padding: 2px 10px;
+                        border-radius: 4px;
+                        font-size: 12px;
+                      "
+                      >Gris</span
+                    >
+                  </td>
+                  <td>Pre-anulado, inactivo, neutro</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="card">
+            <div class="card-title">Cómo usarlo en el HTML</div>
+            <pre><span class="cm">&lt;!-- En la fila: :class aplica el color según el estado --&gt;</span>
+<span class="at">&lt;tr</span> <span class="fn">v-for</span>=<span class="st">"p in polizas"</span> <span class="fn">:key</span>=<span class="st">"p.id"</span> <span class="fn">:class</span>=<span class="st">"colorFila(p.estado)"</span><span class="at">&gt;</span>
+  ...
+<span class="at">&lt;/tr&gt;</span>
+
+<span class="cm">&lt;!-- En una celda: el badge con el texto del estado --&gt;</span>
+<span class="at">&lt;td&gt;&lt;span</span> <span class="fn">:class</span>=<span class="st">"badgeEstado(p.estado)"</span><span class="at">&gt;</span>{{ p.estado }}<span class="at">&lt;/span&gt;&lt;/td&gt;</span></pre>
+          </div>
+        </section>
+
+        <!-- ─── BOOTSTRAP ─── -->
+        <section class="section" id="sec-bootstrap">
+          <div class="page-title">Bootstrap 3 — cheatsheet</div>
+          <div class="page-subtitle">Las clases más usadas en el examen</div>
+
+          <div class="tabs">
+            <button class="tab-btn active" onclick="showTab('bs', 'botones')">
+              Botones
+            </button>
+            <button class="tab-btn" onclick="showTab('bs', 'grid')">
+              Grid
+            </button>
+            <button class="tab-btn" onclick="showTab('bs', 'alertas')">
+              Alertas
+            </button>
+            <button class="tab-btn" onclick="showTab('bs', 'panel')">
+              Panel
+            </button>
+            <button class="tab-btn" onclick="showTab('bs', 'misc')">
+              Varios
+            </button>
+          </div>
+
+          <div class="tab-content active" id="bs-botones">
+            <div class="card">
+              <pre><span class="cm">&lt;!-- Colores --&gt;</span>
+<span class="at">&lt;button</span> class=<span class="st">"btn btn-default"</span><span class="at">&gt;</span>Gris<span class="at">&lt;/button&gt;</span>
+<span class="at">&lt;button</span> class=<span class="st">"btn btn-primary"</span><span class="at">&gt;</span>Azul<span class="at">&lt;/button&gt;</span>
+<span class="at">&lt;button</span> class=<span class="st">"btn btn-success"</span><span class="at">&gt;</span>Verde<span class="at">&lt;/button&gt;</span>
+<span class="at">&lt;button</span> class=<span class="st">"btn btn-warning"</span><span class="at">&gt;</span>Naranja<span class="at">&lt;/button&gt;</span>
+<span class="at">&lt;button</span> class=<span class="st">"btn btn-danger"</span><span class="at">&gt;</span>Rojo<span class="at">&lt;/button&gt;</span>
+<span class="at">&lt;button</span> class=<span class="st">"btn btn-info"</span><span class="at">&gt;</span>Cyan<span class="at">&lt;/button&gt;</span>
+
+<span class="cm">&lt;!-- Tamaños --&gt;</span>
+<span class="at">&lt;button</span> class=<span class="st">"btn btn-primary btn-lg"</span><span class="at">&gt;</span>Grande<span class="at">&lt;/button&gt;</span>
+<span class="at">&lt;button</span> class=<span class="st">"btn btn-primary"</span><span class="at">&gt;</span>Normal<span class="at">&lt;/button&gt;</span>
+<span class="at">&lt;button</span> class=<span class="st">"btn btn-primary btn-sm"</span><span class="at">&gt;</span>Pequeño<span class="at">&lt;/button&gt;</span>
+<span class="at">&lt;button</span> class=<span class="st">"btn btn-primary btn-xs"</span><span class="at">&gt;</span>Muy pequeño (en tablas)<span class="at">&lt;/button&gt;</span>
+
+<span class="cm">&lt;!-- Ancho completo --&gt;</span>
+<span class="at">&lt;button</span> class=<span class="st">"btn btn-primary btn-block"</span><span class="at">&gt;</span>Ocupa todo el ancho<span class="at">&lt;/button&gt;</span></pre>
+            </div>
+          </div>
+
+          <div class="tab-content" id="bs-grid">
+            <div class="card">
+              <pre><span class="cm">&lt;!-- Las columnas siempre van dentro de un .row --&gt;</span>
+<span class="cm">&lt;!-- Los números de col-md-X deben sumar 12 --&gt;</span>
+
+<span class="cm">&lt;!-- Mitades --&gt;</span>
+<span class="at">&lt;div</span> class=<span class="st">"row"</span><span class="at">&gt;</span>
+  <span class="at">&lt;div</span> class=<span class="st">"col-md-6"</span><span class="at">&gt;</span>Izquierda<span class="at">&lt;/div&gt;</span>
+  <span class="at">&lt;div</span> class=<span class="st">"col-md-6"</span><span class="at">&gt;</span>Derecha<span class="at">&lt;/div&gt;</span>
+<span class="at">&lt;/div&gt;</span>
+
+<span class="cm">&lt;!-- Tercios --&gt;</span>
+<span class="at">&lt;div</span> class=<span class="st">"row"</span><span class="at">&gt;</span>
+  <span class="at">&lt;div</span> class=<span class="st">"col-md-4"</span><span class="at">&gt;</span>1/3<span class="at">&lt;/div&gt;</span>
+  <span class="at">&lt;div</span> class=<span class="st">"col-md-4"</span><span class="at">&gt;</span>1/3<span class="at">&lt;/div&gt;</span>
+  <span class="at">&lt;div</span> class=<span class="st">"col-md-4"</span><span class="at">&gt;</span>1/3<span class="at">&lt;/div&gt;</span>
+<span class="at">&lt;/div&gt;</span>
+
+<span class="cm">&lt;!-- Centrado (offset suma la distancia desde la izquierda) --&gt;</span>
+<span class="at">&lt;div</span> class=<span class="st">"row"</span><span class="at">&gt;</span>
+  <span class="at">&lt;div</span> class=<span class="st">"col-md-6 col-md-offset-3"</span><span class="at">&gt;</span>Centrado<span class="at">&lt;/div&gt;</span>
+<span class="at">&lt;/div&gt;</span>
+
+<span class="cm">&lt;!-- Para login, centrar en 4 columnas --&gt;</span>
+<span class="at">&lt;div</span> class=<span class="st">"col-md-4 col-md-offset-4"</span><span class="at">&gt;</span>Formulario login<span class="at">&lt;/div&gt;</span></pre>
+            </div>
+          </div>
+
+          <div class="tab-content" id="bs-alertas">
+            <div class="card">
+              <pre><span class="at">&lt;div</span> class=<span class="st">"alert alert-success"</span> <span class="fn">v-if</span>=<span class="st">"mensajeOk"</span><span class="at">&gt;</span>{{ mensajeOk }}<span class="at">&lt;/div&gt;</span>
+<span class="at">&lt;div</span> class=<span class="st">"alert alert-danger"</span>  <span class="fn">v-if</span>=<span class="st">"mensajeError"</span><span class="at">&gt;</span>{{ mensajeError }}<span class="at">&lt;/div&gt;</span>
+<span class="at">&lt;div</span> class=<span class="st">"alert alert-warning"</span><span class="at">&gt;</span>Mensaje de advertencia<span class="at">&lt;/div&gt;</span>
+<span class="at">&lt;div</span> class=<span class="st">"alert alert-info"</span><span class="at">&gt;</span>Mensaje informativo<span class="at">&lt;/div&gt;</span></pre>
+            </div>
+          </div>
+
+          <div class="tab-content" id="bs-panel">
+            <div class="card">
+              <pre><span class="at">&lt;div</span> class=<span class="st">"panel panel-primary"</span><span class="at">&gt;</span>   <span class="cm">&lt;!-- panel-info, panel-success, panel-danger --&gt;</span>
+  <span class="at">&lt;div</span> class=<span class="st">"panel-heading"</span><span class="at">&gt;</span>Título del panel<span class="at">&lt;/div&gt;</span>
+  <span class="at">&lt;div</span> class=<span class="st">"panel-body"</span><span class="at">&gt;</span>Contenido<span class="at">&lt;/div&gt;</span>
+  <span class="at">&lt;div</span> class=<span class="st">"panel-footer"</span><span class="at">&gt;</span>Pie (opcional)<span class="at">&lt;/div&gt;</span>
+<span class="at">&lt;/div&gt;</span></pre>
+            </div>
+          </div>
+
+          <div class="tab-content" id="bs-misc">
+            <div class="card">
+              <pre><span class="cm">&lt;!-- Texto --&gt;</span>
+<span class="at">&lt;p</span> class=<span class="st">"text-center"</span><span class="at">&gt;</span>    <span class="at">&lt;p</span> class=<span class="st">"text-right"</span><span class="at">&gt;</span>    <span class="at">&lt;p</span> class=<span class="st">"text-muted"</span><span class="at">&gt;</span>
+
+<span class="cm">&lt;!-- Labels/badges pequeños --&gt;</span>
+<span class="at">&lt;span</span> class=<span class="st">"label label-success"</span><span class="at">&gt;</span>Cobrada<span class="at">&lt;/span&gt;</span>
+<span class="at">&lt;span</span> class=<span class="st">"label label-warning"</span><span class="at">&gt;</span>A cuenta<span class="at">&lt;/span&gt;</span>
+<span class="at">&lt;span</span> class=<span class="st">"label label-danger"</span><span class="at">&gt;</span>Anulada<span class="at">&lt;/span&gt;</span>
+
+<span class="cm">&lt;!-- Tabla --&gt;</span>
+<span class="cm">&lt;!-- Combina las que necesites --&gt;</span>
+<span class="at">&lt;table</span> class=<span class="st">"table"</span><span class="at">&gt;</span>           <span class="cm">&lt;!-- base --&gt;</span>
+<span class="at">&lt;table</span> class=<span class="st">"table table-striped"</span><span class="at">&gt;</span>  <span class="cm">&lt;!-- filas alternadas --&gt;</span>
+<span class="at">&lt;table</span> class=<span class="st">"table table-bordered"</span><span class="at">&gt;</span>  <span class="cm">&lt;!-- con bordes --&gt;</span>
+<span class="at">&lt;table</span> class=<span class="st">"table table-hover"</span><span class="at">&gt;</span>    <span class="cm">&lt;!-- resalta al pasar el ratón --&gt;</span>
+
+<span class="cm">&lt;!-- Form --&gt;</span>
+<span class="at">&lt;div</span> class=<span class="st">"form-group"</span><span class="at">&gt;</span>   <span class="cm">&lt;!-- agrupa label + input --&gt;</span>
+  <span class="at">&lt;label&gt;</span>Nombre<span class="at">&lt;/label&gt;</span>
+  <span class="at">&lt;input</span> class=<span class="st">"form-control"</span><span class="at">&gt;</span>   <span class="cm">&lt;!-- input con estilo Bootstrap --&gt;</span>
+<span class="at">&lt;/div&gt;</span>
+
+<span class="cm">&lt;!-- Select con estilo Bootstrap --&gt;</span>
+<span class="at">&lt;select</span> class=<span class="st">"form-control"</span><span class="at">&gt;</span>...
+<span class="at">&lt;textarea</span> class=<span class="st">"form-control"</span> rows=<span class="st">"3"</span><span class="at">&gt;&lt;/textarea&gt;</span></pre>
+            </div>
+          </div>
+        </section>
+
+        <!-- ─── PATRONES ─── -->
+        <section class="section" id="sec-patrones">
+          <div class="page-title">Patrones frecuentes</div>
+          <div class="page-subtitle">
+            Fragmentos de código que usarás en casi cualquier práctica
+          </div>
+
+          <div class="card">
+            <div class="card-title">Buscar en un array</div>
+            <pre><span class="cm">// Encontrar UN elemento (devuelve el objeto o undefined)</span>
+<span class="kw">const</span> cliente = <span class="kw">this</span>.clientes.<span class="fn">find</span>(c => c.id === id);
+
+<span class="cm">// Filtrar (devuelve array nuevo)</span>
+<span class="kw">const</span> solo = <span class="kw">this</span>.polizas.<span class="fn">filter</span>(p => p.clienteId === <span class="kw">this</span>.clienteActual.id);
+
+<span class="cm">// Encontrar posición (para editar con $set)</span>
+<span class="kw">const</span> i = <span class="kw">this</span>.clientes.<span class="fn">findIndex</span>(c => c.id === <span class="kw">this</span>.fCliente.id);
+
+<span class="cm">// ¿Existe alguno?</span>
+<span class="kw">const</span> existe = <span class="kw">this</span>.clientes.<span class="fn">some</span>(c => c.nombre === <span class="st">'Juan'</span>);</pre>
+          </div>
+
+          <div class="card">
+            <div class="card-title">Operaciones con arrays</div>
+            <pre><span class="cm">// Añadir al final</span>
+<span class="kw">this</span>.clientes.<span class="fn">push</span>({ ...<span class="kw">this</span>.fCliente });
+
+<span class="cm">// Eliminar por id</span>
+<span class="kw">this</span>.clientes = <span class="kw">this</span>.clientes.<span class="fn">filter</span>(c => c.id !== id);
+
+<span class="cm">// Editar (reactivo con Vue)</span>
+<span class="kw">this</span>.$<span class="fn">set</span>(<span class="kw">this</span>.clientes, i, { ...<span class="kw">this</span>.fCliente });
+<span class="cm">// alternativa equivalente:</span>
+<span class="kw">this</span>.clientes.<span class="fn">splice</span>(i, <span class="nr">1</span>, { ...<span class="kw">this</span>.fCliente });
+
+<span class="cm">// Copiar un objeto (para no modificar el original)</span>
+<span class="kw">const</span> copia = { ...objeto };
+
+<span class="cm">// Sumar valores de un array</span>
+<span class="kw">const</span> total = <span class="kw">this</span>.pagos.<span class="fn">reduce</span>((acc, p) => acc + p.importe, <span class="nr">0</span>);
+
+<span class="cm">// Siguiente ID disponible</span>
+<span class="kw">const</span> id = Math.<span class="fn">max</span>(<span class="nr">0</span>, ...<span class="kw">this</span>.clientes.<span class="fn">map</span>(c => c.id)) + <span class="nr">1</span>;</pre>
+          </div>
+
+          <div class="card">
+            <div class="card-title">Ordenar arrays</div>
+            <pre><span class="cm">// Por fecha descendente (más reciente primero)</span>
+[...<span class="kw">this</span>.polizas].<span class="fn">sort</span>((a, b) => <span class="kw">new</span> <span class="fn">Date</span>(b.fecha) - <span class="kw">new</span> <span class="fn">Date</span>(a.fecha));
+
+<span class="cm">// Por número ascendente</span>
+[...<span class="kw">this</span>.polizas].<span class="fn">sort</span>((a, b) => a.id - b.id);
+
+<span class="cm">// Por nombre alfabético</span>
+[...<span class="kw">this</span>.clientes].<span class="fn">sort</span>((a, b) => a.nombre.<span class="fn">localeCompare</span>(b.nombre));
+
+<span class="cm">// ⚠️ El [...array] crea una copia para no modificar el original</span></pre>
+          </div>
+
+          <div class="card">
+            <div class="card-title">
+              Computed con filtro + orden (pólizas generales)
+            </div>
+            <pre>computed: {
+  <span class="fn">polizasFiltradas</span>() {
+    <span class="cm">// 1. Copia y ordena por fecha descendente</span>
+    <span class="kw">let</span> lista = [...<span class="kw">this</span>.polizas].<span class="fn">sort</span>(
+      (a, b) => <span class="kw">new</span> <span class="fn">Date</span>(b.fecha) - <span class="kw">new</span> <span class="fn">Date</span>(a.fecha)
+    );
+    <span class="cm">// 2. Filtra por estado si hay alguno seleccionado</span>
+    <span class="kw">if</span> (<span class="kw">this</span>.filtroEstado) {
+      lista = lista.<span class="fn">filter</span>(p => p.estado === <span class="kw">this</span>.filtroEstado);
+    }
+    <span class="kw">return</span> lista;
+  },
+
+  <span class="cm">// Nombre completo del cliente de una póliza</span>
+  <span class="cm">// (para mostrarlo en la tabla general de pólizas)</span>
+  <span class="fn">nombreCliente</span>() { <span class="cm">/* no va en computed, va en methods: */</span> }
+},
+
+methods: {
+  <span class="fn">nombreCliente</span>(id) {
+    <span class="kw">const</span> c = <span class="kw">this</span>.clientes.<span class="fn">find</span>(c => c.id === id);
+    <span class="kw">return</span> c ? `${c.nombre} ${c.apellidos}` : <span class="st">'Desconocido'</span>;
+  }
+}</pre>
+          </div>
+
+          <div class="card">
+            <div class="card-title">Mensaje de éxito temporal</div>
+            <pre><span class="cm">// En methods:</span>
+<span class="fn">ok</span>(msg) {
+  <span class="kw">this</span>.mensajeOk = msg;
+  <span class="fn">setTimeout</span>(() => <span class="kw">this</span>.mensajeOk = <span class="st">''</span>, <span class="nr">3000</span>);  <span class="cm">// 3 segundos</span>
+}
+
+<span class="cm">// En el HTML (ponlo al inicio del container-fluid):</span>
+<span class="at">&lt;div</span> <span class="fn">v-if</span>=<span class="st">"mensajeOk"</span> class=<span class="st">"alert alert-success"</span><span class="at">&gt;</span>{{ mensajeOk }}<span class="at">&lt;/div&gt;</span></pre>
+          </div>
+        </section>
+
+        <!-- ─── CHECKLIST ─── -->
+        <section class="section" id="sec-checklist">
+          <div class="page-title">Checklist del examen</div>
+          <div class="page-subtitle">
+            Marca lo que vas completando. Se guarda en esta sesión.
+          </div>
+
+          <div id="progress-area" style="margin-bottom: 20px">
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                font-size: 12px;
+                color: var(--muted);
+                margin-bottom: 4px;
+              "
+            >
+              <span>Progreso</span>
+              <span id="progress-txt">0 / 0</span>
+            </div>
+            <div class="progress-bar-bg">
+              <div
+                class="progress-bar-fill"
+                id="progress-fill"
+                style="width: 0%"
+              ></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">📖 Al leer el enunciado</div>
+            <ul class="checklist" id="list-lectura">
+              <li>
+                <div class="check-box" onclick="toggleCheck(this)"></div>
+                <div class="check-text">
+                  ¿Hay login? → Prepara tabla
+                  <code class="inline">usuarios</code> y método
+                  <code class="inline">hacerLogin</code>
+                  <div class="check-desc">
+                    Si no hay login,
+                    <code class="inline">usuarioLogueado</code> no es necesario
+                  </div>
+                </div>
+              </li>
+              <li>
+                <div class="check-box" onclick="toggleCheck(this)"></div>
+                <div class="check-text">
+                  ¿Cuál es la entidad principal? (clientes, productos,
+                  empleados...)
+                  <div class="check-desc">
+                    Crea su array y su objeto formulario fX en data
+                  </div>
+                </div>
+              </li>
+              <li>
+                <div class="check-box" onclick="toggleCheck(this)"></div>
+                <div class="check-text">
+                  ¿Tiene sub-entidades? (pólizas, pedidos, líneas de pedido...)
+                  <div class="check-desc">
+                    Crea su array con clienteId (o la FK que corresponda)
+                  </div>
+                </div>
+              </li>
+              <li>
+                <div class="check-box" onclick="toggleCheck(this)"></div>
+                <div class="check-text">
+                  ¿Las sub-entidades tienen estados con colores?
+                  <div class="check-desc">
+                    Prepara colorFila() y badgeEstado() con los estados del
+                    enunciado
+                  </div>
+                </div>
+              </li>
+              <li>
+                <div class="check-box" onclick="toggleCheck(this)"></div>
+                <div class="check-text">
+                  ¿Hay cuotas/pagos?
+                  <div class="check-desc">
+                    Array pagos con polizaId, computed totalPagado y restante
+                  </div>
+                </div>
+              </li>
+              <li>
+                <div class="check-box" onclick="toggleCheck(this)"></div>
+                <div class="check-text">
+                  ¿Hay pantalla de listado general de sub-entidades?
+                  <div class="check-desc">
+                    Computed polizasFiltradas con sort() por fecha desc y filtro
+                    de estado
+                  </div>
+                </div>
+              </li>
+              <li>
+                <div class="check-box" onclick="toggleCheck(this)"></div>
+                <div class="check-text">
+                  ¿Hay informes con filtros?
+                  <div class="check-desc">
+                    Variables de filtro en data y método generarInforme() que
+                    devuelve resultados
+                  </div>
+                </div>
+              </li>
+            </ul>
+          </div>
+
+          <div class="card">
+            <div class="card-title">🏗️ Al construir</div>
+            <ul class="checklist" id="list-build">
+              <li>
+                <div class="check-box" onclick="toggleCheck(this)"></div>
+                <div class="check-text">
+                  Plantilla HTML base pegada y verificada en el navegador (sin
+                  errores en consola)
+                </div>
+              </li>
+              <li>
+                <div class="check-box" onclick="toggleCheck(this)"></div>
+                <div class="check-text">
+                  <code class="inline">data</code> completo con arrays de
+                  ejemplo y objetos de formulario
+                </div>
+              </li>
+              <li>
+                <div class="check-box" onclick="toggleCheck(this)"></div>
+                <div class="check-text">Login funciona (si lo piden)</div>
+              </li>
+              <li>
+                <div class="check-box" onclick="toggleCheck(this)"></div>
+                <div class="check-text">
+                  Navbar navega entre pantallas correctamente
+                </div>
+              </li>
+              <li>
+                <div class="check-box" onclick="toggleCheck(this)"></div>
+                <div class="check-text">
+                  Tabla principal con <code class="inline">v-for</code> sobre
+                  computed filtrado
+                </div>
+              </li>
+              <li>
+                <div class="check-box" onclick="toggleCheck(this)"></div>
+                <div class="check-text">
+                  Buscador reactivo (escribe y filtra automáticamente)
+                </div>
+              </li>
+              <li>
+                <div class="check-box" onclick="toggleCheck(this)"></div>
+                <div class="check-text">
+                  Modal CRUD: Nuevo funciona (crea con nuevo ID)
+                </div>
+              </li>
+              <li>
+                <div class="check-box" onclick="toggleCheck(this)"></div>
+                <div class="check-text">
+                  Modal CRUD: Editar funciona (modifica el registro correcto)
+                </div>
+              </li>
+              <li>
+                <div class="check-box" onclick="toggleCheck(this)"></div>
+                <div class="check-text">
+                  Eliminar pide confirmación y borra correctamente
+                </div>
+              </li>
+              <li>
+                <div class="check-box" onclick="toggleCheck(this)"></div>
+                <div class="check-text">
+                  Pantalla detalle muestra datos del registro y sus
+                  sub-entidades
+                </div>
+              </li>
+              <li>
+                <div class="check-box" onclick="toggleCheck(this)"></div>
+                <div class="check-text">
+                  CRUD de sub-entidades (alta, edición, baja)
+                </div>
+              </li>
+              <li>
+                <div class="check-box" onclick="toggleCheck(this)"></div>
+                <div class="check-text">
+                  Colores de fila y badges por estado
+                </div>
+              </li>
+              <li>
+                <div class="check-box" onclick="toggleCheck(this)"></div>
+                <div class="check-text">
+                  Pagos: totalPagado y restante calculados y mostrados
+                </div>
+              </li>
+              <li>
+                <div class="check-box" onclick="toggleCheck(this)"></div>
+                <div class="check-text">
+                  Pagos: validación de importe (no superar restante)
+                </div>
+              </li>
+              <li>
+                <div class="check-box" onclick="toggleCheck(this)"></div>
+                <div class="check-text">
+                  Listado general de sub-entidades ordenado y filtrable
+                </div>
+              </li>
+            </ul>
+          </div>
+
+          <div class="card">
+            <div class="card-title">
+              ✅ Verificación final antes de entregar
+            </div>
+            <ul class="checklist" id="list-final">
+              <li>
+                <div class="check-box" onclick="toggleCheck(this)"></div>
+                <div class="check-text">
+                  Abrir el fichero desde cero en el navegador — ¿carga sin
+                  errores?
+                </div>
+              </li>
+              <li>
+                <div class="check-box" onclick="toggleCheck(this)"></div>
+                <div class="check-text">
+                  Consola del navegador (F12) sin errores en rojo
+                </div>
+              </li>
+              <li>
+                <div class="check-box" onclick="toggleCheck(this)"></div>
+                <div class="check-text">
+                  Probar login con credenciales incorrectas → muestra error
+                </div>
+              </li>
+              <li>
+                <div class="check-box" onclick="toggleCheck(this)"></div>
+                <div class="check-text">
+                  Crear un registro nuevo, que aparezca en la tabla
+                </div>
+              </li>
+              <li>
+                <div class="check-box" onclick="toggleCheck(this)"></div>
+                <div class="check-text">
+                  Editar un registro, que se actualice correctamente
+                </div>
+              </li>
+              <li>
+                <div class="check-box" onclick="toggleCheck(this)"></div>
+                <div class="check-text">
+                  Buscar algo en el buscador, que filtre
+                </div>
+              </li>
+              <li>
+                <div class="check-box" onclick="toggleCheck(this)"></div>
+                <div class="check-text">
+                  Ver el detalle de un registro y sus sub-entidades
+                </div>
+              </li>
+              <li>
+                <div class="check-box" onclick="toggleCheck(this)"></div>
+                <div class="check-text">
+                  Colores de estado se muestran correctamente
+                </div>
+              </li>
+            </ul>
+          </div>
+
+          <div
+            style="
+              display: flex;
+              gap: 12px;
+              margin-top: 16px;
+              justify-content: flex-end;
+            "
+          >
+            <button
+              onclick="resetAll()"
+              style="
+                padding: 8px 20px;
+                border-radius: 8px;
+                border: 1px solid var(--border2);
+                background: none;
+                color: var(--muted);
+                cursor: pointer;
+                font-size: 13px;
+              "
+            >
+              Reiniciar checklist
+            </button>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script>
+      // ─── NAVEGACIÓN SIDEBAR ───
+      function show(id) {
+        document
+          .querySelectorAll(".section")
+          .forEach((s) => s.classList.remove("active"));
+        document
+          .querySelectorAll(".sidebar-btn")
+          .forEach((b) => b.classList.remove("active"));
+        document.getElementById("sec-" + id).classList.add("active");
+        event.currentTarget.classList.add("active");
+      }
+
+      // ─── TABS ───
+      function showTab(group, id) {
+        const buttons =
+          event.currentTarget.parentElement.querySelectorAll(".tab-btn");
+        buttons.forEach((b) => b.classList.remove("active"));
+        event.currentTarget.classList.add("active");
+
+        const allContents = document.querySelectorAll(`[id^="${group}-"]`);
+        allContents.forEach((c) => c.classList.remove("active"));
+        document.getElementById(`${group}-${id}`).classList.add("active");
+      }
+
+      // ─── COPIAR CÓDIGO ───
+      function copyCode(id, btn) {
+        const pre = document.getElementById("code-" + id);
+        const text = pre.innerText;
+        navigator.clipboard.writeText(text).then(() => {
+          btn.textContent = "✓ Copiado";
+          btn.classList.add("copied");
+          setTimeout(() => {
+            btn.textContent = "Copiar";
+            btn.classList.remove("copied");
+          }, 2000);
+        });
+      }
+
+      // ─── CHECKLIST ───
+      function toggleCheck(box) {
+        box.classList.toggle("done");
+        if (box.classList.contains("done")) {
+          box.textContent = "✓";
+          box.nextElementSibling.classList.add("done");
+        } else {
+          box.textContent = "";
+          box.nextElementSibling.classList.remove("done");
+        }
+        updateProgress();
+      }
+
+      function updateProgress() {
+        const all = document.querySelectorAll(".check-box");
+        const done = document.querySelectorAll(".check-box.done");
+        const pct = all.length > 0 ? (done.length / all.length) * 100 : 0;
+        document.getElementById("progress-fill").style.width = pct + "%";
+        document.getElementById("progress-txt").textContent =
+          `${done.length} / ${all.length}`;
+      }
+
+      function resetAll() {
+        document.querySelectorAll(".check-box").forEach((b) => {
+          b.classList.remove("done");
+          b.textContent = "";
+          b.nextElementSibling.classList.remove("done");
+        });
+        updateProgress();
+      }
+
+      // Inicializar progreso
+      updateProgress();
+    </script>
+  </body>
+</html>

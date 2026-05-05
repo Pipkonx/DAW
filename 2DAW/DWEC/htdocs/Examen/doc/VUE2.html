@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MASTER VUE 2: Guía de Escenarios (HTML + JS Separados)</title>
+    
+    <!-- LIBRERÍAS (Asegúrate de tenerlas locales si no hay internet) -->
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        :root { --primary: #4f46e5; --bg: #f1f5f9; --dark: #0f172a; --code-bg: #1e293b; --warn: #f59e0b; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Outfit', sans-serif; }
+        body { background-color: var(--bg); color: #1e293b; line-height: 1.5; padding-bottom: 5rem; }
+
+        nav.module-nav { background: var(--dark); padding: 1.5rem; position: sticky; top: 0; z-index: 1000; border-bottom: 5px solid var(--primary); display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center; }
+        .nav-btn { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 0.6rem 1.2rem; cursor: pointer; border-radius: 2rem; font-weight: 600; transition: 0.3s; text-decoration: none; }
+        .nav-btn:hover { background: var(--primary); }
+
+        .container { max-width: 1100px; margin: 2rem auto; padding: 0 1rem; }
+
+        .module-section { background: white; border-radius: 1.5rem; padding: 2.5rem; margin-bottom: 4rem; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; }
+        h2 { font-size: 2.2rem; color: var(--dark); margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.8rem; border-bottom: 4px solid var(--bg); padding-bottom: 0.5rem; }
+        
+        .file-header { background: #f8fafc; padding: 1rem; border-radius: 0.5rem 0.5rem 0 0; border: 1px solid #e2e8f0; border-bottom: none; display: flex; align-items: center; gap: 0.5rem; margin-top: 2rem; }
+        .file-header span { font-weight: 700; color: var(--primary); font-family: monospace; }
+        
+        .code-container { background: var(--code-bg); color: #e2e8f0; padding: 1.5rem; border-radius: 0 0 1rem 1rem; font-family: 'Consolas', monospace; font-size: 0.85rem; overflow-x: auto; margin-bottom: 2rem; border: 1px solid #e2e8f0; }
+        .comment { color: #64748b; font-style: italic; }
+
+        .tip-box { background: #fffbeb; border-left: 5px solid var(--warn); padding: 1.5rem; border-radius: 0.5rem; margin: 1.5rem 0; }
+        .tip-box h4 { color: #92400e; margin-bottom: 0.5rem; }
+        
+        .step-tag { background: var(--primary); color: white; padding: 0.2rem 0.6rem; border-radius: 0.4rem; font-size: 0.75rem; font-weight: 700; margin-bottom: 0.5rem; display: inline-block; }
+    </style>
+</head>
+<body>
+
+    <nav class="module-nav">
+        <a href="#escenario1" class="nav-btn">Escenario 1: CRUD Simple</a>
+        <a href="#escenario2" class="nav-btn">Escenario 2: CRUD Relacional</a>
+        <a href="#escenario3" class="nav-btn">Escenario 3: Login y Registro</a>
+    </nav>
+
+    <div class="container">
+
+        <!-- BLOQUE DE ORO: UTF-8 -->
+        <div class="tip-box">
+            <h4><i class="fas fa-exclamation-triangle"></i> IMPORTANTE: Separación de Lógica</h4>
+            <p>En esta guía, el código <b>JavaScript</b> está en un archivo separado llamado <code>script.js</code>. Asegúrate de vincularlo en tu <code>index.html</code> antes de cerrar el <code>&lt;/body&gt;</code>.</p>
+        </div>
+
+        <!-- ESCENARIO 1: CRUD SIMPLE -->
+        <section id="escenario1" class="module-section">
+            <h2><i class="fas fa-list"></i> ESCENARIO 1: CRUD Simple (HTML + JS)</h2>
+            
+            <div class="file-header">Archivo: <span>index.html</span></div>
+            <div class="code-container">
+                <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="es"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"&gt;&lt;/script&gt;
+    &lt;script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"&gt;&lt;/script&gt;
+    &lt;link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;div id="app" class="container"&gt;
+        &lt;h1&gt;Frutería Simple&lt;/h1&gt;
+        &lt;div class="well"&gt;
+            &lt;input v-model="form.nombre" placeholder="Nombre"&gt;
+            &lt;button @click="guardar"&gt;{{ editando ? 'Actualizar' : 'Guardar' }}&lt;/button&gt;
+        &lt;/div&gt;
+        &lt;table class="table"&gt;
+            &lt;tr v-for="p in lista"&gt;
+                &lt;td&gt;{{ p.nombre }}&lt;/td&gt;
+                &lt;td&gt;&lt;button @click="preparar(p)"&gt;E&lt;/button&gt;&lt;/td&gt;
+                &lt;td&gt;&lt;button @click="borrar(p.id)"&gt;X&lt;/button&gt;&lt;/td&gt;
+            &lt;/tr&gt;
+        &lt;/table&gt;
+    &lt;/div&gt;
+    <span class="comment">&lt;!-- VINCULAMOS EL JS EXTERNO --&gt;</span>
+    &lt;script src="script.js"&gt;&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+            </div>
+
+            <div class="file-header">Archivo: <span>script.js</span></div>
+            <div class="code-container">
+                <pre><code>new Vue({
+    el: '#app',
+    data: { lista: [], form: { id: null, nombre: '' }, editando: false },
+    mounted() { this.listar(); },
+    methods: {
+        async listar() { const res = await axios.get('api.php'); this.lista = res.data; },
+        preparar(p) { this.form = { ...p }; this.editando = true; },
+        async guardar() {
+            if(this.editando) { await axios.put('api.php?id=' + this.form.id, this.form); }
+            else { await axios.post('api.php', this.form); }
+            this.editando = false; this.form = { id: null, nombre: '' };
+            this.listar();
+        },
+        async borrar(id) { await axios.delete('api.php?id=' + id); this.listar(); }
+    }
+});</code></pre>
+            </div>
+        </section>
+
+        <!-- ESCENARIO 2: CRUD RELACIONAL -->
+        <section id="escenario2" class="module-section">
+<h2><i class="fas fa-project-diagram"></i> ESCENARIO 2: CRUD Relacional (Completo y Comentado)</h2>
+<p>Este escenario contiene todos los archivos necesarios para un CRUD completo con Maestro-Detalle, perfectamente documentados paso a paso.</p>
+
+<div class="file-header">Archivo: <span>conexion.php</span> (Conexión a MySQL)</div>
+<div class="code-container"><pre><code>&lt;?php
+// Parámetros de conexión al servidor MySQL
+$host = &quot;localhost&quot;; // Donde está el servidor MySQL (localhost es nuestro propio ordenador en XAMPP)
+$db = &quot;fruteria_db&quot;; // Nombre exacto de la base de datos que creaste en phpMyAdmin
+$user = &quot;root&quot;;      // Usuario por defecto en XAMPP
+$pass = &quot;&quot;;          // Contraseña por defecto en XAMPP suele estar vacía
+
+// try...catch se usa para &quot;intentar&quot; hacer algo que puede fallar. Si falla la conexión, en vez de que la página
+// explote con un error feo de servidor, el error &quot;cae&quot; en el bloque catch y podemos controlarlo.
+try {
+    // PDO (PHP Data Objects) es la forma recomendada, moderna y segura de conectar PHP con cualquier base de datos.
+    // charset=utf8 evita que las ñ o los acentos que viajen entre PHP y MySQL salgan con símbolos raros.
+    $pdo = new PDO(&quot;mysql:host=$host;dbname=$db;charset=utf8&quot;, $user, $pass);
+    
+    // Configura PDO para que, si alguna consulta SQL sale mal (ej: falta una coma), PHP lance un &quot;error grave&quot; (Excepción) en vez de callarse.
+    $pdo-&gt;setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    
+    // Configura PDO para que SIEMPRE devuelva los resultados de la base de datos como un &quot;Array Asociativo&quot;
+    // Un Array Asociativo significa que sacas los datos así: $fila[&#039;nombre&#039;]
+    // Esto es vital porque los arrays asociativos son los más fáciles de convertir en JSON.
+    $pdo-&gt;setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+
+} catch (Exception $e) { 
+    // Si falla la conexión (ej: no has encendido MySQL en XAMPP o está mal la contraseña), 
+    // el código se mata (die) y escupe un mensaje en JSON para que Axios sepa que hubo un fallo.
+    die(json_encode([&#039;error&#039; =&gt; $e-&gt;getMessage()])); 
+}
+?&gt;</code></pre></div>
+
+<div class="file-header">Archivo: <span>api.php</span> (Controlador de peticiones)</div>
+<div class="code-container"><pre><code>&lt;?php
+// require incluye la conexión a la base de datos para que la variable $pdo de conexion.php esté disponible aquí
+require &#039;conexion.php&#039;;
+
+// $_SERVER[&#039;REQUEST_METHOD&#039;] detecta con qué verbo HTTP nos ha llamado Axios (GET, POST, PUT, DELETE)
+$method = $_SERVER[&#039;REQUEST_METHOD&#039;];
+
+// $_GET[&#039;accion&#039;] saca el valor de la URL (ej: api.php?accion=categorias).
+// El &quot;??&quot; significa: &quot;Si no mandan ninguna acción por la URL, ponle valor vacío &#039;&#039;&quot;
+$accion = $_GET[&#039;accion&#039;] ?? &#039;&#039;;
+
+// json_decode: Cuando Axios hace un POST o un PUT, envía los datos del formulario (formP) escondidos en el &quot;cuerpo&quot; de la petición.
+// php://input lee ese cuerpo tal cual llega (en formato JSON), y json_decode lo convierte en un array de PHP ($input) para que podamos sacar los datos como $input[&#039;nombre&#039;].
+$input = json_decode(file_get_contents(&#039;php://input&#039;), true);
+
+if ($accion === &#039;categorias&#039;) {
+    if ($method === &#039;GET&#039;) {
+        // $pdo-&gt;query ejecuta un SQL directo. Se usa solo cuando no hay variables mezcladas (es decir, no hay riesgo de inyección SQL)
+        $stmt = $pdo-&gt;query(&quot;SELECT * FROM categorias&quot;);
+        
+        // fetchAll() transforma las filas de la base de datos en un array de PHP.
+        // json_encode() coge ese array y lo convierte a formato texto (JSON) que es lo que entiende Axios.
+        echo json_encode($stmt-&gt;fetchAll());
+    }
+} elseif ($accion === &#039;productos&#039;) {
+    if ($method === &#039;GET&#039;) {
+        $cat_id = $_GET[&#039;cat_id&#039;] ?? 0;
+        // prepare() se usa por SEGURIDAD. Cuando usamos variables que vienen del usuario, ponemos un &quot;?&quot; en lugar de concatenar la variable.
+        $stmt = $pdo-&gt;prepare(&quot;SELECT * FROM productos WHERE categoria_id = ?&quot;);
+        // execute() cambia ese &quot;?&quot; por el valor real de forma segura, evitando que un hacker haga &quot;SQL Injection&quot;
+        $stmt-&gt;execute([$cat_id]);
+        echo json_encode($stmt-&gt;fetchAll());
+        
+    } elseif ($method === &#039;POST&#039;) {
+        $cat_id = $_GET[&#039;cat_id&#039;] ?? 0;
+        // INSERT para crear un nuevo producto. Tiene tres &quot;?&quot;, así que execute necesita recibir un array con 3 variables.
+        $stmt = $pdo-&gt;prepare(&quot;INSERT INTO productos (categoria_id, nombre, precio) VALUES (?, ?, ?)&quot;);
+        $stmt-&gt;execute([$cat_id, $input[&#039;nombre&#039;], $input[&#039;precio&#039;] ?? 0]);
+        // Si todo va bien, le decimos a Axios &quot;ok, creado con éxito&quot;.
+        echo json_encode([&#039;success&#039; =&gt; true]);
+        
+    } elseif ($method === &#039;PUT&#039;) {
+        $id = $_GET[&#039;id&#039;] ?? 0;
+        // UPDATE para editar un producto existente basado en su ID.
+        $stmt = $pdo-&gt;prepare(&quot;UPDATE productos SET nombre = ?, precio = ? WHERE id = ?&quot;);
+        $stmt-&gt;execute([$input[&#039;nombre&#039;], $input[&#039;precio&#039;] ?? 0, $id]);
+        echo json_encode([&#039;success&#039; =&gt; true]);
+        
+    } elseif ($method === &#039;DELETE&#039;) {
+        $id = $_GET[&#039;id&#039;] ?? 0;
+        // DELETE para borrar. Solo necesita la ID por la URL.
+        $stmt = $pdo-&gt;prepare(&quot;DELETE FROM productos WHERE id = ?&quot;);
+        $stmt-&gt;execute([$id]);
+        echo json_encode([&#039;success&#039; =&gt; true]);
+    }
+} else {
+    // Si no hay ?accion= (Escenario 1 de la guía, un CRUD sin categorías) funciona exactamente igual.
+    if ($method === &#039;GET&#039;) {
+        $stmt = $pdo-&gt;query(&quot;SELECT * FROM productos&quot;);
+        echo json_encode($stmt-&gt;fetchAll());
+    } elseif ($method === &#039;POST&#039;) {
+        $stmt = $pdo-&gt;prepare(&quot;INSERT INTO productos (nombre, precio) VALUES (?, ?)&quot;);
+        $stmt-&gt;execute([$input[&#039;nombre&#039;], $input[&#039;precio&#039;] ?? 0]);
+        echo json_encode([&#039;success&#039; =&gt; true]);
+    } elseif ($method === &#039;PUT&#039;) {
+        $id = $_GET[&#039;id&#039;] ?? 0;
+        $stmt = $pdo-&gt;prepare(&quot;UPDATE productos SET nombre = ?, precio = ? WHERE id = ?&quot;);
+        $stmt-&gt;execute([$input[&#039;nombre&#039;], $input[&#039;precio&#039;] ?? 0, $id]);
+        echo json_encode([&#039;success&#039; =&gt; true]);
+    } elseif ($method === &#039;DELETE&#039;) {
+        $id = $_GET[&#039;id&#039;] ?? 0;
+        $stmt = $pdo-&gt;prepare(&quot;DELETE FROM productos WHERE id = ?&quot;);
+        $stmt-&gt;execute([$id]);
+        echo json_encode([&#039;success&#039; =&gt; true]);
+    }
+}
+?&gt;
+</code></pre></div>
+
+<div class="file-header">Archivo: <span>index.html</span> (Vista Vue)</div>
+<div class="code-container"><pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;es&quot;&gt;
+&lt;head&gt;
+    &lt;meta charset=&quot;UTF-8&quot;&gt;
+    &lt;title&gt;Frutería Relacional&lt;/title&gt;
+    &lt;!-- VUE 2: Librería principal que permite usar variables y directivas en el HTML --&gt;
+    &lt;script src=&quot;https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js&quot;&gt;&lt;/script&gt;
+    &lt;!-- AXIOS: Librería para hacer peticiones (GET, POST, etc.) a nuestro api.php de forma asíncrona --&gt;
+    &lt;script src=&quot;https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js&quot;&gt;&lt;/script&gt;
+    &lt;!-- BOOTSTRAP: Librería CSS externa para que los botones y tablas se vean profesionales automáticamente --&gt;
+    &lt;link rel=&quot;stylesheet&quot; href=&quot;https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css&quot;&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;!-- id=&quot;app&quot;: Es el &quot;recinto&quot; donde Vue tiene el control. Lo que esté fuera de este div, Vue lo ignorará. --&gt;
+    &lt;div id=&quot;app&quot; class=&quot;container&quot; style=&quot;margin-top:20px&quot;&gt;
+        &lt;div class=&quot;row&quot;&gt;
+            &lt;div class=&quot;col-md-6&quot;&gt;
+                &lt;h3&gt;Categorías&lt;/h3&gt;
+                &lt;table class=&quot;table table-hover&quot;&gt;
+                    &lt;!-- v-for=&quot;c in categorias&quot;: Repite esta fila (&lt;tr&gt;) por cada categoría existente en el array &#039;categorias&#039; de script.js --&gt;
+                    &lt;!-- @click=&quot;seleccionarCat(c)&quot;: Cuando el usuario hace clic aquí, llama a la función pasándole la categoría actual --&gt;
+                    &lt;!-- :style=&quot;...&quot;: Los dos puntos (:) delante indican que el estilo es dinámico (evalúa código JavaScript). 
+                         Aquí dice: Si hemos seleccionado una categoría (catSel) Y su ID coincide con esta fila (c.id), 
+                         pon el fondo gris oscuro (&#039;background:#eee&#039;), si no, no pongas nada (&#039;&#039;) --&gt;
+                    &lt;tr v-for=&quot;c in categorias&quot; @click=&quot;seleccionarCat(c)&quot; :style=&quot;catSel &amp;&amp; catSel.id==c.id ? &#039;background:#eee&#039; : &#039;&#039;&quot; style=&quot;cursor:pointer&quot;&gt;
+                        &lt;!-- {{ c.nombre }}: Las dobles llaves sirven para &quot;imprimir&quot; variables de Vue directamente en el texto del HTML --&gt;
+                        &lt;td&gt;{{ c.nombre }}&lt;/td&gt;
+                    &lt;/tr&gt;
+                &lt;/table&gt;
+            &lt;/div&gt;
+            
+            &lt;!-- v-if=&quot;catSel&quot;: Este bloque entero &lt;div&gt; SÓLO aparecerá en pantalla si la variable &#039;catSel&#039; tiene datos 
+                 (es decir, si el usuario ya ha hecho clic en alguna categoría). Si es null, Vue lo oculta por completo. --&gt;
+            &lt;div class=&quot;col-md-6&quot; v-if=&quot;catSel&quot;&gt;
+                &lt;!-- Usamos las llaves dobles de nuevo para poner el nombre de la categoría en el título --&gt;
+                &lt;h3&gt;Productos en {{ catSel.nombre }}&lt;/h3&gt;
+                
+                &lt;div class=&quot;well&quot;&gt;
+                    &lt;!-- v-model=&quot;formP.nombre&quot;: Magia pura de Vue. Vincula este &lt;input&gt; de forma bidireccional con formP.nombre. 
+                         Si el usuario escribe, la variable cambia sola en script.js. Si la variable cambia en script.js, el input se actualiza. --&gt;
+                    &lt;input v-model=&quot;formP.nombre&quot; class=&quot;form-control&quot; placeholder=&quot;Nombre del producto&quot;&gt;
+                    
+                    &lt;input v-model=&quot;formP.precio&quot; type=&quot;number&quot; step=&quot;0.01&quot; class=&quot;form-control&quot; style=&quot;margin-top:10px&quot;&gt;
+                    
+                    &lt;!-- @click llama a la función guardarP --&gt;
+                    &lt;button @click=&quot;guardarP&quot; class=&quot;btn btn-success&quot; style=&quot;margin-top:10px&quot;&gt;
+                        &lt;!-- {{ condicion ? &#039;si se cumple&#039; : &#039;si no se cumple&#039; }}: Esto se llama operador ternario. 
+                             Evalúa si estamos editando para mostrar la palabra &quot;Actualizar&quot;, si es nuevo muestra &quot;Añadir&quot;. --&gt;
+                        {{ editandoP ? &#039;Actualizar Producto&#039; : &#039;Añadir Producto&#039; }}
+                    &lt;/button&gt;
+                    
+                    &lt;!-- Este botón de Cancelar solo se dibuja (v-if) si estamos en modo edición (editandoP === true) --&gt;
+                    &lt;button v-if=&quot;editandoP&quot; @click=&quot;cancelarP&quot; class=&quot;btn btn-default&quot; style=&quot;margin-top:10px; margin-left:5px&quot;&gt;Cancelar&lt;/button&gt;
+                &lt;/div&gt;
+
+                &lt;table class=&quot;table&quot;&gt;
+                    &lt;thead&gt;&lt;tr&gt;&lt;th&gt;Producto&lt;/th&gt;&lt;th&gt;Precio&lt;/th&gt;&lt;th&gt;Acción&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;
+                    &lt;tbody&gt;
+                        &lt;!-- Bucle v-for para imprimir todos los productos que nos llegó del servidor --&gt;
+                        &lt;tr v-for=&quot;p in productos&quot;&gt;
+                            &lt;td&gt;{{ p.nombre }}&lt;/td&gt;
+                            &lt;td&gt;{{ p.precio }} €&lt;/td&gt;
+                            &lt;td&gt;
+                                &lt;!-- Le pasamos el objeto completo (p) a la función para cargar sus datos en el formulario --&gt;
+                                &lt;button @click=&quot;prepararP(p)&quot; class=&quot;btn btn-warning btn-xs&quot;&gt;Editar&lt;/button&gt;
+                                &lt;!-- Para borrar, solo necesitamos enviar su ID (p.id) a la función --&gt;
+                                &lt;button @click=&quot;borrarP(p.id)&quot; class=&quot;btn btn-danger btn-xs&quot;&gt;X&lt;/button&gt;
+                            &lt;/td&gt;
+                        &lt;/tr&gt;
+                    &lt;/tbody&gt;
+                &lt;/table&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;!-- Carga nuestra lógica JavaScript. SIEMPRE debe ir al final, justo antes del &lt;/body&gt; --&gt;
+    &lt;script src=&quot;script.js&quot;&gt;&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre></div>
+
+<div class="file-header">Archivo: <span>script.js</span> (Lógica Vue y Axios)</div>
+<div class="code-container"><pre><code>new Vue({
+    // el (element): Le dice a Vue qué parte del HTML va a &quot;vigilar&quot; y controlar (el &lt;div&gt; con id=&quot;app&quot;)
+    el: &quot;#app&quot;,
+    
+    // data: El almacén de estado. Aquí declaramos TODAS las variables que usaremos en el HTML (con v-model, {{ }}, v-if)
+    data: {
+        categorias: [], // Array que rellenaremos con las categorías que mande PHP
+        productos: [],  // Array que rellenaremos con los productos que mande PHP
+        catSel: null,   // Guardará la categoría seleccionada por el usuario al hacer clic en la tabla
+        // formP: Objeto que almacena lo que el usuario escribe en los inputs. Su &#039;id&#039; será null si estamos creando algo nuevo
+        formP: { id: null, nombre: &quot;&quot;, precio: 0 }, 
+        editandoP: false // Bandera para saber en qué modo estamos: false = Creando, true = Editando
+    },
+    
+    // mounted(): Función de ciclo de vida. Se ejecuta AUTOMÁTICAMENTE una vez cuando se carga la página por primera vez
+    mounted() {
+        this.listarCats(); // Arrancamos pidiendo las categorías a la BD nada más entrar
+    },
+    
+    // methods: El cajón de las funciones. Todo lo que pongas en los @click del HTML debe existir aquí dentro.
+    methods: {
+        async listarCats() {
+            // axios.get: Pide datos al servidor (api.php) de fondo, sin recargar la página web.
+            // await: Le dice a JS &quot;párate y espera a que el servidor conteste&quot; antes de seguir a la línea de abajo.
+            const r = await axios.get(&quot;api.php?accion=categorias&quot;);
+            this.categorias = r.data; // Guardamos el JSON que nos manda PHP directamente en nuestra variable de Vue
+        },
+        
+        async seleccionarCat(c) {
+            this.catSel = c; // Guardamos en memoria la categoría (c) que el usuario acaba de hacer clic
+            this.cancelarP(); // Limpiamos el formulario (por si estaba editando algo de otra categoría)
+            this.listarProds(); // Pedimos a PHP los productos pertenecientes a esta categoría
+        },
+        
+        async listarProds() {
+            // Hacemos una petición GET a api.php y le mandamos pegado en la URL el ID de la categoría (catSel.id)
+            const r = await axios.get(&quot;api.php?accion=productos&amp;cat_id=&quot; + this.catSel.id);
+            this.productos = r.data; // Actualizamos la tabla de productos
+        },
+        
+        prepararP(p) {
+            // El {...p} (Spread Operator) clona el producto seleccionado. Si no lo clonáramos, 
+            // como Vue es reactivo, al escribir en el input se cambiaría el nombre en la tabla ¡incluso antes de guardar!
+            this.formP = { ...p }; 
+            this.editandoP = true; // Cambiamos el semáforo a &quot;modo edición&quot;, así el botón dice &quot;Actualizar&quot; y sale el &quot;Cancelar&quot;
+        },
+        
+        cancelarP() {
+            // Limpia el formulario poniéndolo en blanco y quita el modo edición
+            this.formP = { id: null, nombre: &quot;&quot;, precio: 0 };
+            this.editandoP = false;
+        },
+        
+        async guardarP() {
+            // Comprobamos la bandera para saber qué operación hacer en la Base de Datos
+            if (this.editandoP) {
+                // PUT: Método HTTP usado por convención para ACTUALIZAR. Mandamos el ID por la URL, y el objeto (this.formP) va escondido en el cuerpo (body) de la petición.
+                await axios.put(&quot;api.php?accion=productos&amp;id=&quot; + this.formP.id, this.formP);
+            } else {
+                // POST: Método HTTP usado por convención para CREAR. Mandamos el cat_id en la URL y los datos en el body.
+                await axios.post(&quot;api.php?accion=productos&amp;cat_id=&quot; + this.catSel.id, this.formP);
+            }
+            this.cancelarP(); // Tras mandar los datos al servidor, limpiamos los campos de texto
+            this.listarProds(); // y recargamos la lista haciendo otra petición al servidor para ver los cambios actualizados
+        },
+        
+        async borrarP(id) {
+            // confirm() saca una ventanita de alerta nativa del navegador (Aceptar / Cancelar)
+            if (confirm(&#039;¿Borrar producto?&#039;)) {
+                // DELETE: Método HTTP para BORRAR. Le decimos a PHP qué ID concreto destruir.
+                await axios.delete(&quot;api.php?accion=productos&amp;id=&quot; + id);
+                this.listarProds(); // Refrescamos la lista para que desaparezca visualmente
+            }
+        },
+    },
+});
+</code></pre></div>
+
+</section>
+
+    </div>
+
+    <a href="#" class="back-to-top"><i class="fas fa-arrow-up"></i></a>
+
+</body>
+</html>

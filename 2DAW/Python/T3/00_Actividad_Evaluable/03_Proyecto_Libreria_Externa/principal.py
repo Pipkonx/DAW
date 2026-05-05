@@ -57,7 +57,7 @@ def iniciar_vigilante():
                 print("No se ha podido obtener el precio. Tienes que escribir bien el Ticker")
             
             # Esperamos un poco para no saturar la API , para cerrar tiene que darle control+c un par de veces
-            time.sleep(10)
+            time.sleep(60)
 
     except Exception:
         print("\n\nInterrupción por el usuario.")

@@ -1,0 +1,2199 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Guía Vue 2 + PHP — Examen</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap');
+
+    :root {
+      --bg: #0a0a0f;
+      --bg2: #12121a;
+      --bg3: #1a1a26;
+      --bg4: #20202e;
+      --border: rgba(255,255,255,0.07);
+      --border2: rgba(255,255,255,0.13);
+      --text: #ddddf0;
+      --muted: #7070a0;
+      --accent: #5d5aff;
+      --accent2: #9d9aff;
+      --green: #22c55e;
+      --green-bg: rgba(34,197,94,0.08);
+      --yellow: #f0c040;
+      --yellow-bg: rgba(240,192,64,0.08);
+      --red: #f05050;
+      --red-bg: rgba(240,80,80,0.08);
+      --blue: #3b82f6;
+      --blue-bg: rgba(59,130,246,0.08);
+      --orange: #f97316;
+      --orange-bg: rgba(249,115,22,0.08);
+      --cyan: #22d3ee;
+      --cyan-bg: rgba(34,211,238,0.08);
+      --pink: #e879f9;
+      --pink-bg: rgba(232,121,249,0.08);
+      --purple: #a855f7;
+      --purple-bg: rgba(168,85,247,0.08);
+    }
+
+    * { margin:0; padding:0; box-sizing:border-box; }
+
+    body {
+      font-family: 'IBM Plex Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      font-size: 13.5px;
+    }
+
+    .app { display:flex; min-height:100vh; }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      width: 250px;
+      min-width: 250px;
+      background: var(--bg2);
+      border-right: 1px solid var(--border);
+      padding: 0;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sidebar-logo {
+      padding: 18px 18px 16px;
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(135deg, rgba(93,90,255,0.15), rgba(34,211,238,0.05));
+    }
+
+    .sidebar-logo h1 {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--accent2);
+      letter-spacing: -0.3px;
+    }
+
+    .sidebar-logo p { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+    .sidebar-section {
+      padding: 12px 18px 4px;
+      font-size: 9.5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    .sidebar-btn {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      width: 100%;
+      padding: 7px 18px;
+      background: none;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 12.5px;
+      font-family: inherit;
+      text-align: left;
+      transition: all 0.12s;
+      border-left: 2px solid transparent;
+    }
+
+    .sidebar-btn:hover { color: var(--text); background: rgba(255,255,255,0.03); }
+
+    .sidebar-btn.active {
+      color: var(--accent2);
+      background: rgba(93,90,255,0.1);
+      border-left-color: var(--accent);
+    }
+
+    .sidebar-btn .dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    /* ── MAIN ── */
+    .main {
+      flex: 1;
+      padding: 36px 44px;
+      max-width: 940px;
+      min-width: 0;
+    }
+
+    .section { display: none; }
+    .section.active { display: block; }
+
+    /* ── TIPOGRAFÍA ── */
+    .page-title {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 6px;
+      letter-spacing: -0.6px;
+    }
+
+    .page-subtitle {
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 28px;
+    }
+
+    /* ── CARDS ── */
+    .card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 18px 20px;
+      margin-bottom: 16px;
+    }
+
+    .card-title {
+      font-size: 12.5px;
+      font-weight: 700;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text);
+    }
+
+    /* ── BADGES ── */
+    .badge {
+      font-size: 9.5px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 99px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .badge-green  { background: var(--green-bg);  color: var(--green);  }
+    .badge-yellow { background: var(--yellow-bg); color: var(--yellow); }
+    .badge-red    { background: var(--red-bg);    color: var(--red);    }
+    .badge-blue   { background: var(--blue-bg);   color: var(--blue);   }
+    .badge-orange { background: var(--orange-bg); color: var(--orange); }
+    .badge-cyan   { background: var(--cyan-bg);   color: var(--cyan);   }
+    .badge-pink   { background: var(--pink-bg);   color: var(--pink);   }
+    .badge-purple { background: var(--purple-bg); color: var(--purple); }
+
+    /* ── CÓDIGO ── */
+    pre, code {
+      font-family: 'IBM Plex Mono', 'Cascadia Code', 'Fira Code', monospace;
+      font-size: 12px;
+    }
+
+    pre {
+      background: #070710;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px 16px;
+      overflow-x: auto;
+      margin: 10px 0;
+      position: relative;
+      line-height: 1.7;
+    }
+
+    code.inline {
+      background: rgba(255,255,255,0.07);
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-size: 11.5px;
+      color: var(--accent2);
+    }
+
+    .copy-btn {
+      position: absolute;
+      top: 8px; right: 8px;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      padding: 3px 10px;
+      border-radius: 5px;
+      font-size: 10.5px;
+      cursor: pointer;
+      transition: all 0.12s;
+      font-family: inherit;
+    }
+    .copy-btn:hover { color: var(--text); border-color: var(--border2); }
+    .copy-btn.copied { color: var(--green); border-color: var(--green); }
+
+    /* Sintaxis */
+    .kw  { color: #c084fc; }
+    .fn  { color: #60a5fa; }
+    .st  { color: #34d399; }
+    .cm  { color: #3d3d5c; font-style: italic; }
+    .nr  { color: #fb923c; }
+    .at  { color: #f472b6; }
+    .ph  { color: #facc15; }
+
+    /* ── ALERTAS ── */
+    .alert {
+      border-radius: 8px;
+      padding: 11px 15px;
+      font-size: 12.5px;
+      margin-bottom: 14px;
+      border-left: 3px solid;
+      line-height: 1.6;
+    }
+    .alert-yellow { background: var(--yellow-bg); border-color: var(--yellow); color: #fde68a; }
+    .alert-green  { background: var(--green-bg);  border-color: var(--green);  color: #86efac; }
+    .alert-red    { background: var(--red-bg);    border-color: var(--red);    color: #fca5a5; }
+    .alert-blue   { background: var(--blue-bg);   border-color: var(--blue);   color: #93c5fd; }
+    .alert-cyan   { background: var(--cyan-bg);   border-color: var(--cyan);   color: #a5f3fc; }
+    .alert-orange { background: var(--orange-bg); border-color: var(--orange); color: #fed7aa; }
+    .alert-purple { background: var(--purple-bg); border-color: var(--purple); color: #d8b4fe; }
+
+    /* ── STEPS ── */
+    .steps { counter-reset: step; }
+    .step {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 22px;
+      position: relative;
+    }
+    .step::before {
+      content: '';
+      position: absolute;
+      left: 15px; top: 34px; bottom: -22px;
+      width: 1px;
+      background: var(--border);
+    }
+    .step:last-child::before { display: none; }
+
+    .step-num {
+      width: 32px; height: 32px; min-width: 32px;
+      border-radius: 50%;
+      background: var(--bg3);
+      border: 1px solid var(--border2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--accent2);
+    }
+
+    .step-body { flex: 1; padding-top: 4px; }
+    .step-title { font-weight: 700; font-size: 13.5px; margin-bottom: 4px; }
+    .step-desc { color: var(--muted); font-size: 12px; margin-bottom: 8px; }
+
+    /* ── TABLA ── */
+    table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    th {
+      text-align: left;
+      padding: 8px 12px;
+      background: var(--bg3);
+      color: var(--muted);
+      font-size: 10.5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 1px solid var(--border);
+    }
+    td { padding: 9px 12px; border-bottom: 1px solid var(--border); vertical-align: top; line-height: 1.6; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: rgba(255,255,255,0.015); }
+
+    /* ── GRID ── */
+    .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 16px; }
+    @media (max-width:720px) { .grid2 { grid-template-columns: 1fr; } }
+
+    /* ── TABS ── */
+    .tabs { display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap; }
+    .tab-btn {
+      padding: 5px 14px;
+      border-radius: 99px;
+      border: 1px solid var(--border);
+      background: none;
+      color: var(--muted);
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.12s;
+      font-family: inherit;
+    }
+    .tab-btn:hover { border-color: var(--border2); color: var(--text); }
+    .tab-btn.active { background: rgba(93,90,255,0.2); border-color: var(--accent); color: var(--accent2); font-weight: 600; }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    /* ── PROGRESS ── */
+    .progress-bar-bg {
+      background: var(--bg3);
+      border-radius: 99px;
+      height: 6px;
+      overflow: hidden;
+      margin-bottom: 6px;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--cyan));
+      border-radius: 99px;
+      transition: width 0.3s;
+    }
+
+    /* ── CHECKLIST ── */
+    .checklist { list-style: none; }
+    .checklist li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 9px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 13px;
+    }
+    .checklist li:last-child { border-bottom: none; }
+    .check-box {
+      width: 18px; height: 18px; min-width: 18px;
+      border: 1.5px solid var(--border2);
+      border-radius: 4px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.12s;
+      margin-top: 1px;
+      font-size: 10px;
+    }
+    .check-box.done { background: var(--green); border-color: var(--green); color: #fff; }
+    .check-text { flex: 1; line-height: 1.5; }
+    .check-text.done { color: var(--muted); text-decoration: line-through; }
+    .check-desc { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+    /* ── DIVIDER ── */
+    .divider { border: none; border-top: 1px solid var(--border); margin: 20px 0; }
+
+    /* ── QREF ── */
+    .qref {
+      background: var(--bg3);
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: 12.5px;
+      margin-bottom: 10px;
+      line-height: 2;
+    }
+
+    /* ── HIGHLIGHTS ── */
+    .hl        { color: var(--accent2); font-weight: 600; }
+    .hl-green  { color: var(--green);   font-weight: 600; }
+    .hl-yellow { color: var(--yellow);  font-weight: 600; }
+    .hl-red    { color: var(--red);     font-weight: 600; }
+    .hl-cyan   { color: var(--cyan);    font-weight: 600; }
+    .hl-orange { color: var(--orange);  font-weight: 600; }
+    .hl-pink   { color: var(--pink);    font-weight: 600; }
+
+    /* ── ÁRBOL DE FICHEROS ── */
+    .file-tree {
+      background: #070710;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px 20px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 12px;
+      line-height: 2;
+    }
+    .ft-dir   { color: var(--cyan);   }
+    .ft-html  { color: var(--orange); }
+    .ft-php   { color: #a78bfa;       }
+    .ft-js    { color: var(--yellow); }
+    .ft-sql   { color: var(--green);  }
+    .ft-cfg   { color: var(--muted);  }
+    .ft-note  { color: var(--muted); font-style: italic; font-size: 11px; }
+
+    /* ── FILE BADGE ── */
+    .file-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 2px 10px 2px 8px;
+      border-radius: 5px;
+      font-size: 11px;
+      font-weight: 700;
+      font-family: 'IBM Plex Mono', monospace;
+    }
+    .fb-html { background: rgba(249,115,22,0.12); color: var(--orange); border: 1px solid rgba(249,115,22,0.2); }
+    .fb-php  { background: rgba(168,85,247,0.12);  color: #a78bfa;       border: 1px solid rgba(168,85,247,0.2); }
+    .fb-js   { background: rgba(240,192,64,0.12);  color: var(--yellow); border: 1px solid rgba(240,192,64,0.2); }
+    .fb-sql  { background: rgba(34,197,94,0.12);   color: var(--green);  border: 1px solid rgba(34,197,94,0.2); }
+
+    /* ── DECISION BOX ── */
+    .decision {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+    .decision-item {
+      flex: 1;
+      min-width: 200px;
+      background: var(--bg3);
+      border: 1px solid var(--border2);
+      border-radius: 10px;
+      padding: 14px 16px;
+    }
+    .decision-item .di-label {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+    .decision-item .di-title {
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .decision-item ul {
+      list-style: none;
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.9;
+    }
+    .decision-item ul li::before { content: '→ '; color: var(--accent2); }
+
+    /* ── SCROLLBAR ── */
+    ::-webkit-scrollbar { width: 4px; height: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--bg4); border-radius: 99px; }
+  </style>
+</head>
+<body>
+<div class="app">
+
+<!-- ══════════ SIDEBAR ══════════ -->
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <h1>Vue 2 + PHP — Examen</h1>
+    <p>Guía completa con estructura real</p>
+  </div>
+
+  <div class="sidebar-section">Antes de empezar</div>
+  <button class="sidebar-btn active" onclick="show('estructura')">
+    <span class="dot" style="background:#5d5aff"></span> Estructura de archivos
+  </button>
+  <button class="sidebar-btn" onclick="show('cuando-ficheros')">
+    <span class="dot" style="background:#22d3ee"></span> ¿Cuándo crear cada fichero?
+  </button>
+  <button class="sidebar-btn" onclick="show('mental')">
+    <span class="dot" style="background:#a78bfa"></span> Esquema mental
+  </button>
+
+  <div class="sidebar-section">Conexión PHP + BD</div>
+  <button class="sidebar-btn" onclick="show('bbdd')">
+    <span class="dot" style="background:#22c55e"></span> BD: crear la base de datos
+  </button>
+  <button class="sidebar-btn" onclick="show('conexion')">
+    <span class="dot" style="background:#a855f7"></span> conexion.php
+  </button>
+  <button class="sidebar-btn" onclick="show('api-php')">
+    <span class="dot" style="background:#e879f9"></span> APIs PHP (CRUD)
+  </button>
+  <button class="sidebar-btn" onclick="show('fetch')">
+    <span class="dot" style="background:#f97316"></span> Vue ↔ PHP (fetch)
+  </button>
+
+  <div class="sidebar-section">Código Vue esencial</div>
+  <button class="sidebar-btn" onclick="show('html-base')">
+    <span class="dot" style="background:#3b82f6"></span> HTML base (cópialo)
+  </button>
+  <button class="sidebar-btn" onclick="show('data')">
+    <span class="dot" style="background:#06b6d4"></span> Data — declarar datos
+  </button>
+  <button class="sidebar-btn" onclick="show('directivas')">
+    <span class="dot" style="background:#22c55e"></span> Directivas Vue
+  </button>
+
+  <div class="sidebar-section">Funcionalidades</div>
+  <button class="sidebar-btn" onclick="show('login')">
+    <span class="dot" style="background:#eab308"></span> Login
+  </button>
+  <button class="sidebar-btn" onclick="show('tabla')">
+    <span class="dot" style="background:#f97316"></span> Tabla + Buscador
+  </button>
+  <button class="sidebar-btn" onclick="show('crud')">
+    <span class="dot" style="background:#ef4444"></span> CRUD (modal)
+  </button>
+  <button class="sidebar-btn" onclick="show('detalle')">
+    <span class="dot" style="background:#ec4899"></span> Pantalla Detalle
+  </button>
+  <button class="sidebar-btn" onclick="show('pagos')">
+    <span class="dot" style="background:#8b5cf6"></span> Pagos / Sub-items
+  </button>
+  <button class="sidebar-btn" onclick="show('colores')">
+    <span class="dot" style="background:#14b8a6"></span> Colores por estado
+  </button>
+
+  <div class="sidebar-section">Referencia rápida</div>
+  <button class="sidebar-btn" onclick="show('bootstrap')">
+    <span class="dot" style="background:#60a5fa"></span> Bootstrap 3 cheatsheet
+  </button>
+  <button class="sidebar-btn" onclick="show('patrones')">
+    <span class="dot" style="background:#34d399"></span> Patrones frecuentes
+  </button>
+
+  <div class="sidebar-section">En el examen</div>
+  <button class="sidebar-btn" onclick="show('checklist')">
+    <span class="dot" style="background:#fb923c"></span> Checklist examen
+  </button>
+</nav>
+
+<!-- ══════════ CONTENIDO PRINCIPAL ══════════ -->
+<main class="main">
+
+<!-- ─── ESTRUCTURA DE ARCHIVOS ─── -->
+<section class="section active" id="sec-estructura">
+  <div class="page-title">Estructura de archivos del proyecto</div>
+  <div class="page-subtitle">Dos escenarios: solo Vue (sin BD) o Vue + PHP + MySQL</div>
+
+  <div class="alert alert-blue">
+    📋 <strong>Lo primero:</strong> identifica si el enunciado pide base de datos o no. Eso determina completamente qué archivos vas a crear.
+  </div>
+
+  <div class="grid2" style="margin-bottom:20px">
+    <div class="card" style="border-color: rgba(249,115,22,0.3)">
+      <div class="card-title">
+        <span class="file-badge fb-html">📄 .html</span>
+        Escenario A — Solo Vue (sin BD)
+      </div>
+      <div class="alert alert-green" style="margin-bottom:12px">
+        ✅ Un solo fichero. Sin instalar nada.
+      </div>
+      <div class="file-tree">
+<span class="ft-dir">📁 mi-examen/</span>
+└── <span class="ft-html">📄 index.html</span>  <span class="ft-note">← TODO aquí</span>
+      </div>
+      <p style="color:var(--muted);font-size:12px;margin-top:10px">
+        Todo va dentro: HTML + CSS + JS de Vue. Las librerías se cargan por CDN. Abres el fichero directamente en Chrome.
+      </p>
+    </div>
+
+    <div class="card" style="border-color: rgba(168,85,247,0.3)">
+      <div class="card-title">
+        <span class="file-badge fb-php">🐘 .php</span>
+        Escenario B — Vue + PHP + MySQL
+      </div>
+      <div class="alert alert-purple" style="margin-bottom:12px">
+        ⚠️ Necesitas XAMPP / WAMP. La app va en <code class="inline">htdocs/</code>
+      </div>
+      <div class="file-tree">
+<span class="ft-dir">📁 mi-examen/</span>
+├── <span class="ft-html">📄 index.html</span>         <span class="ft-note">← Frontend Vue</span>
+├── <span class="ft-php">📄 conexion.php</span>       <span class="ft-note">← Conexión BD</span>
+├── <span class="ft-php">📄 clientes.php</span>       <span class="ft-note">← API clientes</span>
+├── <span class="ft-php">📄 polizas.php</span>        <span class="ft-note">← API pólizas</span>
+├── <span class="ft-php">📄 login.php</span>          <span class="ft-note">← Autenticación</span>
+└── <span class="ft-sql">📄 bd.sql</span>             <span class="ft-note">← Script BD (opt)</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📁 Estructura ampliada con JS separado</div>
+    <div class="alert alert-yellow" style="margin-bottom:12px">
+      ⚠️ <strong>¿Cuándo separar el JS?</strong> Solo cuando el enunciado lo exige explícitamente o cuando el fichero supera ~600 líneas y se vuelve inmanejable. En el examen, lo más rápido es TODO en un fichero.
+    </div>
+    <div class="file-tree">
+<span class="ft-dir">📁 mi-examen/</span>
+├── <span class="ft-html">📄 index.html</span>                    <span class="ft-note">← HTML + &lt;style&gt; (sin scripts propios)</span>
+├── <span class="ft-dir">📁 js/</span>
+│   ├── <span class="ft-js">📄 app.js</span>                      <span class="ft-note">← new Vue({ ... }) completo</span>
+│   └── <span class="ft-js">📄 helpers.js</span>                  <span class="ft-note">← funciones utilitarias (opcional)</span>
+├── <span class="ft-dir">📁 css/</span>
+│   └── <span class="ft-js">📄 estilos.css</span>                 <span class="ft-note">← CSS separado (opcional)</span>
+├── <span class="ft-dir">📁 api/</span>
+│   ├── <span class="ft-php">📄 conexion.php</span>               <span class="ft-note">← Siempre en subcarpeta api/</span>
+│   ├── <span class="ft-php">📄 clientes.php</span>
+│   ├── <span class="ft-php">📄 polizas.php</span>
+│   └── <span class="ft-php">📄 login.php</span>
+└── <span class="ft-sql">📄 bd.sql</span>
+    </div>
+    <div class="alert alert-orange" style="margin-top:12px;margin-bottom:0">
+      🔗 Si separas el JS en <code class="inline">js/app.js</code>, en tu HTML debes enlazarlo así: <br>
+      <code class="inline">&lt;script src="js/app.js"&gt;&lt;/script&gt;</code> — <strong>siempre después de Vue.js</strong>
+    </div>
+  </div>
+</section>
+
+<!-- ─── CUÁNDO CREAR CADA FICHERO ─── -->
+<section class="section" id="sec-cuando-ficheros">
+  <div class="page-title">¿Cuándo crear cada tipo de fichero?</div>
+  <div class="page-subtitle">La guía de decisión para no dudar en el examen</div>
+
+  <div class="card" style="border-color:rgba(249,115,22,0.3)">
+    <div class="card-title">
+      <span class="file-badge fb-html">📄 index.html</span>
+      SIEMPRE se crea — es el punto de entrada
+    </div>
+    <div class="qref">
+      Contiene: el HTML de la app, el <code class="inline">&lt;style&gt;</code> con CSS,
+      y los <code class="inline">&lt;script&gt;</code> de CDN más tu Vue.<br>
+      Solo lo separas si el enunciado pide JS externo o si el fichero se hace enorme.
+    </div>
+    <pre><span class="cm">&lt;!-- Enlace a JS separado (solo si lo separas) --&gt;</span>
+<span class="at">&lt;script</span> src=<span class="st">"https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"</span><span class="at">&gt;&lt;/script&gt;</span>
+<span class="at">&lt;script</span> src=<span class="st">"js/app.js"</span><span class="at">&gt;&lt;/script&gt;</span>  <span class="cm">&lt;!-- tu código, DESPUÉS de Vue --&gt;</span></pre>
+  </div>
+
+  <div class="card" style="border-color:rgba(240,192,64,0.3)">
+    <div class="card-title">
+      <span class="file-badge fb-js">📄 app.js</span>
+      Crear cuando el examen pide JS en fichero separado
+    </div>
+    <div class="decision">
+      <div class="decision-item">
+        <div class="di-label" style="color:var(--green)">✅ Créalo si...</div>
+        <ul>
+          <li>El enunciado dice "fichero .js separado"</li>
+          <li>El HTML tiene más de ~600 líneas y no puedes manejarlo</li>
+          <li>La práctica exige modularidad explícita</li>
+        </ul>
+      </div>
+      <div class="decision-item">
+        <div class="di-label" style="color:var(--red)">❌ No lo crees si...</div>
+        <ul>
+          <li>El enunciado no lo menciona</li>
+          <li>Vas justo de tiempo en el examen</li>
+          <li>Sería tu primer día usando esta estructura</li>
+        </ul>
+      </div>
+    </div>
+    <pre><span class="cm">// js/app.js — igual que el &lt;script&gt; de siempre</span>
+<span class="kw">new</span> <span class="fn">Vue</span>({
+  el: <span class="st">'#app'</span>,
+  data: { <span class="cm">/* ... */</span> },
+  computed: { <span class="cm">/* ... */</span> },
+  methods: { <span class="cm">/* ... */</span> }
+});</pre>
+  </div>
+
+  <div class="card" style="border-color:rgba(168,85,247,0.3)">
+    <div class="card-title">
+      <span class="file-badge fb-php">📄 conexion.php</span>
+      Crear cuando hay base de datos
+    </div>
+    <div class="alert alert-purple" style="margin-bottom:12px">
+      Este fichero se crea UNA VEZ y todos los demás PHP lo incluyen con <code class="inline">require_once</code>. Nunca escribas las credenciales en cada archivo.
+    </div>
+    <pre><span class="cm">// conexion.php — VER SECCIÓN "Conexión PHP"</span>
+<span class="cm">// Solo contiene la conexión PDO o mysqli</span>
+<span class="cm">// El resto de archivos hacen: require_once 'conexion.php';</span></pre>
+  </div>
+
+  <div class="card" style="border-color:rgba(168,85,247,0.3)">
+    <div class="card-title">
+      <span class="file-badge fb-php">📄 clientes.php / polizas.php / ...</span>
+      Un fichero PHP por cada entidad con BD
+    </div>
+    <div class="decision">
+      <div class="decision-item">
+        <div class="di-label" style="color:var(--cyan)">🧩 Qué va en cada uno</div>
+        <ul>
+          <li>Recibe peticiones de Vue (GET, POST, PUT, DELETE)</li>
+          <li>Habla con la base de datos</li>
+          <li>Devuelve JSON a Vue</li>
+          <li>Incluye <code class="inline">conexion.php</code> arriba</li>
+        </ul>
+      </div>
+      <div class="decision-item">
+        <div class="di-label" style="color:var(--yellow)">📋 Ejemplo de nombres</div>
+        <ul>
+          <li><code class="inline">clientes.php</code> → CRUD clientes</li>
+          <li><code class="inline">polizas.php</code> → CRUD pólizas</li>
+          <li><code class="inline">login.php</code> → autenticación</li>
+          <li><code class="inline">pagos.php</code> → gestión de pagos</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="border-color:rgba(34,197,94,0.3)">
+    <div class="card-title">
+      <span class="file-badge fb-sql">📄 bd.sql</span>
+      Script de la base de datos (muy recomendable tenerlo)
+    </div>
+    <p style="font-size:12.5px;color:var(--muted);margin-bottom:10px">
+      Guarda aquí el <code class="inline">CREATE TABLE</code> de todas tus tablas. Si algo falla en la BD, lo reimportas en segundos desde phpMyAdmin.
+    </p>
+    <pre><span class="cm">-- bd.sql</span>
+<span class="kw">CREATE DATABASE IF NOT EXISTS</span> examen_bd;
+<span class="kw">USE</span> examen_bd;
+
+<span class="kw">CREATE TABLE</span> clientes (
+  id       <span class="fn">INT AUTO_INCREMENT PRIMARY KEY</span>,
+  nombre   <span class="fn">VARCHAR</span>(<span class="nr">100</span>) <span class="kw">NOT NULL</span>,
+  apellidos <span class="fn">VARCHAR</span>(<span class="nr">150</span>),
+  telefono <span class="fn">VARCHAR</span>(<span class="nr">20</span>)
+);</pre>
+  </div>
+</section>
+
+<!-- ─── BASE DE DATOS ─── -->
+<section class="section" id="sec-bbdd">
+  <div class="page-title">Base de datos — crear desde cero</div>
+  <div class="page-subtitle">Pasos con phpMyAdmin + script SQL</div>
+
+  <div class="alert alert-blue">
+    🖥️ <strong>Requisito:</strong> XAMPP o WAMP corriendo. Tu proyecto en <code class="inline">C:/xampp/htdocs/mi-examen/</code>. Accedes desde <code class="inline">http://localhost/mi-examen/</code>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📋 Pasos en phpMyAdmin</div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <div class="step-title">Abre phpMyAdmin</div>
+          <div class="step-desc">Ir a <code class="inline">http://localhost/phpmyadmin</code></div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <div class="step-title">Crea la base de datos</div>
+          <div class="step-desc">Click en "Nueva" (panel izquierdo) → escribe el nombre → Cotejamiento: <code class="inline">utf8_general_ci</code> → Crear</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <div class="step-title">Importa el script SQL (si tienes)</div>
+          <div class="step-desc">Selecciona tu BD → pestaña "Importar" → elige el fichero <code class="inline">bd.sql</code> → Continuar</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <div class="step-title">O crea las tablas manualmente</div>
+          <div class="step-desc">Pestaña "SQL" → pega el CREATE TABLE → Ejecutar</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📄 Script SQL completo de ejemplo</div>
+    <pre id="code-sql"><span class="cm">-- ═══════════════════════════════════════════
+-- Script de base de datos
+-- Importa esto en phpMyAdmin pestaña "SQL"
+-- ═══════════════════════════════════════════</span>
+
+<span class="kw">CREATE DATABASE IF NOT EXISTS</span> examen_bd
+  <span class="fn">CHARACTER SET</span> utf8 <span class="fn">COLLATE</span> utf8_general_ci;
+
+<span class="kw">USE</span> examen_bd;
+
+<span class="cm">-- Tabla de usuarios (para login)</span>
+<span class="kw">CREATE TABLE IF NOT EXISTS</span> usuarios (
+  id        <span class="fn">INT AUTO_INCREMENT PRIMARY KEY</span>,
+  usuario   <span class="fn">VARCHAR</span>(<span class="nr">50</span>) <span class="kw">NOT NULL UNIQUE</span>,
+  password  <span class="fn">VARCHAR</span>(<span class="nr">255</span>) <span class="kw">NOT NULL</span>,
+  nombre    <span class="fn">VARCHAR</span>(<span class="nr">100</span>) <span class="kw">NOT NULL</span>,
+  rol       <span class="fn">VARCHAR</span>(<span class="nr">20</span>) <span class="kw">DEFAULT</span> <span class="st">'usuario'</span>
+);
+
+<span class="cm">-- Datos de ejemplo para usuarios</span>
+<span class="kw">INSERT INTO</span> usuarios (usuario, password, nombre, rol) <span class="kw">VALUES</span>
+  (<span class="st">'admin'</span>, <span class="st">'1234'</span>, <span class="st">'Administrador'</span>, <span class="st">'admin'</span>),
+  (<span class="st">'usuario1'</span>, <span class="st">'1234'</span>, <span class="st">'Juan García'</span>, <span class="st">'usuario'</span>);
+
+<span class="cm">-- Tabla de clientes</span>
+<span class="kw">CREATE TABLE IF NOT EXISTS</span> clientes (
+  id         <span class="fn">INT AUTO_INCREMENT PRIMARY KEY</span>,
+  nombre     <span class="fn">VARCHAR</span>(<span class="nr">100</span>) <span class="kw">NOT NULL</span>,
+  apellidos  <span class="fn">VARCHAR</span>(<span class="nr">150</span>),
+  telefono   <span class="fn">VARCHAR</span>(<span class="nr">20</span>),
+  localidad  <span class="fn">VARCHAR</span>(<span class="nr">100</span>),
+  cp         <span class="fn">VARCHAR</span>(<span class="nr">10</span>),
+  provincia  <span class="fn">VARCHAR</span>(<span class="nr">100</span>),
+  tipo       <span class="fn">ENUM</span>(<span class="st">'particular'</span>, <span class="st">'empresa'</span>) <span class="kw">DEFAULT</span> <span class="st">'particular'</span>,
+  created_at <span class="fn">TIMESTAMP DEFAULT CURRENT_TIMESTAMP</span>
+);
+
+<span class="cm">-- Tabla de pólizas (sub-entidad de clientes)</span>
+<span class="kw">CREATE TABLE IF NOT EXISTS</span> polizas (
+  id            <span class="fn">INT AUTO_INCREMENT PRIMARY KEY</span>,
+  cliente_id    <span class="fn">INT NOT NULL</span>,
+  numero        <span class="fn">VARCHAR</span>(<span class="nr">50</span>) <span class="kw">NOT NULL UNIQUE</span>,
+  importe       <span class="fn">DECIMAL</span>(<span class="nr">10,2</span>) <span class="kw">DEFAULT</span> <span class="nr">0</span>,
+  fecha         <span class="fn">DATE</span>,
+  estado        <span class="fn">ENUM</span>(<span class="st">'cobrada'</span>,<span class="st">'a cuenta'</span>,<span class="st">'liquidada'</span>,<span class="st">'anulada'</span>,<span class="st">'pre-anulada'</span>)
+                <span class="kw">DEFAULT</span> <span class="st">'cobrada'</span>,
+  observaciones <span class="fn">TEXT</span>,
+  <span class="kw">FOREIGN KEY</span> (cliente_id) <span class="kw">REFERENCES</span> clientes(id) <span class="kw">ON DELETE CASCADE</span>
+);
+
+<span class="cm">-- Tabla de pagos (sub-sub-entidad de pólizas)</span>
+<span class="kw">CREATE TABLE IF NOT EXISTS</span> pagos (
+  id         <span class="fn">INT AUTO_INCREMENT PRIMARY KEY</span>,
+  poliza_id  <span class="fn">INT NOT NULL</span>,
+  fecha      <span class="fn">DATE NOT NULL</span>,
+  importe    <span class="fn">DECIMAL</span>(<span class="nr">10,2</span>) <span class="kw">NOT NULL</span>,
+  <span class="kw">FOREIGN KEY</span> (poliza_id) <span class="kw">REFERENCES</span> polizas(id) <span class="kw">ON DELETE CASCADE</span>
+);</pre>
+    <button class="copy-btn" onclick="copyCode('sql', this)">Copiar</button>
+  </div>
+</section>
+
+<!-- ─── CONEXION.PHP ─── -->
+<section class="section" id="sec-conexion">
+  <div class="page-title">conexion.php — la conexión a la BD</div>
+  <div class="page-subtitle">Un solo fichero con las credenciales. Todos los PHP lo incluyen.</div>
+
+  <div class="alert alert-purple">
+    🐘 <strong>Regla:</strong> crea este fichero PRIMERO, antes de cualquier otro PHP. Si la conexión no funciona, nada más va a funcionar.
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="showTab('cx','pdo')">PDO (recomendado)</button>
+    <button class="tab-btn" onclick="showTab('cx','mysqli')">mysqli</button>
+    <button class="tab-btn" onclick="showTab('cx','test')">Probar conexión</button>
+  </div>
+
+  <div class="tab-content active" id="cx-pdo">
+    <div class="card">
+      <div class="card-title"><span class="file-badge fb-php">conexion.php</span> con PDO</div>
+      <div class="alert alert-green" style="margin-bottom:12px">
+        ✅ PDO es más seguro, soporta consultas preparadas y funciona igual para MySQL, PostgreSQL, etc.
+      </div>
+      <pre id="code-conexion-pdo"><span class="ph">&lt;?php</span>
+<span class="cm">// ═══════════════════════════════════
+// conexion.php — incluir en todos los PHP con:
+//   require_once 'conexion.php';
+//   require_once '../conexion.php';  (si está en subcarpeta)
+// ═══════════════════════════════════</span>
+
+<span class="kw">define</span>(<span class="st">'DB_HOST'</span>, <span class="st">'localhost'</span>);     <span class="cm">// Servidor (localhost siempre en XAMPP)</span>
+<span class="kw">define</span>(<span class="st">'DB_NAME'</span>, <span class="st">'examen_bd'</span>);     <span class="cm">// Nombre de tu base de datos</span>
+<span class="kw">define</span>(<span class="st">'DB_USER'</span>, <span class="st">'root'</span>);          <span class="cm">// Usuario (root en XAMPP)</span>
+<span class="kw">define</span>(<span class="st">'DB_PASS'</span>, <span class="st">''</span>);             <span class="cm">// Contraseña (vacía en XAMPP por defecto)</span>
+<span class="kw">define</span>(<span class="st">'DB_CHARSET'</span>, <span class="st">'utf8'</span>);
+
+<span class="kw">try</span> {
+    <span class="ph">$dsn</span> = <span class="st">"mysql:host="</span> . DB_HOST . <span class="st">";dbname="</span> . DB_NAME . <span class="st">";charset="</span> . DB_CHARSET;
+
+    <span class="ph">$pdo</span> = <span class="kw">new</span> <span class="fn">PDO</span>(<span class="ph">$dsn</span>, DB_USER, DB_PASS, [
+        <span class="fn">PDO::ATTR_ERRMODE</span>            => <span class="fn">PDO::ERRMODE_EXCEPTION</span>,
+        <span class="fn">PDO::ATTR_DEFAULT_FETCH_MODE</span> => <span class="fn">PDO::FETCH_ASSOC</span>,
+        <span class="fn">PDO::ATTR_EMULATE_PREPARES</span>   => <span class="kw">false</span>,
+    ]);
+
+} <span class="kw">catch</span> (<span class="fn">PDOException</span> <span class="ph">$e</span>) {
+    <span class="cm">// Si falla la conexión, devuelve JSON de error</span>
+    <span class="fn">header</span>(<span class="st">'Content-Type: application/json'</span>);
+    <span class="fn">http_response_code</span>(<span class="nr">500</span>);
+    <span class="kw">die</span>(<span class="fn">json_encode</span>([
+        <span class="st">'error'</span> => <span class="st">'Error de conexión: '</span> . <span class="ph">$e</span>-><span class="fn">getMessage</span>()
+    ]));
+}</pre>
+      <button class="copy-btn" onclick="copyCode('conexion-pdo', this)">Copiar</button>
+    </div>
+  </div>
+
+  <div class="tab-content" id="cx-mysqli">
+    <div class="card">
+      <div class="card-title"><span class="file-badge fb-php">conexion.php</span> con mysqli</div>
+      <pre id="code-conexion-mysqli"><span class="ph">&lt;?php</span>
+<span class="ph">$host</span>   = <span class="st">'localhost'</span>;
+<span class="ph">$dbname</span> = <span class="st">'examen_bd'</span>;
+<span class="ph">$user</span>   = <span class="st">'root'</span>;
+<span class="ph">$pass</span>   = <span class="st">''</span>;
+
+<span class="ph">$conn</span> = <span class="kw">new</span> <span class="fn">mysqli</span>(<span class="ph">$host</span>, <span class="ph">$user</span>, <span class="ph">$pass</span>, <span class="ph">$dbname</span>);
+<span class="ph">$conn</span>-><span class="fn">set_charset</span>(<span class="st">'utf8'</span>);
+
+<span class="kw">if</span> (<span class="ph">$conn</span>->connect_error) {
+    <span class="fn">header</span>(<span class="st">'Content-Type: application/json'</span>);
+    <span class="fn">http_response_code</span>(<span class="nr">500</span>);
+    <span class="kw">die</span>(<span class="fn">json_encode</span>([<span class="st">'error'</span> => <span class="ph">$conn</span>->connect_error]));
+}</pre>
+      <button class="copy-btn" onclick="copyCode('conexion-mysqli', this)">Copiar</button>
+    </div>
+  </div>
+
+  <div class="tab-content" id="cx-test">
+    <div class="card">
+      <div class="card-title">🧪 Fichero de prueba de conexión</div>
+      <div class="alert alert-yellow" style="margin-bottom:12px">
+        Crea este fichero, ábrelo en el navegador, y <strong>bórralo cuando termines</strong>. Nunca lo dejes en producción.
+      </div>
+      <pre id="code-test-cx"><span class="ph">&lt;?php</span>
+<span class="cm">// test_conexion.php — BORRA ESTE FICHERO CUANDO TERMINES</span>
+<span class="kw">require_once</span> <span class="st">'conexion.php'</span>;
+
+<span class="kw">try</span> {
+    <span class="ph">$stmt</span> = <span class="ph">$pdo</span>-><span class="fn">query</span>(<span class="st">'SELECT 1'</span>);
+    <span class="kw">echo</span> <span class="st">'✅ Conexión correcta a la base de datos'</span>;
+} <span class="kw">catch</span> (<span class="fn">Exception</span> <span class="ph">$e</span>) {
+    <span class="kw">echo</span> <span class="st">'❌ Error: '</span> . <span class="ph">$e</span>-><span class="fn">getMessage</span>();
+}</pre>
+      <button class="copy-btn" onclick="copyCode('test-cx', this)">Copiar</button>
+    </div>
+  </div>
+</section>
+
+<!-- ─── APIS PHP ─── -->
+<section class="section" id="sec-api-php">
+  <div class="page-title">APIs PHP — CRUD completo</div>
+  <div class="page-subtitle">Cómo escribir clientes.php, polizas.php, etc.</div>
+
+  <div class="alert alert-cyan">
+    🔌 <strong>Patrón:</strong> cada fichero PHP recibe la petición de Vue (método HTTP), ejecuta la operación en la BD y devuelve JSON. Siempre empieza con los headers.
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="showTab('php','estructura')">Estructura base</button>
+    <button class="tab-btn" onclick="showTab('php','get')">GET — listar</button>
+    <button class="tab-btn" onclick="showTab('php','post')">POST — crear</button>
+    <button class="tab-btn" onclick="showTab('php','put')">PUT — editar</button>
+    <button class="tab-btn" onclick="showTab('php','delete')">DELETE — borrar</button>
+    <button class="tab-btn" onclick="showTab('php','login-php')">login.php</button>
+  </div>
+
+  <div class="tab-content active" id="php-estructura">
+    <div class="card">
+      <div class="card-title"><span class="file-badge fb-php">clientes.php</span> — estructura base</div>
+      <pre id="code-php-base"><span class="ph">&lt;?php</span>
+<span class="cm">// ══════════════════════════════
+// clientes.php — API REST para clientes
+// ══════════════════════════════</span>
+
+<span class="cm">// 1. Headers OBLIGATORIOS — siempre primero</span>
+<span class="fn">header</span>(<span class="st">'Content-Type: application/json'</span>);
+<span class="fn">header</span>(<span class="st">'Access-Control-Allow-Origin: *'</span>);       <span class="cm">// Permite peticiones desde Vue</span>
+<span class="fn">header</span>(<span class="st">'Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS'</span>);
+<span class="fn">header</span>(<span class="st">'Access-Control-Allow-Headers: Content-Type'</span>);
+
+<span class="cm">// Responde al "preflight" OPTIONS del navegador</span>
+<span class="kw">if</span> (<span class="ph">$_SERVER</span>[<span class="st">'REQUEST_METHOD'</span>] === <span class="st">'OPTIONS'</span>) { <span class="kw">exit</span>(<span class="nr">0</span>); }
+
+<span class="cm">// 2. Incluir la conexión</span>
+<span class="kw">require_once</span> <span class="st">'conexion.php'</span>;
+
+<span class="cm">// 3. Obtener el método HTTP y el cuerpo de la petición</span>
+<span class="ph">$method</span> = <span class="ph">$_SERVER</span>[<span class="st">'REQUEST_METHOD'</span>];
+<span class="ph">$input</span>  = <span class="fn">json_decode</span>(<span class="fn">file_get_contents</span>(<span class="st">'php://input'</span>), <span class="kw">true</span>);
+<span class="ph">$id</span>     = <span class="ph">$_GET</span>[<span class="st">'id'</span>] ?? <span class="kw">null</span>;
+
+<span class="cm">// 4. Enrutar según el método</span>
+<span class="kw">switch</span> (<span class="ph">$method</span>) {
+  <span class="kw">case</span> <span class="st">'GET'</span>:    <span class="fn">getClientes</span>();  <span class="kw">break</span>;
+  <span class="kw">case</span> <span class="st">'POST'</span>:   <span class="fn">createCliente</span>(<span class="ph">$input</span>); <span class="kw">break</span>;
+  <span class="kw">case</span> <span class="st">'PUT'</span>:    <span class="fn">updateCliente</span>(<span class="ph">$input</span>, <span class="ph">$id</span>); <span class="kw">break</span>;
+  <span class="kw">case</span> <span class="st">'DELETE'</span>: <span class="fn">deleteCliente</span>(<span class="ph">$id</span>); <span class="kw">break</span>;
+  <span class="kw">default</span>:
+    <span class="fn">http_response_code</span>(<span class="nr">405</span>);
+    <span class="kw">echo</span> <span class="fn">json_encode</span>([<span class="st">'error'</span> => <span class="st">'Método no permitido'</span>]);
+}
+
+<span class="cm">// === FUNCIONES ===</span></pre>
+      <button class="copy-btn" onclick="copyCode('php-base', this)">Copiar</button>
+    </div>
+  </div>
+
+  <div class="tab-content" id="php-get">
+    <div class="card">
+      <div class="card-title">GET — leer todos / uno</div>
+      <pre id="code-php-get"><span class="kw">function</span> <span class="fn">getClientes</span>() {
+  <span class="kw">global</span> <span class="ph">$pdo</span>, <span class="ph">$id</span>;
+
+  <span class="kw">if</span> (<span class="ph">$id</span>) {
+    <span class="cm">// Obtener UN cliente por ID</span>
+    <span class="ph">$stmt</span> = <span class="ph">$pdo</span>-><span class="fn">prepare</span>(<span class="st">'SELECT * FROM clientes WHERE id = ?'</span>);
+    <span class="ph">$stmt</span>-><span class="fn">execute</span>([<span class="ph">$id</span>]);
+    <span class="ph">$cliente</span> = <span class="ph">$stmt</span>-><span class="fn">fetch</span>();
+
+    <span class="kw">if</span> (<span class="ph">$cliente</span>) {
+      <span class="kw">echo</span> <span class="fn">json_encode</span>(<span class="ph">$cliente</span>);
+    } <span class="kw">else</span> {
+      <span class="fn">http_response_code</span>(<span class="nr">404</span>);
+      <span class="kw">echo</span> <span class="fn">json_encode</span>([<span class="st">'error'</span> => <span class="st">'No encontrado'</span>]);
+    }
+  } <span class="kw">else</span> {
+    <span class="cm">// Obtener TODOS los clientes</span>
+    <span class="ph">$stmt</span> = <span class="ph">$pdo</span>-><span class="fn">query</span>(<span class="st">'SELECT * FROM clientes ORDER BY nombre'</span>);
+    <span class="kw">echo</span> <span class="fn">json_encode</span>(<span class="ph">$stmt</span>-><span class="fn">fetchAll</span>());
+  }
+}
+
+<span class="cm">// Con filtro (ej: pólizas de un cliente)</span>
+<span class="kw">function</span> <span class="fn">getPolizas</span>() {
+  <span class="kw">global</span> <span class="ph">$pdo</span>;
+  <span class="ph">$clienteId</span> = <span class="ph">$_GET</span>[<span class="st">'cliente_id'</span>] ?? <span class="kw">null</span>;
+
+  <span class="kw">if</span> (<span class="ph">$clienteId</span>) {
+    <span class="ph">$stmt</span> = <span class="ph">$pdo</span>-><span class="fn">prepare</span>(<span class="st">'SELECT * FROM polizas WHERE cliente_id = ? ORDER BY fecha DESC'</span>);
+    <span class="ph">$stmt</span>-><span class="fn">execute</span>([<span class="ph">$clienteId</span>]);
+  } <span class="kw">else</span> {
+    <span class="ph">$stmt</span> = <span class="ph">$pdo</span>-><span class="fn">query</span>(<span class="st">'SELECT * FROM polizas ORDER BY fecha DESC'</span>);
+  }
+  <span class="kw">echo</span> <span class="fn">json_encode</span>(<span class="ph">$stmt</span>-><span class="fn">fetchAll</span>());
+}</pre>
+      <button class="copy-btn" onclick="copyCode('php-get', this)">Copiar</button>
+    </div>
+  </div>
+
+  <div class="tab-content" id="php-post">
+    <div class="card">
+      <div class="card-title">POST — crear registro</div>
+      <pre id="code-php-post"><span class="kw">function</span> <span class="fn">createCliente</span>(<span class="ph">$data</span>) {
+  <span class="kw">global</span> <span class="ph">$pdo</span>;
+
+  <span class="cm">// Validar campos obligatorios</span>
+  <span class="kw">if</span> (<span class="kw">empty</span>(<span class="ph">$data</span>[<span class="st">'nombre'</span>])) {
+    <span class="fn">http_response_code</span>(<span class="nr">400</span>);
+    <span class="kw">echo</span> <span class="fn">json_encode</span>([<span class="st">'error'</span> => <span class="st">'El nombre es obligatorio'</span>]);
+    <span class="kw">return</span>;
+  }
+
+  <span class="ph">$stmt</span> = <span class="ph">$pdo</span>-><span class="fn">prepare</span>(<span class="st">'
+    INSERT INTO clientes (nombre, apellidos, telefono, localidad, cp, provincia, tipo)
+    VALUES (:nombre, :apellidos, :telefono, :localidad, :cp, :provincia, :tipo)
+  '</span>);
+
+  <span class="ph">$stmt</span>-><span class="fn">execute</span>([
+    <span class="st">':nombre'</span>    => <span class="ph">$data</span>[<span class="st">'nombre'</span>],
+    <span class="st">':apellidos'</span> => <span class="ph">$data</span>[<span class="st">'apellidos'</span>] ?? <span class="st">''</span>,
+    <span class="st">':telefono'</span>  => <span class="ph">$data</span>[<span class="st">'telefono'</span>]  ?? <span class="st">''</span>,
+    <span class="st">':localidad'</span> => <span class="ph">$data</span>[<span class="st">'localidad'</span>] ?? <span class="st">''</span>,
+    <span class="st">':cp'</span>        => <span class="ph">$data</span>[<span class="st">'cp'</span>]        ?? <span class="st">''</span>,
+    <span class="st">':provincia'</span> => <span class="ph">$data</span>[<span class="st">'provincia'</span>] ?? <span class="st">''</span>,
+    <span class="st">':tipo'</span>      => <span class="ph">$data</span>[<span class="st">'tipo'</span>]      ?? <span class="st">'particular'</span>,
+  ]);
+
+  <span class="cm">// Devuelve el nuevo ID generado</span>
+  <span class="fn">http_response_code</span>(<span class="nr">201</span>);
+  <span class="kw">echo</span> <span class="fn">json_encode</span>([
+    <span class="st">'success'</span> => <span class="kw">true</span>,
+    <span class="st">'id'</span>      => <span class="ph">$pdo</span>-><span class="fn">lastInsertId</span>()
+  ]);
+}</pre>
+      <button class="copy-btn" onclick="copyCode('php-post', this)">Copiar</button>
+    </div>
+  </div>
+
+  <div class="tab-content" id="php-put">
+    <div class="card">
+      <div class="card-title">PUT — actualizar registro</div>
+      <pre id="code-php-put"><span class="kw">function</span> <span class="fn">updateCliente</span>(<span class="ph">$data</span>, <span class="ph">$id</span>) {
+  <span class="kw">global</span> <span class="ph">$pdo</span>;
+
+  <span class="kw">if</span> (!<span class="ph">$id</span>) {
+    <span class="fn">http_response_code</span>(<span class="nr">400</span>);
+    <span class="kw">echo</span> <span class="fn">json_encode</span>([<span class="st">'error'</span> => <span class="st">'ID requerido'</span>]);
+    <span class="kw">return</span>;
+  }
+
+  <span class="ph">$stmt</span> = <span class="ph">$pdo</span>-><span class="fn">prepare</span>(<span class="st">'
+    UPDATE clientes
+    SET nombre=:nombre, apellidos=:apellidos, telefono=:telefono,
+        localidad=:localidad, cp=:cp, provincia=:provincia, tipo=:tipo
+    WHERE id=:id
+  '</span>);
+
+  <span class="ph">$stmt</span>-><span class="fn">execute</span>([
+    <span class="st">':nombre'</span>    => <span class="ph">$data</span>[<span class="st">'nombre'</span>],
+    <span class="st">':apellidos'</span> => <span class="ph">$data</span>[<span class="st">'apellidos'</span>] ?? <span class="st">''</span>,
+    <span class="st">':telefono'</span>  => <span class="ph">$data</span>[<span class="st">'telefono'</span>]  ?? <span class="st">''</span>,
+    <span class="st">':localidad'</span> => <span class="ph">$data</span>[<span class="st">'localidad'</span>] ?? <span class="st">''</span>,
+    <span class="st">':cp'</span>        => <span class="ph">$data</span>[<span class="st">'cp'</span>]        ?? <span class="st">''</span>,
+    <span class="st">':provincia'</span> => <span class="ph">$data</span>[<span class="st">'provincia'</span>] ?? <span class="st">''</span>,
+    <span class="st">':tipo'</span>      => <span class="ph">$data</span>[<span class="st">'tipo'</span>]      ?? <span class="st">'particular'</span>,
+    <span class="st">':id'</span>        => <span class="ph">$id</span>
+  ]);
+
+  <span class="kw">echo</span> <span class="fn">json_encode</span>([<span class="st">'success'</span> => <span class="kw">true</span>]);
+}</pre>
+      <button class="copy-btn" onclick="copyCode('php-put', this)">Copiar</button>
+    </div>
+  </div>
+
+  <div class="tab-content" id="php-delete">
+    <div class="card">
+      <div class="card-title">DELETE — eliminar registro</div>
+      <pre id="code-php-delete"><span class="kw">function</span> <span class="fn">deleteCliente</span>(<span class="ph">$id</span>) {
+  <span class="kw">global</span> <span class="ph">$pdo</span>;
+
+  <span class="kw">if</span> (!<span class="ph">$id</span>) {
+    <span class="fn">http_response_code</span>(<span class="nr">400</span>);
+    <span class="kw">echo</span> <span class="fn">json_encode</span>([<span class="st">'error'</span> => <span class="st">'ID requerido'</span>]);
+    <span class="kw">return</span>;
+  }
+
+  <span class="ph">$stmt</span> = <span class="ph">$pdo</span>-><span class="fn">prepare</span>(<span class="st">'DELETE FROM clientes WHERE id = ?'</span>);
+  <span class="ph">$stmt</span>-><span class="fn">execute</span>([<span class="ph">$id</span>]);
+
+  <span class="kw">if</span> (<span class="ph">$stmt</span>-><span class="fn">rowCount</span>() > <span class="nr">0</span>) {
+    <span class="kw">echo</span> <span class="fn">json_encode</span>([<span class="st">'success'</span> => <span class="kw">true</span>]);
+  } <span class="kw">else</span> {
+    <span class="fn">http_response_code</span>(<span class="nr">404</span>);
+    <span class="kw">echo</span> <span class="fn">json_encode</span>([<span class="st">'error'</span> => <span class="st">'No encontrado'</span>]);
+  }
+}</pre>
+      <button class="copy-btn" onclick="copyCode('php-delete', this)">Copiar</button>
+    </div>
+  </div>
+
+  <div class="tab-content" id="php-login-php">
+    <div class="card">
+      <div class="card-title"><span class="file-badge fb-php">login.php</span> — autenticación</div>
+      <pre id="code-login-php"><span class="ph">&lt;?php</span>
+<span class="fn">header</span>(<span class="st">'Content-Type: application/json'</span>);
+<span class="fn">header</span>(<span class="st">'Access-Control-Allow-Origin: *'</span>);
+<span class="fn">header</span>(<span class="st">'Access-Control-Allow-Methods: POST, OPTIONS'</span>);
+<span class="fn">header</span>(<span class="st">'Access-Control-Allow-Headers: Content-Type'</span>);
+<span class="kw">if</span> (<span class="ph">$_SERVER</span>[<span class="st">'REQUEST_METHOD'</span>] === <span class="st">'OPTIONS'</span>) <span class="kw">exit</span>(<span class="nr">0</span>);
+
+<span class="kw">require_once</span> <span class="st">'conexion.php'</span>;
+
+<span class="ph">$input</span> = <span class="fn">json_decode</span>(<span class="fn">file_get_contents</span>(<span class="st">'php://input'</span>), <span class="kw">true</span>);
+
+<span class="kw">if</span> (<span class="ph">$_SERVER</span>[<span class="st">'REQUEST_METHOD'</span>] !== <span class="st">'POST'</span>) {
+    <span class="fn">http_response_code</span>(<span class="nr">405</span>);
+    <span class="kw">die</span>(<span class="fn">json_encode</span>([<span class="st">'error'</span> => <span class="st">'Solo POST'</span>]));
+}
+
+<span class="ph">$usuario</span>  = <span class="fn">trim</span>(<span class="ph">$input</span>[<span class="st">'usuario'</span>]  ?? <span class="st">''</span>);
+<span class="ph">$password</span> = <span class="fn">trim</span>(<span class="ph">$input</span>[<span class="st">'password'</span>] ?? <span class="st">''</span>);
+
+<span class="kw">if</span> (!<span class="ph">$usuario</span> || !<span class="ph">$password</span>) {
+    <span class="fn">http_response_code</span>(<span class="nr">400</span>);
+    <span class="kw">die</span>(<span class="fn">json_encode</span>([<span class="st">'error'</span> => <span class="st">'Usuario y contraseña requeridos'</span>]));
+}
+
+<span class="cm">// ⚠️ Si usas contraseñas en texto plano (examen simple):</span>
+<span class="ph">$stmt</span> = <span class="ph">$pdo</span>-><span class="fn">prepare</span>(<span class="st">'SELECT id, nombre, rol FROM usuarios WHERE usuario=? AND password=?'</span>);
+<span class="ph">$stmt</span>-><span class="fn">execute</span>([<span class="ph">$usuario</span>, <span class="ph">$password</span>]);
+<span class="ph">$user</span> = <span class="ph">$stmt</span>-><span class="fn">fetch</span>();
+
+<span class="kw">if</span> (<span class="ph">$user</span>) {
+    <span class="kw">echo</span> <span class="fn">json_encode</span>([
+        <span class="st">'success'</span> => <span class="kw">true</span>,
+        <span class="st">'usuario'</span> => <span class="ph">$user</span>
+    ]);
+} <span class="kw">else</span> {
+    <span class="fn">http_response_code</span>(<span class="nr">401</span>);
+    <span class="kw">echo</span> <span class="fn">json_encode</span>([<span class="st">'error'</span> => <span class="st">'Usuario o contraseña incorrectos'</span>]);
+}</pre>
+      <button class="copy-btn" onclick="copyCode('login-php', this)">Copiar</button>
+    </div>
+  </div>
+</section>
+
+<!-- ─── FETCH VUE ↔ PHP ─── -->
+<section class="section" id="sec-fetch">
+  <div class="page-title">Vue ↔ PHP — cómo hablan entre sí</div>
+  <div class="page-subtitle">Métodos fetch en Vue para cada operación CRUD</div>
+
+  <div class="alert alert-orange">
+    🔗 <strong>URL base:</strong> Si tu proyecto está en <code class="inline">http://localhost/mi-examen/</code>, tus APIs están en <code class="inline">http://localhost/mi-examen/clientes.php</code>. Define una constante al inicio del script Vue.
+  </div>
+
+  <div class="card">
+    <div class="card-title">Definir la URL base y cargar datos al inicio</div>
+    <pre id="code-fetch-init"><span class="kw">new</span> <span class="fn">Vue</span>({
+  el: <span class="st">'#app'</span>,
+
+  data: {
+    <span class="cm">// URL base de tu API (ajusta al nombre de tu carpeta)</span>
+    apiBase: <span class="st">'http://localhost/mi-examen'</span>,
+    clientes: [],
+    <span class="cm">// ... resto de data</span>
+  },
+
+  <span class="cm">// mounted() se ejecuta cuando Vue termina de inicializarse</span>
+  <span class="cm">// Aquí es donde cargas los datos iniciales desde PHP</span>
+  <span class="fn">mounted</span>() {
+    <span class="kw">this</span>.<span class="fn">cargarClientes</span>();
+  },
+
+  methods: {
+    <span class="cm">// ── CARGAR (GET) ──────────────────────────────</span>
+    <span class="kw">async</span> <span class="fn">cargarClientes</span>() {
+      <span class="kw">try</span> {
+        <span class="kw">const</span> res  = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="st">`${this.apiBase}/clientes.php`</span>);
+        <span class="kw">const</span> data = <span class="kw">await</span> res.<span class="fn">json</span>();
+        <span class="kw">if</span> (data.error) <span class="kw">throw new</span> <span class="fn">Error</span>(data.error);
+        <span class="kw">this</span>.clientes = data;            <span class="cm">// Array de clientes</span>
+      } <span class="kw">catch</span>(e) {
+        <span class="fn">alert</span>(<span class="st">'Error cargando clientes: '</span> + e.message);
+      }
+    },
+
+    <span class="cm">// ── CARGAR pólizas de un cliente ──────────────</span>
+    <span class="kw">async</span> <span class="fn">cargarPolizas</span>(clienteId) {
+      <span class="kw">const</span> res  = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="st">`${this.apiBase}/polizas.php?cliente_id=${clienteId}`</span>);
+      <span class="kw">const</span> data = <span class="kw">await</span> res.<span class="fn">json</span>();
+      <span class="kw">this</span>.polizas = data;
+    }
+  }
+});</pre>
+    <button class="copy-btn" onclick="copyCode('fetch-init', this)">Copiar</button>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Crear, Editar y Borrar con fetch</div>
+    <pre id="code-fetch-crud"><span class="cm">// ── CREAR (POST) ──────────────────────────────</span>
+<span class="kw">async</span> <span class="fn">guardarCliente</span>() {
+  <span class="kw">if</span> (!<span class="kw">this</span>.fCliente.nombre) { <span class="fn">alert</span>(<span class="st">'Nombre obligatorio'</span>); <span class="kw">return</span>; }
+
+  <span class="kw">const</span> esNuevo = <span class="kw">this</span>.modo === <span class="st">'nuevo'</span>;
+
+  <span class="kw">const</span> res = <span class="kw">await</span> <span class="fn">fetch</span>(
+    esNuevo
+      ? <span class="st">`${this.apiBase}/clientes.php`</span>
+      : <span class="st">`${this.apiBase}/clientes.php?id=${this.fCliente.id}`</span>,
+    {
+      method:  esNuevo ? <span class="st">'POST'</span> : <span class="st">'PUT'</span>,
+      headers: { <span class="st">'Content-Type'</span>: <span class="st">'application/json'</span> },
+      body:    <span class="fn">JSON.stringify</span>(<span class="kw">this</span>.fCliente)
+    }
+  );
+
+  <span class="kw">const</span> data = <span class="kw">await</span> res.<span class="fn">json</span>();
+
+  <span class="kw">if</span> (data.error) { <span class="fn">alert</span>(data.error); <span class="kw">return</span>; }
+
+  $(<span class="st">'#modalCliente'</span>).<span class="fn">modal</span>(<span class="st">'hide'</span>);
+  <span class="kw">await</span> <span class="kw">this</span>.<span class="fn">cargarClientes</span>();    <span class="cm">// Recarga la tabla desde BD</span>
+  <span class="kw">this</span>.<span class="fn">ok</span>(<span class="st">'Cliente guardado'</span>);
+},
+
+<span class="cm">// ── BORRAR (DELETE) ───────────────────────────</span>
+<span class="kw">async</span> <span class="fn">borrarCliente</span>(id) {
+  <span class="kw">if</span> (!<span class="fn">confirm</span>(<span class="st">'¿Eliminar cliente?'</span>)) <span class="kw">return</span>;
+
+  <span class="kw">const</span> res  = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="st">`${this.apiBase}/clientes.php?id=${id}`</span>, {
+    method: <span class="st">'DELETE'</span>
+  });
+  <span class="kw">const</span> data = <span class="kw">await</span> res.<span class="fn">json</span>();
+
+  <span class="kw">if</span> (data.error) { <span class="fn">alert</span>(data.error); <span class="kw">return</span>; }
+
+  <span class="kw">await</span> <span class="kw">this</span>.<span class="fn">cargarClientes</span>();
+  <span class="kw">this</span>.<span class="fn">ok</span>(<span class="st">'Cliente eliminado'</span>);
+},
+
+<span class="cm">// ── LOGIN con PHP ─────────────────────────────</span>
+<span class="kw">async</span> <span class="fn">hacerLogin</span>() {
+  <span class="kw">const</span> res = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="st">`${this.apiBase}/login.php`</span>, {
+    method:  <span class="st">'POST'</span>,
+    headers: { <span class="st">'Content-Type'</span>: <span class="st">'application/json'</span> },
+    body:    <span class="fn">JSON.stringify</span>({
+      usuario:  <span class="kw">this</span>.loginUsuario,
+      password: <span class="kw">this</span>.loginPassword
+    })
+  });
+  <span class="kw">const</span> data = <span class="kw">await</span> res.<span class="fn">json</span>();
+
+  <span class="kw">if</span> (data.error) {
+    <span class="kw">this</span>.errorLogin = data.error;
+  } <span class="kw">else</span> {
+    <span class="kw">this</span>.usuarioLogueado = data.usuario;
+    <span class="kw">this</span>.errorLogin = <span class="st">''</span>;
+    <span class="kw">await</span> <span class="kw">this</span>.<span class="fn">cargarClientes</span>();   <span class="cm">// Carga datos al entrar</span>
+  }
+}</pre>
+    <button class="copy-btn" onclick="copyCode('fetch-crud', this)">Copiar</button>
+  </div>
+
+  <div class="card">
+    <div class="card-title">⚠️ Diferencias Vue solo vs Vue + PHP</div>
+    <table>
+      <thead>
+        <tr><th>Operación</th><th>Solo Vue (sin BD)</th><th>Vue + PHP + MySQL</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Crear registro</td>
+          <td><code class="inline">this.clientes.push({...})</code></td>
+          <td><code class="inline">fetch POST</code> → <code class="inline">cargarClientes()</code></td>
+        </tr>
+        <tr>
+          <td>Editar registro</td>
+          <td><code class="inline">this.$set(array, i, obj)</code></td>
+          <td><code class="inline">fetch PUT</code> → <code class="inline">cargarClientes()</code></td>
+        </tr>
+        <tr>
+          <td>Borrar registro</td>
+          <td><code class="inline">this.clientes.filter(...)</code></td>
+          <td><code class="inline">fetch DELETE</code> → <code class="inline">cargarClientes()</code></td>
+        </tr>
+        <tr>
+          <td>Cargar datos</td>
+          <td>Ya están en <code class="inline">data: {}</code></td>
+          <td><code class="inline">mounted()</code> → <code class="inline">fetch GET</code></td>
+        </tr>
+        <tr>
+          <td>IDs</td>
+          <td><code class="inline">Math.max(0, ...ids) + 1</code></td>
+          <td>Los genera MySQL automáticamente (<code class="inline">AUTO_INCREMENT</code>)</td>
+        </tr>
+        <tr>
+          <td>Persistencia</td>
+          <td>❌ Se pierden al recargar</td>
+          <td>✅ Se guardan en la BD</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ─── HTML BASE ─── -->
+<section class="section" id="sec-html-base">
+  <div class="page-title">HTML base — la plantilla que siempre copias</div>
+  <div class="page-subtitle">Copia esto entero al empezar. Cada comentario explica qué es.</div>
+
+  <div class="alert alert-yellow">
+    ⚠️ El orden de los &lt;script&gt; es crítico. Si Vue va antes que jQuery, el modal no funcionará.
+  </div>
+
+  <div style="position:relative">
+    <pre id="code-htmlbase"><span class="cm">&lt;!-- ════════════════════════════════════════════
+     PLANTILLA BASE VUE 2 + BOOTSTRAP 3 + JQUERY
+     Copia esto SIEMPRE al empezar
+     ════════════════════════════════════════════ --&gt;</span>
+<span class="at">&lt;!DOCTYPE html&gt;</span>
+<span class="at">&lt;html</span> lang=<span class="st">"es"</span><span class="at">&gt;</span>
+<span class="at">&lt;head&gt;</span>
+  <span class="at">&lt;meta</span> charset=<span class="st">"UTF-8"</span><span class="at">&gt;</span>
+  <span class="at">&lt;meta</span> name=<span class="st">"viewport"</span> content=<span class="st">"width=device-width, initial-scale=1.0"</span><span class="at">&gt;</span>
+  <span class="at">&lt;title&gt;</span>Mi Aplicación<span class="at">&lt;/title&gt;</span>
+
+  <span class="cm">&lt;!-- Bootstrap 3 CSS --&gt;</span>
+  <span class="at">&lt;link</span> rel=<span class="st">"stylesheet"</span>
+    href=<span class="st">"https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"</span><span class="at">&gt;</span>
+  <span class="cm">&lt;!-- jQuery UI CSS (para datepicker) --&gt;</span>
+  <span class="at">&lt;link</span> rel=<span class="st">"stylesheet"</span>
+    href=<span class="st">"https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css"</span><span class="at">&gt;</span>
+
+  <span class="at">&lt;style&gt;</span>
+    <span class="cm">/* Evita que se vea el HTML sin procesar mientras Vue carga */</span>
+    [v-cloak] { display: none; }
+  <span class="at">&lt;/style&gt;</span>
+<span class="at">&lt;/head&gt;</span>
+<span class="at">&lt;body&gt;</span>
+
+  <span class="cm">&lt;!-- Todo tu HTML de Vue va aquí dentro --&gt;</span>
+  <span class="at">&lt;div</span> id=<span class="st">"app"</span> v-cloak<span class="at">&gt;</span>
+    <span class="cm">&lt;!-- CONTENIDO (login, navbar, tablas, modales...) --&gt;</span>
+  <span class="at">&lt;/div&gt;</span>
+
+  <span class="cm">&lt;!-- ⚠️ SCRIPTS: AL FINAL DEL BODY, EN ESTE ORDEN EXACTO --&gt;</span>
+  <span class="at">&lt;script</span> src=<span class="st">"https://code.jquery.com/jquery-3.6.0.min.js"</span><span class="at">&gt;&lt;/script&gt;</span>
+  <span class="at">&lt;script</span> src=<span class="st">"https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"</span><span class="at">&gt;&lt;/script&gt;</span>
+  <span class="at">&lt;script</span> src=<span class="st">"https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"</span><span class="at">&gt;&lt;/script&gt;</span>
+  <span class="at">&lt;script</span> src=<span class="st">"https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"</span><span class="at">&gt;&lt;/script&gt;</span>
+
+  <span class="cm">&lt;!-- Si usas JS separado: &lt;script src="js/app.js"&gt;&lt;/script&gt; --&gt;</span>
+  <span class="at">&lt;script&gt;</span>
+  <span class="kw">new</span> <span class="fn">Vue</span>({
+    el: <span class="st">'#app'</span>,
+
+    data: {
+      <span class="cm">// URL base de la API (si usas PHP)</span>
+      <span class="cm">// apiBase: 'http://localhost/mi-examen',</span>
+
+      pantalla: <span class="st">'login'</span>,
+      modo: <span class="st">'nuevo'</span>,
+      usuarioLogueado: <span class="kw">null</span>,
+      loginUsuario: <span class="st">''</span>,
+      loginPassword: <span class="st">''</span>,
+      errorLogin: <span class="st">''</span>,
+      mensajeOk: <span class="st">''</span>,
+      busqueda: <span class="st">''</span>,
+      <span class="cm">// TUS ARRAYS Y OBJETOS AQUÍ</span>
+    },
+
+    computed: {
+      <span class="cm">// VALORES CALCULADOS</span>
+    },
+
+    methods: {
+      <span class="cm">// TUS FUNCIONES AQUÍ</span>
+      <span class="fn">ok</span>(msg) {
+        <span class="kw">this</span>.mensajeOk = msg;
+        <span class="fn">setTimeout</span>(() => <span class="kw">this</span>.mensajeOk = <span class="st">''</span>, <span class="nr">3000</span>);
+      }
+    },
+
+    <span class="fn">mounted</span>() {
+      <span class="cm">// Si usas PHP: this.cargarClientes();</span>
+      <span class="cm">// Si usas jQuery datepicker:</span>
+      <span class="cm">// this.$nextTick(() => $('#miFecha').datepicker({ dateFormat: 'yy-mm-dd' }));</span>
+    }
+  });
+  <span class="at">&lt;/script&gt;</span>
+<span class="at">&lt;/body&gt;</span>
+<span class="at">&lt;/html&gt;</span></pre>
+    <button class="copy-btn" onclick="copyCode('htmlbase', this)">Copiar</button>
+  </div>
+</section>
+
+<!-- ─── DATA ─── -->
+<section class="section" id="sec-data">
+  <div class="page-title">Data — cómo declarar los datos</div>
+  <div class="page-subtitle">El "almacén" de tu app. Todo lo que Vue necesita saber va aquí.</div>
+
+  <div class="grid2">
+    <div class="card">
+      <div class="card-title">🧭 Variables de navegación</div>
+      <pre>pantalla: <span class="st">'login'</span>,
+<span class="cm">// 'login'|'clientes'|'detalle'</span>
+
+modo: <span class="st">'nuevo'</span>,
+<span class="cm">// 'nuevo' | 'editar'</span></pre>
+    </div>
+    <div class="card">
+      <div class="card-title">🔐 Variables de login</div>
+      <pre>loginUsuario: <span class="st">''</span>,
+loginPassword: <span class="st">''</span>,
+usuarioLogueado: <span class="kw">null</span>,
+errorLogin: <span class="st">''</span>,</pre>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📦 Arrays de datos y objetos de formulario</div>
+    <pre>clientes: [
+  { id:<span class="nr">1</span>, nombre:<span class="st">'Juan'</span>, apellidos:<span class="st">'García'</span>, telefono:<span class="st">'600111'</span>,
+    localidad:<span class="st">'Sevilla'</span>, cp:<span class="st">'41001'</span>, provincia:<span class="st">'Sevilla'</span>, tipo:<span class="st">'particular'</span> }
+],
+
+polizas: [
+  { id:<span class="nr">1</span>, clienteId:<span class="nr">1</span>, numero:<span class="st">'POL-001'</span>, importe:<span class="nr">500</span>,
+    fecha:<span class="st">'2024-01-10'</span>, estado:<span class="st">'cobrada'</span>, observaciones:<span class="st">''</span> }
+],
+
+fCliente: {
+  id:<span class="kw">null</span>, nombre:<span class="st">''</span>, apellidos:<span class="st">''</span>, telefono:<span class="st">''</span>,
+  localidad:<span class="st">''</span>, cp:<span class="st">''</span>, provincia:<span class="st">''</span>, tipo:<span class="st">'particular'</span>
+},
+
+clienteActual: <span class="kw">null</span>,
+busqueda: <span class="st">''</span>,
+filtroEstado: <span class="st">''</span>,
+mensajeOk: <span class="st">''</span>,</pre>
+  </div>
+</section>
+
+<!-- ─── DIRECTIVAS ─── -->
+<section class="section" id="sec-directivas">
+  <div class="page-title">Directivas Vue — referencia rápida</div>
+  <div class="page-subtitle">Las instrucciones especiales que pones dentro del HTML</div>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="showTab('dir','mostrar')">Mostrar/Ocultar</button>
+    <button class="tab-btn" onclick="showTab('dir','bucle')">Bucles</button>
+    <button class="tab-btn" onclick="showTab('dir','datos')">v-model</button>
+    <button class="tab-btn" onclick="showTab('dir','atributos')">Atributos</button>
+    <button class="tab-btn" onclick="showTab('dir','eventos')">Eventos</button>
+  </div>
+
+  <div class="tab-content active" id="dir-mostrar">
+    <div class="card">
+      <pre><span class="at">&lt;div</span> <span class="fn">v-if</span>=<span class="st">"pantalla === 'login'"</span><span class="at">&gt;</span>HTML del login<span class="at">&lt;/div&gt;</span>
+<span class="at">&lt;div</span> <span class="fn">v-else-if</span>=<span class="st">"pantalla === 'clientes'"</span><span class="at">&gt;</span>Tabla<span class="at">&lt;/div&gt;</span>
+<span class="at">&lt;div</span> <span class="fn">v-else</span><span class="at">&gt;</span>Otra pantalla<span class="at">&lt;/div&gt;</span>
+
+<span class="at">&lt;div</span> <span class="fn">v-show</span>=<span class="st">"mensajeOk"</span><span class="at">&gt;</span>{{ mensajeOk }}<span class="at">&lt;/div&gt;</span>
+Hola, {{ usuarioLogueado.nombre }}</pre>
+    </div>
+  </div>
+
+  <div class="tab-content" id="dir-bucle">
+    <div class="card">
+      <pre><span class="at">&lt;tr</span> <span class="fn">v-for</span>=<span class="st">"c in clientesFiltrados"</span> <span class="fn">:key</span>=<span class="st">"c.id"</span><span class="at">&gt;</span>
+  <span class="at">&lt;td&gt;</span>{{ c.nombre }}<span class="at">&lt;/td&gt;</span>
+<span class="at">&lt;/tr&gt;</span>
+
+<span class="at">&lt;tr</span> <span class="fn">v-if</span>=<span class="st">"clientesFiltrados.length === 0"</span><span class="at">&gt;</span>
+  <span class="at">&lt;td</span> colspan=<span class="st">"8"</span> class=<span class="st">"text-center text-muted"</span><span class="at">&gt;</span>Sin resultados<span class="at">&lt;/td&gt;</span>
+<span class="at">&lt;/tr&gt;</span></pre>
+    </div>
+  </div>
+
+  <div class="tab-content" id="dir-datos">
+    <div class="card">
+      <pre><span class="at">&lt;input</span> <span class="fn">v-model</span>=<span class="st">"busqueda"</span><span class="at">&gt;</span>
+<span class="at">&lt;input</span> type=<span class="st">"number"</span> <span class="fn">v-model.number</span>=<span class="st">"fPoliza.importe"</span><span class="at">&gt;</span>
+<span class="at">&lt;input</span> <span class="fn">v-model.trim</span>=<span class="st">"fCliente.nombre"</span><span class="at">&gt;</span>
+<span class="at">&lt;select</span> <span class="fn">v-model</span>=<span class="st">"fCliente.tipo"</span><span class="at">&gt;</span>
+  <span class="at">&lt;option</span> value=<span class="st">"particular"</span><span class="at">&gt;</span>Particular<span class="at">&lt;/option&gt;</span>
+  <span class="at">&lt;option</span> value=<span class="st">"empresa"</span><span class="at">&gt;</span>Empresa<span class="at">&lt;/option&gt;</span>
+<span class="at">&lt;/select&gt;</span>
+<span class="at">&lt;textarea</span> <span class="fn">v-model</span>=<span class="st">"fPoliza.observaciones"</span> rows=<span class="st">"3"</span><span class="at">&gt;&lt;/textarea&gt;</span></pre>
+    </div>
+  </div>
+
+  <div class="tab-content" id="dir-atributos">
+    <div class="card">
+      <pre><span class="at">&lt;tr</span> <span class="fn">:class</span>=<span class="st">"colorFila(poliza.estado)"</span><span class="at">&gt;</span>
+<span class="at">&lt;li</span> <span class="fn">:class</span>=<span class="st">"{ active: pantalla === 'clientes' }"</span><span class="at">&gt;</span>
+<span class="at">&lt;span</span> <span class="fn">:style</span>=<span class="st">"{ color: restante &lt; 0 ? 'red' : 'green' }"</span><span class="at">&gt;</span>
+<span class="at">&lt;button</span> <span class="fn">:disabled</span>=<span class="st">"!fCliente.nombre"</span><span class="at">&gt;</span>Guardar<span class="at">&lt;/button&gt;</span></pre>
+    </div>
+  </div>
+
+  <div class="tab-content" id="dir-eventos">
+    <div class="card">
+      <pre><span class="at">&lt;button</span> <span class="fn">@click</span>=<span class="st">"guardarCliente"</span><span class="at">&gt;</span>Guardar<span class="at">&lt;/button&gt;</span>
+<span class="at">&lt;button</span> <span class="fn">@click</span>=<span class="st">"editarCliente(cliente)"</span><span class="at">&gt;</span>Editar<span class="at">&lt;/button&gt;</span>
+<span class="at">&lt;a</span> href=<span class="st">"#"</span> <span class="fn">@click.prevent</span>=<span class="st">"pantalla = 'clientes'"</span><span class="at">&gt;</span>Clientes<span class="at">&lt;/a&gt;</span>
+<span class="at">&lt;input</span> <span class="fn">@keyup.enter</span>=<span class="st">"hacerLogin"</span><span class="at">&gt;</span></pre>
+    </div>
+  </div>
+</section>
+
+<!-- ─── LOGIN ─── -->
+<section class="section" id="sec-login">
+  <div class="page-title">Login</div>
+  <div class="page-subtitle">Pantalla de acceso con usuario y contraseña</div>
+
+  <div class="card">
+    <div class="card-title">HTML — formulario de login</div>
+    <pre><span class="at">&lt;div</span> <span class="fn">v-if</span>=<span class="st">"!usuarioLogueado"</span> class=<span class="st">"container"</span><span class="at">&gt;</span>
+  <span class="at">&lt;div</span> class=<span class="st">"col-md-4 col-md-offset-4"</span><span class="at">&gt;</span>
+    <span class="at">&lt;div</span> class=<span class="st">"panel panel-primary"</span> style=<span class="st">"margin-top:80px"</span><span class="at">&gt;</span>
+      <span class="at">&lt;div</span> class=<span class="st">"panel-heading"</span><span class="at">&gt;&lt;h3</span> class=<span class="st">"text-center"</span><span class="at">&gt;</span>Login<span class="at">&lt;/h3&gt;&lt;/div&gt;</span>
+      <span class="at">&lt;div</span> class=<span class="st">"panel-body"</span><span class="at">&gt;</span>
+        <span class="at">&lt;div</span> <span class="fn">v-if</span>=<span class="st">"errorLogin"</span> class=<span class="st">"alert alert-danger"</span><span class="at">&gt;</span>{{ errorLogin }}<span class="at">&lt;/div&gt;</span>
+        <span class="at">&lt;div</span> class=<span class="st">"form-group"</span><span class="at">&gt;</span>
+          <span class="at">&lt;label&gt;</span>Usuario<span class="at">&lt;/label&gt;</span>
+          <span class="at">&lt;input</span> class=<span class="st">"form-control"</span> <span class="fn">v-model</span>=<span class="st">"loginUsuario"</span><span class="at">&gt;</span>
+        <span class="at">&lt;/div&gt;</span>
+        <span class="at">&lt;div</span> class=<span class="st">"form-group"</span><span class="at">&gt;</span>
+          <span class="at">&lt;label&gt;</span>Contraseña<span class="at">&lt;/label&gt;</span>
+          <span class="at">&lt;input</span> type=<span class="st">"password"</span> class=<span class="st">"form-control"</span>
+                 <span class="fn">v-model</span>=<span class="st">"loginPassword"</span> <span class="fn">@keyup.enter</span>=<span class="st">"hacerLogin"</span><span class="at">&gt;</span>
+        <span class="at">&lt;/div&gt;</span>
+        <span class="at">&lt;button</span> class=<span class="st">"btn btn-primary btn-block"</span> <span class="fn">@click</span>=<span class="st">"hacerLogin"</span><span class="at">&gt;</span>Entrar<span class="at">&lt;/button&gt;</span>
+      <span class="at">&lt;/div&gt;</span>
+    <span class="at">&lt;/div&gt;</span>
+  <span class="at">&lt;/div&gt;</span>
+<span class="at">&lt;/div&gt;</span></pre>
+  </div>
+
+  <div class="card">
+    <div class="card-title">JavaScript — login sin BD (datos en data)</div>
+    <pre>usuarios: [{ id:<span class="nr">1</span>, usuario:<span class="st">'admin'</span>, password:<span class="st">'1234'</span>, nombre:<span class="st">'Administrador'</span> }],
+
+methods: {
+  <span class="fn">hacerLogin</span>() {
+    <span class="kw">const</span> u = <span class="kw">this</span>.usuarios.<span class="fn">find</span>(u =>
+      u.usuario === <span class="kw">this</span>.loginUsuario && u.password === <span class="kw">this</span>.loginPassword
+    );
+    <span class="kw">if</span> (u) { <span class="kw">this</span>.usuarioLogueado = u; <span class="kw">this</span>.errorLogin = <span class="st">''</span>; }
+    <span class="kw">else</span>   { <span class="kw">this</span>.errorLogin = <span class="st">'Usuario o contraseña incorrectos'</span>; }
+  },
+  <span class="fn">cerrarSesion</span>() {
+    <span class="kw">this</span>.usuarioLogueado = <span class="kw">null</span>;
+    <span class="kw">this</span>.loginUsuario = <span class="kw">this</span>.loginPassword = <span class="st">''</span>;
+  }
+}</pre>
+  </div>
+</section>
+
+<!-- ─── TABLA ─── -->
+<section class="section" id="sec-tabla">
+  <div class="page-title">Tabla + Buscador</div>
+  <div class="page-subtitle">Pantalla principal con listado y búsqueda en tiempo real</div>
+
+  <div class="card">
+    <div class="card-title">HTML — tabla con buscador</div>
+    <pre><span class="at">&lt;div</span> <span class="fn">v-if</span>=<span class="st">"pantalla === 'clientes'"</span> class=<span class="st">"container-fluid"</span><span class="at">&gt;</span>
+  <span class="at">&lt;h2&gt;</span>Clientes<span class="at">&lt;/h2&gt;</span>
+  <span class="at">&lt;div</span> class=<span class="st">"row"</span> style=<span class="st">"margin-bottom:15px"</span><span class="at">&gt;</span>
+    <span class="at">&lt;div</span> class=<span class="st">"col-md-6"</span><span class="at">&gt;</span>
+      <span class="at">&lt;input</span> class=<span class="st">"form-control"</span> <span class="fn">v-model</span>=<span class="st">"busqueda"</span> placeholder=<span class="st">"Buscar..."</span><span class="at">&gt;</span>
+    <span class="at">&lt;/div&gt;</span>
+    <span class="at">&lt;div</span> class=<span class="st">"col-md-6 text-right"</span><span class="at">&gt;</span>
+      <span class="at">&lt;button</span> class=<span class="st">"btn btn-success"</span> <span class="fn">@click</span>=<span class="st">"nuevoCliente"</span><span class="at">&gt;</span>Nuevo<span class="at">&lt;/button&gt;</span>
+    <span class="at">&lt;/div&gt;</span>
+  <span class="at">&lt;/div&gt;</span>
+  <span class="at">&lt;table</span> class=<span class="st">"table table-striped table-bordered table-hover"</span><span class="at">&gt;</span>
+    <span class="at">&lt;thead&gt;&lt;tr&gt;&lt;th&gt;</span>Nombre<span class="at">&lt;/th&gt;&lt;th&gt;</span>Apellidos<span class="at">&lt;/th&gt;&lt;th&gt;</span>Teléfono<span class="at">&lt;/th&gt;&lt;th&gt;</span>Acciones<span class="at">&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;</span>
+    <span class="at">&lt;tbody&gt;</span>
+      <span class="at">&lt;tr</span> <span class="fn">v-for</span>=<span class="st">"c in clientesFiltrados"</span> <span class="fn">:key</span>=<span class="st">"c.id"</span><span class="at">&gt;</span>
+        <span class="at">&lt;td&gt;</span>{{ c.nombre }}<span class="at">&lt;/td&gt;&lt;td&gt;</span>{{ c.apellidos }}<span class="at">&lt;/td&gt;&lt;td&gt;</span>{{ c.telefono }}<span class="at">&lt;/td&gt;</span>
+        <span class="at">&lt;td&gt;</span>
+          <span class="at">&lt;button</span> class=<span class="st">"btn btn-xs btn-primary"</span> <span class="fn">@click</span>=<span class="st">"verCliente(c)"</span><span class="at">&gt;</span>Ver<span class="at">&lt;/button&gt;</span>
+          <span class="at">&lt;button</span> class=<span class="st">"btn btn-xs btn-warning"</span> <span class="fn">@click</span>=<span class="st">"editarCliente(c)"</span><span class="at">&gt;</span>Editar<span class="at">&lt;/button&gt;</span>
+          <span class="at">&lt;button</span> class=<span class="st">"btn btn-xs btn-danger"</span>  <span class="fn">@click</span>=<span class="st">"borrarCliente(c.id)"</span><span class="at">&gt;</span>Borrar<span class="at">&lt;/button&gt;</span>
+        <span class="at">&lt;/td&gt;</span>
+      <span class="at">&lt;/tr&gt;</span>
+      <span class="at">&lt;tr</span> <span class="fn">v-if</span>=<span class="st">"clientesFiltrados.length === 0"</span><span class="at">&gt;</span>
+        <span class="at">&lt;td</span> colspan=<span class="st">"4"</span> class=<span class="st">"text-center text-muted"</span><span class="at">&gt;</span>Sin resultados<span class="at">&lt;/td&gt;</span>
+      <span class="at">&lt;/tr&gt;</span>
+    <span class="at">&lt;/tbody&gt;</span>
+  <span class="at">&lt;/table&gt;</span>
+<span class="at">&lt;/div&gt;</span></pre>
+  </div>
+
+  <div class="card">
+    <div class="card-title">JavaScript — computed buscador</div>
+    <pre>computed: {
+  <span class="fn">clientesFiltrados</span>() {
+    <span class="kw">if</span> (!<span class="kw">this</span>.busqueda) <span class="kw">return this</span>.clientes;
+    <span class="kw">const</span> b = <span class="kw">this</span>.busqueda.<span class="fn">toLowerCase</span>();
+    <span class="kw">return this</span>.clientes.<span class="fn">filter</span>(c =>
+      c.nombre.<span class="fn">toLowerCase</span>().<span class="fn">includes</span>(b)    ||
+      c.apellidos.<span class="fn">toLowerCase</span>().<span class="fn">includes</span>(b) ||
+      c.localidad.<span class="fn">toLowerCase</span>().<span class="fn">includes</span>(b)
+    );
+  }
+}</pre>
+  </div>
+</section>
+
+<!-- ─── CRUD ─── -->
+<section class="section" id="sec-crud">
+  <div class="page-title">CRUD — Alta, Edición, Baja</div>
+  <div class="page-subtitle">Un modal para crear Y editar. La variable <code class="inline">modo</code> decide qué hace.</div>
+
+  <div class="card">
+    <div class="card-title">HTML — modal</div>
+    <pre><span class="at">&lt;div</span> class=<span class="st">"modal fade"</span> id=<span class="st">"modalCliente"</span> tabindex=<span class="st">"-1"</span><span class="at">&gt;</span>
+  <span class="at">&lt;div</span> class=<span class="st">"modal-dialog"</span><span class="at">&gt;&lt;div</span> class=<span class="st">"modal-content"</span><span class="at">&gt;</span>
+    <span class="at">&lt;div</span> class=<span class="st">"modal-header"</span><span class="at">&gt;</span>
+      <span class="at">&lt;button</span> class=<span class="st">"close"</span> data-dismiss=<span class="st">"modal"</span><span class="at">&gt;</span>×<span class="at">&lt;/button&gt;</span>
+      <span class="at">&lt;h4</span> class=<span class="st">"modal-title"</span><span class="at">&gt;</span>{{ modo==='nuevo' ? 'Nuevo' : 'Editar' }} Cliente<span class="at">&lt;/h4&gt;</span>
+    <span class="at">&lt;/div&gt;</span>
+    <span class="at">&lt;div</span> class=<span class="st">"modal-body"</span><span class="at">&gt;</span>
+      <span class="at">&lt;div</span> class=<span class="st">"form-group"</span><span class="at">&gt;</span>
+        <span class="at">&lt;label&gt;</span>Nombre *<span class="at">&lt;/label&gt;</span>
+        <span class="at">&lt;input</span> class=<span class="st">"form-control"</span> <span class="fn">v-model</span>=<span class="st">"fCliente.nombre"</span><span class="at">&gt;</span>
+      <span class="at">&lt;/div&gt;</span>
+    <span class="at">&lt;/div&gt;</span>
+    <span class="at">&lt;div</span> class=<span class="st">"modal-footer"</span><span class="at">&gt;</span>
+      <span class="at">&lt;button</span> class=<span class="st">"btn btn-default"</span> data-dismiss=<span class="st">"modal"</span><span class="at">&gt;</span>Cancelar<span class="at">&lt;/button&gt;</span>
+      <span class="at">&lt;button</span> class=<span class="st">"btn btn-success"</span> <span class="fn">@click</span>=<span class="st">"guardarCliente"</span><span class="at">&gt;</span>Guardar<span class="at">&lt;/button&gt;</span>
+    <span class="at">&lt;/div&gt;</span>
+  <span class="at">&lt;/div&gt;&lt;/div&gt;</span>
+<span class="at">&lt;/div&gt;</span></pre>
+  </div>
+
+  <div class="card">
+    <div class="card-title">JavaScript — métodos CRUD (sin BD)</div>
+    <pre>methods: {
+  <span class="fn">nuevoCliente</span>() {
+    <span class="kw">this</span>.modo = <span class="st">'nuevo'</span>;
+    <span class="kw">this</span>.fCliente = { id:<span class="kw">null</span>, nombre:<span class="st">''</span>, apellidos:<span class="st">''</span>, telefono:<span class="st">''</span>,
+                      localidad:<span class="st">''</span>, cp:<span class="st">''</span>, provincia:<span class="st">''</span>, tipo:<span class="st">'particular'</span> };
+    $(<span class="st">'#modalCliente'</span>).<span class="fn">modal</span>(<span class="st">'show'</span>);
+  },
+
+  <span class="fn">editarCliente</span>(c) {
+    <span class="kw">this</span>.modo = <span class="st">'editar'</span>;
+    <span class="kw">this</span>.fCliente = { ...c };
+    $(<span class="st">'#modalCliente'</span>).<span class="fn">modal</span>(<span class="st">'show'</span>);
+  },
+
+  <span class="fn">guardarCliente</span>() {
+    <span class="kw">if</span> (!<span class="kw">this</span>.fCliente.nombre) { <span class="fn">alert</span>(<span class="st">'Nombre obligatorio'</span>); <span class="kw">return</span>; }
+
+    <span class="kw">if</span> (<span class="kw">this</span>.modo === <span class="st">'nuevo'</span>) {
+      <span class="kw">this</span>.fCliente.id = Math.<span class="fn">max</span>(<span class="nr">0</span>, ...<span class="kw">this</span>.clientes.<span class="fn">map</span>(c => c.id)) + <span class="nr">1</span>;
+      <span class="kw">this</span>.clientes.<span class="fn">push</span>({ ...<span class="kw">this</span>.fCliente });
+    } <span class="kw">else</span> {
+      <span class="kw">const</span> i = <span class="kw">this</span>.clientes.<span class="fn">findIndex</span>(c => c.id === <span class="kw">this</span>.fCliente.id);
+      <span class="kw">this</span>.$<span class="fn">set</span>(<span class="kw">this</span>.clientes, i, { ...<span class="kw">this</span>.fCliente });
+    }
+    $(<span class="st">'#modalCliente'</span>).<span class="fn">modal</span>(<span class="st">'hide'</span>);
+    <span class="kw">this</span>.<span class="fn">ok</span>(<span class="st">'Guardado'</span>);
+  },
+
+  <span class="fn">borrarCliente</span>(id) {
+    <span class="kw">if</span> (!<span class="fn">confirm</span>(<span class="st">'¿Eliminar?'</span>)) <span class="kw">return</span>;
+    <span class="kw">this</span>.clientes = <span class="kw">this</span>.clientes.<span class="fn">filter</span>(c => c.id !== id);
+  }
+}</pre>
+  </div>
+</section>
+
+<!-- ─── DETALLE ─── -->
+<section class="section" id="sec-detalle">
+  <div class="page-title">Pantalla Detalle</div>
+  <div class="page-subtitle">Ver un registro y sus sub-entidades</div>
+
+  <div class="card">
+    <div class="card-title">JavaScript — navegación y computed</div>
+    <pre>methods: {
+  <span class="fn">verCliente</span>(c) {
+    <span class="kw">this</span>.clienteActual = c;
+    <span class="kw">this</span>.pantalla = <span class="st">'detalle'</span>;
+  }
+},
+computed: {
+  <span class="fn">polizasCliente</span>() {
+    <span class="kw">if</span> (!<span class="kw">this</span>.clienteActual) <span class="kw">return</span> [];
+    <span class="kw">return this</span>.polizas.<span class="fn">filter</span>(p => p.clienteId === <span class="kw">this</span>.clienteActual.id);
+  }
+}</pre>
+  </div>
+
+  <div class="card">
+    <div class="card-title">HTML — pantalla de detalle</div>
+    <pre><span class="at">&lt;div</span> <span class="fn">v-if</span>=<span class="st">"pantalla === 'detalle' && clienteActual"</span> class=<span class="st">"container-fluid"</span><span class="at">&gt;</span>
+  <span class="at">&lt;button</span> class=<span class="st">"btn btn-default"</span> <span class="fn">@click</span>=<span class="st">"pantalla='clientes'"</span><span class="at">&gt;</span>← Volver<span class="at">&lt;/button&gt;</span>
+  <span class="at">&lt;hr&gt;</span>
+  <span class="at">&lt;div</span> class=<span class="st">"panel panel-info"</span><span class="at">&gt;</span>
+    <span class="at">&lt;div</span> class=<span class="st">"panel-heading"</span><span class="at">&gt;</span>{{ clienteActual.nombre }} {{ clienteActual.apellidos }}<span class="at">&lt;/div&gt;</span>
+    <span class="at">&lt;div</span> class=<span class="st">"panel-body"</span><span class="at">&gt;</span>Tel: {{ clienteActual.telefono }}<span class="at">&lt;/div&gt;</span>
+  <span class="at">&lt;/div&gt;</span>
+
+  <span class="at">&lt;h4&gt;</span>Pólizas <span class="at">&lt;button</span> class=<span class="st">"btn btn-success btn-sm"</span> <span class="fn">@click</span>=<span class="st">"nuevaPoliza"</span><span class="at">&gt;</span>Nueva<span class="at">&lt;/button&gt;&lt;/h4&gt;</span>
+  <span class="at">&lt;table</span> class=<span class="st">"table table-bordered"</span><span class="at">&gt;</span>
+    <span class="at">&lt;thead&gt;&lt;tr&gt;&lt;th&gt;</span>Nº<span class="at">&lt;/th&gt;&lt;th&gt;</span>Importe<span class="at">&lt;/th&gt;&lt;th&gt;</span>Estado<span class="at">&lt;/th&gt;&lt;th&gt;</span>Acciones<span class="at">&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;</span>
+    <span class="at">&lt;tbody&gt;</span>
+      <span class="at">&lt;tr</span> <span class="fn">v-for</span>=<span class="st">"p in polizasCliente"</span> <span class="fn">:key</span>=<span class="st">"p.id"</span> <span class="fn">:class</span>=<span class="st">"colorFila(p.estado)"</span><span class="at">&gt;</span>
+        <span class="at">&lt;td&gt;</span>{{ p.numero }}<span class="at">&lt;/td&gt;&lt;td&gt;</span>{{ p.importe }}€<span class="at">&lt;/td&gt;</span>
+        <span class="at">&lt;td&gt;&lt;span</span> <span class="fn">:class</span>=<span class="st">"badgeEstado(p.estado)"</span><span class="at">&gt;</span>{{ p.estado }}<span class="at">&lt;/span&gt;&lt;/td&gt;</span>
+        <span class="at">&lt;td&gt;</span>
+          <span class="at">&lt;button</span> class=<span class="st">"btn btn-xs btn-warning"</span> <span class="fn">@click</span>=<span class="st">"editarPoliza(p)"</span><span class="at">&gt;</span>Editar<span class="at">&lt;/button&gt;</span>
+          <span class="at">&lt;button</span> class=<span class="st">"btn btn-xs btn-danger"</span>  <span class="fn">@click</span>=<span class="st">"borrarPoliza(p.id)"</span><span class="at">&gt;</span>Borrar<span class="at">&lt;/button&gt;</span>
+        <span class="at">&lt;/td&gt;</span>
+      <span class="at">&lt;/tr&gt;</span>
+    <span class="at">&lt;/tbody&gt;</span>
+  <span class="at">&lt;/table&gt;</span>
+<span class="at">&lt;/div&gt;</span></pre>
+  </div>
+</section>
+
+<!-- ─── PAGOS ─── -->
+<section class="section" id="sec-pagos">
+  <div class="page-title">Pagos / Sub-items</div>
+  <div class="page-subtitle">Control de cuotas o pagos vinculados a una póliza</div>
+
+  <div class="card">
+    <div class="card-title">JavaScript — computed de pagos</div>
+    <pre>computed: {
+  <span class="fn">pagosPoliza</span>() {
+    <span class="kw">if</span> (!<span class="kw">this</span>.polizaActual) <span class="kw">return</span> [];
+    <span class="kw">return this</span>.pagos.<span class="fn">filter</span>(p => p.polizaId === <span class="kw">this</span>.polizaActual.id);
+  },
+  <span class="fn">totalPagado</span>() {
+    <span class="kw">return this</span>.pagosPoliza.<span class="fn">reduce</span>((acc, p) => acc + p.importe, <span class="nr">0</span>);
+  },
+  <span class="fn">restante</span>() {
+    <span class="kw">if</span> (!<span class="kw">this</span>.polizaActual) <span class="kw">return</span> <span class="nr">0</span>;
+    <span class="kw">return this</span>.polizaActual.importe - <span class="kw">this</span>.totalPagado;
+  }
+},
+methods: {
+  <span class="fn">agregarPago</span>() {
+    <span class="kw">if</span> (<span class="kw">this</span>.fPago.importe <= <span class="nr">0</span>)              { <span class="fn">alert</span>(<span class="st">'Importe inválido'</span>); <span class="kw">return</span>; }
+    <span class="kw">if</span> (<span class="kw">this</span>.fPago.importe > <span class="kw">this</span>.restante) { <span class="fn">alert</span>(<span class="st">`Máximo: ${this.restante}€`</span>); <span class="kw">return</span>; }
+    <span class="kw">const</span> id = Math.<span class="fn">max</span>(<span class="nr">0</span>, ...<span class="kw">this</span>.pagos.<span class="fn">map</span>(p => p.id)) + <span class="nr">1</span>;
+    <span class="kw">this</span>.pagos.<span class="fn">push</span>({ id, ...<span class="kw">this</span>.fPago });
+    <span class="kw">this</span>.fPago.importe = <span class="nr">0</span>; <span class="kw">this</span>.fPago.fecha = <span class="st">''</span>;
+  }
+}</pre>
+  </div>
+</section>
+
+<!-- ─── COLORES ─── -->
+<section class="section" id="sec-colores">
+  <div class="page-title">Colores por estado</div>
+  <div class="page-subtitle">Pintar filas y badges según el estado del registro</div>
+
+  <div class="card">
+    <div class="card-title">JavaScript — métodos de color</div>
+    <pre>methods: {
+  <span class="fn">colorFila</span>(estado) {
+    <span class="kw">const</span> c = { <span class="st">'cobrada'</span>:<span class="st">'success'</span>, <span class="st">'a cuenta'</span>:<span class="st">'warning'</span>,
+                 <span class="st">'liquidada'</span>:<span class="st">'info'</span>, <span class="st">'anulada'</span>:<span class="st">'danger'</span>, <span class="st">'pre-anulada'</span>:<span class="st">'active'</span> };
+    <span class="kw">return</span> c[estado] || <span class="st">''</span>;
+  },
+  <span class="fn">badgeEstado</span>(estado) {
+    <span class="kw">const</span> b = { <span class="st">'cobrada'</span>:<span class="st">'label label-success'</span>, <span class="st">'a cuenta'</span>:<span class="st">'label label-warning'</span>,
+                 <span class="st">'liquidada'</span>:<span class="st">'label label-info'</span>, <span class="st">'anulada'</span>:<span class="st">'label label-danger'</span> };
+    <span class="kw">return</span> b[estado] || <span class="st">'label label-default'</span>;
+  }
+}</pre>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Referencia visual Bootstrap 3</div>
+    <table>
+      <thead><tr><th>Clase fila</th><th>Clase badge</th><th>Color</th><th>Cuándo</th></tr></thead>
+      <tbody>
+        <tr><td><code class="inline">success</code></td><td><code class="inline">label-success</code></td><td><span style="background:#dff0d8;color:#3c763d;padding:2px 10px;border-radius:4px;font-size:11px">Verde</span></td><td>Cobrado, activo</td></tr>
+        <tr><td><code class="inline">warning</code></td><td><code class="inline">label-warning</code></td><td><span style="background:#fcf8e3;color:#8a6d3b;padding:2px 10px;border-radius:4px;font-size:11px">Amarillo</span></td><td>A cuenta, pendiente</td></tr>
+        <tr><td><code class="inline">danger</code></td><td><code class="inline">label-danger</code></td><td><span style="background:#f2dede;color:#a94442;padding:2px 10px;border-radius:4px;font-size:11px">Rojo</span></td><td>Anulado, error</td></tr>
+        <tr><td><code class="inline">info</code></td><td><code class="inline">label-info</code></td><td><span style="background:#d9edf7;color:#31708f;padding:2px 10px;border-radius:4px;font-size:11px">Azul</span></td><td>Liquidado</td></tr>
+        <tr><td><code class="inline">active</code></td><td><code class="inline">label-default</code></td><td><span style="background:#f5f5f5;color:#777;padding:2px 10px;border-radius:4px;font-size:11px">Gris</span></td><td>Pre-anulado</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ─── BOOTSTRAP ─── -->
+<section class="section" id="sec-bootstrap">
+  <div class="page-title">Bootstrap 3 — cheatsheet</div>
+  <div class="page-subtitle">Las clases más usadas en el examen</div>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="showTab('bs','botones')">Botones</button>
+    <button class="tab-btn" onclick="showTab('bs','grid')">Grid</button>
+    <button class="tab-btn" onclick="showTab('bs','alertas')">Alertas</button>
+    <button class="tab-btn" onclick="showTab('bs','panel')">Panel</button>
+    <button class="tab-btn" onclick="showTab('bs','misc')">Varios</button>
+  </div>
+
+  <div class="tab-content active" id="bs-botones">
+    <div class="card">
+      <pre><span class="at">&lt;button</span> class=<span class="st">"btn btn-default"</span><span class="at">&gt;</span>Gris<span class="at">&lt;/button&gt;</span>
+<span class="at">&lt;button</span> class=<span class="st">"btn btn-primary"</span><span class="at">&gt;</span>Azul<span class="at">&lt;/button&gt;</span>
+<span class="at">&lt;button</span> class=<span class="st">"btn btn-success"</span><span class="at">&gt;</span>Verde<span class="at">&lt;/button&gt;</span>
+<span class="at">&lt;button</span> class=<span class="st">"btn btn-warning"</span><span class="at">&gt;</span>Naranja<span class="at">&lt;/button&gt;</span>
+<span class="at">&lt;button</span> class=<span class="st">"btn btn-danger"</span><span class="at">&gt;</span>Rojo<span class="at">&lt;/button&gt;</span>
+<span class="at">&lt;button</span> class=<span class="st">"btn btn-info"</span><span class="at">&gt;</span>Cyan<span class="at">&lt;/button&gt;</span>
+<span class="cm">&lt;!-- Tamaños: btn-lg | normal | btn-sm | btn-xs (tablas) --&gt;</span>
+<span class="cm">&lt;!-- Ancho completo: btn-block --&gt;</span></pre>
+    </div>
+  </div>
+
+  <div class="tab-content" id="bs-grid">
+    <div class="card">
+      <pre><span class="cm">&lt;!-- Números de col-md-X deben sumar 12 --&gt;</span>
+<span class="at">&lt;div</span> class=<span class="st">"row"</span><span class="at">&gt;</span>
+  <span class="at">&lt;div</span> class=<span class="st">"col-md-6"</span><span class="at">&gt;</span>Izq<span class="at">&lt;/div&gt;</span>
+  <span class="at">&lt;div</span> class=<span class="st">"col-md-6"</span><span class="at">&gt;</span>Der<span class="at">&lt;/div&gt;</span>
+<span class="at">&lt;/div&gt;</span>
+<span class="cm">&lt;!-- Centrado con offset --&gt;</span>
+<span class="at">&lt;div</span> class=<span class="st">"col-md-4 col-md-offset-4"</span><span class="at">&gt;</span>Login<span class="at">&lt;/div&gt;</span></pre>
+    </div>
+  </div>
+
+  <div class="tab-content" id="bs-alertas">
+    <div class="card">
+      <pre><span class="at">&lt;div</span> class=<span class="st">"alert alert-success"</span> <span class="fn">v-if</span>=<span class="st">"mensajeOk"</span><span class="at">&gt;</span>{{ mensajeOk }}<span class="at">&lt;/div&gt;</span>
+<span class="at">&lt;div</span> class=<span class="st">"alert alert-danger"</span>  <span class="fn">v-if</span>=<span class="st">"mensajeError"</span><span class="at">&gt;</span>{{ mensajeError }}<span class="at">&lt;/div&gt;</span>
+<span class="at">&lt;div</span> class=<span class="st">"alert alert-warning"</span><span class="at">&gt;</span>Advertencia<span class="at">&lt;/div&gt;</span>
+<span class="at">&lt;div</span> class=<span class="st">"alert alert-info"</span><span class="at">&gt;</span>Info<span class="at">&lt;/div&gt;</span></pre>
+    </div>
+  </div>
+
+  <div class="tab-content" id="bs-panel">
+    <div class="card">
+      <pre><span class="at">&lt;div</span> class=<span class="st">"panel panel-primary"</span><span class="at">&gt;</span>
+  <span class="at">&lt;div</span> class=<span class="st">"panel-heading"</span><span class="at">&gt;</span>Título<span class="at">&lt;/div&gt;</span>
+  <span class="at">&lt;div</span> class=<span class="st">"panel-body"</span><span class="at">&gt;</span>Contenido<span class="at">&lt;/div&gt;</span>
+  <span class="at">&lt;div</span> class=<span class="st">"panel-footer"</span><span class="at">&gt;</span>Pie (opt)<span class="at">&lt;/div&gt;</span>
+<span class="at">&lt;/div&gt;</span>
+<span class="cm">&lt;!-- Variantes: panel-info, panel-success, panel-danger, panel-warning --&gt;</span></pre>
+    </div>
+  </div>
+
+  <div class="tab-content" id="bs-misc">
+    <div class="card">
+      <pre><span class="cm">&lt;!-- Texto --&gt;</span>
+<span class="at">&lt;p</span> class=<span class="st">"text-center"</span><span class="at">&gt;</span>  <span class="at">&lt;p</span> class=<span class="st">"text-right"</span><span class="at">&gt;</span>  <span class="at">&lt;p</span> class=<span class="st">"text-muted"</span><span class="at">&gt;</span>
+
+<span class="cm">&lt;!-- Labels --&gt;</span>
+<span class="at">&lt;span</span> class=<span class="st">"label label-success"</span><span class="at">&gt;</span>Cobrada<span class="at">&lt;/span&gt;</span>
+<span class="at">&lt;span</span> class=<span class="st">"label label-warning"</span><span class="at">&gt;</span>A cuenta<span class="at">&lt;/span&gt;</span>
+
+<span class="cm">&lt;!-- Forms --&gt;</span>
+<span class="at">&lt;div</span> class=<span class="st">"form-group"</span><span class="at">&gt;</span>
+  <span class="at">&lt;label&gt;</span>Campo<span class="at">&lt;/label&gt;</span>
+  <span class="at">&lt;input</span> class=<span class="st">"form-control"</span><span class="at">&gt;</span>
+<span class="at">&lt;/div&gt;</span>
+<span class="at">&lt;select</span> class=<span class="st">"form-control"</span><span class="at">&gt;</span>...<span class="at">&lt;/select&gt;</span>
+<span class="at">&lt;textarea</span> class=<span class="st">"form-control"</span> rows=<span class="st">"3"</span><span class="at">&gt;&lt;/textarea&gt;</span></pre>
+    </div>
+  </div>
+</section>
+
+<!-- ─── PATRONES ─── -->
+<section class="section" id="sec-patrones">
+  <div class="page-title">Patrones frecuentes</div>
+  <div class="page-subtitle">Fragmentos que usarás en casi cualquier práctica</div>
+
+  <div class="card">
+    <div class="card-title">Buscar y operar sobre arrays</div>
+    <pre><span class="cm">// Encontrar uno</span>
+<span class="kw">const</span> c = <span class="kw">this</span>.clientes.<span class="fn">find</span>(c => c.id === id);
+
+<span class="cm">// Filtrar</span>
+<span class="kw">const</span> p = <span class="kw">this</span>.polizas.<span class="fn">filter</span>(p => p.clienteId === <span class="kw">this</span>.clienteActual.id);
+
+<span class="cm">// Posición para editar</span>
+<span class="kw">const</span> i = <span class="kw">this</span>.clientes.<span class="fn">findIndex</span>(c => c.id === id);
+
+<span class="cm">// Añadir / Eliminar / Editar</span>
+<span class="kw">this</span>.clientes.<span class="fn">push</span>({ ...<span class="kw">this</span>.fCliente });
+<span class="kw">this</span>.clientes = <span class="kw">this</span>.clientes.<span class="fn">filter</span>(c => c.id !== id);
+<span class="kw">this</span>.$<span class="fn">set</span>(<span class="kw">this</span>.clientes, i, { ...<span class="kw">this</span>.fCliente });
+
+<span class="cm">// Sumar / ID siguiente</span>
+<span class="kw">const</span> total = arr.<span class="fn">reduce</span>((acc, p) => acc + p.importe, <span class="nr">0</span>);
+<span class="kw">const</span> id    = Math.<span class="fn">max</span>(<span class="nr">0</span>, ...arr.<span class="fn">map</span>(x => x.id)) + <span class="nr">1</span>;</pre>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Ordenar arrays</div>
+    <pre><span class="cm">// Por fecha desc (más reciente primero)</span>
+[...arr].<span class="fn">sort</span>((a, b) => <span class="kw">new</span> <span class="fn">Date</span>(b.fecha) - <span class="kw">new</span> <span class="fn">Date</span>(a.fecha));
+
+<span class="cm">// Por nombre</span>
+[...arr].<span class="fn">sort</span>((a, b) => a.nombre.<span class="fn">localeCompare</span>(b.nombre));
+
+<span class="cm">// ⚠️ [...arr] crea copia — no modifica el original</span></pre>
+  </div>
+</section>
+
+<!-- ─── CHECKLIST ─── -->
+<section class="section" id="sec-checklist">
+  <div class="page-title">Checklist del examen</div>
+  <div class="page-subtitle">Marca lo que vas completando</div>
+
+  <div style="margin-bottom:20px">
+    <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:4px">
+      <span>Progreso</span>
+      <span id="progress-txt">0 / 0</span>
+    </div>
+    <div class="progress-bar-bg">
+      <div class="progress-bar-fill" id="progress-fill" style="width:0%"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📁 Estructura y setup</div>
+    <ul class="checklist" id="list-setup">
+      <li>
+        <div class="check-box" onclick="toggleCheck(this)"></div>
+        <div class="check-text">¿El enunciado pide BD? → Crear carpeta en htdocs, iniciar XAMPP
+          <div class="check-desc">Sin BD → un solo index.html basta</div>
+        </div>
+      </li>
+      <li>
+        <div class="check-box" onclick="toggleCheck(this)"></div>
+        <div class="check-text">Base de datos creada en phpMyAdmin y tablas importadas
+          <div class="check-desc">Guarda el CREATE TABLE en bd.sql por si acaso</div>
+        </div>
+      </li>
+      <li>
+        <div class="check-box" onclick="toggleCheck(this)"></div>
+        <div class="check-text"><code class="inline">conexion.php</code> creado y probado con test_conexion.php
+          <div class="check-desc">Borra test_conexion.php cuando confirmes que funciona</div>
+        </div>
+      </li>
+      <li>
+        <div class="check-box" onclick="toggleCheck(this)"></div>
+        <div class="check-text">Plantilla HTML base pegada y verificada (sin errores en consola)
+          <div class="check-desc">F12 → pestaña Console → no debe haber errores rojos</div>
+        </div>
+      </li>
+      <li>
+        <div class="check-box" onclick="toggleCheck(this)"></div>
+        <div class="check-text">Si hay JS separado: <code class="inline">js/app.js</code> enlazado DESPUÉS de Vue en el HTML</div>
+      </li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📖 Al leer el enunciado</div>
+    <ul class="checklist" id="list-lectura">
+      <li>
+        <div class="check-box" onclick="toggleCheck(this)"></div>
+        <div class="check-text">¿Hay login? → tabla <code class="inline">usuarios</code> en BD o en <code class="inline">data</code></div>
+      </li>
+      <li>
+        <div class="check-box" onclick="toggleCheck(this)"></div>
+        <div class="check-text">¿Cuál es la entidad principal? → su array, objeto formulario fX, y tabla PHP</div>
+      </li>
+      <li>
+        <div class="check-box" onclick="toggleCheck(this)"></div>
+        <div class="check-text">¿Tiene sub-entidades? → su array con clienteId (FK), su tabla PHP</div>
+      </li>
+      <li>
+        <div class="check-box" onclick="toggleCheck(this)"></div>
+        <div class="check-text">¿Hay estados con colores? → <code class="inline">colorFila()</code> y <code class="inline">badgeEstado()</code></div>
+      </li>
+      <li>
+        <div class="check-box" onclick="toggleCheck(this)"></div>
+        <div class="check-text">¿Hay pagos/cuotas? → array pagos, computed totalPagado y restante</div>
+      </li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🏗️ Al construir</div>
+    <ul class="checklist" id="list-build">
+      <li><div class="check-box" onclick="toggleCheck(this)"></div><div class="check-text"><code class="inline">data</code> completo con arrays de ejemplo y objetos de formulario</div></li>
+      <li><div class="check-box" onclick="toggleCheck(this)"></div><div class="check-text">Login funciona (si lo piden)</div></li>
+      <li><div class="check-box" onclick="toggleCheck(this)"></div><div class="check-text">Navbar navega entre pantallas</div></li>
+      <li><div class="check-box" onclick="toggleCheck(this)"></div><div class="check-text">Si hay BD: <code class="inline">mounted()</code> llama a <code class="inline">cargarX()</code> y los datos aparecen en tabla</div></li>
+      <li><div class="check-box" onclick="toggleCheck(this)"></div><div class="check-text">Tabla con <code class="inline">v-for</code> + computed filtrado + buscador reactivo</div></li>
+      <li><div class="check-box" onclick="toggleCheck(this)"></div><div class="check-text">Modal CRUD: Nuevo funciona</div></li>
+      <li><div class="check-box" onclick="toggleCheck(this)"></div><div class="check-text">Modal CRUD: Editar funciona (modifica el correcto)</div></li>
+      <li><div class="check-box" onclick="toggleCheck(this)"></div><div class="check-text">Borrar pide confirmación y elimina</div></li>
+      <li><div class="check-box" onclick="toggleCheck(this)"></div><div class="check-text">Si hay PHP: cada operación llama a <code class="inline">cargarX()</code> para refrescar desde BD</div></li>
+      <li><div class="check-box" onclick="toggleCheck(this)"></div><div class="check-text">Pantalla detalle + sub-entidades con su CRUD</div></li>
+      <li><div class="check-box" onclick="toggleCheck(this)"></div><div class="check-text">Colores de fila y badges por estado</div></li>
+      <li><div class="check-box" onclick="toggleCheck(this)"></div><div class="check-text">Pagos: totalPagado, restante, validación de importe</div></li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <div class="card-title">✅ Verificación final</div>
+    <ul class="checklist" id="list-final">
+      <li><div class="check-box" onclick="toggleCheck(this)"></div><div class="check-text">Abrir desde cero — sin errores en consola (F12)</div></li>
+      <li><div class="check-box" onclick="toggleCheck(this)"></div><div class="check-text">Login incorrecto → muestra error | correcto → entra</div></li>
+      <li><div class="check-box" onclick="toggleCheck(this)"></div><div class="check-text">Crear registro → aparece en tabla</div></li>
+      <li><div class="check-box" onclick="toggleCheck(this)"></div><div class="check-text">Editar registro → se actualiza</div></li>
+      <li><div class="check-box" onclick="toggleCheck(this)"></div><div class="check-text">Buscador filtra correctamente</div></li>
+      <li><div class="check-box" onclick="toggleCheck(this)"></div><div class="check-text">Si hay BD: recargar página y los datos siguen ahí</div></li>
+      <li><div class="check-box" onclick="toggleCheck(this)"></div><div class="check-text">Colores de estado correctos en tabla</div></li>
+    </ul>
+  </div>
+
+  <div style="display:flex;gap:12px;margin-top:16px;justify-content:flex-end">
+    <button onclick="resetAll()" style="padding:8px 20px;border-radius:8px;border:1px solid var(--border2);background:none;color:var(--muted);cursor:pointer;font-size:13px;font-family:inherit">
+      Reiniciar checklist
+    </button>
+  </div>
+</section>
+
+<!-- ─── ESQUEMA MENTAL ─── -->
+<section class="section" id="sec-mental">
+  <div class="page-title">Esquema mental para el examen</div>
+  <div class="page-subtitle">Lee el enunciado, identifica cada bloque, construye en orden</div>
+
+  <div class="alert alert-blue">
+    📋 <strong>Regla de oro:</strong> Sigue siempre este orden. Si saltas pasos, perderás tiempo depurando errores innecesarios.
+  </div>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <div class="step-title">Lee el enunciado ENTERO antes de escribir código <span class="badge badge-red">CRÍTICO</span></div>
+        <div class="step-desc">Identifica: ¿hay BD? ¿hay login? ¿cuántas entidades? ¿estados? ¿pagos? Anótalo en papel.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <div class="step-title">Setup de archivos</div>
+        <div class="step-desc">Si hay BD: carpeta en htdocs, XAMPP on, crear BD en phpMyAdmin, crear conexion.php y probarlo. Si no hay BD: solo index.html.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <div class="step-title">Pega la plantilla HTML base</div>
+        <div class="step-desc">Copia de esta guía → pega → abre en navegador → confirma que carga sin errores.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-body">
+        <div class="step-title">Rellena el <code class="inline">data: {}</code> completo</div>
+        <div class="step-desc">Arrays con ejemplos, objetos de formulario fX, variables de navegación, mensajeOk, etc. Si hay BD, añade también <code class="inline">apiBase</code>.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">5</div>
+      <div class="step-body">
+        <div class="step-title">Si hay BD: crea los PHP y el <code class="inline">mounted()</code></div>
+        <div class="step-desc">Un PHP por entidad. Empieza por el GET. Prueba que los datos llegan a Vue antes de hacer el HTML.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">6</div>
+      <div class="step-body">
+        <div class="step-title">Login → Navbar → Tablas → CRUD → Detalle → Pagos → Colores</div>
+        <div class="step-desc">En este orden. Prueba cada paso en el navegador antes de continuar.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="border-color:rgba(93,90,255,0.3)">
+    <div class="card-title">💡 Reglas de supervivencia</div>
+    <ul style="list-style:none;font-size:13px;line-height:2.2">
+      <li>→ Primero haz que funcione, luego ponlo bonito</li>
+      <li>→ Cada vez que añadas algo, <strong>prueba en el navegador</strong></li>
+      <li>→ Si Vue no reacciona a cambios: usa <code class="inline">this.$set()</code> o <code class="inline">.splice()</code></li>
+      <li>→ Si el modal no abre: jQuery debe estar cargado ANTES que Bootstrap</li>
+      <li>→ Si el fetch devuelve error: abre el PHP directamente en el navegador para ver qué devuelve</li>
+      <li>→ Si PHP da error CORS: asegúrate de que tiene los headers <code class="inline">Access-Control-Allow-Origin: *</code></li>
+      <li>→ <code class="inline">{{ variable }}</code> en el HTML te sirve para ver valores mientras depuras</li>
+    </ul>
+  </div>
+</section>
+
+</main>
+</div>
+
+<script>
+  // ─── NAVEGACIÓN SIDEBAR ───
+  function show(id) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.sidebar-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('sec-' + id).classList.add('active');
+    event.currentTarget.classList.add('active');
+    document.querySelector('.main').scrollTop = 0;
+  }
+
+  // ─── TABS ───
+  function showTab(group, id) {
+    const buttons = event.currentTarget.parentElement.querySelectorAll('.tab-btn');
+    buttons.forEach(b => b.classList.remove('active'));
+    event.currentTarget.classList.add('active');
+    const allContents = document.querySelectorAll(`[id^="${group}-"]`);
+    allContents.forEach(c => c.classList.remove('active'));
+    document.getElementById(`${group}-${id}`).classList.add('active');
+  }
+
+  // ─── COPIAR CÓDIGO ───
+  function copyCode(id, btn) {
+    const pre = document.getElementById('code-' + id);
+    const text = pre.innerText;
+    navigator.clipboard.writeText(text).then(() => {
+      btn.textContent = '✓ Copiado';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = 'Copiar'; btn.classList.remove('copied'); }, 2000);
+    });
+  }
+
+  // ─── CHECKLIST ───
+  function toggleCheck(box) {
+    box.classList.toggle('done');
+    if (box.classList.contains('done')) {
+      box.textContent = '✓';
+      box.nextElementSibling.classList.add('done');
+    } else {
+      box.textContent = '';
+      box.nextElementSibling.classList.remove('done');
+    }
+    updateProgress();
+  }
+
+  function updateProgress() {
+    const all  = document.querySelectorAll('.check-box');
+    const done = document.querySelectorAll('.check-box.done');
+    const pct  = all.length > 0 ? (done.length / all.length) * 100 : 0;
+    document.getElementById('progress-fill').style.width = pct + '%';
+    document.getElementById('progress-txt').textContent = `${done.length} / ${all.length}`;
+  }
+
+  function resetAll() {
+    document.querySelectorAll('.check-box').forEach(b => {
+      b.classList.remove('done');
+      b.textContent = '';
+      b.nextElementSibling.classList.remove('done');
+    });
+    updateProgress();
+  }
+
+  updateProgress();
+</script>
+</body>
+</html>
