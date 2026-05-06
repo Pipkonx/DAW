@@ -1,0 +1,42 @@
+// Archivo SASS personalizado para cumplir con los requisitos de la rúbrica
+// Este archivo se encarga de estilos específicos que no son utilitarios de Tailwind
+
+// Variables de marca
+$primary-color: #2563eb; // blue-600
+$secondary-color: #64748b; // slate-500
+$transition-speed: 0.3s;
+
+// Mixin para efectos de elevación
+@mixin elevation-hover {
+  transition: transform $transition-speed ease, box-shadow $transition-speed ease;
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  }
+}
+
+// Clases de componentes personalizados
+.custom-card-interactive {
+  @include elevation-hover;
+  border-radius: 1rem;
+  overflow: hidden;
+  background-color: white;
+  border: 1px solid #e2e8f0;
+}
+
+// Estilo para el scrollbar personalizado
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+::-webkit-scrollbar-thumb {
+  background: $secondary-color;
+  border-radius: 10px;
+  &:hover {
+    background: darken($secondary-color, 10%);
+  }
+}
