@@ -1,7 +1,7 @@
 <?php
 // Parámetros de conexión al servidor MySQL
 $host = "localhost"; // Donde está el servidor MySQL (localhost es nuestro propio ordenador en XAMPP)
-$db = "fruteria_db"; // Nombre exacto de la base de datos que creaste en phpMyAdmin
+$db = "rafaelcordero"; // Nombre exacto de la base de datos que creaste en phpMyAdmin
 $user = "root";      // Usuario por defecto en XAMPP
 $pass = "";          // Contraseña por defecto en XAMPP suele estar vacía
 

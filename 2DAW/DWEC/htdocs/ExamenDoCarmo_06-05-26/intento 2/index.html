@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Examen</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Vue 2 -->
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+    <!-- Axios -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <style>
+        .cursor-pointer { cursor: pointer; }
+        .selected-row { background-color: #e9ecef !important; }
+    </style>
+</head>
+<body>
+    <div id="app" class="container mt-4">
+        <h1 class="mb-4 text-center">Examen docarmo 06/05/2026</h1>
+
+        <div class="row">
+            <!-- Columna Trabajadores -->
+            <div class="col-md-5">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0">Trabajadores</h4>
+                    </div>
+                    <div class="card-body">
+					
+					
+                        <!-- Formulario Crear Trabajador -->
+                        <form @submit.prevent="crearTrabajador" class="mb-4 border-bottom pb-3">
+                            <div class="mb-2">
+                                <input type="text" v-model="formTrabajador.nombre" class="form-control form-control-sm" placeholder="Nombre *" required>
+                            </div>
+                            <div class="mb-2">
+                                <input type="email" v-model="formTrabajador.email" class="form-control form-control-sm" placeholder="Email">
+                            </div>
+                            <div class="mb-2">
+                                <input type="text" v-model="formTrabajador.puesto" class="form-control form-control-sm" placeholder="Puesto">
+                            </div>
+                            <button type="submit" class="btn btn-sm btn-success w-100">Crear Trabajador</button>
+                        </form>
+
+                        <!-- Lista de Trabajadores -->
+                        <div class="table-responsive">
+                            <table class="table table-hover table-bordered table-sm align-middle">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Nombre</th>
+                                        <th>Puesto</th>
+                                        <th>Tareas</th>
+                                        <th>Acción</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="trabajador in trabajadores" :key="trabajador.id" 
+                                        @click="seleccionarTrabajador(trabajador)" 
+                                        :class="{'selected-row': trabajadorSeleccionado && trabajadorSeleccionado.id === trabajador.id}"
+                                        class="cursor-pointer">
+                                        <td>
+                                            <strong>{{ trabajador.nombre }}</strong><br>
+                                            <small class="text-muted">{{ trabajador.email }}</small>
+                                        </td>
+                                        <td>{{ trabajador.puesto }}</td>
+                                        <td class="text-center"><span class="badge bg-info">{{ trabajador.num_tareas }}</span></td>
+										<!-- // ver tras el examen para agregar abajao @click.stop -->
+                                        <td class="text-center" >
+                                            <button @click="eliminarTrabajador(trabajador.id)" class="btn btn-sm btn-danger">Eliminar</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div v-if="trabajadores.length === 0" class="alert alert-info py-2">No hay trabajadores</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Columna Tareas -->
+            <div class="col-md-7">
+                <div v-if="trabajadorSeleccionado">
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                            <h4 class="mb-0">Tareas de: {{ trabajadorSeleccionado.nombre }}</h4>
+                        </div>
+                        <div class="card-body">
+                            
+                            <!-- Formulario Tareas -->
+                            <form @submit.prevent="guardarTarea" class="mb-4 bg-light p-3 rounded border">
+                                <h5 class="mb-3">{{ editandoTarea ? 'Editar Tarea' : 'Nueva Tarea' }}</h5>
+                                <div class="row g-2 mb-2">
+                                    <div class="col-md-8">
+                                        <input type="text" v-model="formTarea.titulo" class="form-control form-control-sm" placeholder="Título *" required>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <select v-model="formTarea.prioridad" class="form-select form-select-sm">
+                                            <option value="baja">Baja</option>
+                                            <option value="media">Media</option>
+                                            <option value="alta">Alta</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="mb-2">
+                                    <textarea v-model="formTarea.descripcion" @input="validarDescripcion" class="form-control form-control-sm" placeholder="Descripción (Sin números)" rows="2"></textarea>
+                                </div>
+                                <div class="row g-2 align-items-center">
+                                    <div class="col-md-4">
+                                        <select v-model="formTarea.estado" class="form-select form-select-sm">
+                                            <option value="pendiente">Pendiente</option>
+                                            <option value="en_progreso">En Progreso</option>
+                                            <option value="completada">Completada</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-8 text-end">
+                                        <button v-if="editandoTarea" type="button" @click="cancelarEdicionTarea" class="btn btn-sm btn-secondary me-2">Cancelar</button>
+                                        <button type="submit" class="btn btn-sm btn-primary">{{ editandoTarea ? 'Actualizar' : 'Añadir' }} Tarea</button>
+                                    </div>
+                                </div>
+                            </form>
+
+                            <!-- Filtros -->
+                            <div class="row g-2 mb-3">
+                                <div class="col-md-6">
+                                    <select v-model="filtroEstado" class="form-select form-select-sm">
+                                        <option value="">Todos los estados</option>
+                                        <option value="pendiente">Pendiente</option>
+                                        <option value="en_progreso">En progreso</option>
+                                        <option value="completada">Completada</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <select v-model="filtroPrioridad" class="form-select form-select-sm">
+                                        <option value="">Todas las prioridades</option>
+                                        <option value="baja">Baja</option>
+                                        <option value="media">Media</option>
+                                        <option value="alta">Alta</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Lista de Tareas -->
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-sm align-middle">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Tarea</th>
+                                            <th>Estado</th>
+                                            <th>Prioridad</th>
+                                            <th>Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="tarea in tareasFiltradas" :key="tarea.id">
+                                            <td>
+                                                <strong>{{ tarea.titulo }}</strong>
+                                                <div v-if="tarea.descripcion" class="small text-muted">{{ tarea.descripcion }}</div>
+                                            </td>
+                                            <td>
+                                                <select :value="tarea.estado" @change="cambiarEstadoTarea(tarea, $event.target.value)" class="form-select form-select-sm" :class="{'bg-warning': tarea.estado=='pendiente', 'bg-info': tarea.estado=='en_progreso', 'bg-success text-white': tarea.estado=='completada'}">
+                                                    <option value="pendiente" class="bg-white text-dark">Pendiente</option>
+                                                    <option value="en_progreso" class="bg-white text-dark">En progreso</option>
+                                                    <option value="completada" class="bg-white text-dark">Completada</option>
+                                                </select>
+                                            </td>
+                                            <td>
+                                                <span class="badge" :class="{'bg-danger': tarea.prioridad=='alta', 'bg-warning text-dark': tarea.prioridad=='media', 'bg-secondary': tarea.prioridad=='baja'}">{{ tarea.prioridad }}</span>
+                                            </td>
+                                            <td class="text-center">
+                                                <div class="btn-group">
+                                                    <button @click="prepararEdicionTarea(tarea)" class="btn btn-sm btn-outline-primary">Editar</button>
+                                                    <button @click="eliminarTarea(tarea.id)" class="btn btn-sm btn-outline-danger">Eliminar</button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <div v-if="tareasFiltradas.length === 0" class="alert alert-secondary py-2">No hay tareas</div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <div v-else class="alert alert-warning shadow-sm">Selecciona un trabajador</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

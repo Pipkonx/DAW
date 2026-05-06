@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Frutería Relacional</title>
+    <title>Examen docarmo</title>
     <!-- VUE 2: Librería principal que permite usar variables y directivas en el HTML -->
     <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
     <!-- AXIOS: Librería para hacer peticiones (GET, POST, etc.) a nuestro api.php de forma asíncrona -->
@@ -15,14 +15,14 @@
     <div id="app" class="container" style="margin-top:20px">
         <div class="row">
             <div class="col-md-6">
-                <h3>Categorías</h3>
+                <h3>trabajadores</h3>
                 <table class="table table-hover">
-                    <!-- v-for="c in categorias": Repite esta fila (<tr>) por cada categoría existente en el array 'categorias' de script.js -->
+                    <!-- v-for="c in trabajadores": Repite esta fila (<tr>) por cada categoría existente en el array 'trabajadores' de script.js -->
                     <!-- @click="seleccionarCat(c)": Cuando el usuario hace clic aquí, llama a la función pasándole la categoría actual -->
                     <!-- :style="...": Los dos puntos (:) delante indican que el estilo es dinámico (evalúa código JavaScript). 
                          Aquí dice: Si hemos seleccionado una categoría (catSel) Y su ID coincide con esta fila (c.id), 
                          pon el fondo gris oscuro ('background:#eee'), si no, no pongas nada ('') -->
-                    <tr v-for="c in categorias" @click="seleccionarCat(c)" :style="catSel && catSel.id==c.id ? 'background:#eee' : ''" style="cursor:pointer">
+                    <tr v-for="c in trabajadores" @click="seleccionarCat(c)" :style="catSel && catSel.id==c.id ? 'background:#eee' : ''" style="cursor:pointer">
                         <!-- {{ c.nombre }}: Las dobles llaves sirven para "imprimir" variables de Vue directamente en el texto del HTML -->
                         <td>{{ c.nombre }}</td>
                     </tr>
@@ -33,12 +33,12 @@
                  (es decir, si el usuario ya ha hecho clic en alguna categoría). Si es null, Vue lo oculta por completo. -->
             <div class="col-md-6" v-if="catSel">
                 <!-- Usamos las llaves dobles de nuevo para poner el nombre de la categoría en el título -->
-                <h3>Productos en {{ catSel.nombre }}</h3>
+                <h3>tareas de {{ catSel.nombre }}</h3>
                 
                 <div class="well">
                     <!-- v-model="formP.nombre": Magia pura de Vue. Vincula este <input> de forma bidireccional con formP.nombre. 
                          Si el usuario escribe, la variable cambia sola en script.js. Si la variable cambia en script.js, el input se actualiza. -->
-                    <input v-model="formP.nombre" class="form-control" placeholder="Nombre del producto">
+                    <input v-model="formP.nombre" class="form-control" placeholder="Nombre de la tarea">
                     
                     <input v-model="formP.precio" type="number" step="0.01" class="form-control" style="margin-top:10px">
                     
@@ -46,7 +46,7 @@
                     <button @click="guardarP" class="btn btn-success" style="margin-top:10px">
                         <!-- {{ condicion ? 'si se cumple' : 'si no se cumple' }}: Esto se llama operador ternario. 
                              Evalúa si estamos editando para mostrar la palabra "Actualizar", si es nuevo muestra "Añadir". -->
-                        {{ editandoP ? 'Actualizar Producto' : 'Añadir Producto' }}
+                        {{ editandoP ? 'Actualizar tareas' : 'Añadir tareas' }}
                     </button>
                     
                     <!-- Este botón de Cancelar solo se dibuja (v-if) si estamos en modo edición (editandoP === true) -->
@@ -54,12 +54,18 @@
                 </div>
 
                 <table class="table">
-                    <thead><tr><th>Producto</th><th>Precio</th><th>Acción</th></tr></thead>
+                    <thead><tr><th>tarea</th><th>id</th><th>titulo</th><th>descripcion</th><th>estado</th><th>prioridad</th><th>trabajador_id</th>
+					<th>created_at</th></tr></thead>
                     <tbody>
-                        <!-- Bucle v-for para imprimir todos los productos que nos llegó del servidor -->
-                        <tr v-for="p in productos">
-                            <td>{{ p.nombre }}</td>
-                            <td>{{ p.precio }} €</td>
+                        <!-- Bucle v-for para imprimir todos los tareas que nos llegó del servidor -->
+                        <tr v-for="p in tareas">
+                            <td>{{ p.id }}</td>
+                            <td>{{ p.titulo }}</td>
+							<td>{{ p.descripcion }}</td>
+							<td>{{ p.estado }}</td>
+							<td>{{ p.prioridad }}</td>
+							<td>{{ p.trabajador_id }}</td>
+							<td>{{ p.created_at }}</td>
                             <td>
                                 <!-- Le pasamos el objeto completo (p) a la función para cargar sus datos en el formulario -->
                                 <button @click="prepararP(p)" class="btn btn-warning btn-xs">Editar</button>
