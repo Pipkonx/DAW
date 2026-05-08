@@ -1,0 +1,14 @@
+# Use this workspace to collaborate
+workspace:
+  id: ff655c75-1268-4bdf-83bf-2b2a2da69c5a
+
+localResources:
+  specs:
+    - ..\2DAW\DWES\htdocs\EjerciciosBasicos\P2Trim\Problema
+      2\storage\api-docs\api-docs.json
+    - ..\2DAW\DWES\htdocs\EjerciciosBasicos\P2Trim\Problema
+      1\storage\api-docs\api-docs.json
+    - ..\2DAW\DWES\htdocs\EjerciciosBasicos\P2Trim\Problema 3\Problema
+      1\storage\api-docs\api-docs.json
+    - ..\2DAW\DWES\htdocs\EjerciciosBasicos\P2Trim\Problema
+      4\moneda\storage\api-docs\api-docs.json

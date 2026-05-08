@@ -1,0 +1,80 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "API de Clientes",
+        "description": "Servicio REST para la gestión de clientes internacionales",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://localhost:8000"
+        }
+    ],
+    "paths": {
+        "/api/clients": {
+            "get": {
+                "summary": "Listado de clientes",
+                "operationId": "ef6e486f00c6179dd9537459d2aedf8e",
+                "responses": {
+                    "200": {
+                        "description": "Lista de clientes"
+                    }
+                }
+            },
+            "post": {
+                "summary": "Crear un nuevo cliente",
+                "operationId": "e3c7f0bdcb5ea935acc2d7cc6f0ab214",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "cif": {
+                                        "type": "string"
+                                    },
+                                    "currency": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Cliente creado"
+                    }
+                }
+            }
+        },
+        "/api/clients/{id}": {
+            "get": {
+                "summary": "Ver detalle de un cliente",
+                "operationId": "3a90ed11382567965daf4e6141016f85",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Detalle del cliente"
+                    },
+                    "404": {
+                        "description": "No encontrado"
+                    }
+                }
+            }
+        }
+    }
+}

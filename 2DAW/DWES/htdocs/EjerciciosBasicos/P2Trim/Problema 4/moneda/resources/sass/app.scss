@@ -1,0 +1,80 @@
+// Importamos Bootstrap
+@import "bootstrap/scss/bootstrap";
+
+// ABSTRACCIÓN DE CLASES (Para mantener el HTML limpio)
+
+// Contenedor principal
+.panel-gestion {
+    @extend .container;
+    @extend .py-4;
+    @extend .mt-4;
+    @extend .bg-white;
+    @extend .shadow;
+    @extend .rounded;
+}
+
+// Cabecera del panel
+.cabecera-panel {
+    @extend .d-flex;
+    @extend .justify-content-between;
+    @extend .align-items-center;
+    @extend .mb-4;
+    @extend .border-bottom;
+    @extend .pb-3;
+
+    h1 { @extend .h3; @extend .mb-0; }
+}
+
+// Tarjeta de formulario
+.tarjeta-formulario {
+    @extend .card;
+    @extend .bg-light;
+    @extend .p-4;
+    @extend .mb-4;
+    @extend .border-0;
+    @extend .shadow-sm;
+
+    h4 { @extend .h5; @extend .mb-3; @extend .fw-bold; }
+}
+
+// Tabla personalizada
+.tabla-cuotas {
+    @extend .table;
+    @extend .table-hover;
+    @extend .align-middle;
+
+    thead { @extend .table-dark; }
+}
+
+// Botones abstractos
+.btn-salir { @extend .btn; @extend .btn-outline-danger; @extend .btn-sm; }
+.btn-generar { @extend .btn; @extend .btn-primary; }
+.btn-pagar { @extend .btn; @extend .btn-warning; @extend .btn-sm; @extend .fw-bold; }
+
+// Badges
+.badge-pagado { @extend .badge; @extend .bg-success; }
+.badge-pendiente { @extend .badge; @extend .bg-warning; @extend .text-dark; }
+
+// Layouts de Formulario
+.fila-formulario { @extend .row; @extend .g-3; }
+.columna-formulario { @extend .col-md-4; }
+
+// Login / Registro
+.contenedor-auth {
+    @extend .d-flex;
+    @extend .justify-content-center;
+    @extend .align-items-center;
+    min-height: 80vh;
+}
+
+.tarjeta-auth {
+    @extend .card;
+    @extend .p-4;
+    @extend .shadow-lg;
+    @extend .border-0;
+    width: 100%;
+    max-width: 400px;
+    border-radius: 15px;
+
+    h2 { @extend .text-center; @extend .mb-4; @extend .fw-bold; }
+}
