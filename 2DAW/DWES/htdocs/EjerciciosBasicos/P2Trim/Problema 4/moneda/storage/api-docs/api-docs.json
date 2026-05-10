@@ -11,33 +11,75 @@
         }
     ],
     "paths": {
-        "/api/clients": {
+        "/api/clientes": {
             "get": {
-                "summary": "Listado de clientes",
-                "operationId": "ef6e486f00c6179dd9537459d2aedf8e",
+                "tags": [
+                    "Clientes"
+                ],
+                "summary": "Listado de todos los clientes",
+                "operationId": "3ab1bd0bc1c6d13508917ec1f71f52f5",
                 "responses": {
                     "200": {
-                        "description": "Lista de clientes"
+                        "description": "Lista de clientes obtenida con éxito",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "id": {
+                                                "type": "integer",
+                                                "example": 1
+                                            },
+                                            "name": {
+                                                "type": "string",
+                                                "example": "Juan Perez"
+                                            },
+                                            "cif": {
+                                                "type": "string",
+                                                "example": "B12345678"
+                                            },
+                                            "currency": {
+                                                "type": "string",
+                                                "example": "EUR"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             },
             "post": {
+                "tags": [
+                    "Clientes"
+                ],
                 "summary": "Crear un nuevo cliente",
-                "operationId": "e3c7f0bdcb5ea935acc2d7cc6f0ab214",
+                "operationId": "22be7ccdd26efb899a619bd891090f4f",
                 "requestBody": {
                     "required": true,
                     "content": {
                         "application/json": {
                             "schema": {
+                                "required": [
+                                    "name",
+                                    "cif",
+                                    "currency"
+                                ],
                                 "properties": {
                                     "name": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "example": "Empresa S.A."
                                     },
                                     "cif": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "example": "A87654321"
                                     },
                                     "currency": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "example": "USD"
                                     }
                                 },
                                 "type": "object"
@@ -47,15 +89,43 @@
                 },
                 "responses": {
                     "201": {
-                        "description": "Cliente creado"
+                        "description": "Cliente creado correctamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": 5
+                                        },
+                                        "name": {
+                                            "type": "string"
+                                        },
+                                        "cif": {
+                                            "type": "string"
+                                        },
+                                        "currency": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Error de validación"
                     }
                 }
             }
         },
-        "/api/clients/{id}": {
+        "/api/clientes/{id}": {
             "get": {
+                "tags": [
+                    "Clientes"
+                ],
                 "summary": "Ver detalle de un cliente",
-                "operationId": "3a90ed11382567965daf4e6141016f85",
+                "operationId": "e898290219910a22d5551f37ed2cfcaf",
                 "parameters": [
                     {
                         "name": "id",
@@ -68,13 +138,134 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Detalle del cliente"
+                        "description": "Detalle del cliente encontrado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer"
+                                        },
+                                        "name": {
+                                            "type": "string"
+                                        },
+                                        "cif": {
+                                            "type": "string"
+                                        },
+                                        "currency": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     },
                     "404": {
-                        "description": "No encontrado"
+                        "description": "Cliente no encontrado"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Clientes"
+                ],
+                "summary": "Actualizar un cliente",
+                "operationId": "2dde92a886747eb383134d1ef3eedd33",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Nombre Actualizado"
+                                    },
+                                    "cif": {
+                                        "type": "string"
+                                    },
+                                    "currency": {
+                                        "type": "string",
+                                        "example": "GBP"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Cliente actualizado correctamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer"
+                                        },
+                                        "name": {
+                                            "type": "string"
+                                        },
+                                        "cif": {
+                                            "type": "string"
+                                        },
+                                        "currency": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Cliente no encontrado"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Clientes"
+                ],
+                "summary": "Eliminar un cliente",
+                "operationId": "94088fd68be6ed57eec592470ce8ddbc",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Cliente eliminado correctamente"
+                    },
+                    "404": {
+                        "description": "Cliente no encontrado"
                     }
                 }
             }
         }
-    }
+    },
+    "tags": [
+        {
+            "name": "Clientes",
+            "description": "Clientes"
+        }
+    ]
 }

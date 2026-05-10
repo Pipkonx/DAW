@@ -33,9 +33,8 @@
 
         <div class="mt-4 border-top pt-4 text-center">
             <p class="small text-muted mb-2">O entrar con</p>
-            <div class="d-flex justify-content-center gap-2">
+            <div class="d-flex justify-content-center">
                 <a href="{{ route('social.redirect', 'google') }}" class="btn btn-outline-danger btn-sm">Google</a>
-                <a href="{{ route('social.redirect', 'github') }}" class="btn btn-outline-dark btn-sm">GitHub</a>
             </div>
         </div>
 

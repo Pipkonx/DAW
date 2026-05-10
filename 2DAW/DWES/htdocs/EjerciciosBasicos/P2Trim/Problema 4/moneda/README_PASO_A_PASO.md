@@ -1,62 +1,67 @@
 # 📑 Guía Técnica del Proyecto - Problema 4 (Servicios)
 
-Esta guía detalla la implementación de las funcionalidades avanzadas requeridas para el Problema 4, asegurando el cumplimiento de la rúbrica de la 2ª Evaluación.
+Esta guía detalla la implementación de las funcionalidades avanzadas requeridas para el Problema 4, asegurando el cumplimiento de la rúbrica de la 2ª Evaluación y destacando la limpieza del código mediante abstracción SASS.
 
 ---
 
-## 1. Facturación Multi-moneda (4.1) ✅
-Hemos implementado un sistema que permite registrar cuotas en la moneda local del cliente (USD, GBP, MXN, etc.) y realizar la conversión contable a euros (EUR) en el momento del pago.
+## 1. Facturación Multi-moneda (Requisito 4.1)
+Sistema que permite registrar cuotas en la moneda local del cliente y realizar la conversión contable a euros (EUR) en tiempo real.
 
-- **Tecnología OBLIGATORIA:** Uso de `Illuminate\Support\Facades\Http` (HttpClient).
-- **API Utilizada:** [Exchange API by fawazahmed0](https://github.com/fawazahmed0/exchange-api).
-- **Lógica:** Cuando el usuario marca una cuota como pagada, el sistema consulta en tiempo real el tipo de cambio y registra el `eur_amount` y `paid_at`.
-
----
-
-## 2. Servicio REST y Documentación (4.2) ✅
-Se ha creado una API robusta para la gestión de clientes.
-
-- **Rutas:** Implementadas mediante `Route::apiResources` en `routes/api.php`.
-- **Formato:** Respuestas en **JSON** con códigos de estado HTTP semánticos (200, 201, 204, 404).
-- **Documentación Swagger:** Generada automáticamente usando `L5-Swagger`.
-  - Acceso: `http://localhost:8000/api/documentation`
-- **Pruebas Automatizadas:** Se han incluido tests de característica en `tests/Feature/ClientApiTest.php` que verifican el CRUD completo de la API.
-- **Cliente JS (SPA):** Una interfaz SPA básica implementada con **Fetch API** en `/api-test` que consume y permite interactuar con la API de clientes sin recargar la página.
+- **Servicio de Conversión:** [ServicioDivisas.php](app/Services/ServicioDivisas.php) utiliza `HttpClient` para consultar la API de tipos de cambio.
+- **Lógica de Negocio:** En [CuotaController.php (línea 61)](app/Http/Controllers/CuotaController.php#L61) se realiza la conversión y el registro del importe en EUR al marcar como pagada.
 
 ---
 
-## 3. Autenticación Social con Socialite (4.3) ✅
-Permite a los usuarios registrarse e iniciar sesión utilizando proveedores externos.
+## 2. Servicio REST y SPA (Requisito 4.2)
+API completa documentada con Swagger y cliente JavaScript.
 
-- **Paquete:** `laravel/socialite`.
-- **Proveedores:** Google y GitHub.
-- **Configuración:** Credenciales gestionadas en `config/services.php` y variables de entorno en `.env`.
-- **Flujo:** Vinculación automática por email. Si el usuario no existe, se crea una cuenta sin necesidad de contraseña manual.
-
----
-
-## 4. Pasarela de Pago Simulada (4.4) ✅
-Simulación del flujo de pago mediante PayPal Sandbox.
-
-- **Proceso:** El usuario selecciona una cuota pendiente y es redirigido a una interfaz que simula la pasarela de PayPal.
-- **Resultado:** Tras la confirmación, se procesa el retorno exitoso y se marca la cuota como pagada en la base de datos, realizando la conversión de moneda correspondiente.
+- **Rutas API:** Definidas con `apiResource` en [routes/api.php (línea 12)](routes/api.php#L12).
+- **Controlador API:** [ClienteApiController.php](app/Http/Controllers/Api/ClienteApiController.php) con anotaciones OpenAPI/Swagger.
+- **Cliente JS (Fetch):** Interfaz SPA en [resources/views/prueba_api.blade.php](resources/views/prueba_api.blade.php) para probar el CRUD asíncronamente.
+- **Tests de Calidad:** Verificación automatizada en [tests/Feature/ClientApiTest.php](tests/Feature/ClientApiTest.php).
 
 ---
 
-## 5. Notificaciones por Correo (Rúbrica 1.8) ✅
-Cada vez que se genera una nueva cuota para un cliente, el sistema envía automáticamente un correo informativo.
+## 3. Autenticación Social (Requisito 4.3)
+Integración con Google y GitHub mediante Laravel Socialite.
 
-- **Implementación:** Clase Mailable `App\Mail\FeeCreated`.
-- **Contenido:** Plantilla Markdown con detalles de la cuota y enlace al panel de pago.
-- **Trigger:** Método `store` del `FeeController`.
+- **Controlador:** [RedSocialController.php](app/Http/Controllers/Auth/RedSocialController.php) gestiona el flujo de redirección y callback.
+- **Registro Automático:** Crea usuarios en la tabla `usuarios` (localizada) vinculándolos por email.
 
 ---
 
-## 🚀 Cómo Replicar / Instalar
-1. Clonar el repositorio.
-2. Ejecutar `composer install` y `npm install`.
-3. Configurar el archivo `.env` con las credenciales de base de datos y Socialite.
-4. Ejecutar migraciones: `php artisan migrate`.
-5. Iniciar servidor: `php artisan serve`.
-6. Para ver la documentación API: `php artisan l5-swagger:generate`.
-7. Para ejecutar tests: `php artisan test`.
+## 4. Pasarela de Pago Simulada (Requisito 4.4)
+Flujo completo de pago seguro simulando PayPal.
+
+- **Controlador de Pago:** [PagoController.php](app/Http/Controllers/PagoController.php) gestiona la sesión de pago y el retorno de éxito.
+- **Vista de Pasarela:** [simulacion_paypal.blade.php](resources/views/pagos/simulacion_paypal.blade.php) con diseño optimizado.
+
+---
+
+## 5. Abstracción de clases de boostrap
+- **Abstracción de Clases:** En [resources/sass/app.scss](resources/sass/app.scss) se usan `@extend` de Bootstrap para crear clases semánticas (ej: `.panel-gestion`, `.btn-pagar`).
+- **Vista Limpia:** El HTML en [resources/views/cuotas/index.blade.php](resources/views/cuotas/index.blade.php) es ahora mucho más legible al usar una sola clase por elemento.
+
+---
+
+## 6. Notificaciones y Localización
+- **Mailing:** [CuotaCreada.php](app/Mail/CuotaCreada.php) envía detalles de la cuota al generarse.
+- **Modelos Localizados:** 
+    - [Usuario.php](app/Models/Usuario.php)
+    - [Cuota.php](app/Models/Cuota.php)
+    - [Cliente.php](app/Models/Cliente.php)
+
+---
+
+## 🚀 Instalación y Pruebas
+1. `composer install` && `npm install`
+2. `php artisan migrate:fresh --seed`
+3. `npm run build` (Para compilar los estilos SASS)
+4. `php artisan test` (Para verificar la API)
+
+---
+
+## 📮 Pruebas con Postman
+Para probar la API de forma profesional con Postman:
+   - **URL:** `http://localhost:8000/api/clientes`
+

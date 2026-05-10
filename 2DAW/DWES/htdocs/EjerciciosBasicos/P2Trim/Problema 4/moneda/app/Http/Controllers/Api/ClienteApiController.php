@@ -19,9 +19,24 @@ class ClienteApiController extends Controller
 {
     #[OA\Get(
         path: "/api/clientes",
-        summary: "Listado de clientes",
+        summary: "Listado de todos los clientes",
+        tags: ["Clientes"],
         responses: [
-            new OA\Response(response: 200, description: "Lista de clientes")
+            new OA\Response(
+                response: 200, 
+                description: "Lista de clientes obtenida con éxito",
+                content: new OA\JsonContent(
+                    type: "array",
+                    items: new OA\Items(
+                        properties: [
+                            new OA\Property(property: "id", type: "integer", example: 1),
+                            new OA\Property(property: "name", type: "string", example: "Juan Perez"),
+                            new OA\Property(property: "cif", type: "string", example: "B12345678"),
+                            new OA\Property(property: "currency", type: "string", example: "EUR")
+                        ]
+                    )
+                )
+            )
         ]
     )]
     public function index()
@@ -32,18 +47,32 @@ class ClienteApiController extends Controller
     #[OA\Post(
         path: "/api/clientes",
         summary: "Crear un nuevo cliente",
+        tags: ["Clientes"],
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
+                required: ["name", "cif", "currency"],
                 properties: [
-                    new OA\Property(property: "name", type: "string"),
-                    new OA\Property(property: "cif", type: "string"),
-                    new OA\Property(property: "currency", type: "string")
+                    new OA\Property(property: "name", type: "string", example: "Empresa S.A."),
+                    new OA\Property(property: "cif", type: "string", example: "A87654321"),
+                    new OA\Property(property: "currency", type: "string", example: "USD")
                 ]
             )
         ),
         responses: [
-            new OA\Response(response: 201, description: "Cliente creado")
+            new OA\Response(
+                response: 201, 
+                description: "Cliente creado correctamente",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "id", type: "integer", example: 5),
+                        new OA\Property(property: "name", type: "string"),
+                        new OA\Property(property: "cif", type: "string"),
+                        new OA\Property(property: "currency", type: "string")
+                    ]
+                )
+            ),
+            new OA\Response(response: 422, description: "Error de validación")
         ]
     )]
     public function store(Request $request)
@@ -61,12 +90,24 @@ class ClienteApiController extends Controller
     #[OA\Get(
         path: "/api/clientes/{id}",
         summary: "Ver detalle de un cliente",
+        tags: ["Clientes"],
         parameters: [
             new OA\Parameter(name: "id", in: "path", required: true, schema: new OA\Schema(type: "integer"))
         ],
         responses: [
-            new OA\Response(response: 200, description: "Detalle del cliente"),
-            new OA\Response(response: 404, description: "No encontrado")
+            new OA\Response(
+                response: 200, 
+                description: "Detalle del cliente encontrado",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "id", type: "integer"),
+                        new OA\Property(property: "name", type: "string"),
+                        new OA\Property(property: "cif", type: "string"),
+                        new OA\Property(property: "currency", type: "string")
+                    ]
+                )
+            ),
+            new OA\Response(response: 404, description: "Cliente no encontrado")
         ]
     )]
     public function show(Cliente $cliente)
@@ -77,6 +118,7 @@ class ClienteApiController extends Controller
     #[OA\Put(
         path: "/api/clientes/{id}",
         summary: "Actualizar un cliente",
+        tags: ["Clientes"],
         parameters: [
             new OA\Parameter(name: "id", in: "path", required: true, schema: new OA\Schema(type: "integer"))
         ],
@@ -84,15 +126,26 @@ class ClienteApiController extends Controller
             required: true,
             content: new OA\JsonContent(
                 properties: [
-                    new OA\Property(property: "name", type: "string"),
+                    new OA\Property(property: "name", type: "string", example: "Nombre Actualizado"),
                     new OA\Property(property: "cif", type: "string"),
-                    new OA\Property(property: "currency", type: "string")
+                    new OA\Property(property: "currency", type: "string", example: "GBP")
                 ]
             )
         ),
         responses: [
-            new OA\Response(response: 200, description: "Cliente actualizado"),
-            new OA\Response(response: 404, description: "No encontrado")
+            new OA\Response(
+                response: 200, 
+                description: "Cliente actualizado correctamente",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "id", type: "integer"),
+                        new OA\Property(property: "name", type: "string"),
+                        new OA\Property(property: "cif", type: "string"),
+                        new OA\Property(property: "currency", type: "string")
+                    ]
+                )
+            ),
+            new OA\Response(response: 404, description: "Cliente no encontrado")
         ]
     )]
     public function update(Request $request, Cliente $cliente)
@@ -104,12 +157,13 @@ class ClienteApiController extends Controller
     #[OA\Delete(
         path: "/api/clientes/{id}",
         summary: "Eliminar un cliente",
+        tags: ["Clientes"],
         parameters: [
             new OA\Parameter(name: "id", in: "path", required: true, schema: new OA\Schema(type: "integer"))
         ],
         responses: [
-            new OA\Response(response: 204, description: "Cliente eliminado"),
-            new OA\Response(response: 404, description: "No encontrado")
+            new OA\Response(response: 204, description: "Cliente eliminado correctamente"),
+            new OA\Response(response: 404, description: "Cliente no encontrado")
         ]
     )]
     public function destroy(Cliente $cliente)
