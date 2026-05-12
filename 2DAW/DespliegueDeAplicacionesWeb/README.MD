@@ -22,7 +22,7 @@ Módulo dedicado a la configuración de infraestructuras, servidores web, monito
 - **[08_Practica2Trim](./08_Practica2Trim/)**: Caso práctico final de trimestre que combina servidor web, DNS y seguridad básica.
 
 ### 🐳 Docker y Contenedores
-- **[09_Docker](./09_Docker/)**: Curso completo de Docker. Instalación, gestión de imágenes, contenedores, volúmenes, redes y Docker Compose.
+- **[09_Docker](./09_Docker/README.md)**: Curso completo de Docker. Instalación, gestión de imágenes, contenedores, volúmenes, redes y Docker Compose.
 
 
 ---
