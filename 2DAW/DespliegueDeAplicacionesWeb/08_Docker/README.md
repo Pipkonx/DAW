@@ -2722,13 +2722,9 @@ En primer lugar vamos a crear un contenedor Docker desde la imagen `bitnami/tomc
 $ docker run -d -p 8080:8080 -e TOMCAT_USERNAME=admin -e TOMCAT_PASSWORD=my-password --name mytomcat bitnami/tomcat:9.0
 ```
 
-Podemos acceder desde un navegador web, y entraríamos en la página principal de Tomcat:
-
-![tomcat](img/ejemplo5_1.png)
 
 Si accedemos a la URL `/manager/html` entraremos a la zona de administración. Para acceder tendremos que indicar el nombre y la contraseña que hemos indicado en las variables de entorno:
 
-![tomcat](img/ejemplo5_2.png)
 
 Podríamos hacer el despliegue de la aplicación de ejemplo que tenemos desde la zona de administración, pero vamos a copiar el fichero war directamente al directorio de despliegue. En esta imagen dicho directorio es `/opt/bitnami/tomcat/webapps` o `/app` que es un enlace simbólico al directorio anterior. De esta manera:
 
@@ -2738,7 +2734,6 @@ $ docker cp sample.war mytomcat:/app
 
 Para entrar a la aplicación podemos acceder a la URL `/sample`:
 
-![tomcat](img/ejemplo5_3.png)
 
 Por último es muy sencillo crear una nueva imagen con nuestra aplicación desplegada. El fichero `Dockerfiile` sería de la siguiente forma:
 
@@ -2755,10 +2750,6 @@ Creamos la nueva imagen y ejecutamos un nuevo contenedor:
 $ docker build -t josedom24/app_java:v1 .
 $ docker run -d -p 8081:8080 -e TOMCAT_PASSWORD=my-password --name app_java josedom24/app_java:v1
 ```
-
-Finalmente podemos acceder a la aplicación utilizando un navegador web.
-
-
 
 
 ## Ciclo de vida de nuestras aplicaciones con docker
@@ -2841,9 +2832,6 @@ $ docker ps
 CONTAINER ID        IMAGE                        COMMAND                    CREATED             STATUS              PORTS                NAMES
 fbdd73529e2b        josedom24/aplicacionweb:v1   "/usr/sbin/apache2ct…"   6 seconds ago       Up 5 seconds        0.0.0.0:80->80/tcp   aplweb
 ```
-Probamos nuestra aplicación:
-
-![docker](img/ciclo1.png)
 
 #### Paso 4: Distribuimos nuestra imagen
 
@@ -2917,4 +2905,4 @@ $ docker run --name aplweb2_prod -d -p 80:80 josedom24/aplicacionweb:v2
 
 
 ---
-*Guía generada para el curso de Despliegue de Aplicaciones Web.*
+*Guía de actividades  del curso de Despliegue de Aplicaciones Web.*
