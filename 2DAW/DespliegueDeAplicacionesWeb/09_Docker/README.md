@@ -185,7 +185,7 @@ o con su nombre:
 $ docker rm elastic_johnson
 ```
 
-![alt text](07_dockerrm.png)
+![alt text](07_dockerRm.png)
 
 
 
@@ -214,7 +214,7 @@ CONTAINER ID        IMAGE              COMMAND                  CREATED         
 ```
 
 
-![alt text](09_dockerps-a.png)
+![alt text](09_dockerPs-a.png)
 
 Con el comando `docker images` podemos visualizar las imágenes que ya tenemos descargadas en nuestro registro local:
 
@@ -226,7 +226,7 @@ hello-world         latest              bf756fb1ae65        13 months ago       
 ```
 
 
-![alt text](10_dockerimages.png)
+![alt text](10_dockerImages.png)
 
 
 
@@ -1519,7 +1519,7 @@ mongo      mongo:4                "docker-entrypoint.sh mongod"   db        Abou
 
 Podemos acceder desde el navegador a la aplicación:
 
-![letschat](img/letschat.png)
+
 
 Finalmente podemos destruir el escenario:
 
@@ -2465,7 +2465,7 @@ $ docker run -d -p 80:80 --name ejemplo2 josedom24/ejemplo2:v2
 
 Podemos acceder al fichero `info.php` para comprobar la versión de php que estamos utilizando con esta imagen:
 
-![ejemplo2](img/ejemplo2_phpinfo2.png)
+
 
 
 
@@ -2522,7 +2522,7 @@ $ docker run -d -p 80:3000 --name ejemplo2 josedom24/ejemplo3:v1
 
 Y acceder con el navegador a nuestra página:
 
-![ejemplo3](img/ejemplo3.png)
+
 
 ### Versión 2: Desde una imagen con python instalado
 
@@ -2885,7 +2885,7 @@ $ docker run --name aplweb2 -d -p 80:80 josedom24/aplicacionweb:v2
 
 Y probamos la aplicación:
 
-![docker](img/ciclo2.png)
+
 
 Subimos la nueva versión de la aplicación. En el entorno de producción: bajamos la nueva versión, eliminamos el contenedor de la versión antigua y creamos un nuevo contenedor con la nueva imagen:
 
