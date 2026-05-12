@@ -21,6 +21,10 @@ Módulo dedicado a la configuración de infraestructuras, servidores web, monito
 - **[07_Bind_ServidorDNS](./07_Bind_ServidorDNS/)**: Instalación y configuración de **BIND9**. Resolución de nombres local, zonas directas e inversas.
 - **[08_Practica2Trim](./08_Practica2Trim/)**: Caso práctico final de trimestre que combina servidor web, DNS y seguridad básica.
 
+### 🐳 Docker y Contenedores
+- **[09_Docker](./09_Docker/)**: Curso completo de Docker. Instalación, gestión de imágenes, contenedores, volúmenes, redes y Docker Compose.
+
+
 ---
 ## ⚙️ Tecnologías Clave
 - Linux (Ubuntu Server), Apache 2, BIND9, SSH, Docker.
