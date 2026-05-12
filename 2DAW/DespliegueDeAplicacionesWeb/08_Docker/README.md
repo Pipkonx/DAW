@@ -718,6 +718,8 @@ A continuación vamos a instalar otra versión de la mediawiki, la 1.40.2, cream
 docker run -d -p 8081:80 --name mediawiki2 mediawiki:1.40.2
 ```
 
+![alt text](40_dockerContenedor4.png)
+
 Si accedemos a la ip de nuestro ordenador, al puerto 8081, podemos observar que hemos instalado la versión 1.40.2:
 
 
@@ -726,6 +728,8 @@ Y finalmente vamos a instalar otra versión en otro contenedor:
 ```bash
 docker run -d -p 8082:80 --name mediawiki3 mediawiki:1.39.6
 ```
+
+![alt text](41_dockerContenedor5.png)
 
 Si accedemos a la ip de nuestro ordenador, al puerto 8082, podemos observar que hemos instalado la versión 1.39.6:
 
@@ -751,7 +755,6 @@ Si accedemos a la ip de nuestro ordenador, al puerto 8082, podemos observar que 
 
 ### Los datos en los contenedores
 
-![docker](img/types-of-mounts.png)
 
 Ante la situación anteriormente descrita Docker nos proporciona varias soluciones para persistir los datos de los contenedores. En este curso nos vamos a centrar en las dos que considero que son más importantes:
 
@@ -804,6 +807,8 @@ $ docker volume create miweb
 miweb
 ```
 
+![alt text](42_dockerVolumen1.png)
+
 A continuación creamos un contenedor con el volumen asociado, usando `-v`, y creamos un fichero `index.html`:
 
 ```bash
@@ -819,6 +824,16 @@ $ docker rm -f my-apache-app
 my-apache-app
 ```
 
+En mi caos primero debemos parar el servicio anterior que ya usa ese puerto:
+
+```bash
+docker stop my-apache-app
+docker rm my-apache-app
+```
+
+![alt text](43_dockerVolumen2.png)
+
+
 Después de borrar el contenedor, volvemos a crear otro contenedor con el mismo volumen asociado:
 
 ```bash
@@ -832,6 +847,8 @@ Y podemos comprobar que no no se ha perdido la información (el fichero `index.h
 $ curl http://localhost:8080
 <h1>Hola</h1>
 ```
+
+![alt text](44_dockerVolumen3.png)
 
 Algunas aclaraciones:
 
@@ -856,6 +873,8 @@ $ cd web
 /web$ echo "<h1>Hola</h1>" > index.html
 ```
 
+![alt text](45_dockerBindMount1.png)
+
 Y podemos montar ese directorio en un contenedor, en este caso usamos la opción `-v`:
 
 ```bash
@@ -863,12 +882,16 @@ $ docker run -d --name my-apache-app -v /home/usuario/web:/usr/local/apache2/htd
 8de025f6ff4d4b8a5a57d10a9cbb283b103209f358c43148a4716a33a404e208
 ```
 
+![alt text](46_dockerBindMount2.png)
+
 Y comprobamos que realmente estamos sirviendo el fichero que tenemos en el directorio que hemos creado.
 
 ```bash
 $ curl http://localhost:8080
 <h1>Hola</h1>
 ```
+
+![alt text](47_dockerBindMount3.png)
 
 Eliminamos el contenedor y volvemos a crear otro con el directorio montado:
 
@@ -883,6 +906,8 @@ $ curl http://localhost:8080
 <h1>Hola</h1>
 ```
 
+![alt text](48_dockerBindMount4.png)
+
 Además podemos comprobar que podemos modificar el contenido del fichero aunque este montado en el contenedor:
 
 ```bash
@@ -890,6 +915,8 @@ $ echo "<h1>Adios</h1>" > web/index.html
 $ curl http://localhost:8080
 <h1>Adios</h1>
 ```
+![alt text](49_dockerBindMount5.png)
+
 
 Por último, indicar que si nuestra carpeta origen no existe y hacemos un bind mount con `-v`, esa carpeta se creará pero lo que tendremos en el contenedor es una carpeta vacía. 
 
@@ -912,6 +939,8 @@ ec77cfd20583        bridge              bridge              local
 089cc966eaeb        none                null                local
 ```
 
+![alt text](50_dockerRedes1.png)
+
 * Por defecto los contenedores que creamos se conectan a la red de tipo **bridge** llamada `bridge` (por defecto el direccionamiento de esta red es 172.17.0.0/16). Los contenedores conectados a esta red que quieren exponer algún puerto al exterior tienen que usar la opción `-p` para mapear puertos.
 
     Este tipo de red nos van a permitir: 
@@ -920,7 +949,6 @@ ec77cfd20583        bridge              bridge              local
     * Aislar los contenedores del acceso exterior.
     * Publicar servicios que tengamos en los contenedores mediante redirecciones que docker implementará con las pertinentes reglas de iptables.
 
-    ![docker](img/bridge1.png)
 
     Veamos un ejemplo:
 
@@ -929,6 +957,9 @@ ec77cfd20583        bridge              bridge              local
     ```bash
     $ docker run -it --name contenedor1 --rm debian bash
     ```
+
+![alt text](51_dockerRedes2.png)
+    
     **Nota: Hemos usado la opción `--rm` para al finalizar de ejecutar el proceso, el contenedor se elimina.**
 
     En otra pestaña, podemos ejecutar esta instrucción para obtener la ip que se le ha asignado:
@@ -936,6 +967,9 @@ ec77cfd20583        bridge              bridge              local
     $ docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' contenedor1
     172.17.0.2
     ```
+
+![alt text](52_dockerRedes3.png)
+
     Obtenemos información del contenedor filtrando el json de salida para obtener la IPv4 que se le ha asignado.
 
     Observamos que el contenedor tiene una ip en la red `172.17.0.0/16`. Además podemos comprobar que se ha creado un `bridge` en el host, al que se conectan los contenedores:
@@ -953,6 +987,10 @@ ec77cfd20583        bridge              bridge              local
     ...
     ```
 
+![alt text](53_dockerRedes4.png)
+
+![alt text](54_dockerRedes5.png)
+
     Además podemos comprobar que se han creado distintas cadenas en el cortafuegos para gestionar la comunicación de los contenedores. Podemos ejecutar como administrador: `iptables -L -n` y `iptables -L -n - t nat` y comprobarlo.
 
 
@@ -966,6 +1004,9 @@ ec77cfd20583        bridge              bridge              local
     135c742af1ff        josedom24/aplicacionweb:v1   "/usr/sbin/apache2ct…"   3 seconds ago       Up 2 seconds                                  mi_servidor
     ```
     
+![alt text](55_dockerRedes6.png)
+![alt text](56_dockerRedes7.png)
+
     Prueba acceder directamente al puerto 80 del servidor para ver la página web.
 
 * La red **none** no configurará ninguna IP para el contenedor y no tiene acceso a la red externa ni a otros contenedores. Tiene la dirección loopback y se puede usar para ejecutar trabajos por lotes.
@@ -1001,7 +1042,6 @@ Para gestionar las redes creadas por el usuario:
 
 Nota: **Cada red docker que creo crea un puente de red específico para cada red que podemos ver con `ip a`**:
 
-![docker](img/bridge2.png)
 
 ### Uso de las redes bridge definidas por el usuario
 
@@ -1011,6 +1051,8 @@ Vamos a crear una red tipo bridge definida por el usuario con la instrucción `d
 $ docker network create red1
 
 ```
+
+![alt text](57_dockerRedes8.png)
 
 Como no hemos indicado ninguna configuración en la red que hemos creado, docker asigna un direccionamiento a la red:
 
@@ -1031,11 +1073,16 @@ $ docker network inspect red1
 ]
 ```
 
+![alt text](58_dockerRedes9.png)
+
 Vamos a crear dos contenedores conectados a dicha red:
 
 ```bash
 $ docker run -d --name my-apache-app --network red1 -p 8080:80 httpd:2.4
 ```
+
+![alt text](59_dockerRedes10.png)
+
 Lo primero que vamos a comprobar es la resolución DNS:
 
 ```bash
@@ -1050,6 +1097,7 @@ my-apache-app.		600	IN	A	172.18.0.2
 ;; SERVER: 127.0.0.11#53(127.0.0.11)
 ...
 ```
+![alt text](60_dockerRedes11.png)
 
 Podemos comprobar la configuración DNS del contenedor:
 
@@ -1058,6 +1106,8 @@ root@98ab5a0c2f0c:/# cat /etc/resolv.conf
 nameserver 127.0.0.11
 ...
 ```
+
+![alt text](61_dockerRedes12.png)
 
 Evidentemente desde los dos contenedores se pueden resolver los dos nombres:
 
@@ -1070,6 +1120,8 @@ contenedor1.		600	IN	A	172.18.0.3
 ;; SERVER: 127.0.0.11#53(127.0.0.11)
 ...
 ```
+
+![alt text](62_dockerRedes13.png)
 
 ### Más opciones al trabajar con redes en docker
 
@@ -1116,6 +1168,8 @@ Los dos contenedores tienen que estar en la misma red y deben tener acceso por n
 $ docker network create red_guestbook
 ```
 
+![alt text](63_dockerRedes14.png)
+
 Para ejecutar los contenedores:
 
 ```bash
@@ -1124,6 +1178,8 @@ $ docker run -d --name redis --network red_guestbook -v /opt/redis:/data redis r
 
 $ docker run -d -p 80:5000 --name guestbook --network red_guestbook iesgn/guestbook
 ```
+![alt text](64_dockerRedes15.png)
+![alt text](65_dockerRedes16.png)
 
 Algunas observaciones:
 
@@ -1131,7 +1187,6 @@ Algunas observaciones:
 * Al nombrar al contenedor de la base de datos con `redis` se crea una entrada en el DNS que resuelve ese nombre con la ip del contenedor. Como hemos indicado, por defecto, la aplicación guestbook usa ese nombre para acceder.
 * Si eliminamos el contenedor de `redis` y lo volvemos a crear podemos comprobar la persistencia de la información.
 
-![guestbook](img/guestbook.png)
 
 ### Configuración de la aplicación guestbook
 
@@ -1142,6 +1197,7 @@ Si creamos un contenedor redis con otro nombre, por ejemplo:
 ```bash
 $ docker run -d --name contenedor_redis --network red_guestbook -v /opt/redis:/data redis redis-server --appendonly yes
 ```
+![alt text](66_dockerRedes17.png)
 
 Tendremos que configurar la aplicación guestbook parea que acceda a la base de datos redis usando como nombre `contenedor_redis`, por lo tanto en la creación tendremos que definir la variable de entorno `REDIS_SERVER`, para ello ejecutamos:
 
@@ -1149,8 +1205,9 @@ Tendremos que configurar la aplicación guestbook parea que acceda a la base de 
 $ docker run -d -p 80:5000 --name guestbook -e REDIS_SERVER=contenedor_redis --network red_guestbook iesgn/guestbook
 ```
 
-
-
+Primero borramos el anterior para que no nos salga error
+![alt text](67_dockerRedes18.png)
+![alt text](68_dockerRedes19.png)
 
 
 
@@ -1169,6 +1226,8 @@ Vamos a crear una red para conectar los dos contenedores:
 $ docker network create red_temperaturas
 ```
 
+![alt text](69_dockerRedes20.png)
+
 Para ejecutar los contenedores:
 
 ```bash
@@ -1177,13 +1236,15 @@ $ docker run -d --name temperaturas-backend --network red_temperaturas iesgn/tem
 $ docker run -d -p 80:3000 --name temperaturas-frontend --network red_temperaturas iesgn/temperaturas_frontend
 ```
 
+![alt text](70_dockerRedes21.png)
+![alt text](71_dockerRedes22.png)
+
 Algunas observaciones:
 
 * Este es un tipo de aplicación, que se caracteriza por no necesitar guardar información para su funcionamiento. Son las denominadas **aplicaciones sin estado**, por lo tanto no necesitamos almacenamiento adicional para la aplicación.
 * No es necesario mapear el puerto de `backend`, ya que no vamos a acceder desde el exterior. Sin embargo el microservicio `frontend` va a poder acceder a `backend` al puerto 5000 porque están conectado a la misma red.
 * Al nombrar al contenedor de backend con `temperaturas-backend` se crea una entrada en el DNS que resuelve ese nombre con la ip del contenedor. Como hemos indicado, por defecto, el microservicio `frontend` usa ese nombre para acceder.
 
-![temperaturas](img/temperaturas.png)
 
 ### Configuración de la aplicación Temperaturas
 
@@ -1194,6 +1255,7 @@ Si creamos un contenedor `backend` con otro nombre, por ejemplo:
 ```bash
 $ docker run -d --name temperaturas-api --network red_temperaturas iesgn/temperaturas_backend
 ```
+![alt text](72_temperaturas.png)
 
 Tendremos que configurar la aplicación `frontend` parea que acceda al `backend` usando como nombre `temperaturas-api`, por lo tanto en la creación tendremos que definir la variable de entorno `TEMP_SERVER`, para ello ejecutamos:
 
@@ -1202,9 +1264,10 @@ $ docker run -d -p 80:3000 --name temperaturas-frontend -e TEMP_SERVER=temperatu
 ```
 
 
+![alt text](73_temperaturas.png)
+![alt text](74_temperaturas.png)
 
-
-
+![alt text](75_PruebaTemperatura.png)
 
 ## Ejemplo 3: Despliegue de Wordpress + mariadb
 
@@ -1213,6 +1276,7 @@ Para la instalación de WordPress necesitamos dos contenedores: la base de datos
 ```bash
 $ docker network create red_wp
 ```
+![alt text](77_dockerRedes23.png)
 
 Siguiendo la documentación de la imagen [mariadb](https://hub.docker.com/_/mariadb) y la imagen [wordpress](https://hub.docker.com/_/wordpress) podemos ejecutar los siguientes comandos para crear los dos contenedores:
 
@@ -1242,6 +1306,8 @@ CONTAINER ID        IMAGE               COMMAND                  CREATED        
 f70f22aed3d1        mariadb             "docker-entrypoint.s…"   9 minutes ago       Up 9 minutes        3306/tcp             servidor_mysql
 ```
 
+![alt text](78_dockerRedes24.png)
+
 Algunas observaciones:
 
 * El contenedor `servidor_mysql` ejecuta un script `docker-entrypoint.sh` que es el encargado, a partir de las variables de entorno, configurar la base de datos: crea usuario, crea base de datos, cambia la contraseña del usuario root,... y termina ejecutando el servidor mariadb.
@@ -1249,12 +1315,6 @@ Algunas observaciones:
 * Del mismo modo el contenedor `servidor_wp` ejecuta un script `docker-entrypoint.sh`, que entre otras cosas, a partir de las variables de entorno, ha creado el fichero `wp-config.php` de wordpress, por lo que durante la instalación no te ha pedido las credenciales de la base de datos.
 * Si te das cuenta la variable de entorno `WORDPRESS_DB_HOST` la hemos inicializado al nombre del servidor de base de datos. Como están conectada a la misma red definida por el usuario, el contenedor wordpress al intentar acceder al nombre `servidor_mysql` estará accediendo al contenedor de la base de datos.
 * Al servicio al que vamos a acceder desde el exterior es al servidor web, es por lo que hemos mapeado los puertos con la opción `-p`. Sin embargo en el contenedor de la base de datos no es necesario mapear los puertos porque no vamos a acceder a ella desde el exterior. Sin embargo, el contenedor `servidor_wp` puede acceder al puerto 3306 del `servidor_mysql` sin problemas ya que están conectados a la misma red.
-
-![wordpress](img/wp.png)
-
-
-
-
 
 
 ## Ejemplo 4: Despliegue de tomcat + nginx
@@ -1268,6 +1328,8 @@ Antes de hacer el despliegue del primer contenedor, vamos a crear una red bridge
 ```bash
 $ docker network create red_tomcat
 ```
+
+![alt text](80_creamos_red_tomcat.png)
 
 A continuación vamos a crear un contenedor a partir de la imagen [`tomcat`](https://hub.docker.com/_/tomcat). En la documentación podemos ver que el directorio `/usr/local/tomcat/webapps/` es donde tenemos que poner el fichero de despliegue `war` (vamos a usar **bind mount** para montar el fichero war en el directorio). No vamos a mapear puerto porque no vamos a acceder a este contenedor desde el exterior.
 
@@ -1287,6 +1349,8 @@ $ docker run -d --name aplicacionjava \
                 -v /home/vagrant/tomcat/sample.war:/usr/local/tomcat/webapps/sample.war:ro \
                 tomcat:9.0
 ```
+
+![alt text](81_creamos_tomcat.png)
 
 ### Desplegando nginx como proxy inverso
 
@@ -1320,8 +1384,7 @@ $ docker run -d --name proxy \
 
 Y al acceder la ip de nuestro host:
 
-![tomcat](img/tomcat.png)
-
+![alt text](82_creamos_nginx.png)
 
 
 
@@ -1525,6 +1588,8 @@ DRIVER    VOLUME NAME
 local     mariadb_mariadb_data
 ...
 ```
+
+![alt text](83_docker_compose_volumenes_creados.png)
 
 En la definición del servicio `db` hemos indicado que el contenedor montará el volumen en un directorio determinado con el parámetro `volumes`. Podemos comprobar que efectivamente se ha realizado el montaje:
 
@@ -1907,7 +1972,6 @@ Hasta ahora hemos creado contenedores a partir de las imágenes que encontramos 
 
 Para crear un contenedor que sirva nuestra aplicación, tendremos que crear una imagen personaliza, es lo que llamamos "dockerizar" una aplicación.
 
-![docker](img/build.png)
 
 La primera forma para personalizar las imágenes es partiendo de un contenedor que hayamos modificado. 
 
@@ -1917,6 +1981,8 @@ La primera forma para personalizar las imágenes es partiendo de un contenedor q
     $ docker  run -it --name contenedor debian bash
     ```
 
+    ![alt text](84_creamos_contenedor_base.png)
+
 2. Realizar modificaciones en el contenedor (instalaciones, modificación de archivos,...).
 
     ```bash
@@ -1924,6 +1990,9 @@ La primera forma para personalizar las imágenes es partiendo de un contenedor q
     root@75f87f84a091:/# echo "<h1>Curso Docker</h1>" > /var/www/html/index.html
     root@75f87f84a091:/# exit
     ```
+
+    ![alt text](85_creamos_contenedor_base.png)
+    ![alt text](86_actualizamos_web.png)
 
 3. Crear una nueva imagen partiendo de ese contenedor usando `docker commit`. Con esta instrucción se creará una nueva imagen con las capas de la imagen base más la capa propia del contenedor. Si no indico etiqueta en el nombre, se pondrá la etiqueta `latest`.
 
@@ -1937,6 +2006,10 @@ La primera forma para personalizar las imágenes es partiendo de un contenedor q
     ...
     ```
 
+![alt text](87_imagenes_creadas.png)
+
+![alt text](88_servidor_web.png)
+
 4. Podríamos crear un nuevo contenedor a partir de esta nueva imagen, pero al crear una imagen con este método **no podemos configurar el proceso que se va a ejecutar por defecto al crear el contenedor** (el proceso por defecto que se ejecuta sería el de la imagen base). Por lo tanto en la creación del nuevo contenedor tendríamos que indicar el proceso que queremos ejecutar. En este caso para ejecutar el servidor web apache2 tendremos que ejecutar el comando `apache2ctl -D FOREGROUND`:
 
 ```bash
@@ -1946,6 +2019,7 @@ $ docker run -d -p 8080:80 \
              bash -c "apache2ctl -D FOREGROUND"
 ```
 
+![alt text](89_docker_commit.png)
 
 
 
@@ -2049,6 +2123,8 @@ En este caso al crear el contenedor a partir de esta imagen no hay que indicar e
 $ docker run -d -p 8080:80 --name servidor_web josedom24/myapache2:v2 
 ```            
 
+![alt text](90_docker_commit.png)
+
 ### Buenas prácticas al crear Dockerfile
 
 * **Los contenedores deber ser "efímeros"**: Cuando decimos "efímeros" queremos decir que la creación, parada, despliegue de los contenedores creados a partir de la imagen que vamos a generar con nuestro `Dockerfile` debe tener una mínima configuración.
@@ -2089,6 +2165,8 @@ En este curso nos vamos a ocupar  únicamente de las dos primeras ya que la terc
     $ docker save josedom24/myapache2:v1 > myapache2.tar
     ```
 
+![alt text](91_docker_save.png)
+
 2. Distribuir el fichero `.tar`.
 
 3. Si me llega un fichero .tar puedo añadir la imagen a mi repositorio local:
@@ -2098,6 +2176,8 @@ En este curso nos vamos a ocupar  únicamente de las dos primeras ya que la terc
     6a30654d94bc: Loading layer [=============================================>]  132.4MB/132.4MB
     Loaded image: josedom24/myapache2:v1
     ```
+
+![alt text](92_docker_load.png)
 
 ### Distribución usando Docker Hub
 
@@ -2111,6 +2191,8 @@ En este curso nos vamos a ocupar  únicamente de las dos primeras ya que la terc
     ...
     Login Succeeded
     ```
+
+![alt text](93_docker_login.png)
 
 2. Distribuir ese fichero subiendo la nueva imagen a DockerHub mediante `docker push`. Nota: El nombre de la imagen tiene que tener como primera parte el nombre del usuario de DockerHub que estamos usando.
 
@@ -2177,9 +2259,99 @@ Y podemos crear un contenedor:
 $ docker run -d -p 80:80 --name ejemplo1 josedom24/ejemplo1:v1
 ```
 
-Y acceder con el navegador a nuestra página:
+Esto en este caso lo mostrare con mi aplicacion web en clase si es necesario, tengo el yml de la apalicaicon donde siempre es lo mismo actualizas, update y agregas dependencias
 
-![ejemplo1](img/ejemplo1.png)
+een mi caso tengo lo siguiente
+
+´´´bash
+
+server {
+    listen 80;
+    index index.php index.html;
+    error_log  /var/log/nginx/error.log;
+    access_log /var/log/nginx/access.log;
+    root /var/www/html/public;
+
+    # Mejora de rendimiento con compresión gzip
+    gzip on;
+    gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript;
+
+    location ~ \.php$ {
+        try_files $uri =404;
+        fastcgi_split_path_info ^(.+\.php)(/.+)$;
+        fastcgi_pass 127.0.0.1:9000;
+        fastcgi_index index.php;
+        include fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        fastcgi_param PATH_INFO $fastcgi_path_info;
+    }
+
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+        gzip_static on;
+    }
+
+    # Caché para activos estáticos (Vite)
+    location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|otf)$ {
+        expires 365d;
+        add_header Cache-Control "public, no-transform";
+    }
+}
+
+´´´
+
+y el dockerfile compose
+
+´´´bash
+
+services:
+  app:
+    build: .
+    container_name: fintechpro-app
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    volumes:
+      - storage:/var/www/html/storage
+    depends_on:
+      - mysql
+      - redis
+    networks:
+      - fintechpro-network
+
+  mysql:
+    image: mysql:8.0
+    container_name: fintechpro-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: fintechpro
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "33066:3306"
+    volumes:
+      - mysql-db:/var/lib/mysql
+    networks:
+      - fintechpro-network
+
+  redis:
+    image: redis:alpine
+    container_name: fintechpro-redis
+    restart: unless-stopped
+    ports:
+      - "63799:6379"
+    networks:
+      - fintechpro-network
+
+networks:
+  fintechpro-network:
+    driver: bridge
+
+volumes:
+  mysql-db:
+  storage:
+
+´´´
+
 
 
 ### Versión 2: Desde una imagen con apache2
@@ -2268,14 +2440,6 @@ Y podemos crear un contenedor:
 ```bash
 $ docker run -d -p 80:80 --name ejemplo2 josedom24/ejemplo2:v1
 ```
-
-Y acceder con el navegador a nuestra página:
-
-![ejemplo2](img/ejemplo2.png)
-
-La aplicación tiene un fichero `info.php`que me da información sobre PHP, en este caso observamos que estamos usando la versión 7.3:
-
-![ejemplo2](img/ejemplo2_phpinfo.png)
 
 
 ### Versión 2: Desde una imagen con PHP instalado
@@ -2374,10 +2538,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 EXPOSE 3000
 CMD python app.py
 ```
-
-
-
-
 
 
 ## Ejemplo 4: Construcción de imágenes configurables con variables de entorno
