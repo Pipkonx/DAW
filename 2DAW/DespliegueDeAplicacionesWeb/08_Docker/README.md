@@ -101,6 +101,19 @@ docker --version
 ![alt text](03_dockerVersion.png)
 ---
 
+Ahora como vamos a poner mucho código y no quiero escribirlo todo porque soy bastante perezoso he instalado open ssh:
+
+```bash
+sudo apt install openssh-server -y
+```
+
+y también zerotier, he creado una red y he conectado mi ordenador de casa con la VM para que se pudiesen ver entre sí, a continuación me conecto por ssh desde WARP que es una consola que tiene IA integrada y ayuda a completar las ordenes más rápidas
+
+
+![alt text](04_warp.png)
+
+
+
 ## El "Hola Mundo" de docker
 
 Vamos a comprobar que todo funciona creando nuestro primer contenedor desde la imagen `hello-world`:
@@ -135,6 +148,8 @@ For more examples and ideas, visit:
  https://docs.docker.com/get-started/
 ```
 
+![alt text](05__dockerHelloWorld.png)
+
 Pero, ¿qué es lo que está sucediendo al ejecutar esa orden?:
 
 * Al ser la primera vez que ejecuto un contenedor basado en esa imagen, la imagen `hello-word` se descarga desde el repositorio que se encuentra en el registro que vayamos a utilizar, en nuestro caso DockerHub.
@@ -156,6 +171,8 @@ CONTAINER ID        IMAGE               COMMAND             CREATED             
 372ca4634d53        hello-world         "/hello"            8 minutes ago       Exited (0) 8 minutes ago                       elastic_johnson
 ```
 
+![alt text](06_dockerps.png)
+
 Para eliminar el contenedor podemos identificarlo con su `id`:
 
 ```bash
@@ -168,7 +185,7 @@ o con su nombre:
 $ docker rm elastic_johnson
 ```
 
-
+![alt text](07_dockerrm.png)
 
 
 
@@ -186,6 +203,8 @@ Status: Downloaded newer image for ubuntu:latest
 Hello world
 ```
 
+![alt text](08_dockerRun.png)
+
 Comprobamos que el contenedor ha ejecutado el comando que hemos indicado y se ha parado:
 
 ```bash
@@ -193,6 +212,9 @@ $ docker ps -a
 CONTAINER ID        IMAGE              COMMAND                  CREATED               STATUS                      PORTS               NAMES
 3bbf39d0ec26        ubuntu              "echo 'Hello wo…"   31 seconds ago      Exited     (0) 29 seconds ago                       wizardly_edison
 ```
+
+
+![alt text](09_dockerps-a.png)
 
 Con el comando `docker images` podemos visualizar las imágenes que ya tenemos descargadas en nuestro registro local:
 
@@ -203,8 +225,8 @@ ubuntu              latest              f63181f19b2f        7 days ago          
 hello-world         latest              bf756fb1ae65        13 months ago       13.3kB
 ```
 
-	
 
+![alt text](10_dockerimages.png)
 
 
 
@@ -217,6 +239,8 @@ $  docker run -it --name contenedor1 ubuntu bash
 root@2bfa404bace0:/#
 ```
 
+![alt text](11_dockerRun-it.png)
+
 El contenedor se para cuando salimos de él. Para volver a conectarnos a él:
 
 ```bash
@@ -226,6 +250,9 @@ $ docker attach contenedor1
 root@2bfa404bace0:/#
 ```
 
+![alt text](12_dockerStartAttach.png)
+
+
 Si el contenedor se está ejecutando podemos ejecutar comandos en él con el subcomando `exec`:
 
 ```bash
@@ -233,6 +260,8 @@ $ docker start contenedor1
 contenedor1
 $ docker exec contenedor1 ls -al
 ```
+
+![alt text](13_dockerExec.png)
 
 Con la orden `docker restart` reiniciamos el contenedor, lo paramos y lo iniciamos.
 
@@ -252,6 +281,7 @@ $ docker inspect contenedor1
             "Paused": false,
             ...
 ```
+![alt text](14_dockerInspect.png)
 
 Nos muestra mucha información, está en formato JSON (JavaScript Object Notation) y nos da datos sobre aspectos como:
 
@@ -282,6 +312,7 @@ En esta ocasión hemos utilizado la opción `-d` del comando `run`, para que la 
 $ docker run -d --name contenedor2 ubuntu bash -c "while true; do echo hello world; sleep 1; done"
 7b6c3b1c0d650445b35a1107ac54610b65a03eda7e4b730ae33bf240982bba08
 ```
+![alt text](15_dockerRun.png)
 
 > NOTA: En la instrucción `docker run` hemos ejecutado el comando con `bash -c` que nos permite ejecutar uno o mas comandos en el contenedor de forma más compleja (por ejemplo, indicando ficheros dentro del contenedor).
 
@@ -294,17 +325,13 @@ Por último podemos parar el contenedor y borrarlo con las siguientes instruccio
 $ docker stop contenedor2
 $ docker rm contenedor2
 ```
+![alt text](16_dockerStopAndRemove.png)
 
 Hay que tener en cuenta que un contenedor que esta ejecutándose no puede ser eliminado. Tendríamos que para el contenedor y posteriormente borrarlo. Otra opción es borrarlo a la fuerza:
 
 ```bash
 $ docker rm -f contenedor2
 ```
-
-	
-
-
-
 
 ## Creando un contenedor con un servidor web
 
@@ -318,13 +345,14 @@ Vemos que el contenedor se está ejecutando, además con la opción `-p` mapeamo
 
 Para probarlo accede desde un navegador a **la ip del servidor con docker (en mi caso: 192.168.121.54 y al puerto 8080**:
 
-![web](img/web.png)
+![alt text](17_dockerWeb.png)
 
 Para acceder al log del contenedor podemos ejecutar:
 
 ```bash
 $ docker logs my-apache-app
 ```
+![alt text](18_dockerLogs.png)
 
 Con la opción `logs -f` seguimos visualizando los logs en tiempo real.
 
@@ -344,21 +372,18 @@ root@cf3cd01a4993:/usr/local/apache2/htdocs# echo "<h1>Curso Docker</h1>" > inde
 root@cf3cd01a4993:/usr/local/apache2/htdocs# exit
 ```
 
+![alt text](19_dockerExecInteractivo.png)
+
 * Ejecutando directamente el comando de creación del fichero `index.html` en el contenedor:
 
 ```bash
 $ docker exec my-apache-app bash -c 'echo "<h1>Curso Docker</h1>" > /usr/local/apache2/htdocs/index.html'
 ```
+![alt text](20_dockerExec.png)
 
 Independientemente de cómo hayamos creado el fichero, podemos volver a acceder al servidor web y comprobar que efectivamente hemos cambiado el contenido del `index.html`:
 
-![web](img/web2.png)
-
-
-
-
-
-
+![web](21_dockerWeb2.png)
 
 
 ## Configuración de contenedores con variables de entorno
@@ -373,6 +398,8 @@ root@91e81200c633:/# echo $USUARIO
 prueba
 ```
 
+![alt text](22_dockerEnv.png)
+
 ### Configuración de un contenedor con la imagen mariadb
 
 En ocasiones es obligatorio el inicializar alguna variable de entorno para que el contenedor pueda ser ejecutado. Si miramos la [documentación](https://hub.docker.com/_/mariadb) en Docker Hub de la imagen mariadb, observamos que podemos definir algunas variables de entorno para la creación y configuración del contenedor (por ejemplo: `MARIADB_DATABASE`,`MARIADB_USER`, `MARIADB_PASSWORD`,...). Pero hay una que la tenemos que indicar de forma obligatoria, la contraseña del usuario `root` (`MARIADB_ROOT_PASSWORD`), por lo tanto:
@@ -383,6 +410,7 @@ $ docker ps
 CONTAINER ID        IMAGE               COMMAND                  CREATED                STATUS              PORTS               NAMES
 9c3effd891e3        mariadb             "docker-entrypoint.s…"   8 seconds ago       Up 7   seconds        3306/tcp            some-mariadb
 ```
+![alt text](23_dockerMariaDB.png)
 
 Podemos ver que se ha creado una variable de entorno:
 
@@ -392,6 +420,7 @@ $ docker exec -it some-mariadb env
 MARIADB_ROOT_PASSWORD=my-secret-pw
 ...
 ```
+![alt text](24_dockerEnvVar.png)
 
 Y para acceder podemos ejecutar:
 
@@ -402,6 +431,8 @@ root@9c3effd891e3:/# mariadb -u root -p"$MARIADB_ROOT_PASSWORD"
 
 MariaDB [(none)]> 
 ```
+![alt text](25_dockerMariaDB2.png)
+
 Otra forma de hacerlo sería:
 
 ```bash
@@ -410,6 +441,7 @@ Enter password:
 ...
 MariaDB [(none)]> 
 ```
+
 
 #### Accediendo a servidor de base de datos desde el exterior
 
@@ -426,11 +458,15 @@ Lo primero que vamos a hacer es eliminar el contenedor anterior:
 $ docker rm -f some-mariadb
 ```
 
+![alt text](26_dockerMariaDBRemove.png)
+
 Y a continuación vamos a crear otro contenedor, pero en esta ocasión vamos a mapear el puerto 3306 del anfitrión con el puerto 3306 del contenedor:
 
 ```bash 
 docker run -d -p 3306:3306 --name some-mariadb -e MARIADB_ROOT_PASSWORD=my-secret-pw mariadb
 ```
+
+![alt text](27_dockerMariaDB2.png)
 
 Comprobamos que los puertos se han mapeado y que el contenedor está ejecutándose:
 
@@ -439,6 +475,8 @@ $ docker ps
 CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                    NAMES
 816ea7df5c41        mariadb             "docker-entrypoint.s…"   3 seconds ago       Up 2 seconds        0.0.0.0:3306->3306/tcp   some-mariadb
 ```
+
+![alt text](28_dockerMariaDBps.png)
 
 Ahora desde nuestro equipo (donde hemos instalado un cliente de mysql) nos conectamos  que tiene la ip `192.168.121.54` vamos a conectarnos a la base de datos (hay que tener instalado el cliente de mariadb):
 
@@ -470,8 +508,6 @@ MariaDB [(none)]>
 # 2. Imágenes Docker
 
 ## Registros de imágenes: Docker Hub
-
-![docker](img/docker2.png)
 
 
 Las **imágenes** de Docker son plantillas de solo lectura, es decir, una imagen puede contener el sistema de archivo de un sistema operativo como Debian, pero esto solo nos permitirá crear los contenedores basados en esta configuración. Si hacemos cambios en el contenedor ya lanzado, al detenerlo esto no se verá reflejado en la imagen.
@@ -521,13 +557,11 @@ Las imágenes están hechas de **capas ordenadas**. Puedes pensar en una capa co
 
 Si tienes muchas imágenes basadas en capas similares, como Sistema Operativo base o paquetes comunes, entonces todas éstas capas comunes será almacenadas solo una vez.
 
-![docker](img/container-layers.jpg)
 
 Cuando un nuevo contenedor es creado desde una imagen, todas las capas de la imagen son únicamente de lectura y una delgada capa lectura-escritura es agregada arriba. Todos los cambios efectuados al contenedor específico son almacenados en esa capa. 
 
 El contenedor no puede modificar los archivos desde su capa de imagen (que es sólo lectura). Creará una copia del fichero en su capa superior, y desde ese punto en adelante, cualquiera que trate de acceder al archivo obtendrá la copia de la capa superior. 
 
-![docker](img/sharing-layers.jpg)
 
 Por lo tanto cuando creamos un contenedor ocupa muy poco de disco duro, porque las capas de la imagen desde la que se ha creado se comparten con el contenedor:
 
@@ -539,11 +573,15 @@ REPOSITORY          TAG                 IMAGE ID            CREATED             
 ubuntu              latest              f63181f19b2f        7 days ago          72.9MB
 ```
 
+![alt text](30_dockerImages.png)
+
 Si creamos un contenedor interactivo:
 
 ```bash
 $ docker run -it --name contenedor1 ubuntu /bin/bash 
 ```
+
+![alt text](31_dockerContenedor.png)
 
 Nos salimos, y a continuación visualizamos los contenedores con la opción `-s` (size):
 
@@ -552,6 +590,8 @@ $ docker ps -a -s
 CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS                       PORTS               NAMES               SIZE
 a2d1ce6990d8        ubuntu              "/bin/bash"              8 seconds ago       Exited (130) 5 seconds ago                       contenedor1         0B (virtual 72.9MB)
 ```
+
+![alt text](32_dockerContenedorSize.png)
 
 Nos damos cuenta que el tamaño real del contenedor es 0B y el virtual, el que comparte con la imagen son los 72,9MB que es el tamaño de la imagen ubuntu.
 
@@ -564,6 +604,10 @@ $ docker attach contenedor1
 root@a2d1ce6990d8:/# echo "00000000000000000">file.txt
 ```
 
+![alt text](33_dockerContenedor2.png)
+
+![alt text](34_dockerContenedor3.png)
+
 Y volvemos a ver el tamaño, vemos que ha crecido con la creación del fichero:
 
 ```bash
@@ -571,6 +615,8 @@ $ docker ps -a -s
 CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS                      PORTS               NAMES               SIZE
 a2d1ce6990d8        ubuntu              "/bin/bash"              56 seconds ago      Exited (0) 2 seconds ago                        contenedor1         52B (virtual 72.9MB)
 ```
+
+![alt text](35_dockerContenedor4.png)
 
 Por todo lo que hemos explicado, ahora se entiende  que **no podemos eliminar una imágen cuando tenemos contenedores creados a a partir de ella**.
 
@@ -589,7 +635,7 @@ $ docker inspect ubuntu:latest
 ...
 ```
 
-
+![alt text](36_dockerInspect.png)
 
 
 
@@ -611,11 +657,15 @@ Por ejemplo en la imagen `ubuntu` el proceso pode defecto es `bash`, por lo tant
 $ docker run -it --name contenedor1 ubuntu 
 ```
 
+![alt text](37_dockerRun.png)
+
 Pero podemos indicar el comando a ejecutar en la creación del contenedor:
 
 ```bash
 $ docker run ubuntu /bin/echo 'Hello world'
 ```
+
+![alt text](38_dockerRun2.png)
 
 Otro ejemplo: la imagen `httpd:2.4` ejecuta un servidor web por defecto, por lo tanto al crear el contenedor:
 
@@ -635,7 +685,6 @@ En este ejemplo nos vamos a fijar cómo por medio de la etiqueta del nombre de l
 
 En concreto, si estudiamos la [documentación](https://hub.docker.com/_/mediawiki) de la imagen `mediawiki`, podemos ver las etiquetas disponibles para la imagen que corresponden a versiones distintas de la aplicación. En enero de 2024 serían las siguientes:
 
-![mediawiki](img/mediawiki_versiones.png)
 
 ### La etiqueta `latest`
 
@@ -657,9 +706,11 @@ En primer lugar vamos a instalar la última versión:
 docker run -d -p 8080:80 --name mediawiki1 mediawiki
 ```
 
+![alt text](39_dockerContenedor3.png)
+
+
 Si accedemos a la ip de nuestro ordenador, al puerto 8080, podemos observar que hemos instalado la versión 1.41.0:
 
-![mediawiki](img/mediawiki141.png)
 
 A continuación vamos a instalar otra versión de la mediawiki, la 1.40.2, creamos otro contenedor con otro nombre y mapeamos otro puerto:
 
@@ -669,7 +720,6 @@ docker run -d -p 8081:80 --name mediawiki2 mediawiki:1.40.2
 
 Si accedemos a la ip de nuestro ordenador, al puerto 8081, podemos observar que hemos instalado la versión 1.40.2:
 
-![mediawiki](img/mediawiki1402.png)
 
 Y finalmente vamos a instalar otra versión en otro contenedor:
 
@@ -678,8 +728,6 @@ docker run -d -p 8082:80 --name mediawiki3 mediawiki:1.39.6
 ```
 
 Si accedemos a la ip de nuestro ordenador, al puerto 8082, podemos observar que hemos instalado la versión 1.39.6:
-
-![mediawiki](img/mediawiki1396.png)
 
 **Nota: Puedes observar que la primera imagen que se baja, descargas todas las capas, sin embargo al descargar las otras versiones de la imagen, sólo se bajan las capas que difieren de la primera.**
 
