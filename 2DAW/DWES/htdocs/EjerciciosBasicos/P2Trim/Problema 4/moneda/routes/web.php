@@ -28,12 +28,12 @@ Route::middleware('auth')->group(function () {
     // Requisito 4.4: Pasarela de Pago
     Route::get('/pago/{cuota}/paypal', [App\Http\Controllers\PagoController::class, 'pagarConPaypal'])->name('pago.paypal');
     Route::get('/pago/exito', [App\Http\Controllers\PagoController::class, 'exito'])->name('pago.exito');
-    
-    // SPA Javascript Consumer
-    Route::get('/prueba-api', function () {
-        return view('prueba_api');
-    })->name('api.prueba');
 });
+
+// SPA Javascript Consumer (Acceso libre para pruebas)
+Route::get('/prueba-api', function () {
+    return view('prueba_api');
+})->name('api.prueba');
 
 // Requisito 4.3: Social Login
 Route::get('/auth/{provider}/redirect', [RedSocialController::class, 'redirect'])->name('social.redirect');

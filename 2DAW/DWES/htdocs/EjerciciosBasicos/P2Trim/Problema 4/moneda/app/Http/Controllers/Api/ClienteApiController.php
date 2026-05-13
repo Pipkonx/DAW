@@ -81,6 +81,15 @@ class ClienteApiController extends Controller
             'name' => 'required|string',
             'cif' => 'required|string|unique:clientes',
             'currency' => 'required|string|size:3',
+        ], [
+            'required' => 'El campo :attribute es obligatorio.',
+            'unique' => 'El valor del campo :attribute ya está en uso.',
+            'size' => 'El campo :attribute debe tener :size caracteres.',
+            'string' => 'El campo :attribute debe ser texto.',
+        ], [
+            'name' => 'nombre',
+            'cif' => 'CIF',
+            'currency' => 'moneda'
         ]);
 
         $cliente = Cliente::create($validated);
@@ -150,7 +159,21 @@ class ClienteApiController extends Controller
     )]
     public function update(Request $request, Cliente $cliente)
     {
-        $cliente->update($request->all());
+        $validated = $request->validate([
+            'name' => 'sometimes|string',
+            'cif' => 'sometimes|string|unique:clientes,cif,' . $cliente->id,
+            'currency' => 'sometimes|string|size:3',
+        ], [
+            'required' => 'El campo :attribute es obligatorio.',
+            'unique' => 'El valor del campo :attribute ya está en uso.',
+            'size' => 'El campo :attribute debe tener :size caracteres.',
+        ], [
+            'name' => 'nombre',
+            'cif' => 'CIF',
+            'currency' => 'moneda'
+        ]);
+
+        $cliente->update($validated);
         return response()->json($cliente, Response::HTTP_OK);
     }
 

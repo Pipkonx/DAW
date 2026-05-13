@@ -36,15 +36,27 @@ class CuotaController extends Controller
             'client_id' => 'required|exists:clientes,id',
             'concept' => 'required|string',
             'amount' => 'required|numeric',
+            'currency' => 'required|string|size:3',
+        ], [
+            'required' => 'El campo :attribute es obligatorio.',
+            'numeric' => 'El campo :attribute debe ser un número.',
+            'size' => 'El campo :attribute debe tener :size caracteres.',
+        ], [
+            'client_id' => 'cliente',
+            'concept' => 'concepto',
+            'amount' => 'importe',
+            'currency' => 'moneda',
         ]);
 
-        $cliente = Cliente::find($validated['client_id']);
-        
+        // Usamos el HttpClient (ServicioDivisas) para obtener el cambio al crear la cuota
+        $eurAmount = $this->servicioDivisas->convertToEur((float) $validated['amount'], $validated['currency']);
+
         $cuota = Cuota::create([
             'client_id' => $validated['client_id'],
             'concept' => $validated['concept'],
             'amount' => $validated['amount'],
-            'currency' => $cliente->currency,
+            'currency' => $validated['currency'],
+            'eur_amount' => $eurAmount,
             'is_paid' => false,
         ]);
 
@@ -55,7 +67,7 @@ class CuotaController extends Controller
             // Registrar error o ignorar si el correo no está configurado
         }
 
-        return back()->with('success', 'Cuota creada con éxito y notificación enviada por correo.');
+        return back()->with('success', 'Cuota creada');
     }
 
     public function markAsPaid(Cuota $cuota)
@@ -77,6 +89,6 @@ class CuotaController extends Controller
             'eur_amount' => $eurAmount
         ]);
 
-        return back()->with('success', "Cuota marcada como pagada. Importe registrado: " . number_format($eurAmount, 2) . " EUR");
+        return back()->with('success', "Cuota marcada como pagada. Importe registrado: " . number_format($eurAmount, 2, ',', '.') . " EUR");
     }
 }
