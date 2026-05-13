@@ -41,6 +41,39 @@ Simulación de flujo completo de pago externo. El sistema redirige a una interfa
 - **Lógica:** [PagoController.php (Líneas 22-64)](app/Http/Controllers/PagoController.php#L22-L64)
 - **Documentación Oficial:** [PayPal Smart Checkout SDK](https://developer.paypal.com/docs/checkout/standard/integrate/)
 
+### 6. Sistema de Notificaciones (Resend)
+
+Integración con **Resend** para el envío de notificaciones por correo electrónico. El sistema permite el envío manual de los detalles de la cuota al usuario administrador.
+
+- **Servicio:** [Resend SMTP](https://resend.com/docs/send-with-smtp-laravel)
+- **Lógica de Envío:** [CuotaController.php (Líneas 100-110)](app/Http/Controllers/CuotaController.php#L100-L110)
+- **Mailable:** [CuotaCreada.php](app/Mail/CuotaCreada.php)
+
+## API Endpoints (Postman)
+
+La API de clientes está disponible en el prefijo `/api/`. A continuación se detallan los endpoints para pruebas en Postman:
+
+### Clientes
+- **Listar:** `GET /api/clientes`
+- **Ver detalle:** `GET /api/clientes/{id}`
+- **Crear:** `POST /api/clientes`
+    ```json
+    {
+      "name": "Nuevo Cliente",
+      "cif": "B12345678",
+      "currency": "USD"
+    }
+    ```
+- **Actualizar:** `PUT /api/clientes/{id}`
+    ```json
+    {
+      "name": "Nombre Actualizado",
+      "cif": "B12345678",
+      "currency": "EUR"
+    }
+    ```
+- **Eliminar:** `DELETE /api/clientes/{id}`
+
 ## Acceso y Enlaces
 
 - **Administración:** [http://127.0.0.1:8000/login](http://127.0.0.1:8000/login)

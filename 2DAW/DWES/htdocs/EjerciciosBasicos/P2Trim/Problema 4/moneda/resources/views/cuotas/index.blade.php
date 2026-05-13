@@ -20,6 +20,10 @@
         <div class="alert alert-success py-1 small">{{ session('success') }}</div>
     @endif
 
+    @if(session('error'))
+        <div class="alert alert-danger py-1 small">{{ session('error') }}</div>
+    @endif
+
     <div class="card p-3 mb-4 bg-light">
         <form action="{{ route('cuotas.store') }}" method="POST" class="row g-2">
             @csrf
@@ -83,6 +87,15 @@
                     @else
                         <span class="text-muted small">Pagada</span>
                     @endif
+                    <form action="{{ route('cuotas.destroy', $cuota) }}" method="POST" class="d-inline" onsubmit="return confirm('¿Estás seguro de eliminar esta cuota?')">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-sm btn-outline-danger py-0">Borrar</button>
+                    </form>
+                    <form action="{{ route('cuotas.email', $cuota) }}" method="POST" class="d-inline">
+                        @csrf
+                        <button type="submit" class="btn btn-sm btn-outline-info py-0">Email</button>
+                    </form>
                 </td>
             </tr>
             @endforeach

@@ -61,13 +61,6 @@ class CuotaController extends Controller
             'is_paid' => false,
         ]);
 
-        // Envío de correo informativo (Requisito 1.8 de la rúbrica)
-        try {
-            Mail::to($request->user()->email)->send(new CuotaCreada($cuota));
-        } catch (\Exception $e) {
-            // Registrar error o ignorar si el correo no está configurado
-        }
-
         return back()->with('success', 'Cuota creada');
     }
 
@@ -91,5 +84,21 @@ class CuotaController extends Controller
         ]);
 
         return back()->with('success', "Cuota marcada como pagada. Importe registrado: " . number_format($eurAmount, 2, ',', '.') . " EUR");
+    }
+
+    public function destroy(Cuota $cuota)
+    {
+        $cuota->delete();
+        return back()->with('success', 'Cuota eliminada correctamente.');
+    }
+
+    public function enviarEmail(Request $request, Cuota $cuota)
+    {
+        try {
+            Mail::to($request->user()->email)->send(new CuotaCreada($cuota));
+            return back()->with('success', 'Email enviado correctamente a ' . $request->user()->email);
+        } catch (\Exception $e) {
+            return back()->with('error', 'Error al enviar el email: ' . $e->getMessage());
+        }
     }
 }

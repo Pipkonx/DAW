@@ -24,6 +24,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/cuotas', [CuotaController::class, 'index'])->name('cuotas.index');
     Route::post('/cuotas', [CuotaController::class, 'store'])->name('cuotas.store');
     Route::post('/cuotas/{cuota}/pagar', [CuotaController::class, 'markAsPaid'])->name('cuotas.pagar');
+    Route::delete('/cuotas/{cuota}', [CuotaController::class, 'destroy'])->name('cuotas.destroy');
+    Route::post('/cuotas/{cuota}/email', [CuotaController::class, 'enviarEmail'])->name('cuotas.email');
     
     // Requisito 4.4: Pasarela de Pago
     Route::get('/pago/{cuota}/paypal', [App\Http\Controllers\PagoController::class, 'pagarConPaypal'])->name('pago.paypal');

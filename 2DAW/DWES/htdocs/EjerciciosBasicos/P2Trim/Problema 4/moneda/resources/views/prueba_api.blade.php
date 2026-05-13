@@ -53,7 +53,7 @@
 </div>
 
 <script>
-    const API_URL = '/api/clientes';
+    const API_URL = '{{ url('/api/clientes') }}';
     let isEditing = false;
 
     async function loadClients() {
