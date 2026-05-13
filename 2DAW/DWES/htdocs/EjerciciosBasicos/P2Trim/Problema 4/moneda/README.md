@@ -8,8 +8,11 @@ Este soporte multi-moneda, integración de APIs externas y autenticación social
 
 El sistema utiliza la fachada `Http` de Laravel para conectar con una API de tipos de cambio externa. Esto permite convertir importes de diversas monedas (USD, GBP, etc.) a Euros en tiempo real durante la creación y el pago de cuotas.
 
-- **Código:** [ServicioDivisas.php (Líneas 23-31)](app/Services/ServicioDivisas.php#L23-L31)
-- **Donde se aplica:** [CuotaController.php (Líneas 52 y 80)](app/Http/Controllers/CuotaController.php#L52-L80)
+- **Lógica de Conversión:** [ServicioDivisas.php (Líneas 23-39)](app/Services/ServicioDivisas.php#L23-L39)
+- **Listado Dinámico (API):** [ServicioDivisas.php (Líneas 44-55)](app/Services/ServicioDivisas.php#L44-L55)
+- **Implementación en Select:** Se recuperan todas las divisas disponibles desde la API externa y se inyectan en los desplegables de la aplicación.
+    - **Controlador:** [CuotaController.php (Línea 30)](app/Http/Controllers/CuotaController.php#L30)
+    - **Vista (Blade):** [index.blade.php (Líneas 42-50)](resources/views/cuotas/index.blade.php#L42-L50)
 
 ### 2. API REST de Clientes
 

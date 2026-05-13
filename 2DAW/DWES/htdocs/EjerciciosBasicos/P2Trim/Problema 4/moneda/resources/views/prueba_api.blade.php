@@ -31,9 +31,13 @@
             </div>
             <div class="col-md-2">
                 <select id="currency" class="form-select form-select-sm">
-                    <option value="EUR">EUR</option>
-                    <option value="USD">USD</option>
-                    <option value="GBP">GBP</option>
+                    @forelse($monedas as $code => $name)
+                        <option value="{{ strtoupper($code) }}" {{ $code == 'eur' ? 'selected' : '' }}>
+                            {{ strtoupper($code) }} - {{ $name }}
+                        </option>
+                    @empty
+                        <option value="EUR">EUR</option>
+                    @endforelse
                 </select>
             </div>
             <div class="col-md-4 d-flex gap-2">

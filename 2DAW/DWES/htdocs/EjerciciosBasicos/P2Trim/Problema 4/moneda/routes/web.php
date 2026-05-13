@@ -31,8 +31,9 @@ Route::middleware('auth')->group(function () {
 });
 
 // SPA Javascript Consumer (Acceso libre para pruebas)
-Route::get('/prueba-api', function () {
-    return view('prueba_api');
+Route::get('/prueba-api', function (App\Services\ServicioDivisas $divisas) {
+    $monedas = $divisas->getCurrencies();
+    return view('prueba_api', compact('monedas'));
 })->name('api.prueba');
 
 // Requisito 4.3: Social Login

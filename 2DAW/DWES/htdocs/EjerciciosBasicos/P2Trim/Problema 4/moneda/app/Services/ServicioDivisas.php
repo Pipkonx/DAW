@@ -37,4 +37,20 @@ class ServicioDivisas
 
         return null;
     }
+
+    /**
+     * Obtiene la lista completa de monedas disponibles desde la API.
+     */
+    public function getCurrencies(): array
+    {
+        try {
+            $response = Http::get("https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies.json");
+            if ($response->successful()) {
+                return $response->json();
+            }
+        } catch (\Exception $e) {
+            return [];
+        }
+        return [];
+    }
 }

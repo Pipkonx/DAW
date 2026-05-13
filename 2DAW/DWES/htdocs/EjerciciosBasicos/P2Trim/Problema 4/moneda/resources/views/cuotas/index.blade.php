@@ -39,9 +39,11 @@
             </div>
             <div class="col-md-2">
                 <select name="currency" required class="form-select form-select-sm">
-                    <option value="EUR">EUR</option>
-                    <option value="USD">USD</option>
-                    <option value="GBP">GBP</option>
+                    @foreach($monedas as $code => $name)
+                        <option value="{{ strtoupper($code) }}" {{ $code == 'eur' ? 'selected' : '' }}>
+                            {{ strtoupper($code) }} - {{ $name }}
+                        </option>
+                    @endforeach
                 </select>
             </div>
             <div class="col-md-2">

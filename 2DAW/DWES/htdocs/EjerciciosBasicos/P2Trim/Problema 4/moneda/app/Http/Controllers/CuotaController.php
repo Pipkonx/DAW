@@ -27,7 +27,8 @@ class CuotaController extends Controller
     {
         $cuotas = Cuota::with('cliente')->get();
         $clientes = Cliente::all();
-        return view('cuotas.index', compact('cuotas', 'clientes'));
+        $monedas = $this->servicioDivisas->getCurrencies();
+        return view('cuotas.index', compact('cuotas', 'clientes', 'monedas'));
     }
 
     public function store(Request $request)
