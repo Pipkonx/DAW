@@ -16,38 +16,32 @@
         <p class="h2 fw-bold text-dark mb-0">{{ number_format($cuota->amount, 2) }} {{ $cuota->currency }}</p>
     </div>
 
-    <div id="payment-area">
-        <button onclick="pay()" id="btn-pay" class="btn btn-warning w-100 py-3 rounded-pill fw-bold shadow-sm border-0" style="background-color: #ffc439; color: #003087;">
-            Pagar ahora con PayPal
-        </button>
-        
-        <div id="msg-processing" class="d-none mt-3">
-            <div class="spinner-border text-primary spinner-border-sm" role="status"></div>
-            <span class="ms-2 text-primary fw-bold">Procesando pago seguro...</span>
-        </div>
-    </div>
+    <div id="paypal-button-container" class="mt-4"></div>
     
     <div class="mt-4 border-top pt-3">
         <a href="{{ route('cuotas.index') }}" class="text-decoration-none text-muted small">Cancelar y volver</a>
     </div>
 </div>
 
+<script src="https://www.paypal.com/sdk/js?client-id=test&currency={{ $cuota->currency }}"></script>
+
 <script>
-    function pay() {
-        const btn = document.getElementById('btn-pay');
-        const msg = document.getElementById('msg-processing');
-        
-        btn.classList.add('disabled');
-        btn.innerHTML = 'Conectando...';
-        
-        setTimeout(() => {
-            btn.classList.add('d-none');
-            msg.classList.remove('d-none');
-            
-            setTimeout(() => {
+    paypal.Buttons({
+        createOrder: function(data, actions) {
+            return actions.order.create({
+                purchase_units: [{
+                    amount: {
+                        value: '{{ $cuota->amount }}'
+                    }
+                }]
+            });
+        },
+        onApprove: function(data, actions) {
+            return actions.order.capture().then(function(details) {
+                // Al aprobar el pago, redirigimos a nuestra ruta de éxito
                 window.location.href = "{{ route('pago.exito') }}";
-            }, 1500);
-        }, 800);
-    }
+            });
+        }
+    }).render('#paypal-button-container');
 </script>
 @endsection

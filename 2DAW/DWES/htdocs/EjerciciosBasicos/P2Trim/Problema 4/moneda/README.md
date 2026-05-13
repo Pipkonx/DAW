@@ -30,6 +30,13 @@ La API está documentada siguiendo el estándar OpenAPI 3.0 mediante anotaciones
 Integración de Laravel Socialite para permitir el inicio de sesión y registro de usuarios utilizando cuentas de Google.
 
 - **Lógica:** [RedSocialController.php (Líneas 16-61)](app/Http/Controllers/Auth/RedSocialController.php#L16-L61)
+ 
+### 5. Pasarela de Pago (PayPal)
+ 
+Simulación de flujo completo de pago externo. El sistema redirige a una interfaz de pago y, tras la confirmación, actualiza el estado de la cuota y realiza la conversión final de divisas.
+ 
+- **Lógica:** [PagoController.php (Líneas 22-64)](app/Http/Controllers/PagoController.php#L22-L64)
+- **Documentación Oficial:** [PayPal Smart Checkout SDK](https://developer.paypal.com/docs/checkout/standard/integrate/)
 
 ## Acceso y Enlaces
 
@@ -37,3 +44,6 @@ Integración de Laravel Socialite para permitir el inicio de sesión y registro 
     - **Usuario:** `admin@example.com`
     - **Contraseña:** `password`
 - **Gestión Clientes (SPA):** [http://127.0.0.1:8000/prueba-api](http://127.0.0.1:8000/prueba-api)
+- **PayPal Sandbox (Pruebas):**
+    - **Usuario:** `sb-v5rxs50991724@business.example.com`
+    - **Contraseña:** `pFL"5-Qx`
